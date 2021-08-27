@@ -1,6 +1,6 @@
 # Discussion-Board
 
-A application as part of CS5617 Software Engineering project at IIT Palakkad
+An application as part of CS5617 Software Engineering project at IIT Palakkad
 
 ## The Team
 
