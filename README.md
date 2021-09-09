@@ -37,3 +37,6 @@ An application as part of CS5617 Software Engineering project at IIT Palakkad
 | Teaching Assistants    |
 |------------------------|
 | Sreejith K P           |
+
+
+[Guidelines for Contribution](./CONTRIBUTING.md)

@@ -5,6 +5,7 @@ We will be using Github for development and version control.
 ## Hierarchy
 
 The workflow hierarchy will be as follows.
+
 ![hierarchy image](./images/hierarchy.png)
 
 - L1 - The main repo: maintained by project manager and technical architect
