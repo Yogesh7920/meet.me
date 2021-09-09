@@ -25,7 +25,7 @@ An application as part of CS5617 Software Engineering project at IIT Palakkad
 | Screen Share & Whiteboard Module (6+1) | UX Module (8+1)              |
 |----------------------------------------|------------------------------|
 | Manas Sharma (Team Lead)               | Raswanth Murugan (Team Lead) |
-| Ashish Kumar                           | Irene Casmir                 |
+| Ashish Kumar Gupta                     | Irene Casmir                 |
 | Neeraj Patil                           | Mitul Kataria                |
 | Parul Sangwan                          | Suchitra Yechuri             |
 | Rajeev Goyal                           | Sai Vipul Mohan              |
