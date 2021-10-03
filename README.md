@@ -1,4 +1,4 @@
-# Discussion-Board
+# Meet.me
 
 An application as part of CS5617 Software Engineering project at IIT Palakkad
 
