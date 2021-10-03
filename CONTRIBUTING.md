@@ -38,9 +38,13 @@ The workflow hierarchy will be as follows.
 
 ## Coding guidelines
 
+Stick to the coding official coding guidelines of C# and .NET.
+Make sure to use trace for every function you make.
+
 - [C# Coding Conventions - Official](https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions)
 - [C# Coding Conventions - Well documented](https://github.com/ktaranov/naming-convention/blob/master/C%23%20Coding%20Standards%20and%20Naming%20Conventions.md)
 - [C# Best Practices - geeksforgeeks](https://www.geeksforgeeks.org/c-sharp-coding-standards/)
+- [.NET Trace methods](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.trace?view=net-5.0#methods)
 
 ## Useful Links
 - [Using GIT](https://docs.github.com/en/github/using-git)
