@@ -3,6 +3,9 @@
 *.docx
 *.tex
 
+# Testing
+trace.txt
+
 # User-specific files
 *.rsuser
 *.suo

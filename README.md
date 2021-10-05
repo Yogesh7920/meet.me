@@ -1,6 +1,7 @@
-# Discussion-Board
+# Meet.me
 
 An application as part of CS5617 Software Engineering project at IIT Palakkad
+* [Wiki](https://github.com/Yogesh7920/meet.me/wiki)
 
 ## The Team
 
@@ -19,7 +20,7 @@ An application as part of CS5617 Software Engineering project at IIT Palakkad
 | Alisetti Sai Vamsi              | Sairoop                    | Yuvraj Raghuvanshi             |           
 | Tausif Iqbal                    | Parmanand Kumar            | Vishesh Munjal                 | 
 | Abdullah Khan                   | Harsh Parihar              | Sameer Dhiman                  | 
-|                                 | Harsh Anand                |                                |
+|                                 | Rajeev Goyal               |                                |
 
 
 | Screen Share & Whiteboard Module (6+1) | UX Module (8+1)              |
@@ -28,9 +29,9 @@ An application as part of CS5617 Software Engineering project at IIT Palakkad
 | Ashish Kumar Gupta                     | Irene Casmir                 |
 | Neeraj Patil                           | Mitul Kataria                |
 | Parul Sangwan                          | Suchitra Yechuri             |
-| Rajeev Goyal                           | Sai Vipul Mohan              |
-| Gurunadh                               | P S Harikrishnan             |
-| Chandan Srivastava                     | Arpan Tripathi               |
+| Gurunadh                               | Sai Vipul Mohan              |
+| Chandan Srivastava                     | P S Harikrishnan             |
+|                                        | Arpan Tripathi               |
 |                                        | Aniket Singh Rajpoot         |
 |                                        | Pulavarti Vinay Kumar        |
 
