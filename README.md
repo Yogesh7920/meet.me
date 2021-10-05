@@ -1,6 +1,7 @@
-# Discussion-Board
+# Meet.me
 
 An application as part of CS5617 Software Engineering project at IIT Palakkad
+* [Wiki](https://github.com/Yogesh7920/meet.me/wiki)
 
 ## The Team
 
@@ -19,21 +20,24 @@ An application as part of CS5617 Software Engineering project at IIT Palakkad
 | Alisetti Sai Vamsi              | Sairoop                    | Yuvraj Raghuvanshi             |           
 | Tausif Iqbal                    | Parmanand Kumar            | Vishesh Munjal                 | 
 | Abdullah Khan                   | Harsh Parihar              | Sameer Dhiman                  | 
-|                                 | Harsh Anand                |                                |
+|                                 | Rajeev Goyal               |                                |
 
 
 | Screen Share & Whiteboard Module (6+1) | UX Module (8+1)              |
 |----------------------------------------|------------------------------|
 | Manas Sharma (Team Lead)               | Raswanth Murugan (Team Lead) |
-| Ashish Kumar Gupta                     | Mitul Kataria                |
-| Neeraj Patil                           | Suchitra Yechuri             |
-| Parul Sangwan                          | Sai Vipul Mohan              |
-| Rajeev Goyal                           | P S Harikrishnan             |
-| Gurunadh                               | Arpan Tripathi               |
-| Chandan Srivastava                     | Aniket Singh Rajpoot         |
+| Ashish Kumar Gupta                     | Irene Casmir                 |
+| Neeraj Patil                           | Mitul Kataria                |
+| Parul Sangwan                          | Suchitra Yechuri             |
+| Gurunadh                               | Sai Vipul Mohan              |
+| Chandan Srivastava                     | P S Harikrishnan             |
+|                                        | Arpan Tripathi               |
+|                                        | Aniket Singh Rajpoot         |
 |                                        | Pulavarti Vinay Kumar        |
-
 
 | Teaching Assistants    |
 |------------------------|
 | Sreejith K P           |
+
+
+[Guidelines for Contribution](./CONTRIBUTING.md)
