@@ -7,8 +7,8 @@
         <ProjectGuid>{49C63807-14DB-4A2B-9BCF-EB7ED4A384BF}</ProjectGuid>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>Screensharing</RootNamespace>
-        <AssemblyName>Screensharing</AssemblyName>
+        <RootNamespace>ScreenSharing</RootNamespace>
+        <AssemblyName>ScreenSharing</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
     </PropertyGroup>

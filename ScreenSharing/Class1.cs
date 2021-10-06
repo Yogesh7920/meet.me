@@ -1,4 +1,4 @@
-﻿namespace Screensharing
+﻿namespace ScreenSharing
 {
     public class Class1
     {
