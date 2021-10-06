@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dashboard", "Dashboard\Dash
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whiteboard", "Whiteboard\Whiteboard.csproj", "{D6D165EC-97B2-48F9-8836-A64F05755CC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Screenshare", "Screenshare\Screenshare.csproj", "{49C63807-14DB-4A2B-9BCF-EB7ED4A384BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSharing", "ScreenSharing\ScreenSharing.csproj", "{49C63807-14DB-4A2B-9BCF-EB7ED4A384BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking", "Networking\Networking.csproj", "{D4E243E8-3DAE-4053-A9C2-B10D177BBC24}"
 EndProject
