@@ -49,6 +49,6 @@ namespace Whiteboard
         /// <param name="checkpointNumber">The identifier/number of the checkpoint which needs to fetched.</param>
         /// <returns>List of UXShapes for UX to render.</returns>
         List<UXShape> FetchCheckpoint(int checkpointNumber);
-        
+
     }
 }

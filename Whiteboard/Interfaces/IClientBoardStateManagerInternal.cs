@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Whiteboard
 {
     /// <summary>
-    /// Interface to be used by OperationsHandler to update state, select a shape and do undo-redo. 
+    /// Internal interface to be used by OperationsHandler to update state, select a shape and do undo-redo. 
     /// </summary>
     public interface IClientBoardStateManagerInternal
     {
