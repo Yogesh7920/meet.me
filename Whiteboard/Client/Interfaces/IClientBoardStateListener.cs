@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Whiteboard
 {
     /// <summary>
-    /// 
+    /// Interface to be implemented by subscribers of ClientBoardStateManager.
     /// </summary>
     public interface IClientBoardStateListener
     {
