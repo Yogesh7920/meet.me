@@ -12,28 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Client.ViewModels;
 
-namespace Client
+namespace Client.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for Chat.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Chat : UserControl
     {
-        public MainWindow()
+        public Chat()
         {
             InitializeComponent();
-        }
-
-        private void ScreenShare_Clicked(object sender, RoutedEventArgs e)
-        {
-            DataContext = new ScreenShareViewModel();
-        }
-
-        private void Whiteboard_Clicked(object sender, RoutedEventArgs e)
-        {
-            DataContext = new WhiteboardViewModel();
         }
     }
 }
