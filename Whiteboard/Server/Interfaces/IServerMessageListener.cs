@@ -13,9 +13,11 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
+    /// <summary>
+    /// Listens to publications from IServerCommunicator
+    /// </summary>
     public interface IServerMessageListener
     {
-
         /// <summary>
         /// Receives XML strings from IServerCommunicator
         /// </summary>

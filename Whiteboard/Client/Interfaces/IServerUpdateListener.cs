@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
+    /// <summary>
+    /// Listens to publications from ClientBoardCommunicator
+    /// </summary>
     public interface IServerUpdateListener
     {
 

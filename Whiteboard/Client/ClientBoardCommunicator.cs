@@ -11,13 +11,14 @@ using System.Collections.Generic;
 namespace Whiteboard
 {
     /// <summary>
-    /// Bridge between Client side White Board Modules and Networking module's Communicator
+    /// Bridge the gap between Server side White Board Modules and Networking module
     /// </summary>
-    public class ClientBoardCommunicator : IMessageListener, IClientBoardStateManager
+
+    public class ClientBoardCommunicator : IMessageListener, IClientBoardCommunicator
     {
         /// <summary>
-        /// serialize the xml string to Board server shape and 
-        /// publish the deserialized object to subscribers
+        /// deserializes the xml string to Board server shape
+        /// publishes the deserialized object to subscribers
         /// </summary>
         /// <param name="data"> xml string received from server side</param>
         public void OnMessageReceived(string data) 
@@ -26,7 +27,7 @@ namespace Whiteboard
         }
         
         /// <summary>
-        /// serialize the shape objects and pass it to communicator.send()
+        /// serializes the shape objects and passes it to communicator.send()
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
         public void Send(List<BoardServerShape> clientUpdate) 
@@ -34,7 +35,7 @@ namespace Whiteboard
             throw new NotImplementedException();
         }
         /// <summary>
-        /// Subscription to receive deserialized objects from ClientBoardCommunicator
+        /// publishes deserialized objects to listeners
         /// </summary>
         /// <param name="listener"></param>
         public void Subscribe(IServerUpdateListener listener) 

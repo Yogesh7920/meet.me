@@ -16,20 +16,14 @@ namespace Whiteboard
     /// 1. sending an object using send()
     /// 2. subscribing to receive objects from server side using subscribe()
     /// </summary>
-    public class IClientBoardCommunicator
+    public class IServerBoardCommunicator
     {
         /// <summary>
         /// to send objects from statemanager to communicator after serializing
         /// </summary>
         /// <param name="clientUpdate"> update from client to server side</param>
-        void Send(List<BoardServerShape> clientUpdate);
-        
-        /// <summary>
-        /// subscribe to receive deserialized objects from Communicator
-        /// </summary>
-        /// <param name="listener"> the subscriber </param>
-        void Subscribe(IServerUpdateListener listener);
+        /// <param name="clientID"> client id to whom to send these objects to</param>
+        void Send(List<BoardServerShape> clientUpdate, string clientID);
+
     }
-
-
 }
