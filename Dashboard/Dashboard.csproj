@@ -4,12 +4,4 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Folder Include="Client\SessionManagement\" />
-      <Folder Include="Server\Summary\" />
-      <Folder Include="Server\Telemetry\" />
-      <Folder Include="Server\Persistence\" />
-      <Folder Include="Server\SessionManagement\" />
-    </ItemGroup>
-
 </Project>
