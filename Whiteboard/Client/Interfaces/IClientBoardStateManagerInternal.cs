@@ -43,5 +43,11 @@ namespace Whiteboard
         /// </summary>
         /// <returns>List of UXShapes for UX to render.</returns>
         List<UXShape> DoRedo();
+
+        /// <summary>
+        /// Provides the current user's id. 
+        /// </summary>
+        /// <returns>The user id of current user.</returns>
+        string GetUser();
     }
 }

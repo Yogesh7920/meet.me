@@ -24,12 +24,16 @@ namespace Whiteboard
         // Attribute holding the single instance of this class. 
         private static ClientBoardStateManager s_instance = null;
 
+        // Attribute holding current user id
+        private string _currentUserId;
+
         /// <summary>
         /// Getter for s_instance. 
         /// </summary>
         public static ClientBoardStateManager Instance
         {
-            get{
+            get
+            {
                 // Create a new instance if not yet created.
                 s_instance = s_instance is null ? new ClientBoardStateManager() : s_instance;
                 return s_instance;
@@ -75,6 +79,15 @@ namespace Whiteboard
         }
 
         /// <summary>
+        /// Provides the current user's id. 
+        /// </summary>
+        /// <returns>The user id of current user.</returns>
+        public string GetUser()
+        {
+            return _currentUserId;
+        }
+
+        /// <summary>
         /// Creates and saves checkpoint. 
         /// </summary>
         /// <returns>The number/identifier of the created checkpoint.</returns>
@@ -91,6 +104,15 @@ namespace Whiteboard
         public bool SaveOperation(BoardShape boardShape)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Sets the current user id. 
+        /// </summary>
+        /// <param name="userId">user Id of the current user.</param>
+        public void SetUser(string userId)
+        {
+            _currentUserId = userId;
         }
 
         /// <summary>

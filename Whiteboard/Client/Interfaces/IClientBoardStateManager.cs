@@ -50,5 +50,11 @@ namespace Whiteboard
         /// <returns>List of UXShapes for UX to render.</returns>
         List<UXShape> FetchCheckpoint(int checkpointNumber);
 
+        /// <summary>
+        /// Sets the current user id. 
+        /// </summary>
+        /// <param name="userId">user Id of the current user.</param>
+        void SetUser(string userId);
+
     }
 }
