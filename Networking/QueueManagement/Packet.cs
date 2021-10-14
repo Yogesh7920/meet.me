@@ -3,8 +3,8 @@
     public class Packet
     {
         
-        private string module_identifier;
-        private string serialized_data;
+        public string ModuleIdentifier;
+        public string SerializedData;
         
     }
 }
