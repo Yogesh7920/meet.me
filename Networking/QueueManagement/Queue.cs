@@ -1,4 +1,4 @@
-﻿namespace Networking.QueueManagement
+﻿namespace Networking
 {
     public class Queue:IQueue
     {
