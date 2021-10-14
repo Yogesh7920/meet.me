@@ -1,8 +1,8 @@
 namespace  Content
 {
     interface IContentServer{
-
-        void Subsribe(IContentListener subscriber);
-
+        void SSubscribe(IContentListener subscriber);
+        List<Thread> SGetAllMessages();
+        void SSendAllMessagesToClient(int userId);
     }    
 }
