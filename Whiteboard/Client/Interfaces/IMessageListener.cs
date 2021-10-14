@@ -21,8 +21,7 @@ namespace Whiteboard
         /// <summary>
         /// Receives XML strings from ICommunicator
         /// </summary>
-        /// <param name="data"> Serialized Object in form of 
-        /// XML string that was sent from server </param>
+        /// <param name="data"> XML string from communicator </param>
         void OnMessageReceived(string data);
     }
 }

@@ -37,7 +37,7 @@ namespace Whiteboard
         /// <summary>
         /// publishes deserialized objects to listeners
         /// </summary>
-        /// <param name="listener"></param>
+        /// <param name="listener">subscriber</param>
         public void Subscribe(IServerUpdateListener listener) 
         {
             throw new NotImplementedException();
