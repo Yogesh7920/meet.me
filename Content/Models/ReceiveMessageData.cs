@@ -2,8 +2,21 @@ namespace Content
 {
     class ReceiveMessageData
     {
-        int messageEvent; // will be one of update, new message or star
-        int messageType; // enum/string indicating file or chat
+        enum MessageType
+        {
+            File,
+            Chat
+        }
+        enum MessageEvent
+        {
+            Update,
+            NewMessage,
+            Star,
+            Download
+        }
+
+        MessageEvent messageEvent; // will be one of update, new message or star
+        MessageType messageType; // enum/string indicating file or chat
         string message; // message if message type is chat / filename and size if file
         int messageId;
         int senderId;
