@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         Title="Window1" Height="450" Width="800">
-    <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" MouseMove="OnCanvasMouseMove" Margin="67,57,64,56" Background="#FF3C1831">
+    <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" MouseMove="OnCanvasMouseMove" Margin="67,57,64,56" Background="#FF4DB6AC">
         <Canvas.RenderTransform>
             <TransformGroup>
                 <ScaleTransform/>

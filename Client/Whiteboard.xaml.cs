@@ -39,5 +39,10 @@ namespace Client
         {
             throw new NotImplementedException();
         }
+
+        private void OnToolbarButtonClick(object sender, MouseButtonEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
