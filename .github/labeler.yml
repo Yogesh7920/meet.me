@@ -1,0 +1,23 @@
+﻿Networking:
+  - Networking/**/*
+
+Content:
+  - Content/**/*
+  
+Dashboard:
+  - Dashboard/**/*
+  
+ScreenSharing:
+  - ScreenSharing/**/*
+    
+Whiteboard:
+  - Whiteboard/**/*
+    
+UX:
+  - any: ['Client/**/*', 'Server/**/*']
+
+Testing:
+  - Testing/**/*
+
+documentation:
+  - '*.pdf'
