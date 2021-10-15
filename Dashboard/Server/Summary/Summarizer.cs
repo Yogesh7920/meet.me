@@ -1,5 +1,19 @@
-﻿namespace Dashboard.Server.Summary
+﻿using System;
+
+namespace Dashboard.Server.Summary
 {
+	/// <summary>
+	/// A not error for not implementing the required function
+	/// which would inherit from the Eception class
+	/// </summary>
+	public class NotImplementedErr : Exception
+	{
+		/// <summary>
+		/// Constructor for the NorImplementdErr class
+		/// which throws the not implemented error <see cref="string"/>
+		/// </summary>
+		public NotImplementedErr() : base(String.Format("Not Implemented")) { }
+	}
 	class Summarizer : ISummarizer
 	{
 		/// <summary>
@@ -10,7 +24,7 @@
 		/// </summary>
 		public Summarizer()
 		{
-
+			throw new NotImplementedErr();
 		}
 
 		/// <summary>
@@ -25,7 +39,7 @@
 		/// </returns>
 		public string GetSummary(Thread[] chats)
 		{
-			return "Not Implemented";
+			throw new NotImplementedErr();
 		}
 
 		/// <summary>
@@ -42,7 +56,7 @@
 		/// </returns>
 		public int SaveSummary(Thread[] chats)
 		{
-			return -1;
+			throw new NotImplementedErr();
 		}
 	}
 }
