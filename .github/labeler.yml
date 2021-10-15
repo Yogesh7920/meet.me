@@ -20,4 +20,4 @@ Testing:
   - Testing/**/*
 
 documentation:
-  - '*.pdf'
+  - any: ['*.pdf']
