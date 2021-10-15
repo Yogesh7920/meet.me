@@ -168,7 +168,12 @@
         </Grid>
 
         <StackPanel Grid.Row="1" Grid.Column="0">
-            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+            </Grid>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="1">
