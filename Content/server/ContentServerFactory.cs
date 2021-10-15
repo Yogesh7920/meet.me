@@ -1,8 +1,8 @@
 namespace Content
 {
-    class ContentServerFactory
+    public class ContentServerFactory
     {
-        static void setUser(int userId);
-        static IContentServer getInstance();
+        public static void setUser(int userId);
+        public static IContentServer getInstance();
     }
 }

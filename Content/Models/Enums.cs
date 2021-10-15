@@ -1,11 +1,11 @@
 namespace Content
 {
-    enum MessageType
+    public enum MessageType
     {
         File,
         Chat
     }
-    enum MessageEvent
+    public enum MessageEvent
     {
         Update,
         NewMessage,
