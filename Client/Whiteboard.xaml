@@ -116,7 +116,8 @@
             
 
             <TextBlock Text="Set Background"
-                       Foreground="White"
+                       Foreground="LightGray"
+                       FontSize="12"
                        Grid.Column="1"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Center"
