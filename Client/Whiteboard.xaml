@@ -5,14 +5,184 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="Window1" Height="450" Width="800">
-    <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" MouseMove="OnCanvasMouseMove" Margin="67,57,64,56" Background="#FF4DB6AC">
-        <Canvas.RenderTransform>
-            <TransformGroup>
-                <ScaleTransform/>
-                <SkewTransform/>
-                <TranslateTransform/>
-            </TransformGroup>
-        </Canvas.RenderTransform>
-    </Canvas>
+        Title="Window1" Height="450" Width="800"
+        WindowStyle="None"
+        Background="#3D2C8D"
+        >
+  <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Background="#1C0C5B" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Content="Undo" 
+                    Grid.Column="0" 
+                    Foreground="LightGray"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5">
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#EC407A"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E91E63"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+
+                    </Button.Style>
+
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="45"
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+
+                                <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
+                            </Border>
+
+
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+
+                <Button Content="Redo" 
+                    Grid.Column="1" 
+                    Foreground="LightGray"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5">
+
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#EC407A"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E91E63"></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+
+                    </Button.Style>
+
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="45"
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+
+                                <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
+                            </Border>
+
+
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+            </Grid>
+            
+            
+
+            <TextBlock Text="Set Background"
+                       Foreground="White"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+             />
+
+            <TextBlock Text="Clear Canvas"
+                       Foreground="LightGray"
+                       Grid.Column="2"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+             />
+
+            <Button Content="Save Frame" 
+                    Grid.Column="6" 
+                    Foreground="White"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5">
+
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#EC407A"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E91E63"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                
+                </Button.Style>
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="80"
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+
+                        <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
+                        </Border>
+
+
+                    </ControlTemplate>
+                </Button.Template>
+                
+            </Button>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" MouseMove="OnCanvasMouseMove" Margin="0,10,0,10" Background="#C5CAE9" Height="400" Width="580" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Canvas.RenderTransform>
+            </Canvas>
+        </StackPanel>
+        
+  </Grid>
+ 
 </Window>
