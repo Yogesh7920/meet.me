@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dashboard.Client.SessionManagement
 {
+    using Dashboard.Server.Telemetry;
     public interface IUXClientSM
     {
         /// <summary>
@@ -55,6 +56,6 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        void GetAnalytics(); // change the return type
+        ITelemetryAnalysisModel GetAnalytics(); 
     }
 }

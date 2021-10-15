@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dashboard.Server.Telemetry
 {
-    interface Interface1
+    public interface ITelemetryAnalysisModel
     {
     }
 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Dashboard.Client.SessionManagement 
 {
+    using Dashboard.Server.Telemetry;
     public class NotImplementedErr : Exception
     {
         public NotImplementedErr() : base(String.Format("Not Implemented")) { }
@@ -77,7 +78,7 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        public void GetAnalytics()
+        public ITelemetryAnalysisModel GetAnalytics()
         {
             // the return type will be an analytics object yet to be decided.
             throw new NotImplementedErr();
