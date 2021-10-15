@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dashboard.Server.SessionManagement
+namespace Dashboard.Server.Telemetry
 {
-    interface Interface1
+    public interface ITelemetryAnalysisModel
     {
     }
 }
