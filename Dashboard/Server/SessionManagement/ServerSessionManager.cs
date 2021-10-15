@@ -8,11 +8,6 @@ namespace Dashboard.Server.SessionManagement
 {
     public class ServerSessionManager : ITelemetrySessionManager
     {
-        public class NotImplementedErr : Exception
-        {
-            public NotImplementedErr() : base(String.Format("Not Implemented")) { }
-        }
-
         /// <summary>
         /// Subscribes to changes in the session object
         /// </summary>
@@ -20,7 +15,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="identifier"> The listener of the subscriber </param>
         public void Subcribe(ITelemetryNotifications listener, string identifier)
         {
-            throw new NotImplementedErr();
+            throw new NotImplementedException();
         }
     }
 }

@@ -9,10 +9,7 @@ using System.Threading.Tasks;
 namespace Dashboard.Client.SessionManagement 
 {
     using Dashboard.Server.Telemetry;
-    public class NotImplementedErr : Exception
-    {
-        public NotImplementedErr() : base(String.Format("Not Implemented")) { }
-    }
+
     class ClientSessionManager : IUXClientSM
     {
         /// <summary>
@@ -22,7 +19,8 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> A MeetingCredentials Object </returns>
         public MeetingCredentials GetPortsAndIPAddress()
         {
-            throw new NotImplementedErr();
+
+            return null;
         }
 
         /// <summary>
@@ -34,7 +32,7 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Boolean denoting the success or failure whether the user was added. </returns>
         public bool AddClient(string ipAddress, int ports, string username)
         {
-            throw new NotImplementedErr();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -43,7 +41,7 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void RemoveClient()
         {
-            throw new NotImplementedErr();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -51,7 +49,7 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void EndMeet()
         {
-            throw new NotImplementedErr();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -61,7 +59,7 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Summary of the chats as a string. </returns>
         public string GetSummary()
         {
-            throw new NotImplementedErr();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -72,7 +70,7 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="identifier"> The identifier of the subscriber. </param>
         public void SubscribeSession(ISessionNotifications listener, string identifier)
         {
-            throw new NotImplementedErr();
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -81,7 +79,7 @@ namespace Dashboard.Client.SessionManagement
         public ITelemetryAnalysisModel GetAnalytics()
         {
             // the return type will be an analytics object yet to be decided.
-            throw new NotImplementedErr();
+            throw new NotImplementedException();
         }
 
         /// <summary>
