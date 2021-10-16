@@ -5,6 +5,7 @@ namespace Content
         File,
         Chat
     }
+
     public enum MessageEvent
     {
         Update,
