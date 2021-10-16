@@ -1,15 +1,18 @@
-﻿using System;
 using NUnit.Framework;
 
 namespace Testing
 {
-    [TestFixture]
     public class Tests
     {
+        [SetUp]
+        public void Setup()
+        {
+        }
+
         [Test]
         public void Test1()
         {
-            Assert.True(true);
+            Assert.Pass();
         }
     }
 }
