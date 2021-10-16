@@ -2,7 +2,17 @@ namespace Content
 {
     public class ContentServerFactory
     {
-        public static void setUser(int userId);
-        public static IContentServer getInstance();
+        private static IContentServer contentServer;
+
+        public static IContentServer GetInstance()
+        {
+            if (contentServer != null)
+            {
+                return contentServer;
+            }
+
+            contentServer = new ContentServer();
+            return contentServer;
+        }
     }
 }
