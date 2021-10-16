@@ -6,4 +6,12 @@
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Resource Include="Icons\WhiteboardUX\Toolbar\drawEllipse.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\drawRectangle.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\Eraser.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\Pen.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\selectTool.png" />
+    </ItemGroup>
+  
 </Project>

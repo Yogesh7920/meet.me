@@ -44,5 +44,63 @@ namespace Client
         {
             throw new NotImplementedException();
         }
+
+        private void ClickedSelectTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedSelectTool");
+            return;
+        }
+        private void ClickedRectTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedRectTool");
+            return;
+        }
+        private void ClickedEllTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedEllTool");
+            return;
+        }
+        private void ClickedFreehandTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedFreehandTool");
+            return;
+        }
+        private void ClickedEraserTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedEraserTool");
+            return;
+        }
+
+        private void ClickedSetBG(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedSetBG");
+            return;
+        }
+
+        private void ClickedClearFrame(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedClearFrame");
+            return;
+        }
+
+        private void ClickedSaveFrame(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedSaveFrame");
+            return;
+        }
+        
+        private void Bu_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Bu.Toggled1 == true)
+            {
+                MessageBox.Show("Toggled On");
+            }
+            else
+            {
+                MessageBox.Show("Toggled Off");
+            }
+
+
+        }
     }
 }
