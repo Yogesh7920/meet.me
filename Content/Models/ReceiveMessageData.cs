@@ -7,46 +7,46 @@ namespace Content
         /// <summary>
         /// Message Event - Update, NewMessage, Star, Download
         /// </summary>
-        public MessageEvent messageEvent;
+        public MessageEvent Event;
 
         /// <summary>
         /// Message Type - File or Chat
         /// </summary>
-        public MessageType messageType;
+        public MessageType Type;
 
         /// <summary>
         /// Message string if messageType is Chat else file name for File messageType
         /// </summary>
-        public string message;
+        public string Message;
 
         /// <summary>
         /// Id of the message
         /// </summary>
-        public int messageId;
+        public int MessageId;
 
         /// <summary>
         /// User id of the message sender
         /// </summary>
-        public int senderId;
+        public int SenderId;
 
         /// <summary>
         /// List of ids for receviers, all if empty
         /// </summary>
-        public int[] receiverIds;
+        public int[] ReceiverIds;
 
         /// <summary>
         /// Id of thread to which this message belongs
         /// </summary>
-        public int replyThreadId;
+        public int ReplyThreadId;
 
         /// <summary>
         /// Time at which message was sent
         /// </summary>
-        public DateTime sentTime;
+        public DateTime SentTime;
 
         /// <summary>
         /// True if this message is starred else False
         /// </summary>
-        public bool starred;
+        public bool Starred;
     }
 }
