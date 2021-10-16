@@ -6,7 +6,10 @@ namespace Content
         private ContentClientFactory() { }
         private static IContentClient _instance;
 
-        public static void setUser(int userId);
+        public static void setUser(int userId)
+        {
+            throw new NotImplementedException();
+        }
         public static IContentClient getInstance()
         {
             throw new NotImplementedException();
