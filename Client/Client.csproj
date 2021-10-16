@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="Icons\WhiteboardUX\Toolbar\drawEllipse.png" />
-      <Content Include="Icons\WhiteboardUX\Toolbar\drawRectangle.png" />
-      <Content Include="Icons\WhiteboardUX\Toolbar\Eraser.png" />
-      <Content Include="Icons\WhiteboardUX\Toolbar\Pen.png" />
-      <Content Include="Icons\WhiteboardUX\Toolbar\selectTool.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\drawEllipse.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\drawRectangle.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\Eraser.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\Pen.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\selectTool.png" />
     </ItemGroup>
   
 </Project>

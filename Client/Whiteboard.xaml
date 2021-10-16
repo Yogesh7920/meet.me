@@ -179,14 +179,14 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="1">
-                    <Border Width="30" Height="300" Background="#EC407A" Margin="0 60 0 30" CornerRadius="15">
+                    <Border Width="30" Height="300" Background="#EC407A" Margin="2,63,1,27" CornerRadius="15">
 
                     </Border>
-                    <Image Width="20" Height="25" Margin="0 0 0 200" Source="Icons/WhiteboardUX/Toolbar/selectTool.png"/>
-                    <Image Width="20" Height="25" Margin="0 0 0 100" Source="Icons/WhiteboardUX/Toolbar/drawRectangle.png"/>
-                    <Image Width="20" Height="25" Margin="0 0 0 0" Source="Icons/WhiteboardUX/Toolbar/drawEllipse.png"/>
-                    <Image Width="20" Height="25" Margin="0 0 0 -100" Source="Icons/WhiteboardUX/Toolbar/Pen.png"/>
-                    <Image Width="20" Height="25" Margin="0 0 0 -200" Source="Icons/WhiteboardUX/Toolbar/Eraser.png"/>
+                    <Image Width="20" Height="25" Margin="0 0 0 160" Source="/Icons/WhiteboardUX/Toolbar/selectTool.png" Cursor="Hand" MouseDown="ClickedSelectTool" />
+                    <Image Width="20" Height="25" Margin="0 0 0 60" Source="/Icons/WhiteboardUX/Toolbar/drawRectangle.png" Cursor="Hand" MouseDown="ClickedRectTool"/>
+                    <Image Width="20" Height="25" Margin="0 0 0 -40" Source="/Icons/WhiteboardUX/Toolbar/drawEllipse.png" Cursor="Hand" MouseDown="ClickedEllTool"/>
+                    <Image Width="20" Height="25" Margin="0 0 0 -140" Source="/Icons/WhiteboardUX/Toolbar/Pen.png" Cursor="Hand" MouseDown="ClickedFreehandTool"/>
+                    <Image Width="20" Height="25" Margin="0 0 0 -240" Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Cursor="Hand" MouseDown="ClickedEraserTool"/>
 
                 </Grid>
             </Grid>

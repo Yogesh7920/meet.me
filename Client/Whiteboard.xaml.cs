@@ -44,5 +44,31 @@ namespace Client
         {
             throw new NotImplementedException();
         }
+
+        private void ClickedSelectTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedSelectTool");
+            return;
+        }
+        private void ClickedRectTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedRectTool");
+            return;
+        }
+        private void ClickedEllTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedEllTool");
+            return;
+        }
+        private void ClickedFreehandTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedFreehandTool");
+            return;
+        }
+        private void ClickedEraserTool(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedEraserTool");
+            return;
+        }
     }
 }
