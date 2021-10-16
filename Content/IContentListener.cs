@@ -1,6 +1,6 @@
 namespace Content
 {
-    interface IContentListener
+    public interface IContentListener
     {
         void OnMessage(ReceiveMessageData messageData);
         void OnAllMessages(List<Thread> allMessages);

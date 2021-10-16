@@ -1,10 +1,12 @@
+using System;
+using System.Collections.Generic;
 namespace Content
 {
-    class Thread
+    public class Thread
     {
-        List<ReceiveMessageData> msgList;
-        int threadId;
-        int numOfMessages;
-        DateTime creationTime;
+        public List<ReceiveMessageData> msgList;
+        public int threadId;
+        public int numOfMessages;
+        public DateTime creationTime;
     }
 }

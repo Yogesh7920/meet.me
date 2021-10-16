@@ -1,6 +1,6 @@
-namespace  Content
+namespace Content
 {
-    interface IContentServer
+    public interface IContentServer
     {
         void SSubscribe(IContentListener subscriber);
         List<Thread> SGetAllMessages();
