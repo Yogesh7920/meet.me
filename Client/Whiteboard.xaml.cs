@@ -70,5 +70,37 @@ namespace Client
             MessageBox.Show("ClickedEraserTool");
             return;
         }
+
+        private void ClickedSetBG(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedSetBG");
+            return;
+        }
+
+        private void ClickedClearFrame(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedClearFrame");
+            return;
+        }
+
+        private void ClickedSaveFrame(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("ClickedSaveFrame");
+            return;
+        }
+        
+        private void Bu_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Bu.Toggled1 == true)
+            {
+                MessageBox.Show("Toggled On");
+            }
+            else
+            {
+                MessageBox.Show("Toggled Off");
+            }
+
+
+        }
     }
 }

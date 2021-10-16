@@ -21,7 +21,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Background="#1C0C5B" Grid.ColumnSpan="3">
+        <Grid Name="MainBar" Background="#1C0C5B" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -51,7 +51,7 @@
                             <Setter Property="Cursor" Value="Hand"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#E91E63"></Setter>
+                                    <Setter Property="Background" Value= "#E91E63"></Setter>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -115,27 +115,112 @@
 
 
 
-            <TextBlock Text="Set Background"
-                       Foreground="LightGray"
-                       FontSize="12"
-                       Grid.Column="1"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-             />
+            <Button Content="Set Background" 
+                    Grid.Column="1" 
+                    Foreground="LightGray"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5"
+                    MouseDown = "ClickedSetBG" >
 
-            <TextBlock Text="Clear Canvas"
-                       Foreground="LightGray"
-                       Grid.Column="2"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-             />
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="{Binding MainBar.Background}"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value= "{Binding MainBar.Background}"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                </Button.Style>
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="85"
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+
+                            <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
+                        </Border>
+
+
+                    </ControlTemplate>
+                </Button.Template>
+
+            </Button>
+
+            <Button Content="Clear Canvas" 
+                    Grid.Column="2" 
+                    Foreground="LightGray"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5"
+                    MouseDown="ClickedClearFrame">
+
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="{Binding Mainbar.Background}"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value= "{Binding Mainbar.Background}"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                </Button.Style>
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="85"
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+
+                            <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
+                        </Border>
+
+
+                    </ControlTemplate>
+                </Button.Template>
+
+            </Button>
+
+            <TextBlock Text="Toggle State"
+                Foreground="LightGray"
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="114,0,0,0"
+             >
+
+            </TextBlock>
+
+            <local:ToggleButton x:Name="Bu" HorizontalAlignment="Left" Height="22" VerticalAlignment="Center" Width="44" RenderTransformOrigin="0.5,0.5" Grid.Column="4" Margin="70,0,0,0" Cursor="Hand" MouseLeftButtonDown="Bu_MouseLeftButtonDown">
+                <local:ToggleButton.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+
+                </local:ToggleButton.RenderTransform>
+
+            </local:ToggleButton>
+
 
             <Button Content="Save Frame" 
                     Grid.Column="6" 
                     Foreground="White"
                     FontSize="10"
                     FontWeight="light"
-                    Margin="0 2.5 0 2.5">
+                    Margin="0 2.5 0 2.5"
+                    MouseLeftButtonDown="ClickedSaveFrame">
 
                 <Button.Style>
                     <Style TargetType="Button">
