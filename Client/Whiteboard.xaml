@@ -9,7 +9,7 @@
         WindowStyle="None"
         Background="#3D2C8D"
         >
-  <Grid>
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
@@ -112,8 +112,8 @@
 
                 </Button>
             </Grid>
-            
-            
+
+
 
             <TextBlock Text="Set Background"
                        Foreground="LightGray"
@@ -147,7 +147,7 @@
                             </Trigger>
                         </Style.Triggers>
                     </Style>
-                
+
                 </Button.Style>
 
                 <Button.Template>
@@ -157,28 +157,45 @@
                                 CornerRadius="10"
                                 Background="{TemplateBinding Background}">
 
-                        <ContentPresenter VerticalAlignment="Center" 
+                            <ContentPresenter VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"/>
                         </Border>
 
 
                     </ControlTemplate>
                 </Button.Template>
-                
+
             </Button>
         </Grid>
 
         <StackPanel Grid.Row="1" Grid.Column="0">
+
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+
                 </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="1">
+                    <Border Width="30" Height="300" Background="#EC407A" Margin="0 60 0 30" CornerRadius="15">
+
+                    </Border>
+                    <Image Width="20" Height="25" Margin="0 0 0 200" Source="Icons/WhiteboardUX/Toolbar/selectTool.png"/>
+                    <Image Width="20" Height="25" Margin="0 0 0 100" Source="Icons/WhiteboardUX/Toolbar/drawRectangle.png"/>
+                    <Image Width="20" Height="25" Margin="0 0 0 0" Source="Icons/WhiteboardUX/Toolbar/drawEllipse.png"/>
+                    <Image Width="20" Height="25" Margin="0 0 0 -100" Source="Icons/WhiteboardUX/Toolbar/Pen.png"/>
+                    <Image Width="20" Height="25" Margin="0 0 0 -200" Source="Icons/WhiteboardUX/Toolbar/Eraser.png"/>
+
+                </Grid>
             </Grid>
+
+
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" MouseMove="OnCanvasMouseMove" Margin="0,10,0,10" Background="#C5CAE9" Height="400" Width="580" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="#C5CAE9" Height="400" Width="580" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -188,7 +205,7 @@
                 </Canvas.RenderTransform>
             </Canvas>
         </StackPanel>
-        
-  </Grid>
- 
+
+    </Grid>
+
 </Window>
