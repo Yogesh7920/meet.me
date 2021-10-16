@@ -8,21 +8,21 @@ namespace Content
         /// <summary>
         /// List of all the messages in the thread
         /// </summary>
-        public List<ReceiveMessageData> msgList;
+        public List<ReceiveMessageData> MsgList;
 
         /// <summary>
         /// Id of the thread
         /// </summary>
-        public int threadId;
+        public int ThreadId;
 
         /// <summary>
         /// Number of messages in the thread
         /// </summary>
-        public int numOfMessages;
+        public int NumOfMessages;
 
         /// <summary>
         /// Time of creation of thread
         /// </summary>
-        public DateTime creationTime;
+        public DateTime CreationTime;
     }
 }
