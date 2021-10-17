@@ -21,5 +21,6 @@ namespace Content
         /// </summary>
         /// <param name="userId">user id of the user to which messages needs to be sent</param>
         void SSendAllMessagesToClient(int userId);
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Networking;
+using System.Collections.Generic;
 
 namespace Content
 {
@@ -6,6 +7,17 @@ namespace Content
     {
         private List<IContentListener> subscribers;
         private List<Thread> allMessages;
+        private ICommunicator communicator;
+        private INotificationHandler notificationHandler;
+
+        public ContentServer()
+        {
+            subscribers = new List<IContentListener>();
+            allMessages = new List<Thread>();
+            communicator = CommunicationFactory.GetCommunicator();
+            notificationHandler = new ContentServerNotificationHandler();
+            communicator.Subscribe("ContentServer", notificationHandler);
+        }
 
         /// <inheritdoc />
         public void SSubscribe(IContentListener subscriber)
