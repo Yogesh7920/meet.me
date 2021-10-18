@@ -115,16 +115,43 @@
             </Grid>
 
             <!--Set Background Button-->
-            <Button Content="Set Background" 
+
+            <!--<Grid Grid.Column="1">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="Welcome to Popup Screen"/>
+            </Grid>-->
+
+            <!-- https://stopbyte.com/t/how-can-i-show-popup-on-button-click-and-hide-it-on-second-click-or-user-clicks-outside-staysopen-false/80-->
+            <Popup Name="SetBGButtonPopUp"
+                    IsOpen="{Binding ElementName=SetBGButton, Path=IsChecked}"
+                    PlacementTarget="{Binding ElementName=SetBGButton}"
+                    Grid.Column="1"
+                    AllowsTransparency="True"
+                    PopupAnimation="Slide"
+                    StaysOpen="False"
+                   Height="100"
+                   Width="100">
+                <Grid Name="SetBGDropdown">
+                    
+                    <TextBlock  Name="McTextBlock" Background="PaleVioletRed" >This is popup text</TextBlock>
+                </Grid>
+               
+            </Popup>
+
+            <RadioButton Grid.Column="1" Margin="0 100 0 0" Height="40" Width="38" Background="#FFDC2C2C" BorderBrush="#FFE42020"> </RadioButton>
+            
+            <ToggleButton Content="Set Background" 
+                    Name ="SetBGButton"
                     Grid.Column="1" 
                     Foreground="LightGray"
                     FontSize="10"
                     FontWeight="light"
                     Margin="0 2.5 0 2.5"
-                    Click = "ClickedSetBG" >
+                    
+                    MouseEnter="OpenPopupButton_MouseEnter"
+                    MouseLeave="OpenPopupButton_MouseLeave">
 
-                <Button.Style>
-                    <Style TargetType="Button">
+                <ToggleButton.Style>
+                    <Style TargetType="ToggleButton">
                         <Setter Property="Background" Value="{Binding MainBar.Background}"/>
                         <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
@@ -134,10 +161,10 @@
                         </Style.Triggers>
                     </Style>
 
-                </Button.Style>
+                </ToggleButton.Style>
 
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="ToggleButton">
                         <Border Width="85"
                                 Height="20"
                                 CornerRadius="10"
@@ -149,9 +176,9 @@
 
 
                     </ControlTemplate>
-                </Button.Template>
+                </ToggleButton.Template>
 
-            </Button>
+            </ToggleButton>
 
             <!--Clear Frame Button-->
             <Button Content="Clear Canvas" 
@@ -304,7 +331,7 @@
                     </Button>
                     
                     <!--Eraser Button-->
-                    <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool">
+                    <Button Name="EraserBtn" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool">
                         <StackPanel Orientation="Vertical">
                             <Image Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Margin="2 2 2 2"></Image>
                         </StackPanel>
@@ -318,6 +345,7 @@
                                         <Setter Property="Background" Value="#536DFE"></Setter>
                                     </Trigger>
                                 </Style.Triggers>
+
                             </Style>
 
                         </Button.Style>
@@ -327,7 +355,7 @@
                                 <Border Width="25"
                                         Height="25"
                                         CornerRadius="18"
-                                        Background="{TemplateBinding Background}" Margin="0 0 0 60">
+                                        Background="{TemplateBinding Background}" Margin="0 0 0 80">
 
                                     <ContentPresenter VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"/>
@@ -360,7 +388,7 @@
                                 <Border Width="25"
                                         Height="25"
                                         CornerRadius="18"
-                                        Background="{TemplateBinding Background}" Margin="0 0 0 -40">
+                                        Background="{TemplateBinding Background}" Margin="0 0 0 0">
 
                                     <ContentPresenter VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"/>
@@ -393,7 +421,7 @@
                                 <Border Width="25"
                                         Height="25"
                                         CornerRadius="18"
-                                        Background="{TemplateBinding Background}" Margin="0 0 0 -140">
+                                        Background="{TemplateBinding Background}" Margin="0 0 0 -80">
 
                                     <ContentPresenter VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"/>
@@ -402,6 +430,39 @@
                         </Button.Template>
                     </Button>
                     
+                    <!--Line Button-->
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedLineTool">
+                        <StackPanel Orientation="Vertical">
+                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawLine.png" Margin="2 2 2 2"></Image>
+                        </StackPanel>
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#EC407A"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#536DFE"></Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Width="25"
+                                        Height="25"
+                                        CornerRadius="18"
+                                        Background="{TemplateBinding Background}" Margin="0 0 0 -160">
+
+                                    <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
                     <!--Ellipse Button-->
                     <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEllTool">
                         <StackPanel Orientation="Vertical">
@@ -434,6 +495,7 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
+
 
                     <!--<Image Width="20" Height="25" Margin="0 0 0 160" Source="/Icons/WhiteboardUX/Toolbar/Pen.png" Cursor="Hand" MouseDown="ClickedFreehandTool"/>-->
                     <!--<Image Width="20" Height="25" Margin="0 0 0 60" Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Cursor="Hand" MouseDown="ClickedEraserTool"/>-->
