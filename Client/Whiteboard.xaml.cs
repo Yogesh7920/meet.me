@@ -17,14 +17,21 @@ namespace Client
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
+    /// 
     public partial class WhiteBoardView : Window
     {
+
+        private Button activeButton;
+        private string buttonDefaultColor = "#EC407A";
+        private string buttonSelectedColor = "#536DFE";
+
         public WhiteBoardView()
         {
             InitializeComponent();
             WhiteBoardViewModel viewModel = new WhiteBoardViewModel();
         }
 
+        // Canvas Mouse actions 
         private void OnCanvasMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
             throw new NotImplementedException();
@@ -40,55 +47,94 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        private void OnToolbarButtonClick(object sender, MouseButtonEventArgs e)
+        //Toolbar selection tool 
+        private void ClickedSelectTool(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void ClickedSelectTool(object sender, MouseButtonEventArgs e)
-        {
+            if (activeButton != null)
+            {
+                activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+            }
+            activeButton = sender as Button;
+            activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedSelectTool");
             return;
         }
-        private void ClickedRectTool(object sender, MouseButtonEventArgs e)
+        private void ClickedRectTool(object sender, RoutedEventArgs e)
         {
+            if (activeButton != null)
+            {
+                activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+            }
+            activeButton = sender as Button;
+            activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedRectTool");
             return;
         }
-        private void ClickedEllTool(object sender, MouseButtonEventArgs e)
+        private void ClickedEllTool(object sender, RoutedEventArgs e)
         {
+            if (activeButton != null)
+            {
+                activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+            }
+            activeButton = sender as Button;
+            activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedEllTool");
             return;
         }
-        private void ClickedFreehandTool(object sender, MouseButtonEventArgs e)
+        private void ClickedFreehandTool(object sender, RoutedEventArgs e)
         {
+            if (activeButton != null)
+            {
+                activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+            }
+            activeButton = sender as Button;
+            activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedFreehandTool");
             return;
         }
-        private void ClickedEraserTool(object sender, MouseButtonEventArgs e)
+        private void ClickedEraserTool(object sender, RoutedEventArgs e)
         {
+            if (activeButton != null)
+            {
+                activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+            }
+            activeButton = sender as Button;
+            activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedEraserTool");
             return;
         }
 
-        private void ClickedSetBG(object sender, MouseButtonEventArgs e)
+        //Whiteboard General tools 
+        private void ClickedSetBG(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("ClickedSetBG");
             return;
         }
 
-        private void ClickedClearFrame(object sender, MouseButtonEventArgs e)
+        private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("ClickedClearFrame");
             return;
         }
 
-        private void ClickedSaveFrame(object sender, MouseButtonEventArgs e)
+        private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("ClickedSaveFrame");
             return;
         }
-        
+
+        private void ClickedUndoButton(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("ClickedUndo");
+            return;
+        }
+
+        private void ClickedRedoButton(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("ClickedRedo");
+            return;
+        }
+
         private void Bu_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (Bu.Toggled1 == true)
@@ -101,6 +147,15 @@ namespace Client
             }
 
 
+        }
+
+        //Parent Window click event
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
         }
     }
 }
