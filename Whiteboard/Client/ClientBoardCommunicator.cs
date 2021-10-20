@@ -14,7 +14,7 @@ namespace Whiteboard
     /// Bridge the gap between Server side White Board Modules and Networking module
     /// </summary>
 
-    public class ClientBoardCommunicator : IMessageListener, IClientBoardCommunicator
+    public class ClientBoardCommunicator : IClientBoardCommunicator, IMessageListener
     {
         /// <summary>
         /// deserializes the xml string to Board server shape
