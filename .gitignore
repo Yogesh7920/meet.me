@@ -1,4 +1,4 @@
-﻿# documenting
+# documenting
 *.doc
 *.docx
 *.tex
@@ -100,6 +100,7 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+.DS_Store
 
 # Chutzpah Test files
 _Chutzpah*
