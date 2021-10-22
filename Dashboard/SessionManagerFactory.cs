@@ -9,8 +9,14 @@ namespace Dashboard
 {
     using Client.SessionManagement;
     using Server.SessionManagement;
-    public static class SMFactory
+    public static class SessionManagerFactory
     {
+        
+        static SessionManagerFactory()
+        {
+            s_clientSessionManager = new ClientSessionManager();
+            s_serverSessionManager = new ServerSessionManager();
+        }
         /// <summary>
         /// This method will create a Client sided server 
         /// manager that will live till the end of the program
@@ -21,7 +27,6 @@ namespace Dashboard
         /// </returns>
         public static IUXClientSM GetClientSessionManager()
         {
-            s_clientSessionManager = new ClientSessionManager();
             return s_clientSessionManager;
         }
 
@@ -35,7 +40,6 @@ namespace Dashboard
         /// </returns>
         public static ITelemetrySessionManager  GetServerSessionManager()
         {
-            s_serverSessionManager = new ServerSessionManager();
             return s_serverSessionManager;
         }
 
