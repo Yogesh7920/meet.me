@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Dashboard.Client.SessionManagement
 {
-    public interface ISessionNotifications
+    public interface IClientSessionNotifications
     {
         /// <summary>
         /// Handles the changes in the SessionData object
         /// </summary>
         /// <param name="session"> The changed SessionData </param>
-        void OnSessionChanged(SessionData session);
+        void OnClientSessionChanged(SessionData session);
     }
 }
