@@ -16,7 +16,7 @@ namespace Whiteboard
     /// 1. sending an object using send()
     /// 2. subscribing to receive objects from server side using subscribe()
     /// </summary>
-    public class IServerBoardCommunicator
+    public interface IServerBoardCommunicator
     {
         /// <summary>
         /// to send objects from statemanager to communicator after serializing
