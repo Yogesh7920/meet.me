@@ -24,6 +24,7 @@ namespace Client
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new WhiteboardViewModel();
         }
 
         private void Users_List_Clicked(object sender, RoutedEventArgs e)
@@ -31,7 +32,7 @@ namespace Client
 
             if (_usersListFlag.Equals(false))
             {
-                SSwb.SetValue(Grid.ColumnProperty, 2);
+                SSwb.SetValue(Grid.ColumnProperty, 4);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
                     if(_chatFlag.Equals(true))
@@ -39,15 +40,15 @@ namespace Client
                     else
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
                 }
-                UsersListPane.Visibility = System.Windows.Visibility.Visible;
+                UsersListPane2.Visibility = System.Windows.Visibility.Visible;
                 _usersListFlag = true;
             }
             else
             {
                 
-                UsersListPane.Visibility = System.Windows.Visibility.Collapsed;
+                UsersListPane2.Visibility = System.Windows.Visibility.Collapsed;
                 _usersListFlag = false;
-                SSwb.SetValue(Grid.ColumnProperty, 0);
+                SSwb.SetValue(Grid.ColumnProperty, 2);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
                     if (_chatFlag.Equals(true))
@@ -70,10 +71,10 @@ namespace Client
             }
             if (_usersListFlag.Equals(true))
             {
-                UsersListPane.Visibility = System.Windows.Visibility.Collapsed;
+                UsersListPane2.Visibility = System.Windows.Visibility.Collapsed;
                 _usersListFlag = false;
             }
-            SSwb.SetValue(Grid.ColumnProperty, 0);
+            SSwb.SetValue(Grid.ColumnProperty, 2);
             SSwb.SetValue(Grid.ColumnSpanProperty, 5);
             
         }
@@ -90,10 +91,10 @@ namespace Client
             }
             if (_usersListFlag.Equals(true))
             {
-                UsersListPane.Visibility = System.Windows.Visibility.Collapsed;
+                UsersListPane2.Visibility = System.Windows.Visibility.Collapsed;
                 _usersListFlag = false;
             }
-            SSwb.SetValue(Grid.ColumnProperty, 0);
+            SSwb.SetValue(Grid.ColumnProperty, 2);
             SSwb.SetValue(Grid.ColumnSpanProperty, 5);
             
         }
@@ -109,13 +110,13 @@ namespace Client
                 {
                     if (_usersListFlag.Equals(true))
                     {
-                        SSwb.SetValue(Grid.ColumnProperty, 2);
+                        SSwb.SetValue(Grid.ColumnProperty, 4);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 1);
                     }
 
                     else
                     {
-                        SSwb.SetValue(Grid.ColumnProperty, 0);
+                        SSwb.SetValue(Grid.ColumnProperty, 2);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
                     }
                 }
@@ -132,12 +133,12 @@ namespace Client
                 {
                     if (_usersListFlag.Equals(true))
                     {
-                        SSwb.SetValue(Grid.ColumnProperty, 2);
+                        SSwb.SetValue(Grid.ColumnProperty, 4);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
                     }
                     else
                     {
-                        SSwb.SetValue(Grid.ColumnProperty, 0);
+                        SSwb.SetValue(Grid.ColumnProperty, 2);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                     }
                 }
@@ -150,10 +151,11 @@ namespace Client
             
         }
 
-        private bool _usersListFlag = true;
+
+        private bool _usersListFlag = false;
         private bool _chatFlag = false;
         private bool _ssFlag = false;
-        private bool _wbFlag = false;
+        private bool _wbFlag = true;
         
     }
 }

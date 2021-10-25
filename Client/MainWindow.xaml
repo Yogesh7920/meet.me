@@ -7,9 +7,10 @@
         xmlns:viewmodels="clr-namespace:Client.ViewModels"
         xmlns:views="clr-namespace:Client.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="{Binding SystemParameters.PrimaryScreenHeight}" Width="{Binding SystemParameters.PrimaryScreenWidth}">
+        Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
     <Window.Resources>
-        <Style x:Key="RoundedButton" TargetType="{x:Type Button}">
+        
+    <Style x:Key="RoundedButton" TargetType="{x:Type Button}">
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Padding" Value="1"/>
@@ -36,8 +37,8 @@
                                             <TranslateTransform X="0.02" Y="0.3"/>
                                         </TransformGroup>
                                     </RadialGradientBrush.RelativeTransform>
-                                    <GradientStop Color="#00000000" Offset="1"/>
-                                    <GradientStop Color="#FF303031" Offset="0.3"/>
+                                    <GradientStop Color="#590955" Offset="1"/>
+                                    <GradientStop Color="#FF1E56" Offset="0.3"/>
                                 </RadialGradientBrush>
                             </Setter.Value>
                         </Setter>
@@ -53,7 +54,7 @@
             </ControlTemplate>
         </Setter.Value>
     </Setter>
-</Style>
+    </Style>
         
         <DataTemplate x:Name="ScreenShareTemplate" DataType="{x:Type viewmodels:ScreenShareViewModel}">
             <views:ScreenShare DataContext="{Binding}"/>
@@ -70,12 +71,12 @@
     </Window.Resources>
     
     <Grid>
-        <Grid.ColumnDefinitions>
+       <!-- <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="0.01*"/>
             <ColumnDefinition Width="10*"/>
             <ColumnDefinition Width="0.01*"/>
-            <ColumnDefinition Width="1.5*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
        
         <Grid.RowDefinitions>
@@ -86,27 +87,47 @@
            <RowDefinition Height="1.2*"/>
            <RowDefinition Height="0.085*"/>
            <RowDefinition Height="0.015*"/>
+       </Grid.RowDefinitions> -->
+       <Grid.ColumnDefinitions>
+           <ColumnDefinition Width="0.5*"/>
+           <ColumnDefinition Width="0.01*"/>
+           <ColumnDefinition Width="0.7*"/>
+           <ColumnDefinition Width="0.01*"/>
+           <ColumnDefinition Width="10*"/>
+           <ColumnDefinition Width="0.01*"/>
+           <ColumnDefinition Width="2*"/>
+       </Grid.ColumnDefinitions>
+       
+       <Grid.RowDefinitions>
+           <RowDefinition Height="0.95*"/>
+           <RowDefinition Height="0.075*"/>
+           <RowDefinition Height="10*"/>
+           <RowDefinition Height="0.75"/>
+           <RowDefinition Height="1.2*"/>
+           <RowDefinition Height="0.085*"/>
+           <RowDefinition Height="0.015*"/>
        </Grid.RowDefinitions>
     
-        <DockPanel Background="Aqua" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"/>
+        <DockPanel Background="Aqua" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7"/>
         
-        <DockPanel Name="UsersListPane" Background="Wheat" Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" Visibility="Visible"/>
-        <Button Grid.Row="4" Grid.Column="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="Auto" Height="32" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="White" Click="Users_List_Clicked">Users List</Button>
+        <DockPanel Name="UsersListPane1" Background="Wheat" Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" Visibility="Visible"/>
+        <DockPanel Name="UsersListPane2" Background="Wheat" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="4" Visibility="Collapsed"/>
+        <Button Grid.Row="4" Grid.Column="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="Auto" Height="32" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="White" Click="Users_List_Clicked">Users</Button>
 
-        <DockPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Width="300">
-            <Button Content="Whiteboard" Width="Auto" Margin="2.5 0" Click="Whiteboard_Clicked" Style="{DynamicResource RoundedButton}"/>
-            <Button Content="ScreenShare" Width="Auto" Margin="2.5 0" Click="ScreenShare_Clicked" Style="{DynamicResource RoundedButton}"/>
+        <DockPanel Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="3" Width="300">
+            <Button Content="Whiteboard" Width="70" Margin="2.5 0" Click="Whiteboard_Clicked" Style="{DynamicResource RoundedButton}"/>
+            <Button Content="ScreenShare" Width="70" Margin="2.5 0" Click="ScreenShare_Clicked" Style="{DynamicResource RoundedButton}"/>
            <!-- <Button Content="Chat" Width="Auto" Margin="2.5 0"/> -->
-            <Button Content="Dashboard" Width="Auto" Margin="2.5 0" Click="Dashboard_Clicked" Style="{DynamicResource RoundedButton}"/>
-            <Button Content="Leave Room" Width="Auto" Margin="2.5 0" Style="{DynamicResource RoundedButton}"/>
+            <Button Content="Dashboard" Width="70" Margin="2.5 0" Click="Dashboard_Clicked" Style="{DynamicResource RoundedButton}"/>
+            <Button Content="Leave Room" Width="70" Margin="2.5 0" Style="{DynamicResource RoundedButton}"/>
             
         </DockPanel>
         
-        <DockPanel Name="ChatPane" Background="Orange" Grid.Row="2" Grid.Column="4" Grid.RowSpan="4" Visibility="Collapsed"/>
-        <Button Grid.Row="4" Grid.Column="4" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="Auto" Height="32" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="White" Click="Chat_Button_Clicked">Chat</Button>
+        <DockPanel Name="ChatPane" Background="DarkRed" Grid.Row="2" Grid.Column="6" Grid.RowSpan="4" Visibility="Collapsed"/>
+        <Button Grid.Row="4" Grid.Column="6" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="Auto" Height="32" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="White" Click="Chat_Button_Clicked">Chat</Button>
  
         
-        <ContentControl Name="SSwb" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Grid.RowSpan="1" Content="{Binding}"/> 
+        <ContentControl Name="SSwb" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" Grid.RowSpan="1" Content="{Binding}"/> 
        <!-- <ContentControl Name="ChatPane" Grid.Row="2" Grid.Column="4" Grid.RowSpan="4" Content="{Binding }"/> -->
 
     </Grid>
