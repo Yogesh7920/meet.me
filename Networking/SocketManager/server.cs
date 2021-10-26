@@ -24,11 +24,9 @@ namespace Networking
             IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString()) +
             " and port number = " + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString());
 
-
             while (true)
             {
                 clientSocket = serverSocket.AcceptTcpClient();
-
             }
 
         }
