@@ -8,7 +8,7 @@
         Title="Window1" Height="450" Width="800"
         WindowStyle="None"
         ResizeMode="NoResize"
-        Background="#3D2C8D"
+        Background="#cfcfcf"
         >
     
     <!--Parent Grid-->
@@ -26,7 +26,7 @@
         </Grid.ColumnDefinitions>
         
         <!--Grid for the upper menu-->
-        <Grid Name="MainBar" Background="#1C0C5B" Grid.ColumnSpan="3">
+        <Grid Name="MainBar" Background="#3B185F" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -55,11 +55,11 @@
 
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="#EC407A"/>
+                            <Setter Property="Background" Value="#D500F9"/>
                             <Setter Property="Cursor" Value="Hand"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value= "#E91E63"></Setter>
+                                    <Setter Property="Background" Value= "#6A1B9A"></Setter>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -90,11 +90,11 @@
 
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="#EC407A"/>
+                            <Setter Property="Background" Value="#D500F9"/>
                             <Setter Property="Cursor" Value="Hand"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#E91E63"></Setter>
+                                    <Setter Property="Background" Value="#6A1B9A"></Setter>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -137,7 +137,7 @@
                
             </Popup>
 
-            <RadioButton Grid.Column="1" Margin="0 100 0 0" Height="40" Width="38" Background="#FFDC2C2C" BorderBrush="#FFE42020"> </RadioButton>
+            <!--<RadioButton Grid.Column="1" Margin="0 100 0 0" Height="40" Width="38" Background="#FFDC2C2C" BorderBrush="#FFE42020"> </RadioButton>-->
             
             <ToggleButton Content="Set Background" 
                     Name ="SetBGButton"
@@ -156,7 +156,7 @@
                         <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value= "#303F9F"></Setter>
+                                <Setter Property="Background" Value= "#3B185F"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -195,7 +195,7 @@
                         <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value= "#303F9F"></Setter>
+                                <Setter Property="Background" Value= "#3B185F"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -253,11 +253,11 @@
 
                 <Button.Style>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="#EC407A"/>
+                        <Setter Property="Background" Value="#D500F9"/>
                         <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#E91E63"></Setter>
+                                <Setter Property="Background" Value="#6A1B9A"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -292,7 +292,7 @@
                 <!--ToolBar-->
                 <Grid Grid.Column="1">
                     <!--Toolbar Border-->
-                    <Border Width="30" Height="265" Background="#EC407A" Margin="0,76,0,30" CornerRadius="15">
+                    <Border Width="30" Height="265" Background="#D500F9" Margin="0,76,0,30" CornerRadius="15">
 
                     </Border>
                     
@@ -305,7 +305,7 @@
 
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#EC407A"/>
+                                <Setter Property="Background" Value="#D500F9"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -338,7 +338,7 @@
 
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#EC407A"/>
+                                <Setter Property="Background" Value="#D500F9"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -372,7 +372,7 @@
 
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#EC407A"/>
+                                <Setter Property="Background" Value="#D500F9"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -405,7 +405,7 @@
 
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#EC407A"/>
+                                <Setter Property="Background" Value="#D500F9"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -438,7 +438,7 @@
 
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#EC407A"/>
+                                <Setter Property="Background" Value="#D500F9"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -471,7 +471,7 @@
 
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#EC407A"/>
+                                <Setter Property="Background" Value="#D500F9"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
@@ -510,7 +510,7 @@
         
         <!--Middle Column Containing Canvas-->
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="#C5CAE9" Height="400" Width="580" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="#FFDEDEDE" Height="400" Width="580" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
