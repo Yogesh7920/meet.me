@@ -10,7 +10,7 @@ namespace Dashboard.Client.SessionManagement
 {
     using Dashboard.Server.Telemetry;
 
-    class ClientSessionManager : IUXClientSM
+    class ClientSessionManager : IUXClientSessionManager
     {
         /// <summary>
         /// Returns the credentials required to 

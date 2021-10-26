@@ -25,7 +25,7 @@ namespace Dashboard
         /// Returns a ClientSessionManager object which 
         /// implements the interface IUXClientSM
         /// </returns>
-        public static IUXClientSM GetClientSessionManager()
+        public static IUXClientSessionManager GetClientSessionManager()
         {
             return s_clientSessionManager;
         }
@@ -43,7 +43,7 @@ namespace Dashboard
             return s_serverSessionManager;
         }
 
-        private static IUXClientSM s_clientSessionManager;
+        private static IUXClientSessionManager s_clientSessionManager;
         private static ITelemetrySessionManager s_serverSessionManager;
     }
 }
