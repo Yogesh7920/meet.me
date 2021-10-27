@@ -7,10 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Icons\WhiteboardUX\Toolbar\flag.png" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Resource Include="Icons\WhiteboardUX\Toolbar\drawEllipse.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\drawLine.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\drawRectangle.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\Eraser.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\flag.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\Pen.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\selectTool.png" />
     </ItemGroup>

@@ -32,7 +32,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="114.286"/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -128,11 +128,64 @@
                     AllowsTransparency="True"
                     PopupAnimation="Slide"
                     StaysOpen="False"
-                   Height="100"
-                   Width="100">
-                <Grid Name="SetBGDropdown">
+                    Height="65"
+                    Width="110">
+                
+                <Grid Name="SetBGDropdown" Background="#cfcfcf">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"></RowDefinition>
+                        <RowDefinition Height="2*"></RowDefinition>
+                    </Grid.RowDefinitions>
                     
-                    <TextBlock  Name="McTextBlock" Background="PaleVioletRed" >This is popup text</TextBlock>
+                    
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Color"
+                                   Foreground="Black"
+                                   FontSize="14"
+                                   FontWeight="light"
+                                   VerticalAlignment="Center"
+                                   Margin="10 10 0 5"
+                        ></TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+
+                            <RadioButton Grid.Column="0" x:Name="c1" Margin="5 0 0 10"  VerticalAlignment="Center" Background="Red" BorderBrush="#cfcfcf" BorderThickness="1">
+                                <RadioButton.RenderTransform>
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                </RadioButton.RenderTransform>
+                            </RadioButton>
+                            <RadioButton Grid.Column="1" x:Name="c2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="#cfcfcf" BorderThickness="1">
+                                <RadioButton.RenderTransform>
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                </RadioButton.RenderTransform>
+                            </RadioButton>
+                            <RadioButton Grid.Column="2" x:Name="c3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="#cfcfcf" BorderThickness="1">
+                                <RadioButton.RenderTransform>
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                </RadioButton.RenderTransform>
+                            </RadioButton>
+                            <RadioButton Grid.Column="3" x:Name="c4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Purple" BorderBrush="#cfcfcf" BorderThickness="1">
+                                <RadioButton.RenderTransform>
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                </RadioButton.RenderTransform>
+                            </RadioButton>
+                            <RadioButton Grid.Column="4" x:Name="c5" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="#cfcfcf" BorderThickness="1">
+                                <RadioButton.RenderTransform>
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                </RadioButton.RenderTransform>
+                            </RadioButton>
+                        </Grid>
+                    </StackPanel>
                 </Grid>
                
             </Popup>
@@ -156,7 +209,7 @@
                         <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value= "#3B185F"></Setter>
+                                <Setter Property="Background" Value= "#6A1B9A"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -195,7 +248,7 @@
                         <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value= "#3B185F"></Setter>
+                                <Setter Property="Background" Value= "#6A1B9A"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -241,6 +294,103 @@
                 </local:ToggleButton.RenderTransform>
 
             </local:ToggleButton>
+            
+            <!--Restore Frame Button-->
+
+            <Popup Name="RestoreFramePopUp"
+                    IsOpen="{Binding ElementName=RestoreFrameButton, Path=IsChecked}"
+                    PlacementTarget="{Binding ElementName=RestoreFrameButton}"
+                    Grid.Column="1"
+                    AllowsTransparency="True"
+                    PopupAnimation="Slide"
+                    StaysOpen="False"
+                    Height="100"
+                    Width="100">
+
+                <Grid Name="RestoreDropdown" Background="#cfcfcf">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"></RowDefinition>
+                        <RowDefinition Height="3*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+
+                    <StackPanel Grid.Row="0" Orientation ="Horizontal">
+                        <Image Source="/Icons/WhiteboardUX/Toolbar/flag.png" Height="20" Width="20" Margin="0 0 0 0"></Image>
+                        <TextBlock Text="Checkpoints"
+                                   Foreground="Black"
+                                   FontSize="14"
+                                   FontWeight="light"
+                                   VerticalAlignment="Center"
+                                   Margin="2.5 5 0 10"
+                        ></TextBlock>
+                    </StackPanel>
+
+                    <ListBox Grid.Row="1" Background="#cfcfcf">
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontSize="10" FontWeight="Light">Checkpoint #1</TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontSize="10" FontWeight="Light">Checkpoint #2</TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontSize="10" FontWeight="Light">Checkpoint #3</TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
+
+
+                    </ListBox>
+                </Grid>
+
+            </Popup>
+
+            <ToggleButton Content="Retore Frame" 
+                    Name ="RestoreFrameButton"
+                    Grid.Column="5" 
+                    Foreground="LightGray"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5"
+                    
+                    MouseEnter="OpenPopupRestoreButton_MouseEnter"
+                    MouseLeave="OpenPopupRestoreButton_MouseLeave">
+
+                <ToggleButton.Style>
+                    <Style TargetType="ToggleButton">
+                        <Setter Property="Background" Value="#D500F9"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value= "#6A1B9A"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                </ToggleButton.Style>
+
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Width="85"
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+
+                            <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
+                        </Border>
+
+
+                    </ControlTemplate>
+                </ToggleButton.Template>
+
+            </ToggleButton>
 
             <!--Save Frame Button-->
             <Button Content="Save Frame" 
@@ -309,8 +459,11 @@
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#536DFE"></Setter>
+                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                     </Trigger>
+                                    <!--<Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Background" Value="DarkRed"></Setter>
+                                    </Trigger>-->
                                 </Style.Triggers>
                             </Style>
 
@@ -342,7 +495,7 @@
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#536DFE"></Setter>
+                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                     </Trigger>
                                 </Style.Triggers>
 
@@ -376,7 +529,7 @@
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#536DFE"></Setter>
+                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -409,7 +562,7 @@
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#536DFE"></Setter>
+                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -433,7 +586,11 @@
                     <!--Line Button-->
                     <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedLineTool">
                         <StackPanel Orientation="Vertical">
-                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawLine.png" Margin="2 2 2 2"></Image>
+                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawLine.png" Margin="2 2 2 2" RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="35"></RotateTransform>
+                                </Image.RenderTransform>
+                            </Image>
                         </StackPanel>
 
                         <Button.Style>
@@ -442,7 +599,7 @@
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#536DFE"></Setter>
+                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -475,7 +632,7 @@
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#536DFE"></Setter>
+                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -510,7 +667,7 @@
         
         <!--Middle Column Containing Canvas-->
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="#FFDEDEDE" Height="400" Width="580" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="White" Height="400" Width="580" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
