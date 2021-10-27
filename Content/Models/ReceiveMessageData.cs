@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 
@@ -24,7 +25,8 @@ namespace Content
         /// <summary>
         /// Id of the message
         /// </summary>
-        public int MessageId;
+        [BsonId]
+        public ObjectId MessageId;
 
         /// <summary>
         /// User id of the message sender

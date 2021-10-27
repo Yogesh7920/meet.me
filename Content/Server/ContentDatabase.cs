@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Content
 {
@@ -15,14 +16,15 @@ namespace Content
             messages = databaseBase.GetCollection<ReceiveMessageData>("messages");
         }
 
-        public void Store(ReceiveMessageData messageData)
+        public ObjectId Store(ReceiveMessageData messageData)
         {
             messages.InsertOne(messageData);
+            return messageData.MessageId;
         }
 
-        public ReceiveMessageData Retrieve(int messageId)
+        public ReceiveMessageData Retrieve(ObjectId messageId)
         {
-            ReceiveMessageData receiveMessageData = messages.Find<ReceiveMessageData>(message => message.MessageId == messageId).FirstOrDefault();
+            ReceiveMessageData receiveMessageData = messages.Find(message => message.MessageId == messageId).FirstOrDefault();
             return receiveMessageData;
         }
     }
