@@ -12,9 +12,9 @@ using System.Net;
 /// <author>Tausif Iqbal </author>
 namespace Networking
 {
-    class Server
+    public class Server : ICommunicator
     {
-        static void Main(string[] args)
+        public void ICommunicator.Start(string serverIp = null, string serverPort = null)
         {
             int port = FreeTcpPort();
             TcpListener serverSocket = new TcpListener(System.Net.IPAddress.Loopback, port);
@@ -44,6 +44,5 @@ namespace Networking
             return port;
         }
         
-
     }
 }
