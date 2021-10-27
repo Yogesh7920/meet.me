@@ -1,7 +1,13 @@
-﻿namespace Content
+﻿using System;
+
+namespace Content
 {
-    internal class FilerServer
+    internal class FileServer
     {
+        public void Receive(ReceiveMessageData messageData)
+        {
+            throw new NotImplementedException();
+        }
         private string SaveFile(ReceiveMessageData messageData)
         {
             return "";
