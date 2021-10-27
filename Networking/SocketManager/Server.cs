@@ -12,9 +12,9 @@ using System.Net;
 /// <author>Tausif Iqbal </author>
 namespace Networking
 {
-    public class Server : ICommunicator
+    public class ServerCommunicator : ICommunicator
     {
-        public void ICommunicator.Start(string serverIp = null, string serverPort = null)
+        public string ICommunicator.Start(string serverIp = null, string serverPort = null)
         {
             int port = FreeTcpPort();
             TcpListener serverSocket = new TcpListener(System.Net.IPAddress.Loopback, port);
@@ -24,11 +24,8 @@ namespace Networking
             IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString()) +
             " and port number = " + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString());
 
-            while (true)
-            {
-                clientSocket = serverSocket.AcceptTcpClient();
-            }
-
+            return IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString())+ 
+                    ":" + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString();
         }
 
         /// <summary>
