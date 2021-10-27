@@ -2,11 +2,11 @@
  * Owned By: Gurunadh Pachappagari
  * Created By: Gurunadh Pachappagari
  * Date Created: 13 Oct 2021
- * Date Modified: 13 Oct 2021
+ * Date Modified: 27 Oct 2021
 **/
 
 using System;
-using System.Collections.Generic;
+using Networking; 
 
 namespace Whiteboard
 {
@@ -16,6 +16,9 @@ namespace Whiteboard
 
     public class ClientBoardCommunicator : IClientBoardCommunicator, IMessageListener
     {
+
+        private ISerializer serializer = new Serializer();
+        private ICommunicator communicator = new Communicator();
         /// <summary>
         /// deserializes the xml string to Board server shape
         /// publishes the deserialized object to subscribers
@@ -30,9 +33,11 @@ namespace Whiteboard
         /// serializes the shape objects and passes it to communicator.send()
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
-        public void Send(List<BoardServerShape> clientUpdate) 
+        public void Send(BoardServerShape clientUpdate) 
         { 
-            throw new NotImplementedException();
+            string module_identifier = "Whiteboard";
+            string xml_obj = serializer.Serialize(clientUpdate);
+            communicator.Send(xml_obj, module_identifier);
         }
         /// <summary>
         /// publishes deserialized objects to listeners
