@@ -16,4 +16,13 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Content\Content.csproj" />
+      <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
+      <ProjectReference Include="..\Networking\Networking.csproj" />
+      <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
+      <ProjectReference Include="..\Server\Server.csproj" />
+      <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
+    </ItemGroup>
+
 </Project>
