@@ -49,6 +49,9 @@ namespace Whiteboard
         public void OnDataReceived(string data)
         {
             BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
+            foreach (var subscriber in subscribers) {
+                subscriber.OnMessageReceived(deserializedShape);
+            }
         }
         
         /// <summary>
