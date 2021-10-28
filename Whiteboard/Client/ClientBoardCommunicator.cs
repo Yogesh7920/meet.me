@@ -15,26 +15,37 @@ namespace Whiteboard
     /// Bridge the gap between Server side White Board Modules and Networking module
     /// </summary>
 
-    public class ClientBoardCommunicator : IClientBoardCommunicator, INotificationHandler
+    public sealed class ClientBoardCommunicator : IClientBoardCommunicator, INotificationHandler
     {
-
-        private ISerializer serializer;
-        private ICommunicator communicator;
-        private string module_identifier;
-        private List<IServerUpdateListener> subscribers;
+        private static ClientBoardCommunicator instance = null;
+        private static ISerializer serializer;
+        private static ICommunicator communicator;
+        private static string moduleIdentifier = "Whiteboard";
+        private static List<IServerUpdateListener> subscribers;
+        /// <summary>
+        /// private constructor for a singleton
+        /// </summary>
+        private ClientBoardCommunicator() { }
 
         /// <summary>
-        /// Constructor to initialize a communicator and a serializer
+        /// instance getter
         /// </summary>
-        public ClientBoardCommunicator()
+        public static ClientBoardCommunicator Instance
         {
-            serializer = new Serializer();
-            communicator = new Communicator();
-            module_identifier = "Whiteboard";
-            communicator.Subscribe(module_identifier, this);
-            subscribers = new List<IServerUpdateListener>();
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ClientBoardCommunicator();
+                    serializer = new Serializer();
+                    communicator = new Communicator();
+                    communicator.Subscribe(moduleIdentifier, instance);
+                    subscribers = new List<IServerUpdateListener>();
+                }
+                return instance;
+            }
         }
-
+        
         public void OnDataReceived(string data)
         {
             throw new NotImplementedException();
@@ -47,8 +58,9 @@ namespace Whiteboard
         public void Send(BoardServerShape clientUpdate) 
         {
             string xml_obj = serializer.Serialize(clientUpdate);
-            communicator.Send(xml_obj, module_identifier);
-        }
+            communicator.Send(xml_obj, moduleIdentifier);
+            
+        }   
         /// <summary>
         /// publishes deserialized objects to listeners
         /// </summary>
