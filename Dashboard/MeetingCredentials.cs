@@ -13,7 +13,13 @@ namespace Dashboard
         /// credentrials required to join/start
         /// the meeting
         /// </summary>
+        
+        public MeetingCredentials(string address, int portNumber)
+        {
+            ipAddress = address;
+            port = portNumber;
+        }
         public string ipAddress;
-        public int ports;
+        public int port;
     }
 }
