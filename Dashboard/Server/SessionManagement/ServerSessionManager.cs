@@ -4,11 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Networking;
+using System.Diagnostics;
 
 namespace Dashboard.Server.SessionManagement
 {
     public class ServerSessionManager : ITelemetrySessionManager, IUXServerSessionManager
     {
+        public ServerSessionManager()
+        {
+            Session session = new Session();
+            session.TraceListener();
+        }
         /// <summary>
         /// Subscribes to changes in the session object
         /// </summary>
@@ -59,13 +65,16 @@ namespace Dashboard.Server.SessionManagement
         public MeetingCredentials GetPortsAndIPAddress()
         {
             ICommunicator communicator = CommunicationFactory.GetCommunicator();
+            Trace.WriteLine("Fetching IP Address and port from the networking module");
             string meetAddress = communicator.Start();
 
             if (IsValidIPAddress(meetAddress) != true)
             {
+                Trace.WriteLine("IP Address is not valid, return null");
                 return null;
             }
 
+            Trace.WriteLine("Returning the IP Address to the UX");
             string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
             int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
 
