@@ -27,19 +27,27 @@ namespace Dashboard.Server.SessionManagement
         /// false: otherwise</returns>
         bool IsValidIPAddress(string IPAddress)
         {
+            // Check for null string, whitespaces or absence of colon
             if (String.IsNullOrWhiteSpace(IPAddress) || IPAddress.Contains(':') == false)
             {
                 return false;
             }
+
+            // Take the part before colon as the ip address
             IPAddress = IPAddress.Substring(0, IPAddress.IndexOf(':'));
             string[] byteValues = IPAddress.Split('.');
 
+            // IPV4 contains 4 bytes separated by .
             if (byteValues.Length != 4)
             {
                 return false;
             }
 
+            // We have 4 bytes in a address
             byte tempForParsing;
+
+            // for each part(elements of byteValues list), we check whether the string 
+            // can be successfully converted into a byte or not.
             return byteValues.All(r => byte.TryParse(r, out tempForParsing));
         }
 
