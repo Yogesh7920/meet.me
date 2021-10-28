@@ -5,7 +5,7 @@
         private static ICommunicator _communicator;
         static CommunicationFactory()
         {
-            _communicator = new Communicator();
+            _communicator = new ClientCommunicator();
         }
         /// <summary>
         /// Returns the Communicator instance that is running.
