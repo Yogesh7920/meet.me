@@ -2,7 +2,7 @@
  * Owned By: Gurunadh Pachappagari
  * Created By: Gurunadh Pachappagari
  * Date Created: 13 Oct 2021
- * Date Modified: 27 Oct 2021
+ * Date Modified: 28 Oct 2021
 **/
 
 using System;
@@ -48,7 +48,7 @@ namespace Whiteboard
         
         public void OnDataReceived(string data)
         {
-            throw new NotImplementedException();
+            BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
         }
         
         /// <summary>
