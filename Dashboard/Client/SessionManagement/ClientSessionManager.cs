@@ -13,17 +13,6 @@ namespace Dashboard.Client.SessionManagement
     class ClientSessionManager : IUXClientSessionManager
     {
         /// <summary>
-        /// Returns the credentials required to 
-        /// Join or start the meeting
-        /// </summary>
-        /// <returns> A MeetingCredentials Object </returns>
-        public MeetingCredentials GetPortsAndIPAddress()
-        {
-
-            return null;
-        }
-
-        /// <summary>
         /// Adds a user to the meeting.
         /// </summary>
         /// <param name="ipAddress"> IP Address of the meeting. </param>

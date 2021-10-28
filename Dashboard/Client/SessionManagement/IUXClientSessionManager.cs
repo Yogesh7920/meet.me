@@ -9,12 +9,6 @@ namespace Dashboard.Client.SessionManagement
     using Dashboard.Server.Telemetry;
     public interface IUXClientSessionManager
     {
-        /// <summary>
-        /// Returns the credentials required to 
-        /// Join or start the meeting
-        /// </summary>
-        /// <returns> A MeetingCredentials Object </returns>
-        MeetingCredentials GetPortsAndIPAddress();
 
         /// <summary>
         /// Adds a user to the meeting.
