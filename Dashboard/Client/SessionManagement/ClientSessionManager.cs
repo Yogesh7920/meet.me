@@ -9,9 +9,14 @@ using System.Threading.Tasks;
 namespace Dashboard.Client.SessionManagement 
 {
     using Dashboard.Server.Telemetry;
-
     class ClientSessionManager : IUXClientSessionManager
     {
+
+        public ClientSessionManager()
+        {
+            Session session = new Session();
+            session.TraceListener();
+        }
         /// <summary>
         /// Adds a user to the meeting.
         /// </summary>
