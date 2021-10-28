@@ -1,20 +1,26 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{575F3368-89C0-4815-9D9D-F7CBE4FA9E8A}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{575F3368-89C0-4815-9D9D-F7CBE4FA9E8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{D492D62B-36C6-4809-8F6B-3A9116BB6F3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{D492D62B-36C6-4809-8F6B-3A9116BB6F3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Content", "Content\Content.csproj", "{0670C59F-47AF-4158-A531-6542A89DB256}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Content", "Content\Content.csproj", "{0670C59F-47AF-4158-A531-6542A89DB256}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dashboard", "Dashboard\Dashboard.csproj", "{320CF9B2-60F6-4464-840F-D43CF31E98E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dashboard", "Dashboard\Dashboard.csproj", "{320CF9B2-60F6-4464-840F-D43CF31E98E4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{76CA701F-4B8D-495D-83D6-9A91E5A6614D} = {76CA701F-4B8D-495D-83D6-9A91E5A6614D}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whiteboard", "Whiteboard\Whiteboard.csproj", "{93444113-A822-4DC8-A5B8-186E09C83B06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whiteboard", "Whiteboard\Whiteboard.csproj", "{93444113-A822-4DC8-A5B8-186E09C83B06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenSharing", "ScreenSharing\ScreenSharing.csproj", "{2728084B-9263-4038-BBFD-57DD02640EEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenSharing", "ScreenSharing\ScreenSharing.csproj", "{2728084B-9263-4038-BBFD-57DD02640EEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking", "Networking\Networking.csproj", "{76CA701F-4B8D-495D-83D6-9A91E5A6614D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networking", "Networking\Networking.csproj", "{76CA701F-4B8D-495D-83D6-9A91E5A6614D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{B682A6CB-3C4A-4E13-8B58-1BFCB47A8FC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "Testing\Testing.csproj", "{B682A6CB-3C4A-4E13-8B58-1BFCB47A8FC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,5 +60,11 @@ Global
 		{B682A6CB-3C4A-4E13-8B58-1BFCB47A8FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B682A6CB-3C4A-4E13-8B58-1BFCB47A8FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B682A6CB-3C4A-4E13-8B58-1BFCB47A8FC2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8377AD8D-5F2B-4F16-9544-65935A6EA653}
 	EndGlobalSection
 EndGlobal
