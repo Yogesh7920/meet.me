@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace Testing.Dasboard
+namespace Testing.Dashboard
 {
     public class Tests
     {
