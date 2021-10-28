@@ -6,7 +6,8 @@
 **/
 
 using System;
-using Networking; 
+using System.Collections.Generic;
+using Networking;
 
 namespace Whiteboard
 {
@@ -14,17 +15,27 @@ namespace Whiteboard
     /// Bridge the gap between Server side White Board Modules and Networking module
     /// </summary>
 
-    public class ClientBoardCommunicator : IClientBoardCommunicator, IMessageListener
+    public class ClientBoardCommunicator : IClientBoardCommunicator, INotificationHandler
     {
 
-        private ISerializer serializer = new Serializer();
-        private ICommunicator communicator = new Communicator();
+        private ISerializer serializer;
+        private ICommunicator communicator;
+        private string module_identifier;
+        private List<IServerUpdateListener> subscribers;
+
         /// <summary>
-        /// deserializes the xml string to Board server shape
-        /// publishes the deserialized object to subscribers
+        /// Constructor to initialize a communicator and a serializer
         /// </summary>
-        /// <param name="data"> xml string received from server side</param>
-        public void OnMessageReceived(string data) 
+        public ClientBoardCommunicator()
+        {
+            serializer = new Serializer();
+            communicator = new Communicator();
+            module_identifier = "Whiteboard";
+            communicator.Subscribe(module_identifier, this);
+            subscribers = new List<IServerUpdateListener>();
+        }
+
+        public void OnDataReceived(string data)
         {
             throw new NotImplementedException();
         }
@@ -34,8 +45,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
         public void Send(BoardServerShape clientUpdate) 
-        { 
-            string module_identifier = "Whiteboard";
+        {
             string xml_obj = serializer.Serialize(clientUpdate);
             communicator.Send(xml_obj, module_identifier);
         }
@@ -45,7 +55,7 @@ namespace Whiteboard
         /// <param name="listener">subscriber</param>
         public void Subscribe(IServerUpdateListener listener) 
         {
-            throw new NotImplementedException();
+            subscribers.Add(listener);
         }
         
 
