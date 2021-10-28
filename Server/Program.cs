@@ -9,27 +9,26 @@ namespace Server
         {
             while(true)
             {
-                //To read a command from the Terminal
-                string s = Console.ReadLine();
-                //if the input command entered is startMeet, will call the GetPortsAndIPAddress function which creates the meeting and 
-                //returns the object which contains IPAddress and Port of the meeting
-                if(s == "startMeet")
+                // To read a command from the Terminal
+                string Command = Console.ReadLine();
+                if(Command == "StartMeet")
                 {
-                    MeetingCredentials m = GetPortsAndIPAddress();
-                    console.writeline(m.ipaddress + ":" + m.port);
+                    // if the input command entered is startMeet, will call the GetPortsAndIPAddress function which creates the meeting and 
+                    // returns the object which contains IPAddress and Port of the meeting
+                    MeetingCredentials Meeting = GetPortsAndIPAddress();
+                    Console.WriteLine(Meeting.ipaddress + " : " + Meeting.port);
                     Console.WriteLine("Meeting has started by Host");
                 }
-                //if the input command entered is endMeet, will call the EndMeet function which ends the meeting
-                else if (s == "endMeet")
+                else if (Command == "EndMeet")
                 {
+                    // if the input command entered is endMeet, will call the EndMeet function which ends the meeting
                     EndMeet();
                     Console.WriteLine("Meeting has ended by Host");
                 }
                 else
                 {
-                    Console.WriteLine("Invalid Command. Try startMeet or endMeet commands!!!");
+                    Console.WriteLine("Invalid Command. Try StartMeet or EndMeet commands!!!");
                 }
-
             }
         }
     }
