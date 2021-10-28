@@ -47,6 +47,16 @@ namespace Client
             throw new NotImplementedException();
         }
 
+        private void OpenPopupButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            SetBGButtonPopUp.StaysOpen = true;
+        }
+
+        private void OpenPopupButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SetBGButtonPopUp.StaysOpen = false;
+        }
+
         //Toolbar selection tool 
         private void ClickedSelectTool(object sender, RoutedEventArgs e)
         {
@@ -101,6 +111,18 @@ namespace Client
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedEraserTool");
+            return;
+        }
+
+        private void ClickedLineTool(object sender, RoutedEventArgs e)
+        {
+            if (activeButton != null)
+            {
+                activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+            }
+            activeButton = sender as Button;
+            activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
+            MessageBox.Show("ClickedLineTool");
             return;
         }
 
