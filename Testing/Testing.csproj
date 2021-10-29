@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
 
         <IsPackable>false</IsPackable>
+
+        <TargetFramework>net5.0-windows</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,6 +15,16 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
         <PackageReference Include="NUnit" Version="3.13.2" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Client\Client.csproj" />
+      <ProjectReference Include="..\Content\Content.csproj" />
+      <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
+      <ProjectReference Include="..\Networking\Networking.csproj" />
+      <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
+      <ProjectReference Include="..\Server\Server.csproj" />
+      <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
     </ItemGroup>
 
 </Project>
