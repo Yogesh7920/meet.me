@@ -7,8 +7,11 @@
         /// </summary>
         /// <param name="serverIP">IP Address of the server.</param>
         /// <param name="serverPort">Port on which the server is running.</param>
-        /// <returns>String indicating success or failure.</returns>
-        string Start(string serverIP, string serverPort);
+        /// <returns>
+        /// Client side: String indicating success or failure.
+        /// Server side: The address of the client as "serverIP:serverPort"
+        /// </returns>
+        string Start(string serverIP=null, string serverPort=null);
         /// <summary>
         /// Disconnects from the server.
         /// </summary>
