@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Networking
 {
-    public class Communicator : ICommunicator
+    public class ClientCommunicator : ICommunicator
     {
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
         /// <inheritdoc />
