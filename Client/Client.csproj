@@ -7,11 +7,27 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\flag.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\pencil.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Icons\WhiteboardUX\Toolbar\bin.png" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Resource Include="Icons\WhiteboardUX\Toolbar\drawEllipse.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\drawLine.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\drawRectangle.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\duplication.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\Eraser.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\fill.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\flag.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\Pen.png" />
+      <Resource Include="Icons\WhiteboardUX\Toolbar\pencil.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\selectTool.png" />
     </ItemGroup>
   

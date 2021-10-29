@@ -22,8 +22,8 @@ namespace Client
     {
 
         private Button activeButton;
-        private string buttonDefaultColor = "#EC407A";
-        private string buttonSelectedColor = "#536DFE";
+        private string buttonDefaultColor = "#D500F9";
+        private string buttonSelectedColor = "#007C9C";
 
         public WhiteBoardView()
         {
@@ -57,13 +57,30 @@ namespace Client
             SetBGButtonPopUp.StaysOpen = false;
         }
 
+        private void OpenPopupRestoreButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            RestoreFramePopUp.StaysOpen = true;
+        }
+
+        private void OpenPopupRestoreButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            RestoreFramePopUp.StaysOpen = false;
+        }
+
         //Toolbar selection tool 
         private void ClickedSelectTool(object sender, RoutedEventArgs e)
         {
             if (activeButton != null)
             {
                 activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+                activeButton.ClearValue(Button.BackgroundProperty);
             }
+
+            if(this.SelectToolBar.Visibility == Visibility.Collapsed)
+            {
+                this.SelectToolBar.Visibility = Visibility.Visible;
+            }
+
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedSelectTool");
@@ -74,7 +91,14 @@ namespace Client
             if (activeButton != null)
             {
                 activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+                activeButton.ClearValue(Button.BackgroundProperty);
             }
+
+            if (this.SelectToolBar.Visibility == Visibility.Visible)
+            {
+                this.SelectToolBar.Visibility = Visibility.Collapsed;
+            }
+
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedRectTool");
@@ -85,7 +109,14 @@ namespace Client
             if (activeButton != null)
             {
                 activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+                activeButton.ClearValue(Button.BackgroundProperty);
             }
+
+            if (this.SelectToolBar.Visibility == Visibility.Visible)
+            {
+                this.SelectToolBar.Visibility = Visibility.Collapsed;
+            }
+
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedEllTool");
@@ -96,7 +127,14 @@ namespace Client
             if (activeButton != null)
             {
                 activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+                activeButton.ClearValue(Button.BackgroundProperty);
             }
+
+            if (this.SelectToolBar.Visibility == Visibility.Visible)
+            {
+                this.SelectToolBar.Visibility = Visibility.Collapsed;
+            }
+
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedFreehandTool");
@@ -107,7 +145,14 @@ namespace Client
             if (activeButton != null)
             {
                 activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+                activeButton.ClearValue(Button.BackgroundProperty);
             }
+
+            if (this.SelectToolBar.Visibility == Visibility.Visible)
+            {
+                this.SelectToolBar.Visibility = Visibility.Collapsed;
+            }
+
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedEraserTool");
@@ -119,7 +164,14 @@ namespace Client
             if (activeButton != null)
             {
                 activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
+                activeButton.ClearValue(Button.BackgroundProperty);
             }
+
+            if (this.SelectToolBar.Visibility == Visibility.Visible)
+            {
+                this.SelectToolBar.Visibility = Visibility.Collapsed;
+            }
+
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             MessageBox.Show("ClickedLineTool");
@@ -167,8 +219,6 @@ namespace Client
             {
                 MessageBox.Show("Toggled Off");
             }
-
-
         }
 
         //Parent Window click event

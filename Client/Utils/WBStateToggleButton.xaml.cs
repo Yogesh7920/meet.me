@@ -25,7 +25,7 @@ namespace Client
         Thickness LeftSide = new Thickness(-39, 0, 0, 0);
         Thickness RightSide = new Thickness(0, 0, -39, 0);
         SolidColorBrush Off = new SolidColorBrush(Color.FromRgb(160, 160, 160));
-        SolidColorBrush On = new SolidColorBrush(Color.FromRgb(130, 190, 125));
+        SolidColorBrush On = new SolidColorBrush(Color.FromRgb(213, 0, 249));
         private bool Toggled = false;
 
         public ToggleButton()
