@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         xmlns:viewmodels="clr-namespace:Client.ViewModels"
-        xmlns:views="clr-namespace:Client.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
     <Window.Resources>
+        
         
     <Style x:Key="RoundedButton" TargetType="{x:Type Button}">
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -37,14 +37,14 @@
                                             <TranslateTransform X="0.02" Y="0.3"/>
                                         </TransformGroup>
                                     </RadialGradientBrush.RelativeTransform>
-                                    <GradientStop Color="#590955" Offset="1"/>
-                                    <GradientStop Color="#FF1E56" Offset="0.3"/>
+                                    <GradientStop Color="{StaticResource LightGray}" Offset="1"/>
+                                    <GradientStop Color="{StaticResource LightPurple}" Offset="0.3"/>
                                 </RadialGradientBrush>
                             </Setter.Value>
                         </Setter>
                     </Trigger>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="BorderBrush" TargetName="border" Value="#FF33962B"/>
+                        <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource DarkPurple}"/>
                     </Trigger>
                     <Trigger Property="IsEnabled" Value="False">
                         <Setter Property="Opacity" TargetName="grid" Value="0.35"/>
@@ -57,37 +57,22 @@
     </Style>
         
         <DataTemplate x:Name="ScreenShareTemplate" DataType="{x:Type viewmodels:ScreenShareViewModel}">
-            <views:ScreenShare DataContext="{Binding}"/>
+            <local:ScreenShareView DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate x:Name="WhiteboardTemplate" DataType="{x:Type viewmodels:WhiteboardViewModel}">
-            <views:Whiteboard DataContext="{Binding}"/>
+            <local:WhiteBoardView DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate x:Name="ChatTemplate" DataType="{x:Type viewmodels:ChatViewModel}">
-            <views:Chat DataContext="{Binding }"/>
+            <local:ChatView DataContext="{Binding }"/>
         </DataTemplate>
-        <DataTemplate x:Name="DashboardTemplate" DataType="{x:Type viewmodels:DashboardViewModel}">
-            <views:Dashboard DataContext="{Binding}"/>
-        </DataTemplate>
+       <!-- <DataTemplate x:Name="DashboardTemplate" DataType="{x:Type viewmodels:DashboardViewModel}">
+            <local:Dashboard DataContext="{Binding}"/>
+        </DataTemplate>-->
+      
     </Window.Resources>
     
     <Grid>
-       <!-- <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="0.01*"/>
-            <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="0.01*"/>
-            <ColumnDefinition Width="2*"/>
-        </Grid.ColumnDefinitions>
        
-        <Grid.RowDefinitions>
-           <RowDefinition Height="0.95*"/>
-           <RowDefinition Height="0.075*"/>
-           <RowDefinition Height="10*"/>
-           <RowDefinition Height="0.75"/>
-           <RowDefinition Height="1.2*"/>
-           <RowDefinition Height="0.085*"/>
-           <RowDefinition Height="0.015*"/>
-       </Grid.RowDefinitions> -->
        <Grid.ColumnDefinitions>
            <ColumnDefinition Width="0.5*"/>
            <ColumnDefinition Width="0.01*"/>
@@ -108,16 +93,17 @@
            <RowDefinition Height="0.015*"/>
        </Grid.RowDefinitions>
     
-        <DockPanel Background="Aqua" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7"/>
+        <DockPanel Background="{StaticResource LightGrayBg}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7">
+            <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="meet.me" FontSize="40" FontWeight="Bold" FontFamily="ComicSans"/>
+        </DockPanel>
         
         <DockPanel Name="UsersListPane1" Background="Wheat" Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" Visibility="Visible"/>
         <DockPanel Name="UsersListPane2" Background="Wheat" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="4" Visibility="Collapsed"/>
-        <Button Grid.Row="4" Grid.Column="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="Auto" Height="32" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" Background="White" Click="Users_List_Clicked">Users</Button>
+        <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="Auto" Height="32" FontSize="16" FontFamily="ComicSans" VerticalAlignment="Top" HorizontalAlignment="Center" Background="White" Click="Users_List_Clicked">Users</Button>
 
         <DockPanel Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="3" Width="300">
             <Button Content="Whiteboard" Width="70" Margin="2.5 0" Click="Whiteboard_Clicked" Style="{DynamicResource RoundedButton}"/>
             <Button Content="ScreenShare" Width="70" Margin="2.5 0" Click="ScreenShare_Clicked" Style="{DynamicResource RoundedButton}"/>
-           <!-- <Button Content="Chat" Width="Auto" Margin="2.5 0"/> -->
             <Button Content="Dashboard" Width="70" Margin="2.5 0" Click="Dashboard_Clicked" Style="{DynamicResource RoundedButton}"/>
             <Button Content="Leave Room" Width="70" Margin="2.5 0" Style="{DynamicResource RoundedButton}"/>
             
