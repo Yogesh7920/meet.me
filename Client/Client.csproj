@@ -30,5 +30,12 @@
       <Resource Include="Icons\WhiteboardUX\Toolbar\pencil.png" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\selectTool.png" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Content\Content.csproj" />
+      <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
+      <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
+      <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
+    </ItemGroup>
   
 </Project>
