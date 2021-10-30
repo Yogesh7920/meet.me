@@ -10,6 +10,10 @@ namespace Dashboard.Server.SessionManagement
 {
     public class ServerSessionManager : ITelemetrySessionManager, IUXServerSessionManager
     {
+        /// <summary>
+        /// Constructor for the ServerSessionManager, calls the 
+        /// tracelistener 
+        /// </summary>
         public ServerSessionManager()
         {
             Session session = new Session();
