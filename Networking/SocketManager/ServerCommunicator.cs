@@ -18,6 +18,23 @@ namespace Networking
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
         
         /// <summary>
+        /// It finds IP4 address of machine
+        /// </summary>
+        /// <returns>IP4 address </returns>
+        private static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
+        
+        /// <summary>
         /// scan for free Tcp port.
         /// </summary>
         /// <returns>Free port </returns>
@@ -74,23 +91,6 @@ namespace Networking
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
         {
             subscribedModules.Add(identifier, handler);
-        }
-
-        /// <summary>
-        /// It finds IP4 address of machine
-        /// </summary>
-        /// <returns>IP4 address </returns>
-        private static string GetLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
         
     }
