@@ -17,7 +17,8 @@ namespace Networking
         public string ICommunicator.Start(string serverIp = null, string serverPort = null)
         {
             int port = FreeTcpPort();
-            TcpListener serverSocket = new TcpListener(System.Net.IPAddress.Loopback, port);
+            IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
+            TcpListener serverSocket = new TcpListener(ip, port);
             serverSocket.Start();
             TcpClient clientSocket = default(TcpClient);
             Console.WriteLine("Server has started with ip = " +
@@ -34,11 +35,29 @@ namespace Networking
         /// <returns>Free port </returns>
         private static int FreeTcpPort()
         {
-            TcpListener tcp = new TcpListener(System.Net.IPAddress.Loopback, 0);
+            IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
+            TcpListener tcp = new TcpListener(ip, 0);
             tcp.Start();
             int port = ((IPEndPoint)tcp.LocalEndpoint).Port;
             tcp.Stop();
             return port;
+        }
+
+        /// <summary>
+        /// It finds IP4 address of machine
+        /// </summary>
+        /// <returns>IP4 address </returns>
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
         
     }
