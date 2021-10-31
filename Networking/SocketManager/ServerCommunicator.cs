@@ -16,7 +16,8 @@ namespace Networking
     public class ServerCommunicator : ICommunicator
     {
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
-        
+        private Hashtable clientIdSocket = new Hashtable();
+        private Queue globalQueue = new Queue();
         /// <summary>
         /// It finds IP4 address of machine
         /// </summary>
@@ -48,6 +49,10 @@ namespace Networking
             return port;
         }
         
+        /// <summary>
+        /// start the server and return ip and port
+        /// </summary>
+        /// <returns> String</returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
             int port = FreeTcpPort();
@@ -59,18 +64,38 @@ namespace Networking
             IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString()) +
             " and port number = " + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString());
 
+            Thread acceptRequest = new Thread(()=>AcceptRequest(serverSocket));
+            acceptRequest.Start();
+
             return IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString())+ 
                     ":" + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString();
         }
-        
+
+        /// <summary>
+        /// It accepts all incoming client request
+        /// </summary>
+        /// <returns> void </returns>
+        private void AcceptRequest(TcpListener serverSocket)
+        {
+            TcpClient clientSocket = default(TcpClient);
+            while (true)
+            {
+                clientSocket = serverSocket.AcceptTcpClient();
+                onClientJoined(clientSocket);
+            }
+        }
         void ICommunicator.Stop()
         {
             throw new NotImplementedException();
         }
-        /// <inheritdoc />
+        /// <summary>
+        /// It adds client socket to a map starts listening on that socket
+        /// </summary>
+        /// <returns> void </returns>
         void ICommunicator.AddClient<T>(string clientID, T socketObject)
         {
-            throw new NotImplementedException();
+            ClientIdSocket[ClientID] = socketObject;
+            SocketListener rt =new SocketListener(globalQueue,socketObject);
         }
         /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientID)
