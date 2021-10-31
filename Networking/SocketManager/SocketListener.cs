@@ -1,9 +1,15 @@
 using System.Net.Sockets;
 
+/// <summary>
+/// This file contains the implementation of socketListener
+/// socketListener will continously listen for message and
+/// after getting the message it will push into queue 
+/// </summary>
+/// <author>Tausif Iqbal </author>
 namespace Networking
 {
     public class SocketListener{
-
+        Thread listen;
         // define the threashold size
         const int threshold = 1025;
 
@@ -12,7 +18,7 @@ namespace Networking
 
         //socket which keeps listening for the client requests
         private TcpClient _clientSocket;
-        
+
         /// <summary>
         /// This method is the constructor of the class which initializes the params
         /// <param name="queue">queue.</param>
@@ -21,7 +27,7 @@ namespace Networking
         public SocketListener(IQueue queue,TcpClient clientSocket){
             this._queue=queue;
             this._clientSocket=clientSocket;
-            Thread listen = new Thread(Start);
+            listen = new Thread(Start);
             listen.Start();
         }
 
@@ -57,10 +63,10 @@ namespace Networking
         }
 
         /// <summary>
-        /// This method is for stopping the thread
+        /// This method closes the listen thread
         /// </summary>
         public void Stop(){
-            throw new NotImplementedException();
+            listen.Abort();
         }
 
         /// <summary>

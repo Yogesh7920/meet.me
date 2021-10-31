@@ -8,6 +8,7 @@ namespace Networking
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
         private TcpClient _clientSocket = new TcpClient();
         private Queue _queue = new Queue();
+        private SocketListener socketListener;
 
         /// <summary>
         /// This method connects client to server
@@ -17,13 +18,13 @@ namespace Networking
         string ICommunicator.Start(string serverIP, string serverPort)
         {
             _clientSocket.Connect(serverIP, serverPort);
-            SocketListener socketListener =new SocketListener(_queue,_clientSocket);
+            socketListener =new SocketListener(_queue,_clientSocket);
             socketListener.Start();
         }
         /// <inheritdoc />
         void ICommunicator.Stop()
         {
-            throw new NotImplementedException();
+            socketListener.Abort();
         }
         /// <inheritdoc />
         void ICommunicator.AddClient<T>(string clientID, T socketObject)

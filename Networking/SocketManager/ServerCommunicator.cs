@@ -18,6 +18,9 @@ namespace Networking
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
         private Hashtable clientIdSocket = new Hashtable();
         private Queue _globalQueue = new Queue();
+
+        private Thread acceptRequest;
+        private Thread sendQueueListener;
         /// <summary>
         /// It finds IP4 address of machine
         /// </summary>
@@ -63,8 +66,10 @@ namespace Networking
             Console.WriteLine("Server has started with ip = " +
             IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString()) +
             " and port number = " + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString());
-
-            Thread acceptRequest = new Thread(()=>AcceptRequest(serverSocket));
+            
+            sendQueueListener = new SendQueueListener(_globalQueue);; 
+            sendQueueListener.Start();
+            acceptRequest = new Thread(() => AcceptRequest(serverSocket));
             acceptRequest.Start();
 
             return IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString())+ 
@@ -84,9 +89,16 @@ namespace Networking
                 onClientJoined(clientSocket);
             }
         }
+
+        /// <summary>
+        /// closes all the running thread of the server
+        /// </summary>
+        /// <returns> void </returns>
         void ICommunicator.Stop()
         {
-            throw new NotImplementedException();
+            sendQueueListener.Abort();
+            acceptRequest.Abort();
+
         }
         /// <summary>
         /// It adds client socket to a map and starts listening on that socket
