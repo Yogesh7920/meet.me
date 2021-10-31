@@ -6,10 +6,19 @@ namespace Networking
     public class ClientCommunicator : ICommunicator
     {
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
-        /// <inheritdoc />
+        private TcpClient _clientSocket = new TcpClient();
+        private Queue _queue = new Queue();
+
+        /// <summary>
+        /// This method connects client to server
+        /// <param name="serverIP">serverIP</param>
+        /// <param name="serverPort">serverPort.</param>
+        /// </summary>
         string ICommunicator.Start(string serverIP, string serverPort)
         {
-            throw new NotImplementedException();
+            _clientSocket.Connect(serverIP, serverPort);
+            SocketListener socketListener =new SocketListener(_queue,_clientSocket);
+            socketListener.Start();
         }
         /// <inheritdoc />
         void ICommunicator.Stop()

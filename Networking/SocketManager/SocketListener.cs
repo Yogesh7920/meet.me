@@ -12,6 +12,7 @@ namespace Networking
 
         //socket which keeps listening for the client requests
         private TcpClient _clientSocket;
+        
         /// <summary>
         /// This method is the constructor of the class which initializes the params
         /// <param name="queue">queue.</param>

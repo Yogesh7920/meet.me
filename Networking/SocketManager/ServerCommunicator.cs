@@ -17,7 +17,7 @@ namespace Networking
     {
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
         private Hashtable clientIdSocket = new Hashtable();
-        private Queue globalQueue = new Queue();
+        private Queue _globalQueue = new Queue();
         /// <summary>
         /// It finds IP4 address of machine
         /// </summary>
@@ -89,13 +89,14 @@ namespace Networking
             throw new NotImplementedException();
         }
         /// <summary>
-        /// It adds client socket to a map starts listening on that socket
+        /// It adds client socket to a map and starts listening on that socket
         /// </summary>
         /// <returns> void </returns>
         void ICommunicator.AddClient<T>(string clientID, T socketObject)
         {
             ClientIdSocket[ClientID] = socketObject;
-            SocketListener rt =new SocketListener(globalQueue,socketObject);
+            SocketListener socketListener =new SocketListener(_globalQueue,socketObject);
+            socketListener.Start();
         }
         /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientID)
