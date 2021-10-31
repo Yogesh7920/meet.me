@@ -23,7 +23,8 @@ namespace Networking
         /// <returns>Free port </returns>
         private static int FreeTcpPort()
         {
-            TcpListener tcp = new TcpListener(System.Net.IPAddress.Loopback, 0);
+            IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
+            TcpListener tcp = new TcpListener(ip, 0);
             tcp.Start();
             int port = ((IPEndPoint)tcp.LocalEndpoint).Port;
             tcp.Stop();
@@ -79,7 +80,7 @@ namespace Networking
         /// It finds IP4 address of machine
         /// </summary>
         /// <returns>IP4 address </returns>
-        public static string GetLocalIPAddress()
+        private static string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
