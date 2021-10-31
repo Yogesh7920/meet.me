@@ -15,3 +15,4 @@ namespace Dashboard.Server.SessionManagement
         void OnAnalyticsChanged(SessionData newSession);
     }
 }
+

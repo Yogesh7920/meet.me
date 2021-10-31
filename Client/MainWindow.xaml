@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Client"
         xmlns:viewmodels="clr-namespace:Client.ViewModels"
         mc:Ignorable="d"
+
         Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
     <Window.Resources>
         
@@ -117,4 +118,5 @@
        <!-- <ContentControl Name="ChatPane" Grid.Row="2" Grid.Column="4" Grid.RowSpan="4" Content="{Binding }"/> -->
 
     </Grid>
+
 </Window>

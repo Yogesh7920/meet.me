@@ -27,6 +27,7 @@ namespace Client
             DataContext = new WhiteboardViewModel();
         }
 
+
         private void Users_List_Clicked(object sender, RoutedEventArgs e)
         {
 
@@ -157,5 +158,6 @@ namespace Client
         private bool _ssFlag = false;
         private bool _wbFlag = true;
         
+
     }
 }

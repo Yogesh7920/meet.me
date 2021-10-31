@@ -19,7 +19,9 @@ namespace Client
     /// Interaction logic for Window1.xaml
     /// </summary>
     /// 
+
     public partial class WhiteBoardView : UserControl
+
     {
 
         private Button activeButton;
@@ -29,7 +31,9 @@ namespace Client
         public WhiteBoardView()
         {
             InitializeComponent();
+
             WhiteboardViewModel viewModel = new WhiteboardViewModel();
+
         }
 
         // Canvas Mouse actions 
@@ -227,8 +231,10 @@ namespace Client
         {
             if(e.LeftButton == MouseButtonState.Pressed)
             {
+
               // DragMove();
             }
         }
     }
 }
+
