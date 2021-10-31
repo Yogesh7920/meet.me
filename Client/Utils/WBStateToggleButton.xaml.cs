@@ -1,4 +1,8 @@
-﻿using System;
+
+﻿///Adapted from https://github.com/TacticDevGit/C-WPf-Toggle-Switch-UI-Control/tree/master/ToggleSwitch/ToggleSwitch
+
+using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

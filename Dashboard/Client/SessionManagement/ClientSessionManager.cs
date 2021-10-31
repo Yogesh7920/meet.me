@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Dashboard.Client.SessionManagement 
 {
     using Dashboard.Server.Telemetry;
-    class ClientSessionManager : IUXClientSessionManager
+    public class ClientSessionManager : IUXClientSessionManager
     {
 
         public ClientSessionManager()

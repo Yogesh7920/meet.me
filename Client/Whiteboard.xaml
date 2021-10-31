@@ -8,6 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800"
              Background="#cfcfcf">
 
+
     <!--Parent Grid-->
     <Grid MouseDown="Grid_MouseDown">
         <Grid.RowDefinitions>
@@ -884,5 +885,7 @@
             </Grid>
         </StackPanel>
     </Grid>
+
     
     </UserControl>
+
