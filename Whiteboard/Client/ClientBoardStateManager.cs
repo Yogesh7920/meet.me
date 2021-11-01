@@ -58,10 +58,11 @@ namespace Whiteboard
         {
             get
             {
-                // Create a new instance if not yet created.
-                s_instance = s_instance is null ? new ClientBoardStateManager() : s_instance;
                 Trace.Indent();
                 Trace.WriteLineIf(s_instance == null, "Whiteboard.ClientBoardStateManager.Instance: Creating and storing a new instance.");
+
+                // Create a new instance if not yet created.
+                s_instance = s_instance is null ? new ClientBoardStateManager() : s_instance;
                 Trace.WriteLine("Whiteboard.ClientBoardStateManager.Instance: Returning the stored instance.s");
                 Trace.Unindent();
                 return s_instance;
