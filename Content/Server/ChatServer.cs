@@ -6,8 +6,8 @@ namespace Content
     {
         public void Receive(MessageData messageData)
         {
-
         }
+
         private ObjectId SaveChat(MessageData messageData, ContentDatabase contentDatabse)
         {
             return contentDatabse.Store(messageData);

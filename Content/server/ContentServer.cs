@@ -32,19 +32,18 @@ namespace Content
 
             MessageData messageData = serializer.Deserialize<MessageData>(data);
 
-            if ("CHAT".Equals(type))
+            if (messageData.Type == MessageType.Chat)
             {
                 chatServer.Receive(messageData);
             }
-            else if ("FILE".Equals(type))
+            else if (messageData.Type == MessageType.File)
             {
                 fileServer.Receive(messageData);
             }
             else
             {
-                throw new System.ArgumentException();
+                throw new System.Exception();
             }
-
         }
 
         /// <inheritdoc />
