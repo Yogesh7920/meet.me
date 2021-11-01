@@ -188,8 +188,9 @@ namespace Whiteboard
             _undoStack = null;
             GC.Collect();
 
-            // Re-initializing state
+            // Re-initializing state and adding subscriber 
             InitializeDataStructures(true);
+            _clients.Add(identifier, listener);
 
             // Creating BoardServerShape object and requesting communicator
             BoardServerShape boardServerShape = new(null, Operation.FETCH_STATE, _currentUserId);
