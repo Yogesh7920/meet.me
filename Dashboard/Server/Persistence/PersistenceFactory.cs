@@ -14,11 +14,15 @@ namespace Dashboard.Server.Persistence
     /// </summary>
     public class PersistenceFactory
     {
+        /// <summary>Helps to create instance of ISummaryPersistence </summary>
+        /// <returns> return ITelemetryPersistence Interface which enables to use functions of class inheriting the same </returns>
             ISummaryPersistence getSummaryPersistenceInstance()
             {
                 return new SummaryPersistence();
             }
-
+        
+        /// <summary>Helps to create instance of ITelemetryPersistence </summary>
+        /// <returns> return ITelemetryPersistence Interface which enables to use functions of class inheriting the same </returns>
             ITelemetryPersistence getTelemetryPersistenceInstance()
             {
                 return new TelemetryPersistence();
