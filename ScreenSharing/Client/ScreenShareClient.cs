@@ -6,8 +6,10 @@
 **/
 
 using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Threading;
-using System.Collections;
 using Networking;
 
 namespace ScreenSharing
@@ -16,7 +18,7 @@ namespace ScreenSharing
 	/// <summary>
 	/// Client Side screen sharing class
 	/// </summary>
-	public class ScreenShareClient : IDataHandler
+	public class ScreenShareClient : INotificationHandler
 	{
 		//Store the Communicator instance which is used to send screen over the network.
 		public ICommunicator _communicator;
@@ -29,7 +31,7 @@ namespace ScreenSharing
 		//Stores the incoming frames
 		public Queue<SharedScreen> frameQueue;
 		// Store an instance of the Serializer
-		public Serializer serializer;
+		public ISerializer serializer;
 		//Stores the module Id which will be "ScreenSharing"
 		public string moduleId;
 		// This will be an instance of the UX class which will subscribe for notifications
@@ -42,6 +44,7 @@ namespace ScreenSharing
 		/// </summary>
 		public ScreenShareClient()
         {
+			_communicator = CommunicationFactory.GetCommunicator();
 			throw new NotImplementedException();
 		}
 
@@ -66,8 +69,8 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will be triggered by the Networking team whenever a screen is sent.
 		/// </summary>
-		public void onDataRecieve(string xml)
-        {
+		public void OnDataReceived(string data)
+		{
 			throw new NotImplementedException();
 		}
 
