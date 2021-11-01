@@ -1,8 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net5.0-windows</TargetFramework>
+	    <UseWPF>true</UseWPF>
     </PropertyGroup>
+
+    <ItemGroup>
+      <COMReference Include="{d37e2a3e-8545-3a39-9f4f-31827c9124ab}">
+        <WrapperTool>tlbimp</WrapperTool>
+        <VersionMinor>4</VersionMinor>
+        <VersionMajor>2</VersionMajor>
+        <Guid>d37e2a3e-8545-3a39-9f4f-31827c9124ab</Guid>
+      </COMReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    </ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\Networking\Networking.csproj" />
 	</ItemGroup>
