@@ -2,12 +2,11 @@
  * Owned By: Gurunadh Pachappagari
  * Created By: Gurunadh Pachappagari
  * Date Created: 13 Oct 2021
- * Date Modified: 28 Oct 2021
+ * Date Modified: 13 Oct 2021
 **/
 
 using System;
 using System.Collections.Generic;
-using Networking;
 
 namespace Whiteboard
 {
@@ -15,64 +14,35 @@ namespace Whiteboard
     /// Bridge the gap between Server side White Board Modules and Networking module
     /// </summary>
 
-    public sealed class ClientBoardCommunicator : IClientBoardCommunicator, INotificationHandler
+    public class ClientBoardCommunicator : IClientBoardCommunicator, IMessageListener
     {
-        private static ClientBoardCommunicator instance = null;
-        private static ISerializer serializer;
-        private static ICommunicator communicator;
-        private static string moduleIdentifier = "Whiteboard";
-        private static List<IServerUpdateListener> subscribers;
         /// <summary>
-        /// private constructor for a singleton
+        /// deserializes the xml string to Board server shape
+        /// publishes the deserialized object to subscribers
         /// </summary>
-        private ClientBoardCommunicator() { }
+        /// <param name="data"> xml string received from server side</param>
+        public void OnMessageReceived(string data)
+        {
+            throw new NotImplementedException();
+        }
 
-        /// <summary>
-        /// instance getter
-        /// </summary>
-        public static ClientBoardCommunicator Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new ClientBoardCommunicator();
-                    serializer = new Serializer();
-                    communicator = new Communicator();
-                    communicator.Subscribe(moduleIdentifier, instance);
-                    subscribers = new List<IServerUpdateListener>();
-                }
-                return instance;
-            }
-        }
-        
-        public void OnDataReceived(string data)
-        {
-            BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
-            foreach (var subscriber in subscribers) {
-                subscriber.OnMessageReceived(deserializedShape);
-            }
-        }
-        
         /// <summary>
         /// serializes the shape objects and passes it to communicator.send()
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
-        public void Send(BoardServerShape clientUpdate) 
+        public void Send(List<BoardServerShape> clientUpdate)
         {
-            string xml_obj = serializer.Serialize(clientUpdate);
-            communicator.Send(xml_obj, moduleIdentifier);
-            
-        }   
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// publishes deserialized objects to listeners
         /// </summary>
         /// <param name="listener">subscriber</param>
-        public void Subscribe(IServerUpdateListener listener) 
+        public void Subscribe(IServerUpdateListener listener)
         {
-            subscribers.Add(listener);
+            throw new NotImplementedException();
         }
-        
+
 
 
     }

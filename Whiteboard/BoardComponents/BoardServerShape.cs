@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 10/11/2021
+ * Date Modified: 11/01/2021
 **/
 
 using System;
@@ -15,13 +15,20 @@ namespace Whiteboard
 {
     public class BoardServerShape
     {
-        public MainShape MainShapeDefiner { get; set; }
-        public int UserLevel { get; set; }
-        public DateTime CreationTime { get; set; }
-        public DateTime LastModifiedTime { get; set; }
-        public string Uid { get; set; }
-        public string ShapeOwnerId { get; set; }
-        public Operation RecentOperation { get; set; }
-        public int CheckPointNumber { get; set; }
+        public List<BoardShape> ShapeUpdates { get; set; }
+        public Operation OperationFlag { get; set; }
+        public string RequesterId { get; set; }
+        public DateTime RequestTime { get; set; }
+        public int CheckpointNumber { get; set; }
+
+        public BoardServerShape(List<BoardShape> shapeUpdates, Operation operation, string requesterId, int checkpointNumber = 0)
+        {
+            ShapeUpdates = shapeUpdates;
+            OperationFlag = operation;
+            RequesterId = requesterId;
+            CheckpointNumber = checkpointNumber;
+            RequestTime = DateTime.Now;
+        }
+
     }
 }

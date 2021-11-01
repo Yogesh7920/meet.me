@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 10/11/2021
+ * Date Modified: 11/01/2021
 **/
 
 using System;
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Shapes;
 
 namespace Whiteboard
 {
@@ -25,10 +26,10 @@ namespace Whiteboard
 
         public BoardShape Clone()
         {
-            return new BoardShape(MainShapeDefiner.Clone(), UserLevel, CreationTime, LastModifiedTime, (string)Uid.Clone(), (string)ShapeOwnerId.Clone() );
+            return new BoardShape(MainShapeDefiner.Clone(), UserLevel, CreationTime, LastModifiedTime, (string)Uid.Clone(), (string)ShapeOwnerId.Clone(), RecentOperation);
         }
 
-        public BoardShape(MainShape mainShapeDefiner, int userLevel, DateTime creationTime, DateTime lastModifiedTime, String uid, String shapeOwnerId)
+        public BoardShape(MainShape mainShapeDefiner, int userLevel, DateTime creationTime, DateTime lastModifiedTime, String uid, String shapeOwnerId, Operation operation)
         {
             MainShapeDefiner = mainShapeDefiner;
             UserLevel = userLevel;
@@ -36,6 +37,7 @@ namespace Whiteboard
             LastModifiedTime = lastModifiedTime;
             Uid = uid;
             ShapeOwnerId = shapeOwnerId;
+            RecentOperation = operation;
         }
 
         public BoardShape()
@@ -46,6 +48,7 @@ namespace Whiteboard
             LastModifiedTime = DateTime.Now;
             Uid = null;
             ShapeOwnerId = null;
+            RecentOperation = Operation.CREATE;
         }
 
 
