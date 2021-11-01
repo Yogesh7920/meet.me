@@ -10,7 +10,6 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            IUXClientSessionManager UXClientSM = new ClientSessionManager();
             ServerSessionManager ServerSM = new ServerSessionManager();
 
             // if the input command entered is startMeet, will call the GetPortsAndIPAddress function which creates the meeting and 
