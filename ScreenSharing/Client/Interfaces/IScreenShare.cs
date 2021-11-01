@@ -5,7 +5,7 @@
  * date modified: 14/10/2021
 **/
 
-using system;
+using System;
 
 namespace ScreenSharing
 {
