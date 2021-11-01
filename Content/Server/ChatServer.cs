@@ -17,7 +17,7 @@ namespace Content
             ObjectId messageId = contentDatabase.Store(messageData);
             foreach (var chatConext in allMessages)
             {
-                if(messageData.ReplyThreadId == chatConext.ThreadId)
+                if (messageData.ReplyThreadId == chatConext.ThreadId)
                 {
                     chatConext.MsgList.Add(messageData);
                 }
@@ -27,7 +27,7 @@ namespace Content
 
         public MessageData Fetch(ObjectId messageId)
         {
-            return contentDatabase.Retrieve(messageId);
+            return contentDatabase.RetrieveMessage(messageId);
         }
     }
 }
