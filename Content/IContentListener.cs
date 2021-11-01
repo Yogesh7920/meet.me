@@ -17,6 +17,6 @@ namespace Content
         /// as it is running on the server, not on the clients.
         /// </summary>
         /// <param name="allMessages">list of Thread objects containing all messages</param>
-        void OnAllMessages(List<Thread> allMessages);
+        void OnAllMessages(List<ChatContext> allMessages);
     }
 }
