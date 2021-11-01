@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections.Generic;
 
 namespace Content
 {
@@ -26,6 +27,11 @@ namespace Content
         {
             MessageData receiveMessageData = messages.Find(message => message.MessageId == messageId).FirstOrDefault();
             return receiveMessageData;
+        }
+
+        public List<MessageData> Retrieve()
+        {
+            return messages.Find( message => true).ToList();
         }
     }
 }

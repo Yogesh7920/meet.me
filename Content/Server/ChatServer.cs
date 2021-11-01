@@ -1,21 +1,33 @@
 ﻿using MongoDB.Bson;
+using System.Collections.Generic;
 
 namespace Content
 {
     internal class ChatServer
     {
-        public void Receive(MessageData messageData)
+        private ContentDatabase contentDatabase;
+
+        public ChatServer(ContentDatabase contentDatabase)
         {
+            this.contentDatabase = contentDatabase;
         }
 
-        private ObjectId SaveChat(MessageData messageData, ContentDatabase contentDatabse)
+        public ObjectId Receive(MessageData messageData, List<ChatContext> allMessages)
         {
-            return contentDatabse.Store(messageData);
+            ObjectId messageId = contentDatabase.Store(messageData);
+            foreach (var chatConext in allMessages)
+            {
+                if(messageData.ReplyThreadId == chatConext.ThreadId)
+                {
+                    chatConext.MsgList.Add(messageData);
+                }
+            }
+            return messageId;
         }
 
-        private MessageData FetchChat(ObjectId messageId, ContentDatabase contentDatabse)
+        public MessageData Fetch(ObjectId messageId)
         {
-            return contentDatabse.Retrieve(messageId);
+            return contentDatabase.Retrieve(messageId);
         }
     }
 }

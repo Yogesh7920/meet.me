@@ -19,9 +19,10 @@ namespace Content
             subscribers = new List<IContentListener>();
             allMessages = new List<ChatContext>();
             communicator = CommunicationFactory.GetCommunicator();
+            contentDatabase = new ContentDatabase();
             notificationHandler = new ContentServerNotificationHandler();
             fileServer = new FileServer();
-            chatServer = new ChatServer();
+            chatServer = new ChatServer(contentDatabase);
             serializer = new Serializer();
             communicator.Subscribe("ContentServer", notificationHandler);
         }
@@ -34,7 +35,7 @@ namespace Content
 
             if (messageData.Type == MessageType.Chat)
             {
-                chatServer.Receive(messageData);
+                chatServer.Receive(messageData, allMessages);
             }
             else if (messageData.Type == MessageType.File)
             {
