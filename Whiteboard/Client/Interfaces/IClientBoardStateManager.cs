@@ -34,21 +34,18 @@ namespace Whiteboard
         /// </summary>
         /// <param name="listener">The subscriber. </param>
         /// <param name="identifier">The identifier of the subscriber. </param>
-        /// <returns>List of UXShapes for UX to render along with an integer which specifies number of checkpoints saved on server.</returns>
-        Tuple<List<UXShape>, int> Subscribe(IClientBoardStateListener listener, string identifier);
+        void Subscribe(IClientBoardStateListener listener, string identifier);
 
         /// <summary>
         /// Creates and saves checkpoint. 
         /// </summary>
-        /// <returns>The number/identifier of the created checkpoint.</returns>
-        int SaveCheckpoint();
+        void SaveCheckpoint();
 
         /// <summary>
         /// Fetches the checkpoint from server and updates the current state. 
         /// </summary>
         /// <param name="checkpointNumber">The identifier/number of the checkpoint which needs to fetched.</param>
-        /// <returns>List of UXShapes for UX to render.</returns>
-        List<UXShape> FetchCheckpoint(int checkpointNumber);
+        void FetchCheckpoint(int checkpointNumber);
 
         /// <summary>
         /// Sets the current user id. 

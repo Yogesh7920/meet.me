@@ -30,8 +30,8 @@ namespace Whiteboard
         /// </summary>
         /// <param name="serverShapes"> the object to be passed to clients</param>
         /// <param name="clientID"> client id to whom to send these objects to</param>
-        public void Send(List<BoardServerShape> clientUpdate, string clientID) 
-        { 
+        public void Send(List<BoardServerShape> clientUpdate, string clientID)
+        {
             throw new NotImplementedException();
         }
 

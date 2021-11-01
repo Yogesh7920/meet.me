@@ -30,7 +30,7 @@ namespace Whiteboard
         /// serializes the shape objects and passes it to communicator.send()
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
-        public void Send(List<BoardServerShape> clientUpdate)
+        public void Send(BoardServerShape clientUpdate)
         {
             throw new NotImplementedException();
         }
