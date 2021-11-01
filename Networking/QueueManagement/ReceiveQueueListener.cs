@@ -8,24 +8,24 @@ namespace Networking
         private IQueue _receieveQueue;
         private Dictionary<string, INotificationHandler> _notificationHandlers;
 
-        public ReceiveQueueListener(Dictionary<string , INotificationHandler> notificationHandlers)
+        public ReceiveQueueListener(IQueue queue, Dictionary<string , INotificationHandler> notificationHandlers)
         {
-            _receieveQueue = new Queue();
-            this._notificationHandlers = notificationHandlers;
+            _receieveQueue = queue;
+            _notificationHandlers = notificationHandlers;
         }
 
         public void ListenQueue()
         {
             while (!(_receieveQueue.IsEmpty()))
             {
-                Packet Item = _receieveQueue.Dequeue();
-                string Data = Item.SerializedData;
-                string ModuleIdentifier = Item.ModuleIdentifier;
+                Packet packet = _receieveQueue.Dequeue();
+                string data = packet.SerializedData;
+                string moduleIdentifier = packet.ModuleIdentifier;
 
-                if (_notificationHandlers.ContainsKey(ModuleIdentifier))
+                if (_notificationHandlers.ContainsKey(moduleIdentifier))
                 {
-                    INotificationHandler Handler = _notificationHandlers[ModuleIdentifier];    
-                    Handler.OnDataReceived(Data);
+                    INotificationHandler handler = _notificationHandlers[moduleIdentifier];    
+                    handler.OnDataReceived(data);
                 }
                 else
                 {

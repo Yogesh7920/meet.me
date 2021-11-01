@@ -3,6 +3,11 @@
     public interface IQueue
     {
         /// <summary>
+        /// Register Module into the multilevel queue
+        /// </summary>
+        public void RegisterModule(string moduleId, int priority);
+        
+        /// <summary>
         /// Size of the queue
         /// </summary>
         public int Size();

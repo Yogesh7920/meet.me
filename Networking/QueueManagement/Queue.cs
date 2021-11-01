@@ -1,90 +1,72 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Networking
 {
     public class Queue: IQueue
     {
-        private ConcurrentQueue<Packet> _screenShareQueue;
-        private ConcurrentQueue<Packet> _whiteBoardQueue;
-        private ConcurrentQueue<Packet> _fileQueue;
-        private ConcurrentQueue<Packet> _chatQueue;
         private ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
-        private ConcurrentDictionary<int, Tuple<string, int>> _priorityMap;
+        private ConcurrentDictionary<string, int> _priorityMap;
+        private List<string> _moduleIdentifiers;
         private int _currentQueue;
         private int _currentWeight;
 
         public Queue()
         {
-            _screenShareQueue = new ConcurrentQueue<Packet>();
-            _whiteBoardQueue  = new ConcurrentQueue<Packet>();
-            _fileQueue  = new ConcurrentQueue<Packet>();
-            _chatQueue  = new ConcurrentQueue<Packet>();
             _multiLevelQueue = new ConcurrentDictionary<string, ConcurrentQueue<Packet>>();
-            _priorityMap = new ConcurrentDictionary<int, Tuple<string, int>>();
-            
-            if (!(_multiLevelQueue.TryAdd("S", _screenShareQueue)))
-            {
-                throw new Exception("Adding ScreenShareQueue to MultiLevelQueue Failed!");
-            }
-            
-            if (!(_multiLevelQueue.TryAdd("W", _whiteBoardQueue)))
-            {
-                throw new Exception("Adding WhiteBoardQueue to MultiLevelQueue Failed!");
-            }
-            
-            if (!(_multiLevelQueue.TryAdd("F", _fileQueue)))
-            {
-                throw new Exception("Adding FileQueue to MultiLevelQueue Failed!");
-            }
-            
-            if (!(_multiLevelQueue.TryAdd("C", _chatQueue)))
-            {
-                throw new Exception("Adding ChatQueue to MultiLevelQueue Failed!");
-            }
+            _priorityMap = new ConcurrentDictionary<string, int>();
+            _currentQueue = 0;
+            _currentWeight = 0;
+        }
 
-            try
+        public void RegisterModule(string moduleId, int priority)
+        {
+            if (!(_multiLevelQueue.TryAdd(moduleId, new ConcurrentQueue<Packet>())))
             {
-                _priorityMap[0] = Tuple.Create("S", 4);
-                _priorityMap[1] = Tuple.Create("W", 3);
-                _priorityMap[2] = Tuple.Create("F", 2);
-                _priorityMap[3] = Tuple.Create("C", 1);
-                _currentQueue = 0;
-                _currentWeight = _priorityMap[_currentQueue].Item2;
+                Trace.WriteLine("Adding Queue to MultiLevelQueue Failed!");
+                throw new Exception("Adding Queue to MultiLevelQueue Failed!");
             }
-            catch (Exception e)
+            
+            if (!(_priorityMap.TryAdd(moduleId, priority)))
             {
-                Console.WriteLine(e);
-                throw;
+                ConcurrentQueue<Packet> queue;
+                _multiLevelQueue.TryRemove(moduleId, out queue);
+                throw new Exception("Priority Map Error");
             }
+            
+            IOrderedEnumerable<KeyValuePair<string, int>> orderedIdPairs = _priorityMap.OrderByDescending(s => s.Value);
+            _moduleIdentifiers = new List<string>();
+            
+            foreach (var keyValuePair in orderedIdPairs)
+                _moduleIdentifiers.Add(keyValuePair.Key);
+
+            string moduleIdentifier = _moduleIdentifiers[_currentQueue];
+            _currentWeight = _priorityMap[moduleIdentifier];
         }
         
         public int Size()
         {
-            int TotalPackets = 0;
+            int totalPackets = 0;
             foreach (var item in _multiLevelQueue)
             {
-                TotalPackets += item.Value.Count;
+                totalPackets += item.Value.Count;
             }
-            return TotalPackets;
+            return totalPackets;
         }
         
         public void Clear()
         {
-            foreach (var item in _multiLevelQueue)
+            foreach (var key in _multiLevelQueue)
             {
-                while (item.Value.Count > 0)
+                while (key.Value.Count > 0)
                 {
-                    Packet Item;
-                    try
+                    Packet item;
+                    if (!(key.Value.TryDequeue(out item)))
                     {
-                        item.Value.TryDequeue(out Item);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                        throw;
+                        throw new Exception("Empty Queue cannot be dequeued");
                     }
                 }
             }
@@ -92,69 +74,32 @@ namespace Networking
 
         public void Enqueue(Packet item)
         {
-            string ModuleIdentifier = item.ModuleIdentifier;
+            string moduleIdentifier = item.ModuleIdentifier;
             
-            if (_multiLevelQueue.ContainsKey(ModuleIdentifier))
+            if (_multiLevelQueue.ContainsKey(moduleIdentifier))
             {
-                try
-                {
-                    _multiLevelQueue[ModuleIdentifier].Enqueue(item);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-                
+                _multiLevelQueue[moduleIdentifier].Enqueue(item);
             }
             else
             {
-                throw new Exception("MultiLevelQueue Key Error");
+                throw new Exception("Key Error: Packet holds invalid module identifier");
             }
         }
-        
+
         public Packet Dequeue()
         {
             if (!(IsEmpty()))
             {
-                Packet Item;
-                if (_currentWeight != 0)
-                {
-                    try
-                    {
-                        string ModuleIdentifier = _priorityMap[_currentQueue].Item1;
-                        if(_multiLevelQueue[ModuleIdentifier].Count != 0)
-                            _multiLevelQueue[ModuleIdentifier].TryDequeue(out Item);
-                        else
-                        {
-                            while (_multiLevelQueue[ModuleIdentifier].Count == 0)
-                            {
-                                _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
-                                ModuleIdentifier = _priorityMap[_currentQueue].Item1;
-                                _currentWeight = _priorityMap[_currentQueue].Item2;
-                            }
-                            _multiLevelQueue[ModuleIdentifier].TryDequeue(out Item);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                        throw;
-                    }
-                    _currentWeight -= 1;
-                }
-                else
-                {
-                    _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
-                    _currentWeight = _priorityMap[_currentQueue].Item2;
-                    Item = Dequeue();
-                }
-                
-                return Item;
+                Packet packet;
+                FindNext();
+                string moduleIdentifier = _moduleIdentifiers[_currentQueue];
+                _multiLevelQueue[moduleIdentifier].TryDequeue(out packet);
+                _currentWeight -= 1;
+                return packet;
             }
             else
             {
-                throw new Exception("Queue is empty");
+                throw new Exception("Cannot Dequeue empty queue");
             }
         }
         
@@ -162,34 +107,14 @@ namespace Networking
         {
             if (!(IsEmpty()))
             {
-                Packet Item;
-                try
-                {
-                    string ModuleIdentifier = _priorityMap[_currentQueue].Item1;
-                    if(_multiLevelQueue[ModuleIdentifier].Count != 0)
-                        _multiLevelQueue[ModuleIdentifier].TryPeek(out Item);
-                    else
-                    {
-                        while (_multiLevelQueue[ModuleIdentifier].Count == 0)
-                        {
-                            _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
-                            ModuleIdentifier = _priorityMap[_currentQueue].Item1;
-                        }
-                        _multiLevelQueue[ModuleIdentifier].TryPeek(out Item);
-                    }
-                
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-
-                return Item;
+                Packet packet;
+                string moduleIdentifier = _moduleIdentifiers[_currentQueue];
+                _multiLevelQueue[moduleIdentifier].TryPeek(out packet);
+                return packet;
             }
             else
             {
-                throw new Exception("Queue is empty");
+                throw new Exception("Cannot Peek into empty queue");
             }
         }
         
@@ -197,6 +122,31 @@ namespace Networking
         {
             if (this.Size() == 0) return true;
             return false;
+        }
+
+        private void FindNext()
+        {
+            string moduleIdentifier = _moduleIdentifiers[_currentQueue];
+            if (_currentWeight == 0)
+            {
+                _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
+                moduleIdentifier = _moduleIdentifiers[_currentQueue];   
+                _currentWeight = _priorityMap[moduleIdentifier];
+                FindNext();
+            }
+            else
+            {
+                if (_multiLevelQueue[moduleIdentifier].Count == 0)
+                {
+                    while (_multiLevelQueue[moduleIdentifier].Count == 0)
+                    {
+                        _currentQueue = (_currentQueue + 1) % _moduleIdentifiers.Count;
+                        moduleIdentifier = _moduleIdentifiers[_currentQueue];
+                        _currentWeight = _priorityMap[moduleIdentifier];
+                    }    
+                }
+            }
+            
         }
     }
 }
