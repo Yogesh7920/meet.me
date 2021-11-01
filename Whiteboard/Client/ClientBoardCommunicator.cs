@@ -21,28 +21,28 @@ namespace Whiteboard
         /// publishes the deserialized object to subscribers
         /// </summary>
         /// <param name="data"> xml string received from server side</param>
-        public void OnMessageReceived(string data) 
+        public void OnMessageReceived(string data)
         {
             throw new NotImplementedException();
         }
-        
+
         /// <summary>
         /// serializes the shape objects and passes it to communicator.send()
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
-        public void Send(List<BoardServerShape> clientUpdate) 
-        { 
+        public void Send(List<BoardServerShape> clientUpdate)
+        {
             throw new NotImplementedException();
         }
         /// <summary>
         /// publishes deserialized objects to listeners
         /// </summary>
         /// <param name="listener">subscriber</param>
-        public void Subscribe(IServerUpdateListener listener) 
+        public void Subscribe(IServerUpdateListener listener)
         {
             throw new NotImplementedException();
         }
-        
+
 
 
     }

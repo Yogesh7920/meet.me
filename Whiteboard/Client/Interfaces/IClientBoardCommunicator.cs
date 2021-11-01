@@ -23,7 +23,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="clientUpdate"> update from client to server side</param>
         void Send(List<BoardServerShape> clientUpdate);
-        
+
         /// <summary>
         /// subscribe to receive deserialized objects from Communicator
         /// </summary>
