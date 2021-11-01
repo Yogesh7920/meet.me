@@ -22,8 +22,8 @@ namespace Whiteboard
         /// to send objects from statemanager to communicator after serializing
         /// </summary>
         /// <param name="clientUpdate"> update from client to server side</param>
-        void Send(BoardServerShape clientUpdate);
-        
+        void Send(List<BoardServerShape> clientUpdate);
+
         /// <summary>
         /// subscribe to receive deserialized objects from Communicator
         /// </summary>
