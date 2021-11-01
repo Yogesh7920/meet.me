@@ -6,8 +6,9 @@
 **/
 
 using System;
-using System.Drawing.Image;
 using System.Drawing;
+using System.Drawing.Imaging;
+
 
 namespace ScreenSharing
 {
