@@ -21,7 +21,7 @@ namespace Whiteboard
         private static ClientBoardStateManager s_instance = null;
 
         // Attribute holding current user id
-        private string _currentUserId;
+        private string _currentUserId = null;
 
         // Clients subscribed to state manager
         private Dictionary<string, IClientBoardStateListener> _clients;
@@ -34,6 +34,8 @@ namespace Whiteboard
 
         // instance of clientBoardCommunicator
         private IClientBoardCommunicator _clientBoardCommunicator;
+
+        private IClientCheckPointHandler _clientCheckPointHandler;
 
         // data structures to maintain state
         private Dictionary<string, BoardShape> _mapIdToBoardShape;
@@ -59,7 +61,7 @@ namespace Whiteboard
                 // Create a new instance if not yet created.
                 s_instance = s_instance is null ? new ClientBoardStateManager() : s_instance;
                 Trace.Indent();
-                Trace.WriteLineIf(s_instance==null, "Whiteboard.ClientBoardStateManager.Instance: Creating and storing a new instance.");
+                Trace.WriteLineIf(s_instance == null, "Whiteboard.ClientBoardStateManager.Instance: Creating and storing a new instance.");
                 Trace.WriteLine("Whiteboard.ClientBoardStateManager.Instance: Returning the stored instance.s");
                 Trace.Unindent();
                 return s_instance;
@@ -89,7 +91,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="checkpointNumber">The identifier/number of the checkpoint which needs to fetched.</param>
         /// <returns>List of UXShapes for UX to render.</returns>
-        public List<UXShape> FetchCheckpoint(int checkpointNumber)
+        public void FetchCheckpoint(int checkpointNumber)
         {
             throw new NotImplementedException();
         }
@@ -117,8 +119,13 @@ namespace Whiteboard
         /// Manages state and notifies UX on receiving an update from ClientBoardCommunicator.
         /// </summary>
         /// <param name="serverUpdate">BoardServerShapes signifying the update.</param>
-        public void OnMessageReceived(List<BoardServerShape> serverUpdate)
+        public void OnMessageReceived(BoardServerShape serverUpdate)
         {
+            if (serverUpdate.OperationFlag == Operation.FETCH_STATE && serverUpdate.RequesterId == _currentUserId)
+            {
+                List<UXShape> uXShapes = UpdateStateOnFetch(serverUpdate);
+                NotifyClients(uXShapes);
+            }
             throw new NotImplementedException();
         }
 
@@ -126,7 +133,7 @@ namespace Whiteboard
         /// Creates and saves checkpoint. 
         /// </summary>
         /// <returns>The number/identifier of the created checkpoint.</returns>
-        public int SaveCheckpoint()
+        public void SaveCheckpoint()
         {
             throw new NotImplementedException();
         }
@@ -158,13 +165,9 @@ namespace Whiteboard
             // initializing all attributes 
             _checkpointsNumber = 0;
             _clientBoardCommunicator = new ClientBoardCommunicator();
+            _clientCheckPointHandler = new ClientCheckPointHandler();
             _clients = new Dictionary<string, IClientBoardStateListener>();
-            _currentUserId = null;
-            _mapIdToBoardShape = new Dictionary<string, BoardShape>();
-            _mapIdToQueueElement = new Dictionary<string, QueueElement>();
-            _priorityQueue = new BoardPriorityQueue();
-            _redoStack = new BoardStack(_undoRedoCapacity);
-            _undoStack = new BoardStack(_undoRedoCapacity);
+            InitializeDataStructures();
 
             // subscribing to ClientBoardCommunicator
             _clientBoardCommunicator.Subscribe(this);
@@ -175,13 +178,109 @@ namespace Whiteboard
         /// </summary>
         /// <param name="listener">The subscriber. </param>
         /// <param name="identifier">The identifier of the subscriber. </param>
-        /// <returns>List of UXShapes for UX to render along with an integer which specifies number of checkpoints saved on server.</returns>
-        public Tuple<List<UXShape>, int> Subscribe(IClientBoardStateListener listener, string identifier)
+        public void Subscribe(IClientBoardStateListener listener, string identifier)
         {
-            
-            throw new NotImplementedException();
+            // Cleaning current state since new state will be called
+            _mapIdToBoardShape = null;
+            _mapIdToQueueElement = null;
+            _priorityQueue = null;
+            _redoStack = null;
+            _undoStack = null;
+            GC.Collect();
+
+            // Re-initializing state
+            InitializeDataStructures(true);
+
+            // Creating BoardServerShape object and requesting communicator
+            BoardServerShape boardServerShape = new(null, Operation.FETCH_STATE, _currentUserId);
+            _clientBoardCommunicator.Send(boardServerShape);
         }
 
-        
+        /// <summary>
+        /// Initializes the data structures which are maintaining the state. 
+        /// </summary>
+        /// <param name="initializeUndoRedo">Initialize undo-redo stacks or not. By default it is true.</param>
+        private void InitializeDataStructures(bool initializeUndoRedo = true)
+        {
+            _mapIdToBoardShape = new Dictionary<string, BoardShape>();
+            _mapIdToQueueElement = new Dictionary<string, QueueElement>();
+            _priorityQueue = new BoardPriorityQueue();
+            if (initializeUndoRedo)
+            {
+                _redoStack = new BoardStack(_undoRedoCapacity);
+                _undoStack = new BoardStack(_undoRedoCapacity);
+            }
+        }
+
+        /// <summary>
+        /// Updates local state on Fetch State from server.
+        /// </summary>
+        /// <param name="boardServerShape">BoardServerShape object having the whole update.</param>
+        /// <returns>List of UXShape to notify client.</returns>
+        private List<UXShape> UpdateStateOnFetch(BoardServerShape boardServerShape)
+        {
+            List<BoardShape> boardShapes = boardServerShape.ShapeUpdates;
+            List<UXShape> uXShapes = new();
+
+            // Sorting boardShapes
+            boardShapes.Sort(delegate (BoardShape boardShape1, BoardShape boardShape2) { return boardShape1.LastModifiedTime.CompareTo(boardShape2.LastModifiedTime); });
+
+            // updating checkpoint number   
+            _checkpointsNumber = boardServerShape.CheckpointNumber;
+            _clientCheckPointHandler.CheckpointNumber = _checkpointsNumber;
+
+            // updating state
+            for (int i = 0; i < boardShapes.Count; i++)
+            {
+                string boardShapeId = boardShapes[i].Uid;
+
+                // insert in id to BoardShape map
+                if (_mapIdToBoardShape.ContainsKey(boardShapeId))
+                {
+                    _mapIdToBoardShape[boardShapeId] = null;
+                    GC.Collect();
+                }
+                _mapIdToBoardShape.Add(boardShapeId, boardShapes[i]);
+
+                // insert in priority queue and id to QueueElement map
+                QueueElement queueElement = new QueueElement(boardShapeId, boardShapes[i].LastModifiedTime);
+                if (_mapIdToQueueElement.ContainsKey(boardShapeId))
+                {
+                    QueueElement tempQueueElement = _mapIdToQueueElement[boardShapeId];
+                    _priorityQueue.DeleteElement(tempQueueElement);
+                    _mapIdToQueueElement[boardShapeId] = null;
+                    GC.Collect();
+                }
+                _mapIdToQueueElement.Add(boardShapeId, queueElement);
+                _priorityQueue.Insert(queueElement);
+
+                // converting BoardShape to UXShape and adding it in the list
+                uXShapes.Add(new(UXOperation.CREATE, boardShapes[i].MainShapeDefiner, boardShapeId, _checkpointsNumber, boardServerShape.OperationFlag));
+            }
+            return uXShapes;
+        }
+
+        /// <summary>
+        /// Notifies clients with List of UXShapes. 
+        /// </summary>
+        /// <param name="uXShapes">List of UX Shapes for UX to render</param>
+        private void NotifyClients(List<UXShape> uXShapes)
+        {
+            try
+            {
+                lock (this)
+                {
+                    foreach (KeyValuePair<string, IClientBoardStateListener> entry in _clients)
+                    {
+                        entry.Value.OnUpdateFromStateManager(uXShapes);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e.Message);
+            }
+        }
+
     }
 }

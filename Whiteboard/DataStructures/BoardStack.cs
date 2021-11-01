@@ -34,7 +34,7 @@ namespace Whiteboard
         /// </summary>
         private void RemoveFirstInserted()
         {
-            if(GetSize() == 0)
+            if (GetSize() == 0)
             {
                 throw new InvalidOperationException("Stack is empty");
             }
@@ -46,7 +46,7 @@ namespace Whiteboard
         /// </summary>
         private void RemoveLastInserted()
         {
-            if(GetSize() == 0)
+            if (GetSize() == 0)
             {
                 throw new InvalidOperationException("Stack is empty");
             }
@@ -57,7 +57,7 @@ namespace Whiteboard
         /// Initializes BoardStack. 
         /// </summary>
         /// <param name="capacity">Capacity of stack. Default is 7.</param>
-        public BoardStack(int capacity=7)
+        public BoardStack(int capacity = 7)
         {
             s_capacity = capacity;
             _stack = new List<Tuple<BoardShape, BoardShape>>();
@@ -79,7 +79,7 @@ namespace Whiteboard
         /// <param name="boardShapeNew">BoardShape after operation.</param>
         public void Push(BoardShape boardShapePrevious, BoardShape boardShapeNew)
         {
-            if(GetSize() == s_capacity)
+            if (GetSize() == s_capacity)
             {
                 Trace.Indent();
                 Trace.WriteLine("Whiteboard.BoardStack.Push: Stack is at full capacity. Removing first inserted element.");
@@ -95,7 +95,7 @@ namespace Whiteboard
         /// <returns>Tuple of BoardShape before and after the operation.</returns>
         public Tuple<BoardShape, BoardShape> Top()
         {
-            if(GetSize() == 0)
+            if (GetSize() == 0)
             {
                 Trace.Indent();
                 Trace.WriteLine("Whiteboard.BoardStack.Top: Stack is empty.");
@@ -110,7 +110,7 @@ namespace Whiteboard
         /// </summary>
         public void Pop()
         {
-            if(GetSize() == 0)
+            if (GetSize() == 0)
             {
                 Trace.Indent();
                 Trace.WriteLine("Whiteboard.BoardStack.Pop: Stack is empty.");
