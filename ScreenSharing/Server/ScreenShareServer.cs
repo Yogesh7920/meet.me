@@ -6,8 +6,8 @@
 **/
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
-using System.Collections;
 using Networking;
 
 namespace ScreenSharing 
@@ -15,7 +15,7 @@ namespace ScreenSharing
 	/// <summary>
 	/// Server Side screen sharing class
 	/// </summary>
-	public class ScreenShareServer : IDataHandler
+	public class ScreenShareServer : INotificationHandler
 	{
 		//Store the Communicator used to send screen over the network.
 		public ICommunicator _communicator;
@@ -24,7 +24,7 @@ namespace ScreenSharing
 		// Queue to store the incoming frames
 		public Queue<SharedScreen> frameQueue;
 		// Stores an instance of the Serializer
-		public Serializer serializer;
+		public ISerializer serializer;
 		//Stores the moduleId which will be "ScreenSharing"
 		public string moduleId;
 		//Timer will be used to sense disconnection issues.
@@ -32,19 +32,24 @@ namespace ScreenSharing
 		//Stores the user Id of the user currently sharing the screen.
 		public int userId;
 
+		public static string identifier;
+
 		/// <summary>
 		/// Public Constructor which will initialize most of the attributes.
 		/// </summary>
 		public ScreenShareServer()
 		{
+			_communicator = CommunicationFactory.GetCommunicator();
+			//_communicator.Subscribe();
 			throw new NotImplementedException();
 		}
 
 		/// <summary>
 		/// This method will be triggered by the Networking team whenever a screen is sent.
 		/// </summary>
-		public void onDataRecieve(string xml)
-        {
+		public void OnDataReceived(string data)
+		{
+
 			throw new NotImplementedException();
 		}
 

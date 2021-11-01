@@ -1,7 +1,10 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 
 namespace Content
 {
+    [BsonIgnoreExtraElements]
     public class ReceiveMessageData
     {
         /// <summary>
@@ -22,7 +25,8 @@ namespace Content
         /// <summary>
         /// Id of the message
         /// </summary>
-        public int MessageId;
+        [BsonId]
+        public ObjectId MessageId;
 
         /// <summary>
         /// User id of the message sender

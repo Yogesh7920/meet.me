@@ -1,12 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+
 	<PropertyGroup>
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 	</PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Networking\Networking.csproj" />
-    </ItemGroup>
-
-</Project>

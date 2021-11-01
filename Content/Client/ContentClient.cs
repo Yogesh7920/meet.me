@@ -10,7 +10,7 @@ namespace Content
         
         private List<IContentListener> subscribers;
         private Queue<SendMessageData> sendQueue;
-        private List<Thread> allMessages;
+        private List<ChatContext> allMessages;
         Dictionary<int, int> threadMap;
 
         public ContentClient()
@@ -18,7 +18,7 @@ namespace Content
             userId = -1;
             subscribers = new List<IContentListener>();
             sendQueue = new Queue<SendMessageData>();
-            allMessages = new List<Thread>();
+            allMessages = new List<ChatContext>();
             threadMap = new Dictionary<int, int>();
         }
 
@@ -53,7 +53,7 @@ namespace Content
         }
 
         /// <inheritdoc/>
-        public Thread CGetThread(int threadId)
+        public ChatContext CGetThread(int threadId)
         {
             throw new NotImplementedException();
         }
