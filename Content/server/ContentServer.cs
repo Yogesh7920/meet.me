@@ -6,14 +6,14 @@ namespace Content
     internal class ContentServer : IContentServer
     {
         private List<IContentListener> subscribers;
-        private List<Thread> allMessages;
+        private List<ChatContext> allMessages;
         private ICommunicator communicator;
         private INotificationHandler notificationHandler;
 
         public ContentServer()
         {
             subscribers = new List<IContentListener>();
-            allMessages = new List<Thread>();
+            allMessages = new List<ChatContext>();
             communicator = CommunicationFactory.GetCommunicator();
             notificationHandler = new ContentServerNotificationHandler();
             communicator.Subscribe("ContentServer", notificationHandler);
@@ -26,7 +26,7 @@ namespace Content
         }
 
         /// <inheritdoc />
-        public List<Thread> SGetAllMessages()
+        public List<ChatContext> SGetAllMessages()
         {
             return allMessages;
         }
