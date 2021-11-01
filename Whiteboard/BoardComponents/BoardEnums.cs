@@ -21,4 +21,29 @@ namespace Whiteboard
         ACTIVE,
         INACTIVE
     }
+
+    public enum ShapeType
+    {
+        ELLIPSE,
+        RECTANGLE,
+        LINE,
+        POLYLINE
+    }
+
+    public enum UXOperation
+    {
+        CREATE,
+        DELETE
+    }
+
+    public enum Operation
+    {
+        CREATE,
+        DELETE,
+        MODIFY,
+        FETCH_STATE,
+        FETCH_CHECKPOINT,
+        CREATE_CHECKPOINT
+    }
+
 }
