@@ -4,7 +4,6 @@ using System.Diagnostics;
 namespace Server
 {
     using Dashboard;
-    using Dashboard.Client.SessionManagement;
     using Dashboard.Server.SessionManagement;
     class Program
     {
