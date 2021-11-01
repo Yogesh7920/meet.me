@@ -10,6 +10,7 @@ namespace Content
         private IMongoDatabase databaseBase;
         private IMongoCollection<MessageData> messages;
         private IMongoCollection<ChatContext> chatContexts;
+        private IMongoCollection<SendFileData> files;
 
         public ContentDatabase()
         {
@@ -17,6 +18,7 @@ namespace Content
             databaseBase = mongoClient.GetDatabase("test");
             messages = databaseBase.GetCollection<MessageData>("messages");
             chatContexts = databaseBase.GetCollection<ChatContext>("chatContext");
+            files = databaseBase.GetCollection<SendFileData>("files");
         }
 
         public ObjectId Store(MessageData messageData)
@@ -28,6 +30,11 @@ namespace Content
         public void Store(ChatContext chatContext)
         {
             chatContexts.InsertOne(chatContext);
+        }
+
+        public void Store(SendFileData fileData)
+        {
+            files.InsertOne(fileData);
         }
 
         public void UpdateChatContext(int id, ChatContext chatContext)
@@ -52,5 +59,9 @@ namespace Content
             return chatContexts.Find(chatContexts => true).ToList();
         }
 
+        public SendFileData RetrieveFile(ObjectId messageId)
+        {
+            return files.Find(file => file.messageId == messageId).FirstOrDefault();
+        }
     }
 }
