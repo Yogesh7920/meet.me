@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Content
 {
-    public class Thread
+    public class ChatContext
     {
         /// <summary>
         /// List of all the messages in the thread

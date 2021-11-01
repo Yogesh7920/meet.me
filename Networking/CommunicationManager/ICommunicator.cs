@@ -8,7 +8,7 @@
         /// <param name="serverIP">IP Address of the server.</param>
         /// <param name="serverPort">Port on which the server is running.</param>
         /// <returns>
-        /// Client side: String indicating success or failure.
+        /// Client side: "1" if success, "0" if it fails.
         /// Server side: The address of the client as "serverIP:serverPort"
         /// </returns>
         string Start(string serverIP=null, string serverPort=null);

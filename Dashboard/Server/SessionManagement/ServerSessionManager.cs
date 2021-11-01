@@ -10,6 +10,10 @@ namespace Dashboard.Server.SessionManagement
 {
     public class ServerSessionManager : ITelemetrySessionManager, IUXServerSessionManager
     {
+        /// <summary>
+        /// Constructor for the ServerSessionManager, calls the 
+        /// tracelistener 
+        /// </summary>
         public ServerSessionManager()
         {
             Session session = new Session();
@@ -64,7 +68,7 @@ namespace Dashboard.Server.SessionManagement
         /// <returns> A MeetingCredentials Object </returns>
         public MeetingCredentials GetPortsAndIPAddress()
         {
-            ICommunicator communicator = CommunicationFactory.GetCommunicator();
+            ICommunicator communicator = CommunicationFactory.GetCommunicator(false);
             Trace.WriteLine("Fetching IP Address and port from the networking module");
             string meetAddress = communicator.Start();
 
