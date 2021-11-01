@@ -10,7 +10,7 @@ namespace Content
         
         private List<IContentListener> subscribers;
         private Queue<SendMessageData> sendQueue;
-        private List<Thread> allMessages;
+        private List<ChatContext> allMessages;
         Dictionary<int, int> threadMap;
 
         public ContentClient()
