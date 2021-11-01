@@ -22,7 +22,7 @@ namespace Whiteboard
         /// <summary>
         /// Receives deserialized BoardServerShape objects from ClientBoardCommunicator
         /// </summary>
-        /// <param name="serverUpdate"> list of deserialized Objects that was sent from ClientBoardCommunicator</param>
-        void OnMessageReceived(List<BoardServerShape> serverUpdate);
+        /// <param name="serverUpdate"> deserialized Object that was sent from ClientBoardCommunicator</param>
+        void OnMessageReceived(BoardServerShape serverUpdate);
     }
 }
