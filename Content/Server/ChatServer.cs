@@ -1,15 +1,21 @@
-﻿namespace Content
+﻿using MongoDB.Bson;
+
+namespace Content
 {
     internal class ChatServer
     {
-        private void SaveChat(ReceiveMessageData messageData)
+        public void Receive(MessageData messageData)
         {
-            return;
+
+        }
+        private ObjectId SaveChat(MessageData messageData, ContentDatabase contentDatabse)
+        {
+            return contentDatabse.Store(messageData);
         }
 
-        private ReceiveMessageData FetchChat(int messageId)
+        private MessageData FetchChat(ObjectId messageId, ContentDatabase contentDatabse)
         {
-            return new ReceiveMessageData();
+            return contentDatabse.Retrieve(messageId);
         }
     }
 }

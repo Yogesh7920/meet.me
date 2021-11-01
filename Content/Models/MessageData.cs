@@ -1,7 +1,10 @@
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 using System;
 
 namespace Content
 {
+    [BsonIgnoreExtraElements]
     public class MessageData
     {
         /// <summary>
@@ -22,7 +25,8 @@ namespace Content
         /// <summary>
         /// Id of the message
         /// </summary>
-        public int MessageId;
+        [BsonId]
+        public ObjectId MessageId;
 
         /// <summary>
         /// File data such as the content of the file as bytes, its size, etc.

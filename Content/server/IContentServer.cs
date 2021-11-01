@@ -4,6 +4,8 @@ namespace Content
 {
     public interface IContentServer
     {
+        void Receive(string data);
+
         /// <summary>
         /// Add a new subscriber to the list of subscribers
         /// </summary>

@@ -9,6 +9,10 @@ namespace Content
         private List<ChatContext> allMessages;
         private ICommunicator communicator;
         private INotificationHandler notificationHandler;
+        private ContentDatabase contentDatabase;
+        private ISerializer serializer;
+        private FileServer fileServer;
+        private ChatServer chatServer;
 
         public ContentServer()
         {
@@ -16,7 +20,31 @@ namespace Content
             allMessages = new List<ChatContext>();
             communicator = CommunicationFactory.GetCommunicator();
             notificationHandler = new ContentServerNotificationHandler();
+            fileServer = new FileServer();
+            chatServer = new ChatServer();
+            serializer = new Serializer();
             communicator.Subscribe("ContentServer", notificationHandler);
+        }
+
+        public void Receive(string data)
+        {
+            string type = serializer.GetObjectType(data, "Content");
+
+            MessageData messageData = serializer.Deserialize<MessageData>(data);
+
+            if ("CHAT".Equals(type))
+            {
+                chatServer.Receive(messageData);
+            }
+            else if ("FILE".Equals(type))
+            {
+                fileServer.Receive(messageData);
+            }
+            else
+            {
+                throw new System.ArgumentException();
+            }
+
         }
 
         /// <inheritdoc />

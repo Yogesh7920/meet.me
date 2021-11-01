@@ -7,24 +7,24 @@ namespace Content
     {
         private IMongoClient mongoClient;
         private IMongoDatabase databaseBase;
-        private IMongoCollection<ReceiveMessageData> messages;
+        private IMongoCollection<MessageData> messages;
 
         public ContentDatabase()
         {
             mongoClient = new MongoClient("mongodb://127.0.0.1:27017");
             databaseBase = mongoClient.GetDatabase("test");
-            messages = databaseBase.GetCollection<ReceiveMessageData>("messages");
+            messages = databaseBase.GetCollection<MessageData>("messages");
         }
 
-        public ObjectId Store(ReceiveMessageData messageData)
+        public ObjectId Store(MessageData messageData)
         {
             messages.InsertOne(messageData);
             return messageData.MessageId;
         }
 
-        public ReceiveMessageData Retrieve(ObjectId messageId)
+        public MessageData Retrieve(ObjectId messageId)
         {
-            ReceiveMessageData receiveMessageData = messages.Find(message => message.MessageId == messageId).FirstOrDefault();
+            MessageData receiveMessageData = messages.Find(message => message.MessageId == messageId).FirstOrDefault();
             return receiveMessageData;
         }
     }
