@@ -15,5 +15,20 @@ namespace Whiteboard
 {
     public class BoardServerShape
     {
+        public List<BoardShape> ShapeUpdates { get; set; }
+        public Operation OperationFlag { get; set; }
+        public string RequesterId { get; set; }
+        public DateTime RequestTime { get; set; }
+        public int CheckpointNumber { get; set; }
+
+        public BoardServerShape(List<BoardShape> shapeUpdates, Operation operation, string requesterId, int checkpointNumber = 0)
+        {
+            ShapeUpdates = shapeUpdates;
+            OperationFlag = operation;
+            RequesterId = requesterId;
+            CheckpointNumber = checkpointNumber;
+            RequestTime = DateTime.Now;
+        }
+
     }
 }

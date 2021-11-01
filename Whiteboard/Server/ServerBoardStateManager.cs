@@ -25,7 +25,7 @@ namespace Whiteboard
         /// <param name="checkpointNumber">The identifier/number of the checkpoint which needs to fetched.</param>
         /// <param name="userId">The user who requested the checkpoint.</param>
         /// <returns>List of BoardServerShape to broadcast to all clients.</returns>
-        public List<BoardServerShape> FetchCheckpoint(int checkpointNumber, string userId)
+        public BoardServerShape FetchCheckpoint(int checkpointNumber, string userId)
         {
             throw new NotImplementedException();
         }
@@ -34,7 +34,7 @@ namespace Whiteboard
         /// Fetches the state of the server to send to newly joined user. 
         /// </summary>
         /// <returns>List of BoardServerShape to send to a client.</returns>
-        public List<BoardServerShape> FetchState()
+        public BoardServerShape FetchState(string userId)
         {
             throw new NotImplementedException();
         }
@@ -53,7 +53,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="userId">Id of the user who requested to save this checkpoint.</param>
         /// <returns>The number/identifier of the created checkpoint.</returns>
-        public int SaveCheckpoint(string userId)
+        public BoardServerShape SaveCheckpoint(string userId)
         {
             throw new NotImplementedException();
         }
@@ -63,7 +63,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="boardServerShapes">The serializable object containing all information of a shape.</param>
         /// <returns>Boolean to indicate success status of update.</returns>
-        public bool SaveUpdate(List<BoardServerShape> boardServerShapes)
+        public bool SaveUpdate(BoardServerShape boardServerShapes)
         {
             throw new NotImplementedException();
         }

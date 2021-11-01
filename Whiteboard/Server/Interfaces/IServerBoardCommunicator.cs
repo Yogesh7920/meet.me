@@ -24,6 +24,5 @@ namespace Whiteboard
         /// <param name="clientUpdate"> update from client to server side</param>
         /// <param name="clientID"> client id to whom to send these objects to</param>
         void Send(BoardServerShape clientUpdate, string clientID);
-
     }
 }

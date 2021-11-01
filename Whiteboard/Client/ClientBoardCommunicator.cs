@@ -2,7 +2,7 @@
  * Owned By: Gurunadh Pachappagari
  * Created By: Gurunadh Pachappagari
  * Date Created: 13 Oct 2021
- * Date Modified: 28 Oct 2021
+ * Date Modified: 01 Nov 2021
 **/
 
 using System;
@@ -21,7 +21,7 @@ namespace Whiteboard
         private static ISerializer serializer;
         private static ICommunicator communicator;
         private static string moduleIdentifier = "Whiteboard";
-        private static List<IServerUpdateListener> subscribers;
+        private static HashSet<IServerUpdateListener> subscribers;
         /// <summary>
         /// private constructor for a singleton
         /// </summary>
@@ -40,7 +40,7 @@ namespace Whiteboard
                     serializer = new Serializer();
                     communicator = new Communicator();
                     communicator.Subscribe(moduleIdentifier, instance);
-                    subscribers = new List<IServerUpdateListener>();
+                    subscribers = new HashSet<IServerUpdateListener>();
                 }
                 return instance;
             }
@@ -49,9 +49,11 @@ namespace Whiteboard
         public void OnDataReceived(string data)
         {
             BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
-            foreach (var subscriber in subscribers) {
+            foreach (var subscriber in subscribers) 
+            {
                 subscriber.OnMessageReceived(deserializedShape);
             }
+            
         }
         
         /// <summary>
