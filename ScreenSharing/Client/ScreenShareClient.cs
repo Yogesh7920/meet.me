@@ -9,10 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Windows.Forms;
 using System.Threading;
 using Networking;
-using Networking.ISerializer;
 
 namespace ScreenSharing
 {
@@ -46,6 +44,7 @@ namespace ScreenSharing
 		/// </summary>
 		public ScreenShareClient()
         {
+			_communicator = CommunicationFactory.GetCommunicator();
 			throw new NotImplementedException();
 		}
 
@@ -70,8 +69,8 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will be triggered by the Networking team whenever a screen is sent.
 		/// </summary>
-		public void OnDataRecieve(string xml)
-        {
+		public void OnDataReceived(string data)
+		{
 			throw new NotImplementedException();
 		}
 

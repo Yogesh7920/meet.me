@@ -5,10 +5,10 @@
  * date modified: 14/10/2021
 **/
 
-using System;  
-using System.Drawing;  
-using System.Drawing.Imaging;  
-using System.Windows.Forms;  
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+
 
 namespace ScreenSharing
 {

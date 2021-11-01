@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Collections;
 using Networking;
 
 namespace ScreenSharing 
@@ -16,7 +15,7 @@ namespace ScreenSharing
 	/// <summary>
 	/// Server Side screen sharing class
 	/// </summary>
-	public class ScreenShareServer : IDataHandler
+	public class ScreenShareServer : INotificationHandler
 	{
 		//Store the Communicator used to send screen over the network.
 		public ICommunicator _communicator;
@@ -41,15 +40,15 @@ namespace ScreenSharing
 		public ScreenShareServer()
 		{
 			_communicator = CommunicationFactory.GetCommunicator();
-			_communicator.Subscribe();
+			//_communicator.Subscribe();
 			throw new NotImplementedException();
 		}
 
 		/// <summary>
 		/// This method will be triggered by the Networking team whenever a screen is sent.
 		/// </summary>
-		public void OnDataRecieve(string xml)
-        {
+		public void OnDataReceived(string data)
+		{
 
 			throw new NotImplementedException();
 		}
