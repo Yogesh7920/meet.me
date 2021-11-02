@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Icons\ChatUX\options.png" />
+      <None Remove="Icons\ChatUX\reply.png" />
+      <None Remove="Icons\ChatUX\reply3.png" />
+      <None Remove="Icons\ChatUX\upload.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
@@ -15,6 +19,22 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Content\Content.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Icons\ChatUX\options.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\reply.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\reply3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\upload.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
       <Resource Include="Icons\WhiteboardUX\Toolbar\bin.png" />
     </ItemGroup>
 
