@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/01/2021
+ * Date Modified: 11/02/2021
 **/
 
 using System;
@@ -22,7 +22,14 @@ namespace Whiteboard
             s = new Ellipse();
         }
 
-        // updates the prevShape
+        /// <summary>
+        /// Creates/modifies Shape.
+        /// </summary>
+        /// <param name="shapeType">Defines which shape to create.</param>
+        /// <param name="start">Start coordinate of mouse drag.</param>
+        /// <param name="end">End coordinate of mouse drag.</param>
+        /// <param name="prevShape">previous shape to modify.</param>
+        /// <returns></returns>
         public static MainShape MainShapeCreatorFactory(ShapeType shapeType, Coordinate start, Coordinate end, MainShape prevShape)
         {
 
