@@ -1,8 +1,8 @@
-﻿/**
+/**
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 10/13/2021
+ * Date Modified: 11/01/2021
 **/
 
 using System;
@@ -21,6 +21,7 @@ namespace Whiteboard
         ACTIVE,
         INACTIVE
     }
+
     public enum ShapeType
     {
         ELLIPSE,
@@ -42,6 +43,8 @@ namespace Whiteboard
         MODIFY,
         FETCH_STATE,
         FETCH_CHECKPOINT,
-        CREATE_CHECKPOINT
+        CREATE_CHECKPOINT,
+        NONE
     }
+
 }
