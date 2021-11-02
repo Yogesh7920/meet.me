@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 11/01/2021
+ * Date Modified: 11/02/2021
 **/
 
 using System;
@@ -15,6 +15,16 @@ namespace Whiteboard
 {
     class WhiteBoardOperationHandler : IWhiteBoardOperationHandler
     {
+
+        private Coordinate _canvasSize;
+        private BoardOperationsState _boardState;
+
+        public WhiteBoardOperationHandler(Coordinate canvasSize)
+        {
+            _canvasSize = canvasSize;
+            _boardState = new ActiveBoardOperationsHandler(_canvasSize);
+        }
+
         /// <summary>
         /// Changes the height of shape with given shape ID.
         /// </summary>

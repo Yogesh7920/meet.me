@@ -22,6 +22,9 @@ namespace Whiteboard
         INACTIVE
     }
 
+    /// <summary>
+    /// The Possible Shapes that can be drawn on whiteboard.
+    /// </summary>
     public enum ShapeType
     {
         ELLIPSE,
@@ -30,12 +33,18 @@ namespace Whiteboard
         POLYLINE
     }
 
+    /// <summary>
+    /// Defines the types of Operations that UX will have to perform with the provided UXShapes.
+    /// </summary>
     public enum UXOperation
     {
         CREATE,
         DELETE
     }
 
+    /// <summary>
+    /// Denotes the present Operation. Helps the server to identify the operation performed.
+    /// </summary>
     public enum Operation
     {
         CREATE,
