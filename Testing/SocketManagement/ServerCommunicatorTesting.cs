@@ -48,43 +48,5 @@ namespace Testing
             
         }
 
-        [Test, Category("pass")]
-        public void FreePortTest()
-        {
-            string[] s = address.Split(":");
-            IPAddress ip = IPAddress.Parse(s[0]);
-            int port = Int32.Parse(s[1]);
-
-            //int port =
-            //server.FreeTcpPort();
-            bool inUse = true;
-            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
-            IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
-            foreach (IPEndPoint endPoint in ipEndPoints)
-            {
-                if (endPoint.Port == port)
-                {
-                    inUse = false;
-                    break;
-                }
-            }
-            
-            Assert.AreEqual(inUse,false);
-
-        }
-        [Test, Category("pass")]
-        public void ServerAddClientTest()
-        {
-            TcpClient t = new TcpClient();
-            server.AddClient("1", t);
-            _clientIdSocket["1"]=t;
-            bool v = false;
-            if (_clientIdSocket.ContainsKey("1"))
-            {
-                v = true;
-            }
-            Assert.AreEqual(v, true) ;
-        }
-
     }
 }
