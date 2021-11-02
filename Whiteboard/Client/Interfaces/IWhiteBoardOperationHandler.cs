@@ -163,7 +163,14 @@ namespace Whiteboard
         /// Switches WhiteBoard state from active to inactive and vice-versa.
         /// </summary>
         /// <returns> Denotes succesfull state switch. </returns>
-        bool SwitchState();  
+        bool SwitchState();
+
+        /// <summary>
+        /// Delete shape with given shape Id.
+        /// </summary>
+        /// <param name="shapeId">Id of the shape.</param>
+        /// <returns></returns>
+        List<UXShape> DeleteShape(string shapeId);
 
     }
 }

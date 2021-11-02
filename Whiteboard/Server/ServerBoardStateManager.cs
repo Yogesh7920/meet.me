@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,6 +38,7 @@ namespace Whiteboard
             _mapIdToBoardShape = new Dictionary<string, BoardShape>();
             _mapIdToQueueElement = new Dictionary<string, QueueElement>();
             _priorityQueue = new BoardPriorityQueue();
+            Trace.WriteLine("ServerBoardStateManager.ServerBoardStateManager: Initialized attributes.");
         }
 
         /// <summary>
@@ -47,9 +49,19 @@ namespace Whiteboard
         /// <returns>BoardServerShape containing all shape information to broadcast to all clients.</returns>
         public BoardServerShape FetchCheckpoint(int checkpointNumber, string userId)
         {
-            List<BoardShape> boardShapes = _serverCheckPointHandler.FetchCheckpoint(checkpointNumber);
-            BoardServerShape boardServerShape = new(boardShapes, Operation.FETCH_CHECKPOINT, userId, checkpointNumber);
-            return boardServerShape;
+            try
+            {
+                List<BoardShape> boardShapes = _serverCheckPointHandler.FetchCheckpoint(checkpointNumber);
+                BoardServerShape boardServerShape = new(boardShapes, Operation.FETCH_CHECKPOINT, userId, checkpointNumber);
+                Trace.WriteLine("ServerBoardStateManager.FetchCheckpoint: Checkpoint fetched.");
+                return boardServerShape;
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine("ServerBoardStateManager.FetchCheckpoint: Exception occurred.");
+                Trace.WriteLine(e.Message);
+            }
+            return null;
         }
 
         /// <summary>
@@ -59,10 +71,22 @@ namespace Whiteboard
         /// <returns>BoardServerShape containing all shape updates and no. of checkpoints to send to the client.</returns>
         public BoardServerShape FetchState(string userId)
         {
-            List<BoardShape> boardShapes = GetOrderedList();
-            int checkpointNumber = GetCheckpointsNumber();
-            BoardServerShape serverShape = new(boardShapes, Operation.FETCH_STATE, userId, checkpointNumber);
-            return serverShape;
+            try
+            {
+                // convert current state into sorted list of shapes (increasing timestamp)
+                List<BoardShape> boardShapes = GetOrderedList();
+
+                // number of checkpoints currently saved at the server
+                int checkpointNumber = GetCheckpointsNumber();
+                BoardServerShape serverShape = new(boardShapes, Operation.FETCH_STATE, userId, checkpointNumber);
+                return serverShape;
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine("ServerBoardStateManager.FetchState: Exception occurred.");
+                Trace.WriteLine(e.Message);
+            }
+            return null;
         }
 
         /// <summary>
@@ -81,10 +105,21 @@ namespace Whiteboard
         /// <returns>BoardServerShape object specifying the checkpoint number which was created.</returns>
         public BoardServerShape SaveCheckpoint(string userId)
         {
-            List<BoardShape> boardShapes = GetOrderedList();
-            int checkpointNumber = _serverCheckPointHandler.SaveCheckpoint(boardShapes, userId);
-            BoardServerShape boardServerShape = new(null, Operation.CREATE_CHECKPOINT, userId, checkpointNumber);
-            return boardServerShape;
+            try
+            {
+                // sending sorted list of shapes to ServerCheckPointHandler
+                List<BoardShape> boardShapes = GetOrderedList();
+                int checkpointNumber = _serverCheckPointHandler.SaveCheckpoint(boardShapes, userId);
+                BoardServerShape boardServerShape = new(null, Operation.CREATE_CHECKPOINT, userId, checkpointNumber);
+                Trace.WriteLine("ServerBoardStateManager.SaveCheckpoint: Checkpoint saved.");
+                return boardServerShape;
+            }
+            catch (Exception e) 
+            { 
+                Trace.WriteLine("ServerBoardStateManager.SaveCheckpoint: Exception occurred."); 
+                Trace.WriteLine(e.Message); 
+            }
+            return null;
         }
 
         /// <summary>
@@ -97,6 +132,10 @@ namespace Whiteboard
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Converts current state to sorted list of BoardShapes, sorted in increasing order of timestamp
+        /// </summary>
+        /// <returns>Sorted list of BoardShape</returns>
         private List<BoardShape> GetOrderedList()
         {
             List<QueueElement> queueElements = new();

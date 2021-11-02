@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    class WhiteBoardOperationHandler : IWhiteBoardOperationHandler
+    public class WhiteBoardOperationHandler : IWhiteBoardOperationHandler
     {
 
         private Coordinate _canvasSize;
@@ -140,6 +140,16 @@ namespace Whiteboard
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Delete the shape with given shape ID.
+        /// </summary>
+        /// <param name="shapeId">Id of the shape.</param>
+        /// <returns></returns>
+        public List<UXShape> DeleteShape(string shapeId)
         {
             throw new NotImplementedException();
         }
