@@ -34,5 +34,10 @@ namespace Whiteboard
             return false;
         }
 
+        public Coordinate Clone()
+        {
+            return new Coordinate(R,C);
+        }
+
     }
 }

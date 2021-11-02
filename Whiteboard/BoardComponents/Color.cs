@@ -6,33 +6,34 @@
 **/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    public class Color : IEquatable<Color>
+    public class BoardColor : IEquatable<BoardColor>
     {
         public int R;
         public int G;
         public int B;
 
-        public Color(int r, int g, int b)
+        public BoardColor(int r, int g, int b)
         {
             this.R = r;
             this.G = g;
             this.B = b;
         }
 
-        public bool Equals(Color otherColor)
+        public bool Equals(BoardColor otherColor)
         {
             if (this.R == otherColor.R && this.B == otherColor.B && this.G == otherColor.G)
             {
                 return true;
             }
             return false;
+        }
+
+        public BoardColor Clone()
+        {
+            return new BoardColor(R, G, B);
         }
     }
 }
