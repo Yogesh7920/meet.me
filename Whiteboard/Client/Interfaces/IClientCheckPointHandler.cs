@@ -21,15 +21,18 @@ namespace Whiteboard
         /// <summary>
         /// Creates and saves checkpoint. 
         /// </summary>
-        /// <returns>The number/identifier of the created checkpoint.</returns>
-        int SaveCheckpoint();
+        void SaveCheckpoint();
 
         /// <summary>
         /// Fetches the checkpoint from server. 
         /// </summary>
         /// <param name="checkpointNumber">The identifier/number of the checkpoint which needs to fetched.</param>
-        /// <returns>List of UXShapes to ClientBoardStateManager.</returns>
-        List<UXShape> FetchCheckpoint(int checkpointNumber);
+        void FetchCheckpoint(int checkpointNumber);
+
+        /// <summary>
+        /// Gets and sets checkpoint number.
+        /// </summary>
+        int CheckpointNumber { get; set; }
 
     }
 }

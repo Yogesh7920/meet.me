@@ -22,6 +22,6 @@ namespace Whiteboard
         /// Handles the reception of update from state manager. 
         /// </summary>
         /// <param name="shapeUpdates">List of UXShapes for UX to render.</param>
-        void OnUpdateFromStateManager(List<UXShape> shapeUpdates); 
+        void OnUpdateFromStateManager(List<UXShape> shapeUpdates);
     }
 }
