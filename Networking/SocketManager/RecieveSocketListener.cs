@@ -14,6 +14,7 @@ namespace Networking
 {
     public class RecieveSocketListener{
         Thread listen;
+        bool listenRun = false;
         // define the threashold size
         const int threshold = 1025;
 
@@ -32,6 +33,7 @@ namespace Networking
             this._queue=queue;
             this._clientSocket=clientSocket;
             listen = new Thread(Start);
+            listenRun = true;
             listen.Start();
         }
 
@@ -71,7 +73,7 @@ namespace Networking
         /// This method closes the listen thread
         /// </summary>
         public void Stop(){
-            throw new NotImplementedException();
+            listenRun = false;
         }
 
         /// <summary>
