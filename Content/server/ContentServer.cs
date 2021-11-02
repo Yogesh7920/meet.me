@@ -50,6 +50,9 @@ namespace Content
             {
                 subscriber.OnMessage(messageData);
             }
+
+            string message = serializer.Serialize<MessageData>(messageData);
+            communicator.Send(message, "Content");
         }
 
         /// <inheritdoc />
@@ -65,9 +68,10 @@ namespace Content
         }
 
         /// <inheritdoc />
-        public void SSendAllMessagesToClient(int userId)
+        public void SSendAllMessagesToClient(string userId)
         {
-            return;
+            string allMessagesSerialized = serializer.Serialize<List<MessageData>>(allMessages);
+            communicator.Send(allMessagesSerialized, "Content", userId);
         }
     }
 }
