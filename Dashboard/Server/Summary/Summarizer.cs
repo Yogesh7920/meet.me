@@ -24,12 +24,12 @@ namespace Dashboard.Server.Summary
 		/// discussion to present in the Dashboard
 		/// </summary>
 		/// <param name="chats">
-		/// Thread array
+		/// ChatContext array
 		/// </param>
 		/// <returns>
 		/// String which is the summary of the discussion
 		/// </returns>
-		public string GetSummary(Thread[] chats)
+		public string GetSummary(ChatContext[] chats)
 		{
 			throw new NotImplementedException();
 		}
@@ -40,13 +40,13 @@ namespace Dashboard.Server.Summary
 		/// the database
 		/// </summary>
 		/// <param name="chats">
-		/// Thread array
+		/// ChatContext array
 		/// </param>
 		/// <returns>
 		/// Error code denoting the success or failure 
 		/// of the operation
 		/// </returns>
-		public int SaveSummary(Thread[] chats)
+		public int SaveSummary(ChatContext[] chats)
 		{
 			throw new NotImplementedException();
 		}
