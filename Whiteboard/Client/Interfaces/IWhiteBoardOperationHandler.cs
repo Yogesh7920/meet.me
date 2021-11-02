@@ -28,7 +28,7 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, Color strokeColor, string shapeId = null, bool shapeComp = false);
+        List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false);
 
         /// <summary>
         /// Creates Rectangle/Square.
@@ -40,7 +40,7 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth, Color strokeColor, string shapeId = null, bool shapeComp = false);
+        List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false);
 
         /// <summary>
         /// Creates Polyline.
@@ -52,7 +52,7 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, Color strokeColor, string shapeId = null, bool shapeComp = false);
+        List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false);
 
         /// <summary>
         /// Creates straight line.
@@ -64,7 +64,7 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, Color strokeColor, string shapeId = null, bool shapeComp = false);
+        List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false);
 
         /// <summary>
         /// Translates the shape with given shape ID.
@@ -130,7 +130,7 @@ namespace Whiteboard
         /// <param name="strokeColor"> Stroke Color. </param>
         /// <param name="shapeId">Id of the shape. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> ChangeStrokeColor(Color strokeColor, string shapeId);
+        List<UXShape> ChangeStrokeColor(BoardColor strokeColor, string shapeId);
 
         /// <summary>
         /// Changes the Fill Color of the shape.
@@ -138,7 +138,7 @@ namespace Whiteboard
         /// <param name="shapeFill"> Shape Fill Color. </param>
         /// <param name="shapeId">Id of the shape. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> ChangeShapeFill(Color shapeFill, string shapeId);
+        List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId);
 
         /// <summary>
         /// Performs Undo.
@@ -157,13 +157,20 @@ namespace Whiteboard
         /// </summary>
         /// <param name="shapeId"> Id of the shape. </param>
         /// <returns> User Name. </returns>
-        string getUserName(string shapeId);
+        string GetUserName(string shapeId);
 
         /// <summary>
         /// Switches WhiteBoard state from active to inactive and vice-versa.
         /// </summary>
         /// <returns> Denotes succesfull state switch. </returns>
-        bool switchState();  
+        bool SwitchState();
+
+        /// <summary>
+        /// Delete shape with given shape Id.
+        /// </summary>
+        /// <param name="shapeId">Id of the shape.</param>
+        /// <returns></returns>
+        List<UXShape> DeleteShape(string shapeId);
 
     }
 }
