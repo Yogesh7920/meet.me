@@ -21,6 +21,7 @@ namespace Dashboard
             Trace.Listeners.Add(new TextWriterTraceListener(traceFile));
             Trace.AutoFlush = true;
             Trace.IndentSize = 4;
+            traceFile.Close();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Dashboard.Server.Summary
         /// Function to get the Summary of the chat and
         /// discussion to present in the Dashboard
         /// </summary>
-        /// <param name="chats">Array of thread each of 
+        /// <param name="chats">Array of ChatContext each of 
         /// which would contain an array of chat messages
         /// which would be used for the summarizer to 
         /// generate the summary
@@ -20,14 +20,14 @@ namespace Dashboard.Server.Summary
         /// String which is the summary of the 
         /// chat in the particular discusiion
         /// </returns>
-        string GetSummary(Thread[] chats);
+        string GetSummary(ChatContext[] chats);
 
         /// <summary>
         /// Function to save the summary of the dashboard
         /// discussion that took place into the database
         /// using the persistence module.
         /// </summary>
-        /// <param name="chats">Array of thread each of 
+        /// <param name="chats">Array of ChatContext each of 
         /// which would contain an array of chat messages
         /// which would be used for the summarizer to 
         /// save the summary in the database
@@ -38,6 +38,6 @@ namespace Dashboard.Server.Summary
         /// there has been an error in the saving of the 
         /// summary in the database
         /// </returns>
-        int SaveSummary(Thread[] chats);
+        int SaveSummary(ChatContext[] chats);
     }
 }

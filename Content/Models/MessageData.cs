@@ -1,11 +1,8 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using System;
 
 namespace Content
 {
-    [BsonIgnoreExtraElements]
-    public class ReceiveMessageData
+    public class MessageData
     {
         /// <summary>
         /// Message Event - Update, NewMessage, Star, Download
@@ -18,15 +15,19 @@ namespace Content
         public MessageType Type;
 
         /// <summary>
-        /// Message string if messageType is Chat else file name for File messageType
+        /// Message string if messageType is Chat else file name
         /// </summary>
         public string Message;
 
         /// <summary>
         /// Id of the message
         /// </summary>
-        [BsonId]
-        public ObjectId MessageId;
+        public int MessageId;
+
+        /// <summary>
+        /// File data such as the content of the file as bytes, its size, etc.
+        /// </summary>
+        public SendFileData FileData;
 
         /// <summary>
         /// User id of the message sender
