@@ -39,6 +39,6 @@ namespace Content
         /// </summary>
         /// <param name="threadId">Id of the requested thread</param>
         /// <returns>Thread object corresponding to specified thread Id</returns>
-        Thread CGetThread(int threadId);
+        ChatContext CGetThread(int threadId);
     }
 }

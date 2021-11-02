@@ -17,10 +17,11 @@ namespace Dashboard
         /// </summary>
         public void TraceListener()
         {
-            Stream traceFile = File.Create("trace.txt");
+            Stream traceFile = File.Open("trace.txt", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             Trace.Listeners.Add(new TextWriterTraceListener(traceFile));
             Trace.AutoFlush = true;
             Trace.IndentSize = 4;
+            traceFile.Close();
         }
     }
 }
