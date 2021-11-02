@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    class Polyline : MainShape
+    public class Polyline : MainShape
     {
         /// <summary>
         /// Constructor setting just the basic attributes of Polyline.

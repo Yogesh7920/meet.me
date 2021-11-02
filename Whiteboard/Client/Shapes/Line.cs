@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    class Line: MainShape
+    public class Line: MainShape
     {
 
         /// <summary>

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    class Ellipse : MainShape
+    public class Ellipse : MainShape
     {
         /// <summary>
         /// Constructor setting just the basic attributes of Ellipse.

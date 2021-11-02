@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    class Rectangle : MainShape
+    public class Rectangle : MainShape
     {
         /// <summary>
         /// Constructor setting just the basic attributes of Polyline.
