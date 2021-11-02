@@ -1,5 +1,4 @@
 ﻿using MongoDB.Bson;
-using System.Collections.Generic;
 
 namespace Content
 {
@@ -12,17 +11,9 @@ namespace Content
             this.contentDatabase = contentDatabase;
         }
 
-        public ObjectId Receive(MessageData messageData, List<ChatContext> allMessages)
+        public MessageData Receive(MessageData messageData)
         {
-            ObjectId messageId = contentDatabase.Store(messageData);
-            foreach (var chatConext in allMessages)
-            {
-                if (messageData.ReplyThreadId == chatConext.ThreadId)
-                {
-                    chatConext.MsgList.Add(messageData);
-                }
-            }
-            return messageId;
+            return contentDatabase.Store(messageData);
         }
 
         public MessageData Fetch(ObjectId messageId)

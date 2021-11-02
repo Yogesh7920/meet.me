@@ -4,8 +4,6 @@ namespace Content
 {
     public interface IContentServer
     {
-        void Receive(string data);
-
         /// <summary>
         /// Add a new subscriber to the list of subscribers
         /// </summary>
@@ -16,7 +14,7 @@ namespace Content
         /// Get all the messages sent
         /// </summary>
         /// <returns>List of Thread objects</returns>
-        List<ChatContext> SGetAllMessages();
+        List<MessageData> SGetAllMessages();
 
         /// <summary>
         /// Sends all the messages to the client of the user with user id = userId

@@ -21,10 +21,10 @@ namespace Content
             files = databaseBase.GetCollection<SendFileData>("files");
         }
 
-        public ObjectId Store(MessageData messageData)
+        public MessageData Store(MessageData messageData)
         {
             messages.InsertOne(messageData);
-            return messageData.MessageId;
+            return messageData;
         }
 
         public void Store(ChatContext chatContext)

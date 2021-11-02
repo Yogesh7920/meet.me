@@ -7,6 +7,19 @@ namespace Content
     [BsonIgnoreExtraElements]
     public class ReceiveMessageData
     {
+        public ReceiveMessageData(MessageData messageData)
+        {
+            this.Event = messageData.Event;
+            this.Type = messageData.Type;
+            this.Message = messageData.Message;
+            this.MessageId = messageData.MessageId;
+            this.ReceiverIds = messageData.ReceiverIds;
+            this.ReplyThreadId = messageData.ReplyThreadId;
+            this.SenderId = messageData.SenderId;
+            this.SentTime = messageData.SentTime;
+            this.Starred = messageData.Starred;
+        }
+
         /// <summary>
         /// Message Event - Update, NewMessage, Star, Download
         /// </summary>

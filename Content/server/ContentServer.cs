@@ -6,7 +6,7 @@ namespace Content
     internal class ContentServer : IContentServer
     {
         private List<IContentListener> subscribers;
-        private List<ChatContext> allMessages;
+        private List<MessageData> allMessages;
         private ICommunicator communicator;
         private INotificationHandler notificationHandler;
         private ContentDatabase contentDatabase;
@@ -17,7 +17,7 @@ namespace Content
         public ContentServer()
         {
             subscribers = new List<IContentListener>();
-            allMessages = new List<ChatContext>();
+            allMessages = new List<MessageData>();
             communicator = CommunicationFactory.GetCommunicator();
             contentDatabase = new ContentDatabase();
             notificationHandler = new ContentServerNotificationHandler();
@@ -35,7 +35,7 @@ namespace Content
 
             if (messageData.Type == MessageType.Chat)
             {
-                chatServer.Receive(messageData, allMessages);
+                allMessages.Add(chatServer.Receive(messageData));
             }
             else if (messageData.Type == MessageType.File)
             {
@@ -44,6 +44,11 @@ namespace Content
             else
             {
                 throw new System.Exception();
+            }
+
+            foreach (IContentListener subscriber in subscribers)
+            {
+                subscriber.OnMessage(messageData);
             }
         }
 
@@ -54,7 +59,7 @@ namespace Content
         }
 
         /// <inheritdoc />
-        public List<ChatContext> SGetAllMessages()
+        public List<MessageData> SGetAllMessages()
         {
             return allMessages;
         }

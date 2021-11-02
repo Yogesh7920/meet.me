@@ -5,11 +5,11 @@ namespace Content
 {
     public class ContentServerNotificationHandler : INotificationHandler
     {
-        private IContentServer contentServer;
+        private ContentServer contentServer;
 
         public ContentServerNotificationHandler()
         {
-            contentServer = ContentServerFactory.GetInstance();
+            contentServer = ContentServerFactory.GetInstance() as ContentServer;
         }
 
         /// <inheritdoc />
