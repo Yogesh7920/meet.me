@@ -12,7 +12,7 @@ namespace Testing
     public class ServerComunicatorTesting
     {
 
-        ICommunicator server = new ServerCommunicator();
+        
         string address=null;
         private TcpClient _clientSocket = new TcpClient();
         private Hashtable _clientIdSocket = new Hashtable();
@@ -20,13 +20,15 @@ namespace Testing
         [SetUp]
         public void Setup()
         {
-            address =server.Start();
-            Console.WriteLine(address);
+            
         }
         
         [Test, Category("pass")]
         public void ServerStartTest()
         {
+            ICommunicator server = CommunicationFactory.GetCommunicator(false);
+            address = server.Start();
+            server.Stop();
             string[] s = address.Split(":");
             IPAddress ip = IPAddress.Parse(s[0]);
             int port = Int32.Parse(s[1]);
@@ -36,9 +38,12 @@ namespace Testing
            
         }
 
-        [Test, Category("pass")]
+         [Test, Category("pass")]
         public void ClientStartTest()
         {
+            ICommunicator server = CommunicationFactory.GetCommunicator(false);
+            address = server.Start();
+            server.Stop();
             string[] s = address.Split(":");
             IPAddress ip = IPAddress.Parse(s[0]);
             int port = Int32.Parse(s[1]);

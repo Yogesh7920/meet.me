@@ -21,6 +21,7 @@ namespace Networking
         private Queue _recieveQueue = new Queue();
 
         private Thread _acceptRequest;
+        private bool _acceptRequestRun = false;
         private SendSocketListener sendSocketListener;
 
         /// <summary>
@@ -72,6 +73,7 @@ namespace Networking
             sendSocketListener = new SendSocketListener(_recieveQueue); 
             sendSocketListener.Start();
             _acceptRequest = new Thread(() => AcceptRequest(serverSocket));
+            _acceptRequestRun = true;
             _acceptRequest.Start();
 
             return IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString())+ 
@@ -85,7 +87,7 @@ namespace Networking
         private void AcceptRequest(TcpListener serverSocket)
         {
             TcpClient clientSocket = default(TcpClient);
-            while (true)
+            while (_acceptRequestRun)
             {
                 clientSocket = serverSocket.AcceptTcpClient();
                 foreach (KeyValuePair<string, INotificationHandler> module in _subscribedModules)
@@ -101,6 +103,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Stop()
         {
+            _acceptRequestRun = false;
             sendSocketListener.Stop();
         }
 
