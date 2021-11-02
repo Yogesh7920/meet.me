@@ -22,14 +22,47 @@ namespace Client
         public LoginWindow()
         {
             InitializeComponent();
+            //
+            AuthViewModel viewmodel = new AuthViewModel();
+            this.DataContext = viewmodel;
         }
         
-        private void OnJoinClick(object sender, RoutedEventArgs e)
+       /* private void OnJoinClick(object sender, RoutedEventArgs e)
         {
             obj.Show();
             Close();
-           /* Page mainPage = new MainPage();
-            MainFrame.Navigate(mainPage);*/
-        }
+            // Page mainPage = new MainPage();
+            //MainFrame.Navigate(mainPage);
+        }*/
+       private void OnJoinClick(object sender, RoutedEventArgs e)
+       {
+           var ip = this.IpBox.Text;
+           var port = this.PortNumberBox.Text;
+           var username = this.UsernameBox.Text;
+
+           if (string.IsNullOrWhiteSpace(ip) || string.IsNullOrWhiteSpace(port) ||
+               string.IsNullOrWhiteSpace((username)))
+           {
+               ErrorMsg.Visibility = System.Windows.Visibility.Visible;
+           }
+           else
+           {
+               AuthViewModel viewmodel = this.DataContext as AuthViewModel;
+               var result = viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
+               if (result == true)
+               {
+                   obj.Show();
+                   Close();
+               }
+               else
+               {
+                   ErrorMsg.Visibility = System.Windows.Visibility.Visible;
+                  // Close();
+               }
+           }
+
+
+       }
+       
     }
 }

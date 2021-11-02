@@ -24,7 +24,7 @@ namespace Client
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new WhiteboardViewModel();
+          //  DataContext = new WhiteBoardViewModel();
         }
 
 
@@ -82,7 +82,7 @@ namespace Client
 
         private void Whiteboard_Clicked(object sender, RoutedEventArgs e)
         {
-            DataContext = new WhiteboardViewModel();
+            DataContext = new WhiteBoardViewModel();
             _wbFlag = true;
             if (_chatFlag.Equals(true))
             {

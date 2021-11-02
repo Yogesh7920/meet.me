@@ -13,9 +13,8 @@
         </LinearGradientBrush>
         
         <Color x:Key="InnerBackground">White</Color>
-        <SolidColorBrush x:Key="InnerBackgroundBrush" Color="{StaticResource InnerBackground}" />
-
-        
+        <SolidColorBrush x:Key="InnerBackgroundBrush" Color="{StaticResource InnerBackground}"/>
+ 
     </Window.Resources>  
    
     <Grid Background="{StaticResource BackGroundPattern}">
@@ -50,7 +49,7 @@
             <TextBlock Name="ErrorMsg" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 0 0 10" Text="Sorry! Invalid Credentials" FontSize="20" Foreground="Red" Visibility="Collapsed"/>
             <DockPanel Grid.Row="2" Grid.Column="2">
             <TextBlock Height="20" Name="IP" Text="IP Address" FontFamily="Auria" />  
-            <TextBox Height="20" Width="120" Margin="20 0 0 0" Name="IpBox" /> 
+            <TextBox Height="20" Width="120" Margin="23 0 0 0" Name="IpBox" /> 
             </DockPanel>
         
         <DockPanel Grid.Row="3" Grid.Column="2">
@@ -61,7 +60,7 @@
         
         <DockPanel Grid.Row="4" Grid.Column="2">
             <TextBlock Height="20" Name="Username" Text="Username" FontFamily="Auria"/>  
-            <TextBox Height="20" Width="120" Margin="20 0 0 0" Name="UsernameBox" /> 
+            <TextBox Height="20" Width="120" Margin="23 0 0 0" Name="UsernameBox" /> 
 
         </DockPanel>
         <DockPanel Grid.Row="5" Grid.Column="2">
