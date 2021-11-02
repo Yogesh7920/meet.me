@@ -53,3 +53,4 @@ namespace Dashboard.Client.SessionManagement
         ITelemetryAnalysisModel GetAnalytics(); 
     }
 }
+

@@ -4,6 +4,120 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
+        xmlns:viewmodels="clr-namespace:Client.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+
+        Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
+    <Window.Resources>
+
+
+        <Style x:Key="RoundedButton" TargetType="{x:Type Button}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid x:Name="grid">
+                            <Border x:Name="border" CornerRadius="5" BorderBrush="Black" BorderThickness="1">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          TextElement.FontWeight="Bold">
+                                </ContentPresenter>
+                            </Border>
+
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" TargetName="border">
+                                    <Setter.Value>
+                                        <RadialGradientBrush GradientOrigin="0.496,1.052">
+                                            <RadialGradientBrush.RelativeTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.5" ScaleY="1.5"/>
+                                                    <TranslateTransform X="0.02" Y="0.3"/>
+                                                </TransformGroup>
+                                            </RadialGradientBrush.RelativeTransform>
+                                            <GradientStop Color="#FFCFCFCF" Offset="1"/>
+                                            <GradientStop Color="#FF8522BD" Offset="0.3"/>
+                                        </RadialGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" TargetName="border" Value="#FF340051"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" TargetName="grid" Value="0.35"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Name="ScreenShareTemplate" DataType="{x:Type viewmodels:ScreenShareViewModel}">
+            <local:ScreenShareView DataContext="{Binding}"/>
+        </DataTemplate>
+        <!--<DataTemplate x:Name="WhiteboardTemplate" DataType="{x:Type viewmodels:WhiteboardViewModel}">
+            <local:WhiteBoardView DataContext="{Binding}"/>
+        </DataTemplate> 
+        <DataTemplate x:Name="ChatTemplate" DataType="{x:Type viewmodels:ChatViewModel}">
+            <local:ChatView DataContext="{Binding }"/>
+        </DataTemplate>  -->
+        <!-- <DataTemplate x:Name="DashboardTemplate" DataType="{x:Type viewmodels:DashboardViewModel}">
+            <local:Dashboard DataContext="{Binding}"/>
+        </DataTemplate>-->
+
+    </Window.Resources>
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="0.01*"/>
+            <ColumnDefinition Width="0.7*"/>
+            <ColumnDefinition Width="0.01*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="0.01*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="65*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="687*"/>
+            <RowDefinition Height="0.75"/>
+            <RowDefinition Height="82*"/>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="0*"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Background="{StaticResource LightGrayBg}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7">
+            <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="meet.me" FontSize="40" FontWeight="Bold" FontFamily="ComicSans"/>
+        </DockPanel>
+
+        <DockPanel Name="UsersListPane1" Background="Wheat" Grid.Row="1" Grid.Column="0" Grid.RowSpan="5" Visibility="Visible" Margin="0,5,0,0"/>
+        <DockPanel Name="UsersListPane2" Background="Wheat" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="5" Visibility="Collapsed" Margin="58,5,0,0"/>
+        <Button Grid.Row="1" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="44" Height="32" FontSize="16" FontFamily="ComicSans" VerticalAlignment="Top" Background="White" Click="Users_List_Clicked" Margin="0,5,0,0" Grid.RowSpan="2">Users</Button>
+
+        <DockPanel Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+            <!--<Button Content="Whiteboard" Width="70" Margin="2.5 0" Click="Whiteboard_Clicked" Style="{DynamicResource RoundedButton}"/> -->
+            <Button Content="Whiteboard" Margin="2.5 0" Style="{DynamicResource RoundedButton}"/>
+            <Button Content="ScreenShare" Margin="2.5 0" Click="ScreenShare_Clicked" Style="{DynamicResource RoundedButton}"/>
+            <Button Content="Dashboard" Margin="2.5 0" Click="Dashboard_Clicked" Style="{DynamicResource RoundedButton}"/>
+            <Button Content="Leave Room" Margin="2.5 0" Style="{DynamicResource RoundedButton}"/>
+
+        </DockPanel>
+
+        <DockPanel Name="ChatPane" Background="DarkRed" Grid.Row="1" Grid.Column="6" Grid.RowSpan="5" Visibility="Collapsed" Margin="0,5,0,0"/>
+        <Button Grid.Row="4" Grid.Column="6" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="38" Height="32" FontSize="16" VerticalAlignment="Top" Background="White" Click="Chat_Button_Clicked" Margin="0,50,0,0">Chat</Button>
+
+
+        <ContentControl Name="SSwb" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="6" Grid.RowSpan="2" Content="{Binding}" Margin="1,5,0,0"/>
+        <!-- <ContentControl Name="ChatPane" Grid.Row="2" Grid.Column="4" Grid.RowSpan="4" Content="{Binding }"/> -->
+
+    </Grid>
+
 </Window>

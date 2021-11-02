@@ -296,7 +296,7 @@
             </local:ToggleButton>
 
             <!--Restore Frame Button-->
-            
+
             <!--Restore Frame Pop up-->
             <Popup Name="RestoreFramePopUp"
                     IsOpen="{Binding ElementName=RestoreFrameButton, Path=IsChecked}"
@@ -517,7 +517,7 @@
                                                         Height="25"
                                                         CornerRadius="18"
                                                         Background="{TemplateBinding Background}" 
-                                                        Margin="0 15 0 0">    
+                                                        Margin="0 15 0 0">
 
                                                     <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
@@ -551,7 +551,7 @@
                                                 <Border Width="25"
                                                         Height="25"
                                                         CornerRadius="18"
-                                                        Background="{TemplateBinding Background}" Margin="0 15 0 0">     
+                                                        Background="{TemplateBinding Background}" Margin="0 15 0 0">
 
                                                     <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
@@ -585,7 +585,7 @@
                                                 <Border Width="25"
                                                         Height="25"
                                                         CornerRadius="18"
-                                                        Background="{TemplateBinding Background}" Margin="0 15 0 0">   
+                                                        Background="{TemplateBinding Background}" Margin="0 15 0 0">
 
                                                     <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
@@ -624,7 +624,7 @@
                                                         Height="25"
                                                         CornerRadius="18"
                                                         Background="{TemplateBinding Background}" 
-                                                        Margin="0 15 0 0">  
+                                                        Margin="0 15 0 0">
 
                                                     <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
@@ -671,7 +671,7 @@
                         </StackPanel>
                     </Border>
 
-                  
+
 
                     <!--<Image Width="20" Height="25" Margin="0 0 0 160" Source="/Icons/WhiteboardUX/Toolbar/Pen.png" Cursor="Hand" MouseDown="ClickedFreehandTool"/>-->
                     <!--<Image Width="20" Height="25" Margin="0 0 0 60" Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Cursor="Hand" MouseDown="ClickedEraserTool"/>-->
@@ -694,7 +694,7 @@
                         <TranslateTransform/>
                     </TransformGroup>
                 </Canvas.RenderTransform>
-                
+
                 <!--Testing shapes-->
                 <!--<Rectangle Stroke="Blue" Height="50" Width="60" StrokeThickness="1" StrokeDashArray="4 4" SnapsToDevicePixels="True" Canvas.Left="260" Canvas.Top="175"></Rectangle>
                 <Ellipse Fill="White" Height="50" Width="60" StrokeThickness="2" Stroke="Black" Canvas.Left="260" Canvas.Top="175"></Ellipse>-->

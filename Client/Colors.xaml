@@ -1,0 +1,15 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:local="clr-namespace:Client">
+    
+    <Color x:Key="DarkPurple"> #FF340051 </Color>  
+    <Color x:Key="LightPurple"> #FF8522BD </Color> 
+    <Color x:Key="LightGray"> #FFCFCFCF </Color> 
+    
+    <SolidColorBrush x:Key="DarkPurpleBg" Color="#FF340051"> </SolidColorBrush>  
+    <SolidColorBrush x:Key="LightPurpleBg" Color="#FF8522BD"> </SolidColorBrush>  
+    <SolidColorBrush x:Key="LightGrayBg" Color="#FFCFCFCF"> </SolidColorBrush>  
+    
+</ResourceDictionary>

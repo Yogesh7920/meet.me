@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dashboard
+namespace Client.ViewModels
 {
-    public class SessionData
+    public class WhiteboardViewModel
     {
-        // the List of users in the meeting 
-        public List<UserData> users;
     }
 }
-
