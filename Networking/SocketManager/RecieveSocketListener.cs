@@ -1,4 +1,8 @@
 using System.Net.Sockets;
+using System.Threading;
+using System.Text;
+using System;
+using System.Diagnostics;
 
 /// <summary>
 /// This file contains the implementation of socketListener
@@ -8,7 +12,7 @@ using System.Net.Sockets;
 /// <author>Tausif Iqbal </author>
 namespace Networking
 {
-    public class SocketListener{
+    public class RecieveSocketListener{
         Thread listen;
         // define the threashold size
         const int threshold = 1025;
@@ -24,7 +28,7 @@ namespace Networking
         /// <param name="queue">queue.</param>
         /// <param name="clientSocket">clientSocket.</param>
         /// </summary>
-        public SocketListener(IQueue queue,TcpClient clientSocket){
+        public RecieveSocketListener(IQueue queue,TcpClient clientSocket){
             this._queue=queue;
             this._clientSocket=clientSocket;
             listen = new Thread(Start);
@@ -39,7 +43,7 @@ namespace Networking
             {
                 try
                 {
-                    NetworkStream networkStream = clientSocket.GetStream();
+                    NetworkStream networkStream = _clientSocket.GetStream();
                     String message = "";
                     while (true)
                     {
@@ -48,6 +52,7 @@ namespace Networking
                         message += System.Text.Encoding.ASCII.GetString(inStream);
                         if (message.Contains("EOF"))
                         {
+                            Trace.WriteLine("message recieved from client "+ message);
                             break;
                         }
                     }
@@ -56,7 +61,7 @@ namespace Networking
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(" >> listen method " + ex.ToString());
+                    Trace.WriteLine(" >> listen method " + ex.ToString());
                     break;
                 }
             }
@@ -66,7 +71,7 @@ namespace Networking
         /// This method closes the listen thread
         /// </summary>
         public void Stop(){
-            listen.Abort();
+            throw new NotImplementedException();
         }
 
         /// <summary>

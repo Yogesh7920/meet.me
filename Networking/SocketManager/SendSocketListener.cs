@@ -1,6 +1,6 @@
 namespace Networking
 {
-    public class SendQueueListener{
+    public class SendSocketListener{
 
         // It contains the packets which needs to be sent over the network
         private IQueue _queue;
@@ -9,7 +9,7 @@ namespace Networking
         /// This method is the constructor of the class which initializes the params
         /// <param name="queue">queue</param>
         /// </summary>
-        public SendQueueListener(IQueue queue){
+        public SendSocketListener(IQueue queue){
             this._queue = queue;
         }
         

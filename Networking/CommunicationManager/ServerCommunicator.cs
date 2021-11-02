@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Diagnostics;
 
 /// <summary>
 /// This file contains the class Server which will be running on the server.
@@ -15,12 +16,13 @@ namespace Networking
 {
     public class ServerCommunicator : ICommunicator
     {
-        private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
-        private Hashtable clientIdSocket = new Hashtable();
-        private Queue _globalQueue = new Queue();
+        private Dictionary<string, INotificationHandler> _subscribedModules = new Dictionary<string, INotificationHandler>();
+        private Hashtable _clientIdSocket = new Hashtable();
+        private Queue _recieveQueue = new Queue();
 
-        private Thread acceptRequest;
-        private Thread sendQueueListener;
+        private Thread _acceptRequest;
+        private SendSocketListener sendSocketListener;
+
         /// <summary>
         /// It finds IP4 address of machine
         /// </summary>
@@ -62,15 +64,15 @@ namespace Networking
             IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
             TcpListener serverSocket = new TcpListener(ip, port);
             serverSocket.Start();
-            TcpClient clientSocket = default(TcpClient);
-            Console.WriteLine("Server has started with ip = " +
+            
+            Trace.WriteLine("Server has started with ip = " +
             IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString()) +
             " and port number = " + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString());
             
-            sendQueueListener = new SendQueueListener(_globalQueue);; 
-            sendQueueListener.Start();
-            acceptRequest = new Thread(() => AcceptRequest(serverSocket));
-            acceptRequest.Start();
+            sendSocketListener = new SendSocketListener(_recieveQueue); 
+            sendSocketListener.Start();
+            _acceptRequest = new Thread(() => AcceptRequest(serverSocket));
+            _acceptRequest.Start();
 
             return IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString())+ 
                     ":" + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString();
@@ -86,7 +88,10 @@ namespace Networking
             while (true)
             {
                 clientSocket = serverSocket.AcceptTcpClient();
-                onClientJoined(clientSocket);
+                foreach (KeyValuePair<string, INotificationHandler> module in _subscribedModules)
+                {
+                    module.Value.OnClientJoined(clientSocket);
+                }
             }
         }
 
@@ -96,19 +101,19 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Stop()
         {
-            sendQueueListener.Abort();
-            acceptRequest.Abort();
-
+            sendSocketListener.Stop();
         }
+
         /// <summary>
         /// It adds client socket to a map and starts listening on that socket
         /// </summary>
         /// <returns> void </returns>
-        void ICommunicator.AddClient<T>(string clientID, T socketObject)
+        void ICommunicator.AddClient<T>(string clientID, T socketObject) 
         {
-            ClientIdSocket[ClientID] = socketObject;
-            SocketListener socketListener =new SocketListener(_globalQueue,socketObject);
-            socketListener.Start();
+            _clientIdSocket[clientID] = socketObject;
+            RecieveSocketListener socketListener =new RecieveSocketListener(_recieveQueue, (TcpClient)(object)socketObject);
+            Thread s = new Thread(socketListener.Start);
+            s.Start();
         }
         /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientID)
@@ -128,7 +133,7 @@ namespace Networking
         /// <inheritdoc />
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
         {
-            subscribedModules.Add(identifier, handler);
+            _subscribedModules.Add(identifier, handler);
         }
         
     }

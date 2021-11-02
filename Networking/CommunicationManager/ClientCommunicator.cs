@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Networking
 {
@@ -8,7 +11,7 @@ namespace Networking
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
         private TcpClient _clientSocket = new TcpClient();
         private Queue _queue = new Queue();
-        private SocketListener socketListener;
+        private RecieveSocketListener recievesocketListener;
 
         /// <summary>
         /// This method connects client to server
@@ -17,14 +20,23 @@ namespace Networking
         /// </summary>
         string ICommunicator.Start(string serverIP, string serverPort)
         {
-            _clientSocket.Connect(serverIP, serverPort);
-            socketListener =new SocketListener(_queue,_clientSocket);
-            socketListener.Start();
+            IPAddress ip = IPAddress.Parse(serverIP);
+            int port = Int32.Parse(serverPort);
+            _clientSocket.Connect(ip, port);
+
+            if (_clientSocket.Connected)
+            {
+                recievesocketListener = new RecieveSocketListener(_queue, _clientSocket);
+                Thread s = new Thread(recievesocketListener.Start);
+                s.Start();
+                return "1";
+            }
+            return "0";
         }
         /// <inheritdoc />
         void ICommunicator.Stop()
         {
-            socketListener.Abort();
+            recievesocketListener.Stop();
         }
         /// <inheritdoc />
         void ICommunicator.AddClient<T>(string clientID, T socketObject)
