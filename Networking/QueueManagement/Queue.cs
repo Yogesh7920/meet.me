@@ -130,6 +130,10 @@ namespace Networking
             }
         }
         
+        /// <summary>
+        /// Peeks into the first element of the queue.
+        /// </summary>
+        /// <returns>Returns the peeked packet from the queue.</returns>
         public Packet Peek()
         {
             if (!(IsEmpty()))
