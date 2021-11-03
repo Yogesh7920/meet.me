@@ -23,4 +23,3 @@ namespace Dashboard
         public int port;
     }
 }
-
