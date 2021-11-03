@@ -13,9 +13,10 @@ using System.Diagnostics;
 namespace Networking
 {
     public class RecieveSocketListener{
-        Thread listen;
+        private Thread _listen;
+        private bool _listenRun =false ;
         // define the threashold size
-        const int threshold = 1025;
+        const int _threshold = 1025;
 
         // queue containing messages
         private IQueue _queue;
@@ -31,33 +32,64 @@ namespace Networking
         public RecieveSocketListener(IQueue queue,TcpClient clientSocket){
             this._queue=queue;
             this._clientSocket=clientSocket;
-            listen = new Thread(Start);
-            listen.Start();
         }
 
         /// <summary>
         /// This method is for starting the thread
         /// </summary>
         public void Start(){
-            while ((true))
+            _listen = new Thread(() => Listen());
+            _listenRun = true;
+            _listen.Start();
+        }
+
+        /// <summary>
+        /// This form packet object out of string
+        /// </summary>
+        ///  /// <returns>Packet </returns>
+        private Packet GetPacket(String msg)
+        {
+            Packet packet= new Packet();
+            string[] s = msg.Split(":");
+            packet.ModuleIdentifier = s[0];
+            string data = s[1];
+            string serializedData = "";
+            for(int i = 0; i < data.Length - 3; i++)
+            {
+                serializedData += data[i];
+            }
+            packet.SerializedData = serializedData;
+            return packet;
+        }
+
+        /// <summary>
+        /// This method runs on a thread and listen for incoming message
+        /// </summary>
+        private void Listen()
+        {
+            while (_listenRun)
             {
                 try
                 {
                     NetworkStream networkStream = _clientSocket.GetStream();
                     String message = "";
-                    while (true)
+                    //problem := not able to close this thread if I use _listenRun two times
+                    // while (_listenRun)
                     {
-                        byte[] inStream = new byte[threshold];
+                        byte[] inStream = new byte[_threshold];
                         networkStream.Read(inStream, 0, inStream.Length);
                         message += System.Text.Encoding.ASCII.GetString(inStream);
                         if (message.Contains("EOF"))
                         {
-                            Trace.WriteLine("message recieved from client "+ message);
+                            Trace.WriteLine("message recieved from client " + message);
                             break;
                         }
                     }
-                    //push to Queue
-              
+                    
+                    Packet packet = GetPacket(message);
+                    _queue.Enqueue(packet);
+                    Trace.WriteLine("message reiceved and equeued into queue");
+
                 }
                 catch (Exception ex)
                 {
@@ -71,7 +103,7 @@ namespace Networking
         /// This method closes the listen thread
         /// </summary>
         public void Stop(){
-            throw new NotImplementedException();
+            _listenRun = false;
         }
 
         /// <summary>

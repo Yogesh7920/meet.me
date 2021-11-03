@@ -11,32 +11,41 @@ namespace Networking
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
         private TcpClient _clientSocket = new TcpClient();
         private Queue _queue = new Queue();
-        private RecieveSocketListener recievesocketListener;
-
+        private RecieveSocketListener recieveSocketListener;
+        private SendSocketListenerClient sendSocketListenerClient;
         /// <summary>
         /// This method connects client to server
         /// <param name="serverIP">serverIP</param>
         /// <param name="serverPort">serverPort.</param>
         /// </summary>
+        ///  /// <returns> String </returns>
         string ICommunicator.Start(string serverIP, string serverPort)
         {
-            IPAddress ip = IPAddress.Parse(serverIP);
-            int port = Int32.Parse(serverPort);
-            _clientSocket.Connect(ip, port);
 
-            if (_clientSocket.Connected)
+            try
             {
-                recievesocketListener = new RecieveSocketListener(_queue, _clientSocket);
-                Thread s = new Thread(recievesocketListener.Start);
-                s.Start();
+                IPAddress ip = IPAddress.Parse(serverIP);
+                int port = Int32.Parse(serverPort);
+                _clientSocket.Connect(ip, port);
+
+                recieveSocketListener = new RecieveSocketListener(_queue, _clientSocket);
+                recieveSocketListener.Start();
+                sendSocketListenerClient = new SendSocketListenerClient(_queue,_clientSocket);
+                sendSocketListenerClient.Start();
                 return "1";
             }
-            return "0";
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return "0";
+            }
+            
         }
         /// <inheritdoc />
         void ICommunicator.Stop()
         {
-            recievesocketListener.Stop();
+            sendSocketListenerClient.Stop();
+            recieveSocketListener.Stop();
         }
         /// <inheritdoc />
         void ICommunicator.AddClient<T>(string clientID, T socketObject)
