@@ -1,20 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Networking
 {
-    public class Communicator : ICommunicator
+    public class ClientCommunicator : ICommunicator
     {
         private Dictionary<string, INotificationHandler> subscribedModules = new Dictionary<string, INotificationHandler>();
-        /// <inheritdoc />
+        private TcpClient _clientSocket = new TcpClient();
+        private Queue _queue = new Queue();
+        private RecieveSocketListener recievesocketListener;
+
+        /// <summary>
+        /// This method connects client to server
+        /// <param name="serverIP">serverIP</param>
+        /// <param name="serverPort">serverPort.</param>
+        /// </summary>
         string ICommunicator.Start(string serverIP, string serverPort)
         {
-            throw new NotImplementedException();
+            IPAddress ip = IPAddress.Parse(serverIP);
+            int port = Int32.Parse(serverPort);
+            _clientSocket.Connect(ip, port);
+
+            if (_clientSocket.Connected)
+            {
+                recievesocketListener = new RecieveSocketListener(_queue, _clientSocket);
+                Thread s = new Thread(recievesocketListener.Start);
+                s.Start();
+                return "1";
+            }
+            return "0";
         }
         /// <inheritdoc />
         void ICommunicator.Stop()
         {
-            throw new NotImplementedException();
+            recievesocketListener.Stop();
         }
         /// <inheritdoc />
         void ICommunicator.AddClient<T>(string clientID, T socketObject)
