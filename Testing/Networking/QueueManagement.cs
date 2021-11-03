@@ -98,6 +98,8 @@ namespace Testing.Networking
             {
                 _queue.Enqueue(packet);
             });
+            
+            Assert.IsNotNull(ex);
             string expectedMessage = "Key Error: Packet holds invalid module identifier";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
@@ -186,6 +188,7 @@ namespace Testing.Networking
                 Task.WaitAll(thread2, thread3);
             });
 
+            Assert.IsNotNull(ex);
             ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
             Exception clearEx = innerEx.ElementAt(0);
 
@@ -218,6 +221,7 @@ namespace Testing.Networking
                 Task.WaitAll(thread1, thread2);
             });
             
+            Assert.IsNotNull(ex);
             ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
             Exception registerEx = innerEx.ElementAt(0);
 
@@ -242,6 +246,7 @@ namespace Testing.Networking
                 Task.WaitAll(thread);
             });
             
+            Assert.IsNotNull(ex);
             ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
             Exception registerEx = innerEx.ElementAt(0);
 
@@ -261,6 +266,7 @@ namespace Testing.Networking
                 Task.WaitAll(thread);
             });
             
+            Assert.IsNotNull(ex);
             ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
             Exception dequeueEx = innerEx.ElementAt(0);
 
@@ -280,6 +286,7 @@ namespace Testing.Networking
                 Task.WaitAll(thread);
             });
             
+            Assert.IsNotNull(ex);
             ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
             Exception dequeueEx = innerEx.ElementAt(0);
 

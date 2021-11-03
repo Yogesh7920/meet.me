@@ -50,8 +50,7 @@ namespace Networking
             // Adding <moduleId, priority> keyValuePair to the _priorityMap dictionary
             if (!(_priorityMap.TryAdd(moduleId, priority)))
             {
-                ConcurrentQueue<Packet> queue;
-                _multiLevelQueue.TryRemove(moduleId, out queue);
+                _multiLevelQueue.TryRemove(moduleId, out ConcurrentQueue<Packet> queue);
                 Trace.WriteLine("Priority Map cannot overwrite existing key");
                 throw new Exception("Priority Map Error");
             }
@@ -97,8 +96,7 @@ namespace Networking
             {
                 while (keyValuePair.Value.Count > 0)
                 {
-                    Packet packet;
-                    if (!(keyValuePair.Value.TryDequeue(out packet)))
+                    if (!(keyValuePair.Value.TryDequeue(out Packet packet)))
                     {
                         Trace.WriteLine("Cannot dequeue elements from an empty queue");
                         throw new Exception("Empty Queue cannot be dequeued");
