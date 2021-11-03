@@ -9,20 +9,14 @@ using System.Threading.Tasks;
 namespace Dashboard.Client.SessionManagement 
 {
     using Dashboard.Server.Telemetry;
-
-    class ClientSessionManager : IUXClientSM
+    public class ClientSessionManager : IUXClientSessionManager
     {
-        /// <summary>
-        /// Returns the credentials required to 
-        /// Join or start the meeting
-        /// </summary>
-        /// <returns> A MeetingCredentials Object </returns>
-        public MeetingCredentials GetPortsAndIPAddress()
+
+        public ClientSessionManager()
         {
-
-            return null;
+            Session session = new Session();
+            session.TraceListener();
         }
-
         /// <summary>
         /// Adds a user to the meeting.
         /// </summary>

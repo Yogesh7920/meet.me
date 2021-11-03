@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net5.0-windows</TargetFramework>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Content\Content.csproj" />
+    </ItemGroup>
 
 </Project>
