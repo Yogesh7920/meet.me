@@ -5,13 +5,13 @@ using Content;
 
 namespace Dashboard.Server.Telemetry{
     
-    public class Telemetry:ITelemetryNotifications
+    public class Telemetry:ITelemetry
     {
         /// <summary>
         ///     plots the histogram of number of users vs time 
         /// </summary>
         /// <params> takes the session data which contains the users list and whenever the session data changes, I get notified, based on it I can store the timestamp
-        void user_time(SessionData newSession){
+        void UserCountVsTimeStamp(SessionData newSession){
             throw new NotImplementedException();
         }
 
@@ -19,7 +19,7 @@ namespace Dashboard.Server.Telemetry{
         ///     plots a pie chart for number of messages sent by each user
         /// </summary>
         /// <params> Takes the list of Threads </params>
-        void messages_user(List<Content.models.Threads> AllMess){
+        void UserVsChatCount(List<Content.models.Threads> AllMess){
             throw new NotImplementedException();
         }
 
@@ -36,21 +36,21 @@ namespace Dashboard.Server.Telemetry{
         ///     Gives the session wise analysis of the server. Show visuals for score of each session
         /// </summary>
         /// <params> Takes the list of ServerData </params>
-        void sessionVsScore(List<ServerData> AllSessionData ){
+        void sessionVsScore(List<ServerDataToSave> AllSessionData ){
             throw new NotImplementedException();
         }
         /// <summary>
         ///     Gives the session wise analysis of the server. Show plots for users and session
         /// </summary>
         /// <params> Takes the list of ServerData </params>
-        void sesssionVsUsers(List<ServerData> AllSessionData){
+        void sesssionVsUsers(List<ServerDataToSave> AllSessionData){
             throw new NotImplementedException();
         }
         /// <summary>
         ///     Gives the session wise analysis of the server. Show plots of chats vs session.
         /// </summary>
         /// <params> Takes the list of ServerData </params>
-        void sessionVsChats(List<ServerData> AllSessionData){
+        void sessionVsChats(List<ServerDataToSave> AllSessionData){
             throw new NotImplementedException();
         }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Dashboard
 {
-    public class ServerData
+    public class ServerDataToSave
     {
         SessionData sessionID;
         int sincereUserCount;

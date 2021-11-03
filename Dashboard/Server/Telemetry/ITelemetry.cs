@@ -21,8 +21,8 @@ namespace Dashboard.Server.Telemetry
         ///    SM uses it to get the analysed data to pass on to the UI
         /// </summary>
         
-        /// <returns> UXTelemetry object </returns>
-        UXTelemetry getTelemetryAnalytics();
+        /// <returns> TelemetryAnalyticsModel object </returns>
+        TelemetryAnalyticsModel getTelemetryAnalytics();
     }    
     }
 }
