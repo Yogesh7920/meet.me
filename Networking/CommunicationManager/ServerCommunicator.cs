@@ -22,10 +22,12 @@ namespace Networking
 
         private Thread _acceptRequest;
         private bool _acceptRequestRun = false;
-        private SendSocketListener sendSocketListener;
+        private SendSocketListenerServer _sendSocketListenerServer;
+       
+       private HashSet<RecieveSocketListener> clientListener = new HashSet<RecieveSocketListener>();
 
         /// <summary>
-        /// It finds IP4 address of machine
+        /// It finds IP4 address of machine which does not end with .1
         /// </summary>
         /// <returns>IP4 address </returns>
         private static string GetLocalIPAddress()
@@ -35,7 +37,13 @@ namespace Networking
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    return ip.ToString();
+                    string address = ip.ToString();
+                    int n = address.Length;
+                    if( address[n-1]!='1' && address[n - 2] != '.')
+                    {
+                        return ip.ToString();
+                    }
+                    
                 }
             }
             throw new Exception("No network adapters with an IPv4 address in the system!");
@@ -44,7 +52,7 @@ namespace Networking
         /// <summary>
         /// scan for free Tcp port.
         /// </summary>
-        /// <returns>Free port </returns>
+        /// <returns>integer </returns>
         private static int FreeTcpPort()
         {
             IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
@@ -70,8 +78,8 @@ namespace Networking
             IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString()) +
             " and port number = " + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString());
             
-            sendSocketListener = new SendSocketListener(_recieveQueue); 
-            sendSocketListener.Start();
+            _sendSocketListenerServer = new SendSocketListenerServer(_recieveQueue, _clientIdSocket); 
+            _sendSocketListenerServer.Start();
             _acceptRequest = new Thread(() => AcceptRequest(serverSocket));
             _acceptRequestRun = true;
             _acceptRequest.Start();
@@ -104,19 +112,28 @@ namespace Networking
         void ICommunicator.Stop()
         {
             _acceptRequestRun = false;
-            sendSocketListener.Stop();
+            // run a loop and stop  recieveSocketListener of all the clients
+            foreach( RecieveSocketListener r in clientListener)
+            {
+                r.Stop();
+            }
+            _sendSocketListenerServer.Stop();
+            
         }
 
         /// <summary>
         /// It adds client socket to a map and starts listening on that socket
+        /// also adds corresponding listener to a set
         /// </summary>
         /// <returns> void </returns>
         void ICommunicator.AddClient<T>(string clientID, T socketObject) 
         {
             _clientIdSocket[clientID] = socketObject;
-            RecieveSocketListener socketListener =new RecieveSocketListener(_recieveQueue, (TcpClient)(object)socketObject);
-            Thread s = new Thread(socketListener.Start);
-            s.Start();
+            RecieveSocketListener recieveSocketListener =new RecieveSocketListener(_recieveQueue, (TcpClient)(object)socketObject);
+            clientListener.Add(recieveSocketListener);
+            recieveSocketListener.Start();
+            
+
         }
         /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientID)
