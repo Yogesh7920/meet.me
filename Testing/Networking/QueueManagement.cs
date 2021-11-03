@@ -77,12 +77,7 @@ namespace Testing.Networking
             int size = 0;
             Packet packet = new Packet(moduleId, data);
             
-            Task thread = Task.Run(() =>
-            {
-                _queue.Enqueue(packet);
-            });
-            
-            Task.WaitAll(thread);
+            _queue.Enqueue(packet);
             size = _queue.Size();
             Assert.AreEqual(1, size);
         }
@@ -138,24 +133,14 @@ namespace Testing.Networking
         public void Clear_FlushingAllPackets_ShouldBeEmpty()
         {
             bool empty;
-            Task thread1 = Task.Run(() =>
-            {
-                for (int i = 0; i < _testPackets.Capacity; i++)
-                {
-                    Packet packet = _testPackets[i];
-                    _queue.Enqueue(packet);
-                }
-            });
-            
-            Task.WaitAll(thread1);
 
-            Task thread2 = Task.Run(() =>
+            for (int i = 0; i < _testPackets.Capacity; i++)
             {
-                _queue.Clear();
-            });
+                Packet packet = _testPackets[i];
+                _queue.Enqueue(packet);
+            }
             
-            Task.WaitAll(thread2);
-
+            _queue.Clear();
             empty = _queue.IsEmpty();
             Assert.AreEqual(true, empty);
         }
@@ -164,39 +149,44 @@ namespace Testing.Networking
         public void Clear_CalledByMultipleThreadsAtSameTime_ThrowsEmptyQueueException()
         {
             
+            const string moduleId = "S";
+            const string data = "testData";
             bool empty;
-            Task thread1 = Task.Run(() =>
-            {
-                for (int i = 0; i < _testPackets.Capacity; i++)
-                {
-                    Packet packet = _testPackets[i];
-                    _queue.Enqueue(packet);
-                }
-            });
-            Task.WaitAll(thread1);
             
-            AggregateException ex = Assert.Throws<AggregateException>(() =>
+            Packet packet = new Packet(moduleId, data);
+            _queue.Enqueue(packet);
+            
+            AggregateException ex  = Assert.Throws<AggregateException>(() =>
             {
-                Task thread2 = Task.Run(() =>
-                {
-                    _queue.Clear();
-                });
-                Task thread3 = Task.Run(() =>
-                {
-                    _queue.Clear();
-                });
-                Task.WaitAll(thread2, thread3);
+                Parallel.Invoke(
+                    () =>
+                    {
+                        _queue.Clear();
+                    },
+                    () =>
+                    {
+                        _queue.Clear();
+                    }
+                );
             });
 
-            Assert.IsNotNull(ex);
-            ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
-            Exception clearEx = innerEx.ElementAt(0);
+            if (ex == null)
+            {
+                Assert.Pass();
+            }
+            else
+            {
+                Assert.IsNotNull(ex);
+                ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
+                Exception clearEx = innerEx.ElementAt(0);
 
-            string expectedMessage = "Empty Queue cannot be dequeued";
+                string expectedMessage = "Empty Queue cannot be dequeued";
             
-            empty = _queue.IsEmpty();
-            Assert.AreEqual(expectedMessage, clearEx.Message);
-            Assert.AreEqual(true, empty);
+                empty = _queue.IsEmpty();
+                Assert.AreEqual(expectedMessage, clearEx.Message);
+                Assert.AreEqual(true, empty);
+            }
+
         }
 
         [Test]
@@ -234,64 +224,43 @@ namespace Testing.Networking
         {
             string moduleId = "A";
             int priority = -1;
-            
-            AggregateException ex = Assert.Throws<AggregateException>(() =>
+
+            Exception ex = Assert.Throws<Exception>(() =>
             {
-                Task thread = Task.Run(() =>
-                {
-                    _queue.RegisterModule(moduleId, priority);
-                   
-                });
+                _queue.RegisterModule(moduleId, priority);
 
-                Task.WaitAll(thread);
             });
-            
-            Assert.IsNotNull(ex);
-            ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
-            Exception registerEx = innerEx.ElementAt(0);
 
+            Assert.IsNotNull(ex);
             string expectedMessage = "Priority should be positive integer";
-            Assert.AreEqual(expectedMessage, registerEx.Message);
+            Assert.AreEqual(expectedMessage, ex.Message);
         }
 
         [Test]
         public void Dequeue_QueueIsEmpty_ThrowsException()
         {
-            AggregateException ex = Assert.Throws<AggregateException>(() =>
+            Exception ex = Assert.Throws<Exception>(() =>
             {
-                Task thread = Task.Run(() =>
-                {
-                    _queue.Dequeue();
-                });
-                Task.WaitAll(thread);
+                _queue.Dequeue();
             });
             
             Assert.IsNotNull(ex);
-            ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
-            Exception dequeueEx = innerEx.ElementAt(0);
-
             string expectedMessage = "Cannot Dequeue empty queue";
-            Assert.AreEqual(expectedMessage, dequeueEx.Message);
+            Assert.AreEqual(expectedMessage, ex.Message);
         }
 
         [Test]
         public void Peek_QueueIsEmpty_ThrowsException()
         {
-            AggregateException ex = Assert.Throws<AggregateException>(() =>
+            Exception ex = Assert.Throws<Exception>(() =>
             {
-                Task thread = Task.Run(() =>
-                {
-                    _queue.Peek();
-                });
-                Task.WaitAll(thread);
+                _queue.Peek();
+
             });
             
             Assert.IsNotNull(ex);
-            ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
-            Exception dequeueEx = innerEx.ElementAt(0);
-
             string expectedMessage = "Cannot Peek into empty queue";
-            Assert.AreEqual(expectedMessage, dequeueEx.Message);
+            Assert.AreEqual(expectedMessage, ex.Message);
         }
 
         [Test]
@@ -307,6 +276,8 @@ namespace Testing.Networking
                 _queue.Enqueue(packet);
             });
 
+            Task.WaitAll(thread1);
+            
             Task thread2 = Task.Run(() =>
             {
                 Packet p = _queue.Dequeue();
@@ -314,14 +285,14 @@ namespace Testing.Networking
                 Assert.AreEqual(p.SerializedData, data);
             });
 
-            Task.WaitAll(thread1, thread2);
+            Task.WaitAll(thread2);
 
             size = _queue.Size();
             Assert.AreEqual(0, size);
         }
 
         [Test]
-        public void Dequeue_MultiplePackets_SizeIsNotZero()
+        public void Dequeue_MultiplePackets_SizeIsZero()
         {
             int size = 0;
             Task thread1 = Task.Run(() =>
@@ -333,12 +304,12 @@ namespace Testing.Networking
                 }
             });
 
+            Task.WaitAll(thread1);
             Task thread2 = Task.Run(() =>
             {
                 for (int i = 0; i < _testPackets.Capacity; i++)
                 {
                     Packet packet = _queue.Dequeue();
-                    Console.WriteLine(packet.ModuleIdentifier);
                 }
             });
 
@@ -354,20 +325,11 @@ namespace Testing.Networking
             const string moduleId = "S";
             const string data = "testData";
             Packet packet = new Packet(moduleId, data);
-            
-            Task thread1 = Task.Run(() =>
-            {
-                _queue.Enqueue(packet);
-            });
 
-            Task thread2 = Task.Run(() =>
-            {
-                Packet p = _queue.Peek();
-                Assert.AreEqual(p.ModuleIdentifier, moduleId);
-                Assert.AreEqual(p.SerializedData, data);
-            });
-
-            Task.WaitAll(thread1, thread2);
+            _queue.Enqueue(packet);
+            Packet p = _queue.Peek();
+            Assert.AreEqual(p.ModuleIdentifier, moduleId);
+            Assert.AreEqual(p.SerializedData, data);
         }
         
         [Test]
@@ -407,6 +369,7 @@ namespace Testing.Networking
                 _queue.Enqueue(yPacket2);
             });
 
+            Task.WaitAll(thread1, thread2);
             Task thread3 = Task.Run(() =>
             {
                 Packet p1 = _queue.Dequeue();
@@ -430,7 +393,7 @@ namespace Testing.Networking
                 Assert.AreEqual(yData2, p5.SerializedData);
             });
 
-            Task.WaitAll(thread1, thread2, thread3);
+            Task.WaitAll(thread3);
         }
 
         [Test]
@@ -462,37 +425,21 @@ namespace Testing.Networking
             
             Task.WaitAll(thread1, thread2);
 
-            Task thread3 = Task.Run(() =>
-            {
-                Packet p1 = _queue.Dequeue();
-                Assert.AreEqual(moduleId, p1.ModuleIdentifier);
-                Assert.AreEqual(data, p1.SerializedData);
-            });
 
-            Task thread4 = Task.Run(() =>
-            {
-                _queue.RegisterModule(newModuleId, newPriority);
-            });
+            Packet p1 = _queue.Dequeue();
+            Assert.AreEqual(moduleId, p1.ModuleIdentifier);
+            Assert.AreEqual(data, p1.SerializedData);
+
+            _queue.RegisterModule(newModuleId, newPriority);
+            _queue.Enqueue(packet3);
             
-            Task.WaitAll(thread3, thread4);
+            Packet p2 = _queue.Dequeue();
+            Assert.AreEqual(moduleId2, p2.ModuleIdentifier);
+            Assert.AreEqual(data2, p2.SerializedData);
 
-            Task thread5 = Task.Run(() =>
-            {
-                _queue.Enqueue(packet3);
-            });
-
-            Task thread6 = Task.Run(() =>
-            {
-                Packet p2 = _queue.Dequeue();
-                Assert.AreEqual(moduleId2, p2.ModuleIdentifier);
-                Assert.AreEqual(data2, p2.SerializedData);
-
-                Packet p3 = _queue.Dequeue();
-                Assert.AreEqual(newModuleId, p3.ModuleIdentifier);
-                Assert.AreEqual(newData, p3.SerializedData);
-            });
-
-            Task.WaitAll(thread5, thread6);
+            Packet p3 = _queue.Dequeue();
+            Assert.AreEqual(newModuleId, p3.ModuleIdentifier);
+            Assert.AreEqual(newData, p3.SerializedData);
         }
     }
 }

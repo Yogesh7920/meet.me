@@ -14,6 +14,7 @@ namespace Networking
         private int _currentQueue;
         private int _currentWeight;
         private int _avoidStateChange;
+        private string _currentModuleIdentifier;
 
         /// <summary>
         /// Queue constructor initializes multilevel queue, priority map dictionaries and also the state of the queue.
@@ -66,6 +67,11 @@ namespace Networking
                 // Assigning the _currentWeight to the top priority queue's weight
                 string moduleIdentifier = _moduleIdentifiers[_currentQueue];
                 _currentWeight = _priorityMap[moduleIdentifier];
+                _currentModuleIdentifier = moduleIdentifier;
+            }
+            else
+            {
+                _currentQueue = _moduleIdentifiers.FindIndex(x => x == _currentModuleIdentifier);
             }
             
             Trace.WriteLine("Module Registered");
@@ -198,7 +204,7 @@ namespace Networking
                 _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
                 moduleIdentifier = _moduleIdentifiers[_currentQueue];   
                 _currentWeight = _priorityMap[moduleIdentifier];
-                
+                _currentModuleIdentifier = moduleIdentifier;
                 FindNext(); // To circumvent the case of the next queue having no packets
             }
             else
@@ -212,6 +218,7 @@ namespace Networking
                         _currentQueue = (_currentQueue + 1) % _moduleIdentifiers.Count;
                         moduleIdentifier = _moduleIdentifiers[_currentQueue];
                         _currentWeight = _priorityMap[moduleIdentifier];
+                        _currentModuleIdentifier = moduleIdentifier;
                     }    
                 }
             }
