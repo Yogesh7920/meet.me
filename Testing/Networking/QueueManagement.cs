@@ -148,7 +148,6 @@ namespace Testing.Networking
         [Test]
         public void Clear_CalledByMultipleThreadsAtSameTime_ThrowsEmptyQueueException()
         {
-            
             const string moduleId = "S";
             const string data = "testData";
             bool empty;
@@ -156,7 +155,7 @@ namespace Testing.Networking
             Packet packet = new Packet(moduleId, data);
             _queue.Enqueue(packet);
             
-            AggregateException ex  = Assert.Throws<AggregateException>(() =>
+            try
             {
                 Parallel.Invoke(
                     () =>
@@ -168,25 +167,19 @@ namespace Testing.Networking
                         _queue.Clear();
                     }
                 );
-            });
-
-            if (ex == null)
-            {
                 Assert.Pass();
             }
-            else
+            catch (AggregateException ex)
             {
                 Assert.IsNotNull(ex);
                 ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
                 Exception clearEx = innerEx.ElementAt(0);
 
                 string expectedMessage = "Empty Queue cannot be dequeued";
-            
                 empty = _queue.IsEmpty();
                 Assert.AreEqual(expectedMessage, clearEx.Message);
                 Assert.AreEqual(true, empty);
             }
-
         }
 
         [Test]
@@ -255,7 +248,6 @@ namespace Testing.Networking
             Exception ex = Assert.Throws<Exception>(() =>
             {
                 _queue.Peek();
-
             });
             
             Assert.IsNotNull(ex);
