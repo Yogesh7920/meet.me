@@ -19,21 +19,79 @@ namespace Client
     /// </summary>
     public partial class WhiteBoardView : Window
     {
-
         private Button activeButton;
+        private WhiteBoardViewModel viewModel;
+        public Canvas GlobCanvas;
+
+        //Button Dynamic Colors 
         private string buttonDefaultColor = "#D500F9";
         private string buttonSelectedColor = "#007C9C";
+
+        //Canvas BG available Colors 
+        private string canvasBg1 = "#FFFFFF";
+        private string canvasBg2 = "#FF0000";
+        private string canvasBg3 = "#00FF00";
+        private string canvasBg4 = "#0000FF";
+        private string canvasBg5 = "#FFFF00";
+
 
         public WhiteBoardView()
         {
             InitializeComponent();
-            WhiteBoardViewModel viewModel = new WhiteBoardViewModel();
+            this.GlobCanvas = MyCanvas;
+            viewModel = new WhiteBoardViewModel(GlobCanvas);
         }
 
         // Canvas Mouse actions 
         private void OnCanvasMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+
+
+                MessageBox.Show(viewModel.GetActiveTool().ToString());
+                switch (viewModel.GetActiveTool())
+                {
+                    case (WhiteBoardViewModel.WBTools.FreeHand):
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewLine):
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewRectangle):
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewEllipse):
+                        break;
+                    case (WhiteBoardViewModel.WBTools.Selection):
+                        
+
+        
+                        if(e.OriginalSource is Shape && !viewModel.shapeManager.BBmap.ContainsValue((e.OriginalSource as Shape).Uid))
+                        {
+                            MessageBox.Show("Shape Found");
+                            //Create Shape -> Creates a temp Rectangle for bounding box with height and width same as selected shape
+                            //Add this Shape to selected shape
+                            Shape selectedShape = e.OriginalSource as Shape;
+                           
+                            //this.SelectionBox.Visibility = Visibility.Visible;
+                            //GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas,viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle,...) 
+                            
+                            GlobCanvas =  viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps, 0);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Entered Else");
+                            viewModel.shapeManager.UnselectAllBB(GlobCanvas, viewModel.WBOps);
+                            //this.SelectionBox.Visibility = Visibility.Collapsed;
+                        }
+                        
+                        break;
+                    case (WhiteBoardViewModel.WBTools.Eraser):
+                        break;
+                }
+                //this.viewModel.start = e.GetPosition(MyCanvas);
+            }
+
         }
 
         private void OnCanvasMouseButtonUp(object sender, MouseButtonEventArgs e)
@@ -82,7 +140,7 @@ namespace Client
 
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            MessageBox.Show("ClickedSelectTool");
+            viewModel.ChangeActiveTool(activeButton.Name);
             return;
         }
         private void ClickedRectTool(object sender, RoutedEventArgs e)
@@ -100,7 +158,7 @@ namespace Client
 
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            MessageBox.Show("ClickedRectTool");
+            viewModel.ChangeActiveTool(activeButton.Name);
             return;
         }
         private void ClickedEllTool(object sender, RoutedEventArgs e)
@@ -118,7 +176,7 @@ namespace Client
 
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            MessageBox.Show("ClickedEllTool");
+            viewModel.ChangeActiveTool(activeButton.Name);
             return;
         }
         private void ClickedFreehandTool(object sender, RoutedEventArgs e)
@@ -136,7 +194,7 @@ namespace Client
 
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            MessageBox.Show("ClickedFreehandTool");
+            viewModel.ChangeActiveTool(activeButton.Name);
             return;
         }
         private void ClickedEraserTool(object sender, RoutedEventArgs e)
@@ -154,7 +212,7 @@ namespace Client
 
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            MessageBox.Show("ClickedEraserTool");
+            viewModel.ChangeActiveTool(activeButton.Name);
             return;
         }
 
@@ -173,20 +231,41 @@ namespace Client
 
             activeButton = sender as Button;
             activeButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            MessageBox.Show("ClickedLineTool");
+            viewModel.ChangeActiveTool(activeButton.Name);
             return;
         }
+
+        //Radio Button (Set Background)
+        private void ColorBtn1Checked(object sender, RoutedEventArgs e)
+        {
+            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg1);
+        }
+
+        private void ColorBtn2Checked(object sender, RoutedEventArgs e)
+        {
+            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg2);
+        }
+
+        private void ColorBtn3Checked(object sender, RoutedEventArgs e)
+        {
+            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg3);
+        }
+
+        private void ColorBtn4Checked(object sender, RoutedEventArgs e)
+        {
+            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg4);
+        }
+
+        private void ColorBtn5Checked(object sender, RoutedEventArgs e)
+        {
+            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg5);
+        }
+
 
         //Whiteboard General tools 
-        private void ClickedSetBG(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("ClickedSetBG");
-            return;
-        }
-
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedClearFrame");
+            GlobCanvas.Children.Clear();
             return;
         }
 
@@ -219,7 +298,6 @@ namespace Client
                 MessageBox.Show("Toggled Off");
             }
         }
-
         //Parent Window click event
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {

@@ -80,7 +80,7 @@ namespace Client
             
         }
 
-        private void Whiteboard_Clicked(object sender, RoutedEventArgs e)
+        /*private void Whiteboard_Clicked(object sender, RoutedEventArgs e)
         {
             DataContext = new WhiteBoardViewModel();
             _wbFlag = true;
@@ -98,7 +98,7 @@ namespace Client
             SSwb.SetValue(Grid.ColumnProperty, 2);
             SSwb.SetValue(Grid.ColumnSpanProperty, 5);
             
-        }
+        }*/
 
         private void Chat_Button_Clicked(object sender, RoutedEventArgs e)
         {

@@ -160,27 +160,27 @@
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
 
-                            <RadioButton Grid.Column="0" x:Name="c1" Margin="5 0 0 10"  VerticalAlignment="Center" Background="Red" BorderBrush="#cfcfcf" BorderThickness="1">
+                            <RadioButton Grid.Column="0" x:Name="c1" Margin="5 0 0 10"  VerticalAlignment="Center" Background="White" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn1Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
-                            <RadioButton Grid.Column="1" x:Name="c2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="#cfcfcf" BorderThickness="1">
+                            <RadioButton Grid.Column="1" x:Name="c2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn2Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
-                            <RadioButton Grid.Column="2" x:Name="c3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="#cfcfcf" BorderThickness="1">
+                            <RadioButton Grid.Column="2" x:Name="c3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn3Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
-                            <RadioButton Grid.Column="3" x:Name="c4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Purple" BorderBrush="#cfcfcf" BorderThickness="1">
+                            <RadioButton Grid.Column="3" x:Name="c4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn4Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
-                            <RadioButton Grid.Column="4" x:Name="c5" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="#cfcfcf" BorderThickness="1">
+                            <RadioButton Grid.Column="4" x:Name="c5" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn5Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
@@ -455,7 +455,7 @@
                                 <!--Buttons-->
                                 <Grid Grid.Row="0">
                                     <!--Paint Brush Button-->
-                                    <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedFreehandTool">
+                                    <Button x:Name="PenTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedFreehandTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/Pen.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
@@ -493,7 +493,7 @@
 
                                 <Grid Grid.Row="1">
                                     <!--Eraser Button-->
-                                    <Button Name="EraserBtn" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool">
+                                    <Button x:Name="EraseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
@@ -528,7 +528,7 @@
 
                                 <Grid Grid.Row="2">
                                     <!--Select Button-->
-                                    <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedSelectTool">
+                                    <Button x:Name="SelectTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedSelectTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/selectTool.png" Margin="4.5 2 0 2"></Image>
                                         </StackPanel>
@@ -562,7 +562,7 @@
 
                                 <Grid Grid.Row="3">
                                     <!--Rectangle Button-->
-                                    <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedRectTool">
+                                    <Button x:Name="RectTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedRectTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/drawRectangle.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
@@ -596,7 +596,7 @@
 
                                 <Grid Grid.Row="4">
                                     <!--Line Button-->
-                                    <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedLineTool">
+                                    <Button x:Name="LineTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedLineTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/drawLine.png" Margin="2 2 2 2" RenderTransformOrigin="0.5,0.5">
                                                 <Image.RenderTransform>
@@ -635,7 +635,7 @@
 
                                 <Grid Grid.Row="5">
                                     <!--Ellipse Button-->
-                                    <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEllTool">
+                                    <Button x:Name="EllipseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEllTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/drawEllipse.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
@@ -696,8 +696,8 @@
                 </Canvas.RenderTransform>
 
                 <!--Testing shapes-->
-                <!--<Rectangle Stroke="Blue" Height="50" Width="60" StrokeThickness="1" StrokeDashArray="4 4" SnapsToDevicePixels="True" Canvas.Left="260" Canvas.Top="175"></Rectangle>
-                <Ellipse Fill="White" Height="50" Width="60" StrokeThickness="2" Stroke="Black" Canvas.Left="260" Canvas.Top="175"></Ellipse>-->
+                <!--<Rectangle x:Name="SelectionBox" Stroke="Blue" Height="50" Width="60" StrokeThickness="1" StrokeDashArray="4 4" SnapsToDevicePixels="True" Canvas.Left="260" Canvas.Top="175" Visibility="Collapsed"></Rectangle>-->
+                <Ellipse Fill="White" Height="50" Width="60" StrokeThickness="2" Stroke="Black" Canvas.Left="260" Canvas.Top="175"></Ellipse>
 
             </Canvas>
         </StackPanel>
