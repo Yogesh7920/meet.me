@@ -70,8 +70,6 @@ namespace Networking
             {
                 Trace.WriteLine(ex.Message);
             }
-            
-            throw new NotImplementedException();
         }
         /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier, string destination)
