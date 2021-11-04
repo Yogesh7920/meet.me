@@ -79,7 +79,6 @@ namespace Networking
                 {
                     NetworkStream networkStream = _clientSocket.GetStream();
                     String message = "";
-                    //problem := not able to close this thread if I use _listenRun two times
                     while (_listenRun)
                     {
                         byte[] inStream = new byte[_threshold];

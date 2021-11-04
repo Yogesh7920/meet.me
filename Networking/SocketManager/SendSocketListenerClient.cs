@@ -29,8 +29,7 @@ namespace Networking
         public void Start(){
              _listen = new Thread(() => Listen());
              _listenRun = true;
-            // problem := this thread is causing problem 
-            _listen.Start();
+             _listen.Start();
         }
 
         /// <summary>
