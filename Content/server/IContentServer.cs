@@ -20,6 +20,6 @@ namespace Content
         /// Sends all the messages to the client of the user with user id = userId
         /// </summary>
         /// <param name="userId">user id of the user to which messages needs to be sent</param>
-        void SSendAllMessagesToClient(int userId);
+        void SSendAllMessagesToClient(string userId);
     }
 }

@@ -4,18 +4,19 @@ namespace Content
 {
     internal class FileServer
     {
-        public void Receive(ReceiveMessageData messageData)
+        public void Receive(MessageData messageData)
         {
             throw new NotImplementedException();
         }
-        private string SaveFile(ReceiveMessageData messageData)
+
+        private string SaveFile(MessageData messageData)
         {
             return "";
         }
 
-        private ReceiveMessageData FetchFile(string file)
+        private MessageData FetchFile(string file)
         {
-            return new ReceiveMessageData();
+            return new MessageData();
         }
     }
 }

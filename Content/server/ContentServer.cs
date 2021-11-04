@@ -9,14 +9,69 @@ namespace Content
         private List<ChatContext> allMessages;
         private ICommunicator communicator;
         private INotificationHandler notificationHandler;
+        private ContentDatabase contentDatabase;
+        private ISerializer serializer;
+        private FileServer fileServer;
+        private ChatServer chatServer;
 
         public ContentServer()
         {
             subscribers = new List<IContentListener>();
             allMessages = new List<ChatContext>();
             communicator = CommunicationFactory.GetCommunicator();
+            contentDatabase = new ContentDatabase();
             notificationHandler = new ContentServerNotificationHandler();
+            fileServer = new FileServer();
+            chatServer = new ChatServer(contentDatabase);
+            serializer = new Serializer();
             communicator.Subscribe("ContentServer", notificationHandler);
+        }
+
+        public void Receive(string data)
+        {
+            MessageData messageData = serializer.Deserialize<MessageData>(data);
+            ReceiveMessageData receiveMessageData = null;
+
+            switch (messageData.Type)
+            {
+                case MessageType.Chat:
+                    receiveMessageData = chatServer.Receive(messageData);
+                    break;
+
+                case MessageType.File:
+                    fileServer.Receive(messageData);
+                    break;
+
+                default:
+                    throw new System.Exception();
+            }
+
+            foreach (ChatContext chatContext in allMessages)
+            {
+                if (receiveMessageData != null && receiveMessageData.ReplyThreadId == chatContext.ThreadId)
+                {
+                    chatContext.MsgList.Add(receiveMessageData);
+                    break;
+                }
+            }
+
+            foreach (IContentListener subscriber in subscribers)
+            {
+                subscriber.OnMessage(receiveMessageData);
+            }
+
+            string message = serializer.Serialize<MessageData>(messageData);
+            if (messageData.ReceiverIds.Length == 0)
+            {
+                communicator.Send(message, "Content");
+            }
+            else
+            {
+                foreach (string userId in messageData.ReceiverIds)
+                {
+                    communicator.Send(message, "Content", userId);
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -32,9 +87,10 @@ namespace Content
         }
 
         /// <inheritdoc />
-        public void SSendAllMessagesToClient(int userId)
+        public void SSendAllMessagesToClient(string userId)
         {
-            return;
+            string allMessagesSerialized = serializer.Serialize<List<ChatContext>>(allMessages);
+            communicator.Send(allMessagesSerialized, "Content", userId);
         }
     }
 }
