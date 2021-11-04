@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/11/2021
- * Date Modified: 10/11/2021
+ * Date Modified: 10/27/2021
 **/
 
 using System;
@@ -18,6 +18,11 @@ namespace Whiteboard
     /// </summary>
     public interface IClientBoardStateManagerInternal
     {
+        /// <summary>
+        /// Static method to get the single created instance of ClientBoardStateManager. 
+        /// </summary>
+        static ClientBoardStateManager Instance { get; }
+
         /// <summary>
         /// Saves the update on a shape in the state and sends it to server for broadcast. 
         /// </summary>
