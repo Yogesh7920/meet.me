@@ -23,7 +23,6 @@ namespace Whiteboard
         /// </summary>
         /// <param name="clientUpdate"> update from client to server side</param>
         /// <param name="clientID"> client id to whom to send these objects to</param>
-        void Send(List<BoardServerShape> clientUpdate, string clientID);
-
+        void Send(BoardServerShape clientUpdate, string clientID);
     }
 }
