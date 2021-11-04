@@ -3,7 +3,14 @@
     public interface IQueue
     {
         /// <summary>
-        /// Size of the queue
+        /// Register Module into the multilevel queue.
+        /// </summary>
+        /// <param name="moduleId">Unique Id for module.</param>
+        /// <param name="priority">Priority Number indicating the weight to be given to the module.</param>
+        public void RegisterModule(string moduleId, int priority);
+        
+        /// <summary>
+        /// Size of the queue.
         /// </summary>
         public int Size();
         
