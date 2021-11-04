@@ -8,7 +8,7 @@ namespace Content
         /// Handler for messages received by the Content module.
         /// </summary>
         /// <param name="messageData">Received message</param>
-        void OnMessage(MessageData messageData);
+        void OnMessage(ReceiveMessageData messageData);
 
         /// <summary>
         /// Handler for the event of all messages sent to/from client being received at once

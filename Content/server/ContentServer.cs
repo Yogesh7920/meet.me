@@ -1,6 +1,5 @@
 ﻿using Networking;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Content
 {
@@ -30,13 +29,13 @@ namespace Content
 
         public void Receive(string data)
         {
-
             MessageData messageData = serializer.Deserialize<MessageData>(data);
+            ReceiveMessageData receiveMessageData = null;
 
             switch (messageData.Type)
             {
                 case MessageType.Chat:
-                    chatServer.Receive(messageData);
+                    receiveMessageData = chatServer.Receive(messageData);
                     break;
 
                 case MessageType.File:
@@ -47,9 +46,18 @@ namespace Content
                     throw new System.Exception();
             }
 
+            foreach (ChatContext chatContext in allMessages)
+            {
+                if (receiveMessageData != null && receiveMessageData.ReplyThreadId == chatContext.ThreadId)
+                {
+                    chatContext.MsgList.Add(receiveMessageData);
+                    break;
+                }
+            }
+
             foreach (IContentListener subscriber in subscribers)
             {
-                subscriber.OnMessage(messageData);
+                subscriber.OnMessage(receiveMessageData);
             }
 
             string message = serializer.Serialize<MessageData>(messageData);
