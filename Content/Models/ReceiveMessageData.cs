@@ -31,12 +31,12 @@ namespace Content
         /// <summary>
         /// User id of the message sender
         /// </summary>
-        public int SenderId;
+        public string SenderId;
 
         /// <summary>
         /// List of ids for receviers, all if empty
         /// </summary>
-        public int[] ReceiverIds;
+        public string[] ReceiverIds;
 
         /// <summary>
         /// Id of thread to which this message belongs

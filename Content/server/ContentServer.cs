@@ -61,7 +61,17 @@ namespace Content
             }
 
             string message = serializer.Serialize<MessageData>(messageData);
-            communicator.Send(message, "Content");
+            if (messageData.ReceiverIds.Length == 0)
+            {
+                communicator.Send(message, "Content");
+            }
+            else
+            {
+                foreach (string userId in messageData.ReceiverIds)
+                {
+                    communicator.Send(message, "Content", userId);
+                }
+            }
         }
 
         /// <inheritdoc />
