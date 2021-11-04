@@ -16,7 +16,7 @@
         <SolidColorBrush x:Key="InnerBackgroundBrush" Color="{StaticResource InnerBackground}"/>
  
     </Window.Resources>  
-   
+    <!-- Parent Grid-->
     <Grid Background="{StaticResource BackGroundPattern}">
           
         <Grid.ColumnDefinitions>
