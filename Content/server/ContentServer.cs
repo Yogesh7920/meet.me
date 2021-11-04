@@ -1,12 +1,13 @@
 ﻿using Networking;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Content
 {
     internal class ContentServer : IContentServer
     {
         private List<IContentListener> subscribers;
-        private List<MessageData> allMessages;
+        private List<ChatContext> allMessages;
         private ICommunicator communicator;
         private INotificationHandler notificationHandler;
         private ContentDatabase contentDatabase;
@@ -17,7 +18,7 @@ namespace Content
         public ContentServer()
         {
             subscribers = new List<IContentListener>();
-            allMessages = new List<MessageData>();
+            allMessages = new List<ChatContext>();
             communicator = CommunicationFactory.GetCommunicator();
             contentDatabase = new ContentDatabase();
             notificationHandler = new ContentServerNotificationHandler();
@@ -29,21 +30,21 @@ namespace Content
 
         public void Receive(string data)
         {
-            string type = serializer.GetObjectType(data, "Content");
 
             MessageData messageData = serializer.Deserialize<MessageData>(data);
 
-            if (messageData.Type == MessageType.Chat)
+            switch (messageData.Type)
             {
-                allMessages.Add(chatServer.Receive(messageData));
-            }
-            else if (messageData.Type == MessageType.File)
-            {
-                fileServer.Receive(messageData);
-            }
-            else
-            {
-                throw new System.Exception();
+                case MessageType.Chat:
+                    chatServer.Receive(messageData);
+                    break;
+
+                case MessageType.File:
+                    fileServer.Receive(messageData);
+                    break;
+
+                default:
+                    throw new System.Exception();
             }
 
             foreach (IContentListener subscriber in subscribers)
@@ -62,7 +63,7 @@ namespace Content
         }
 
         /// <inheritdoc />
-        public List<MessageData> SGetAllMessages()
+        public List<ChatContext> SGetAllMessages()
         {
             return allMessages;
         }
@@ -70,7 +71,7 @@ namespace Content
         /// <inheritdoc />
         public void SSendAllMessagesToClient(string userId)
         {
-            string allMessagesSerialized = serializer.Serialize<List<MessageData>>(allMessages);
+            string allMessagesSerialized = serializer.Serialize<List<ChatContext>>(allMessages);
             communicator.Send(allMessagesSerialized, "Content", userId);
         }
     }

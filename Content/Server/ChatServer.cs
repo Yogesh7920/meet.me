@@ -12,7 +12,7 @@ namespace Content
             this.contentDatabase = contentDatabase;
         }
 
-        public MessageData Receive(MessageData messageData)
+        public ReceiveMessageData Receive(MessageData messageData)
         {
             switch (messageData.Event)
             {

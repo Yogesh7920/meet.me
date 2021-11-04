@@ -1,6 +1,9 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Testing")]
 
 namespace Content
 {
@@ -35,6 +38,12 @@ namespace Content
         public void Store(SendFileData fileData)
         {
             files.InsertOne(fileData);
+        }
+
+        public void UpdateMessageData(ObjectId id, MessageData messageData)
+        {
+            var filter = Builders<MessageData>.Filter.Eq("MessageId", id);
+            messages.ReplaceOne(filter, messageData);
         }
 
         public void UpdateChatContext(int id, ChatContext chatContext)

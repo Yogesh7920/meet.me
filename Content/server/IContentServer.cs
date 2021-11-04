@@ -14,7 +14,7 @@ namespace Content
         /// Get all the messages sent
         /// </summary>
         /// <returns>List of Thread objects</returns>
-        List<MessageData> SGetAllMessages();
+        List<ChatContext> SGetAllMessages();
 
         /// <summary>
         /// Sends all the messages to the client of the user with user id = userId

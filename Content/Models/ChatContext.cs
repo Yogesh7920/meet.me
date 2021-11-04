@@ -10,7 +10,7 @@ namespace Content
         /// <summary>
         /// List of all the messages in the thread
         /// </summary>
-        public List<MessageData> MsgList;
+        public List<ReceiveMessageData> MsgList;
 
         /// <summary>
         /// Id of the thread
