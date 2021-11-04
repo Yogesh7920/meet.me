@@ -31,7 +31,7 @@ namespace Client.ViewModels
             }
             catch(Exception _)
             {
-                return false;
+                return true;
             }
         }
     }
