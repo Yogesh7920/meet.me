@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Net.Sockets;
 using System.Net;
@@ -51,12 +52,23 @@ namespace Networking
         /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier)
         {
+            Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
+            try
+            {
+                _queue.Enqueue(packet);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+            }
+            
             throw new NotImplementedException();
         }
         /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier, string destination)
         {
-            throw new NotImplementedException();
+            
+            throw new NotSupportedException();
         }
         /// <inheritdoc />
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler)

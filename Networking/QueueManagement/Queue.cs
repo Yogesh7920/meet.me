@@ -44,7 +44,6 @@ namespace Networking
             // Adding <moduleId, Queue> keyValuePair to the _multiLevelQueue dictionary 
             if (!(_multiLevelQueue.TryAdd(moduleId, new ConcurrentQueue<Packet>())))
             {
-                Trace.WriteLine("Multilevel Queue cannot overwrite existing key");
                 throw new Exception("Adding Queue to MultiLevelQueue Failed!");
             }
             
@@ -52,8 +51,7 @@ namespace Networking
             if (!(_priorityMap.TryAdd(moduleId, priority)))
             {
                 _multiLevelQueue.TryRemove(moduleId, out ConcurrentQueue<Packet> queue);
-                Trace.WriteLine("Priority Map cannot overwrite existing key");
-                throw new Exception("Priority Map Error");
+                throw new Exception("Priority Map cannot overwrite existing key");
             }
             
             // Getting the moduleIds in the priority order
@@ -125,7 +123,6 @@ namespace Networking
             }
             else
             {
-                Trace.WriteLine("Invalid Module Identifier found in the packet");
                 throw new Exception("Key Error: Packet holds invalid module identifier");
             }
             Trace.WriteLine("Packet Enqueued");
@@ -151,7 +148,6 @@ namespace Networking
             }
             else
             {
-                Trace.WriteLine("Cannot remove packets from empty queue");                
                 throw new Exception("Cannot Dequeue empty queue");
             }
         }
@@ -175,7 +171,6 @@ namespace Networking
             }
             else
             {
-                Trace.WriteLine("Dequeuing Packet");
                 throw new Exception("Cannot Peek into empty queue");
             }
         }

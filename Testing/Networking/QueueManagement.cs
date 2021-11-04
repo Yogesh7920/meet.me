@@ -54,7 +54,7 @@ namespace Testing.Networking
             {
                 moduleIndex = random.Next(0,4);
                 tempModuleId = _moduleIdentifiers[moduleIndex];
-                Packet item = new Packet(tempModuleId, tempData);
+                Packet item = new Packet{ModuleIdentifier = tempModuleId, SerializedData = tempData};
                 _testPackets.Add(item);
             }
 
@@ -75,7 +75,7 @@ namespace Testing.Networking
             const string moduleId = "S";
             const string data = "testData";
             int size = 0;
-            Packet packet = new Packet(moduleId, data);
+            Packet packet = new Packet{ModuleIdentifier = moduleId, SerializedData = data};
             
             _queue.Enqueue(packet);
             size = _queue.Size();
@@ -87,7 +87,7 @@ namespace Testing.Networking
         {
             const string moduleId = "A";
             const string data = "testData";
-            Packet packet = new Packet(moduleId, data);
+            Packet packet = new Packet{ModuleIdentifier = moduleId, SerializedData = data};
 
             Exception ex = Assert.Throws<Exception>(() =>
             {
@@ -152,7 +152,7 @@ namespace Testing.Networking
             const string data = "testData";
             bool empty;
             
-            Packet packet = new Packet(moduleId, data);
+            Packet packet = new Packet{ModuleIdentifier = moduleId, SerializedData = data};
             _queue.Enqueue(packet);
             
             try
@@ -193,7 +193,6 @@ namespace Testing.Networking
                 Task thread1 = Task.Run(() =>
                 {
                     _queue.RegisterModule(moduleId, priority);
-                   
                 });
 
                 Task thread2 = Task.Run(() =>
@@ -221,7 +220,6 @@ namespace Testing.Networking
             Exception ex = Assert.Throws<Exception>(() =>
             {
                 _queue.RegisterModule(moduleId, priority);
-
             });
 
             Assert.IsNotNull(ex);
@@ -261,7 +259,7 @@ namespace Testing.Networking
             const string moduleId = "S";
             const string data = "testData";
             int size = 8;
-            Packet packet = new Packet(moduleId, data);
+            Packet packet = new Packet{ModuleIdentifier = moduleId, SerializedData = data};
             
             Task thread1 = Task.Run(() =>
             {
@@ -316,7 +314,7 @@ namespace Testing.Networking
         {
             const string moduleId = "S";
             const string data = "testData";
-            Packet packet = new Packet(moduleId, data);
+            Packet packet = new Packet{ModuleIdentifier = moduleId, SerializedData = data};
 
             _queue.Enqueue(packet);
             Packet p = _queue.Peek();
@@ -339,12 +337,12 @@ namespace Testing.Networking
             _queue.RegisterModule(moduleId1, 2);
             _queue.RegisterModule(moduleId2,  1);
             
-            Packet xPacket1 = new Packet(moduleId1, xData1);
-            Packet xPacket2 = new Packet(moduleId1, xData2);
-            Packet xPacket3 = new Packet(moduleId1, xData3);
-            
-            Packet yPacket1 = new Packet(moduleId2, yData1);
-            Packet yPacket2 = new Packet(moduleId2, yData2);
+            Packet xPacket1 = new Packet{ModuleIdentifier = moduleId1, SerializedData = xData1};
+            Packet xPacket2 = new Packet{ModuleIdentifier = moduleId1,SerializedData = xData2};
+            Packet xPacket3 = new Packet{ModuleIdentifier = moduleId1,SerializedData = xData3};
+
+            Packet yPacket1 = new Packet{ModuleIdentifier = moduleId2,SerializedData = yData1};
+            Packet yPacket2 = new Packet{ModuleIdentifier = moduleId2,SerializedData = yData2};
             
 
             Task thread1 = Task.Run(() =>
@@ -401,9 +399,9 @@ namespace Testing.Networking
             const string newData = "xData";
             int newPriority = 5;
 
-            Packet packet1 = new Packet(moduleId, data);
-            Packet packet2 = new Packet(moduleId2, data2);
-            Packet packet3 = new Packet(newModuleId, newData);
+            Packet packet1 = new Packet{ModuleIdentifier = moduleId, SerializedData = data};
+            Packet packet2 = new Packet{ModuleIdentifier = moduleId2, SerializedData = data2};
+            Packet packet3 = new Packet{ModuleIdentifier = newModuleId, SerializedData = newData};
             
             Task thread1 = Task.Run(() =>
             {

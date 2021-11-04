@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Networking
 {
@@ -31,8 +32,11 @@ namespace Networking
                 // If the _notificationHandlers dictionary contains the moduleIdentifier
                 if (_notificationHandlers.ContainsKey(moduleIdentifier))
                 {
-                    INotificationHandler handler = _notificationHandlers[moduleIdentifier];    
-                    handler.OnDataReceived(data);
+                    INotificationHandler handler = _notificationHandlers[moduleIdentifier];
+                    _ = Task.Run(() =>
+                    {
+                        handler.OnDataReceived(data);
+                    });
                 }
                 else
                 {
