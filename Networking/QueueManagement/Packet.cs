@@ -5,6 +5,6 @@
         
         public string ModuleIdentifier;
         public string SerializedData;
-        
+        public string Destination;
     }
 }
