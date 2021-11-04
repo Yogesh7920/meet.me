@@ -16,35 +16,32 @@ using Client.ViewModels;
 
 namespace Client
 {
-    public partial class LoginWindow : Window
+    public partial class AuthView : Window
     {
         private MainWindow obj = new MainWindow();
-        public LoginWindow()
+        public AuthView()
         {
             InitializeComponent();
-            //
             AuthViewModel viewmodel = new AuthViewModel();
             this.DataContext = viewmodel;
         }
-        
-       /* private void OnJoinClick(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Handler method for Join Room button click
+        /// </summary>
+        private void OnJoinClick(object sender, RoutedEventArgs e)
         {
-            obj.Show();
-            Close();
-            // Page mainPage = new MainPage();
-            //MainFrame.Navigate(mainPage);
-        }*/
-       private void OnJoinClick(object sender, RoutedEventArgs e)
-       {
            var ip = this.IpBox.Text;
            var port = this.PortNumberBox.Text;
            var username = this.UsernameBox.Text;
 
            if (string.IsNullOrWhiteSpace(ip) || string.IsNullOrWhiteSpace(port) ||
-               string.IsNullOrWhiteSpace((username)))
+               string.IsNullOrWhiteSpace(username) || int.TryParse(port, out _) == false)
            {
                ErrorMsg.Visibility = System.Windows.Visibility.Visible;
-           }
+               this.IpBox.Text = String.Empty;
+               this.PortNumberBox.Text = String.Empty;
+               this.UsernameBox.Text = String.Empty;
+            }
            else
            {
                AuthViewModel viewmodel = this.DataContext as AuthViewModel;
@@ -57,12 +54,13 @@ namespace Client
                else
                {
                    ErrorMsg.Visibility = System.Windows.Visibility.Visible;
-                  // Close();
-               }
+                   this.IpBox.Text = String.Empty;
+                   this.PortNumberBox.Text = String.Empty;
+                   this.UsernameBox.Text = String.Empty;
+                }
            }
 
-
-       }
+        }
        
     }
 }
