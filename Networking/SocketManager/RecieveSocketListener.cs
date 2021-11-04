@@ -14,7 +14,7 @@ namespace Networking
 {
     public class RecieveSocketListener{
         private Thread _listen;
-        private bool _listenRun =false ;
+        private volatile bool _listenRun =false ;
         // define the threashold size
         const int _threshold = 1025;
 
@@ -54,10 +54,16 @@ namespace Networking
             packet.ModuleIdentifier = s[0];
             string data = s[1];
             string serializedData = "";
+            // have to make it more readable 
             for(int i = 0; i < data.Length - 3; i++)
             {
+                if(data[i]=='E' && data[i+1]=='O'&& data[i + 2] == 'F')
+                {
+                    break;
+                }
                 serializedData += data[i];
             }
+            
             packet.SerializedData = serializedData;
             return packet;
         }
@@ -74,13 +80,14 @@ namespace Networking
                     NetworkStream networkStream = _clientSocket.GetStream();
                     String message = "";
                     //problem := not able to close this thread if I use _listenRun two times
-                    // while (_listenRun)
+                    while (_listenRun)
                     {
                         byte[] inStream = new byte[_threshold];
                         networkStream.Read(inStream, 0, inStream.Length);
                         message += System.Text.Encoding.ASCII.GetString(inStream);
                         if (message.Contains("EOF"))
                         {
+                            // need to do resizing here else it will print 1KB length of string
                             Trace.WriteLine("message recieved from client " + message);
                             break;
                         }

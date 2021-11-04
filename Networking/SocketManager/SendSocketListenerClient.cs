@@ -11,7 +11,7 @@ namespace Networking
         private IQueue _queue;
         private TcpClient _tcpSocket;
         private Thread _listen;
-        private bool _listenRun = false;
+        private volatile bool _listenRun = false;
         const int _threshold = 1025;
         /// <summary>
         /// This method is the constructor of the class which initializes the params
@@ -30,7 +30,7 @@ namespace Networking
              _listen = new Thread(() => Listen());
              _listenRun = true;
             // problem := this thread is causing problem 
-            // _listen.Start();
+            _listen.Start();
         }
 
         /// <summary>
