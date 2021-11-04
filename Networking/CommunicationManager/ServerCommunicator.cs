@@ -39,7 +39,7 @@ namespace Networking
                 {
                     string address = ip.ToString();
                     int n = address.Length;
-                    if( address[n-1]!='1' && address[n - 2] != '.')
+                    if(address.Split(".")[3] != "1")
                     {
                         return ip.ToString();
                     }
