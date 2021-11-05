@@ -38,9 +38,7 @@ namespace Client
     public class ShapeManager : IWhiteBoardUpdater
     {
 
-        private List<string> selectedShapes = new List<string>();
-        private Dictionary<string, string> BBmap = new Dictionary<string, string>();
-        int counter = 0;
+        private List<int> selectedShapes;
 
         /// <summary>
         /// Fetch shape updates from IWhiteBoardState for rendering in the view   
@@ -118,42 +116,20 @@ namespace Client
         /// <param name="sh"> System.Windows.Shape instance to be selected </param>
         /// <param name="mode"> mode=0 if shape selected without Ctrl pressed, else mode=1 </param>
         /// <returns> void, upon altering the 'selectedShapes' of this class instane accordingly </returns>
-        public Canvas SelectShape(Canvas cn, Shape sh, IWhiteBoardOperationHandler WBOp, int mode = 0)
+        public void SelectShape(Shape sh, int mode = 0)
         {
-
-            SolidColorBrush strokeColor = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
-            switch (mode)
+            switch(mode)
             {
-                //single shape selection case
-                case 0:
-                    if (selectedShapes.Contains(sh.Uid.ToString()))
-                    {
-                        cn = DeleteSelectionBB(cn, sh, WBOp);
-                        selectedShapes.Remove(sh.Uid.ToString());
-                    }
-                    else
-                    {
-                        selectedShapes.Add(sh.Uid.ToString());
-                        cn = CreateSelectionBB(cn, sh, WBOp, strokeColor);
-                    }
-                    break;
-                //multiple shape selection case
-                case 1:
-                    if (selectedShapes.Contains(sh.Uid.ToString()))
-                    {
-                        cn = DeleteSelectionBB(cn, sh, WBOp);
-                        selectedShapes.Remove(sh.Uid.ToString());
-                    }
-                    else
-                    {
-                        selectedShapes.Add(sh.Uid.ToString());
-                        cn = CreateSelectionBB(cn, sh, WBOp, strokeColor); 
-                    }
-
-                    break;
-
-            }
-            return cn;
+               //single shape selection case
+              case 0:
+                selectedShapes = new List<int> { int.Parse(sh.Uid) };
+                break;
+               //multiple shape selection case
+              case 1:
+                selectedShapes.Add(int.Parse(sh.Uid));
+                break;
+             }
+            return;
         }
 
         /// <summary>
@@ -170,12 +146,12 @@ namespace Client
         /// <param name="shapeId"> Attribute to recursively keep track of the drawn shape visually by the user, initialised as null and equal to the UID assigned by the WB module for the remaining iterations </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> Final Canvas instance with the newly rendered/deleted shapes </returns>
-        public Canvas CreateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, WhiteBoardViewModel.WBTools activeTool, Point strt, Point end, float strokeWidth, SolidColorBrush strokeColor, string shapeId = null, bool shapeComp = false)
+        public Canvas CreateShape(Canvas cn, IWhiteBoardOperationHandler WBOps ,WhiteBoardViewModel.WBTools activeTool, Point strt, Point end, float strokeWidth, SolidColorBrush strokeColor, string shapeId = null, bool shapeComp = false)
         {
             List<UXShape> toRender;
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
-
+            
             BoardColor strk_clr = new BoardColor(strokeColor.Color.R, strokeColor.Color.G, strokeColor.Color.B);
 
             switch (activeTool)
@@ -276,15 +252,14 @@ namespace Client
         /// <param name="strokeColor"> Float determining the fill color of the drawn shape </param>
         /// 
         /// <returns> The updated Canvas </returns>
-        public Canvas DuplicateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, List<UXShape> shps, float strokeWidth, SolidColorBrush strokeColor, int offs_x = 10, int offs_y = 10)
+        public Canvas DuplicateShape(Canvas cn, IWhiteBoardOperationHandler WBOps,  List<UXShape> shps, float strokeWidth , SolidColorBrush strokeColor, int offs_x = 10, int offs_y = 10)
         {
             BoardColor fill = new BoardColor(strokeColor.Color.R, strokeColor.Color.G, strokeColor.Color.B);
 
             foreach (UXShape shp in shps)
             {
                 List<UXShape> toRender;
-                switch (shp.ShapeIdentifier)
-                {
+                switch (shp.ShapeIdentifier){
                     case (Whiteboard.ShapeType.ELLIPSE):
                         lock (this)
                         {
@@ -339,6 +314,35 @@ namespace Client
             return cn;
         }
 
+                            Coordinate strt = new Coordinate(topleft_x, topleft_y);
+                            Coordinate end = new Coordinate(bottomright_x, bottomright_y);
+
+                            toRender = WBOps.CreateEllipse(strt, end, strokeWidth, fill, rect.Uid, true);
+                            cn = this.RenderUXElement(toRender, cn);
+                        }
+                        break;
+                    case (Whiteboard.ShapeType.LINE):
+                        //TODO: Verify the working of this
+                        lock (this)
+                        {
+                            System.Windows.Shapes.Line lin = (System.Windows.Shapes.Line)shp.WindowsShape;
+                            int topleft_x = (int)Canvas.GetLeft(lin);
+                            int topleft_y = (int)Canvas.GetTop(lin);
+                            int bottomright_x = (int)(topleft_x + lin.Width);
+                            int bottomright_y = (int)(topleft_y + lin.Height);
+
+                            Coordinate strt = new Coordinate(topleft_x, topleft_y);
+                            Coordinate end = new Coordinate(bottomright_x, bottomright_y);
+
+                            toRender = WBOps.CreateEllipse(strt, end, strokeWidth, fill, lin.Uid, true);
+                            cn = this.RenderUXElement(toRender, cn);
+                        }
+                        break;
+                }
+            }
+            return cn;
+        }
+
         /// <summary>
         /// Render fetched shape updates on canvas  
         /// </summary>
@@ -350,7 +354,6 @@ namespace Client
                 switch (shp.UxOperation)
                 {
                     case (UXOperation.CREATE):
-                        //Take care of rendering Shape Geomatry and Orientation
                         cn.Children.Add(shp.WindowsShape);
                         break;
                     case (UXOperation.DELETE):
@@ -358,9 +361,9 @@ namespace Client
                         cn.Children.Remove(iterat.ToList()[0]);
                         break;
                 }
-
+        
             }
-
+            
             return cn;
         }
 
@@ -422,7 +425,7 @@ namespace Client
             }
             return cn;
         }
-
+      
 
         /// <summary>
         /// Set background color of the selected shape   
@@ -433,7 +436,7 @@ namespace Client
         }
 
     }
-
+   
     /// <summary>
     /// Class to manage existing and new FreeHand instances by providing various methods by aggregating WhiteBoard Module    
     /// </summary>
@@ -481,11 +484,11 @@ namespace Client
 
         public System.Windows.Point start;
         public System.Windows.Point end;
-        private WBTools activeTool;
-        public ShapeManager shapeManager;
-        public FreeHand freeHand;
+        public WBTools activeTool;
+        private ShapeManager shapeManager;
+        private FreeHand freeHand;
 
-        public IWhiteBoardOperationHandler WBOps;
+        IWhiteBoardOperationHandler WBOps;
 
         /// <summary>
         /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
@@ -493,9 +496,9 @@ namespace Client
         public WhiteBoardViewModel(Canvas GlobCanvas)
         {
             this.shapeManager = new ShapeManager();
-            this.freeHand = new FreeHand();
+            this.freeHand = new FreeHand(); 
             this.activeTool = WBTools.Initial;
-            this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
+            this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)) );
         }
 
 
@@ -503,9 +506,9 @@ namespace Client
         /// <summary>
         /// Changes the Background color of Canvas in View 
         /// </summary>
-        public Canvas ChangeWbBackground(Canvas cn, String hexCode)
+        public Canvas ChangeWbBackground(Canvas cn, Color clr)
         {
-            cn.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(hexCode));
+            cn.Background = new SolidColorBrush(clr);
             return cn;
         }
         /// <summary>
@@ -514,36 +517,27 @@ namespace Client
         /// <param name="clickedTool"> Defines the tool on which the user clicked to be used to set the 'activeTool' enum accordingly </param>
         /// <returns> void, upon altering the 'activeTool' of this class instance accordingly </returns>
 
-        public void ChangeActiveTool(string clickedTool)
+        public void ChangeActiveTool(WBTools clickedTool)
         {
             switch (clickedTool)
             {
-                case ("PenTool"):
-                    this.activeTool = WBTools.FreeHand;
-                    break;
-                case ("LineTool"):
+                case (WBTools.NewLine):
                     this.activeTool = WBTools.NewLine;
                     break;
-                case ("RectTool"):
+                case (WBTools.NewRectangle):
                     this.activeTool = WBTools.NewRectangle;
                     break;
-                case ("EllipseTool"):
+                case (WBTools.NewEllipse):
                     this.activeTool = WBTools.NewEllipse;
                     break;
-                case ("SelectTool"):
+                case (WBTools.Selection):
                     this.activeTool = WBTools.Selection;
                     break;
-                case ("EraseTool"):
+                case (WBTools.Eraser):
                     this.activeTool = WBTools.Eraser;
                     break;
             }
             return;
-
-        }
-
-        public WBTools GetActiveTool()
-        {
-            return activeTool;
 
         }
 
@@ -557,19 +551,28 @@ namespace Client
         }
 
         /// <summary>
-        /// Checkpoints the drawn shapes on canvas  
-        /// </summary>
-        /*public void SaveFrame(Canvas GlobCanvas)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Resotres the selected checkpoint  
         /// </summary>
-        public void RestoreFrame(Canvas GlobCanvas)
+        public void HandleClickEvent(MouseButtonEventArgs bt )
         {
-            throw new NotImplementedException();
-        }*/
+
+            if (bt.RightButton == MouseButtonState.Pressed) {
+                
+            }
+            else if (bt.RightButton == MouseButtonState.Released)
+            {
+
+            }
+            else if (bt.LeftButton == MouseButtonState.Pressed)
+            {
+                
+            }
+            else if (bt.LeftButton == MouseButtonState.Released)
+            {
+
+            }
+
+            return;
+        }
     }
 }

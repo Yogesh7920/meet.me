@@ -15,4 +15,3 @@ namespace Dashboard.Client.SessionManagement
         void OnSessionChanged(SessionData session);
     }
 }
-
