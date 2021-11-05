@@ -224,11 +224,18 @@ namespace Client
         /// <returns> Updated Canvas instance with the updated boundary of moved/rotated shape </returns>
         public Canvas SyncBorders(Canvas cn, IWhiteBoardOperationHandler WBOp,string shUID)
         {
-            cn = DeleteSelectionBB(cn,shUID,WBOp);
-            selectedShapes.Remove(shUID);
-
+            //Finding shape that was moved/rotated
             Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
-            cn = SelectShape(cn, sh, WBOp, 1); //mode = 1, as other selected shapes should remain selected 
+
+            string bbUID = BBmap[shUID];
+            //Finding bounding box
+            Shape bbox = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == bbUID).ToList()[0];
+            //Setting the position of bounding box to be same as updated shape
+            Canvas.SetLeft(bbox, Canvas.GetLeft(sh));
+            Canvas.SetTop(bbox, Canvas.GetTop(sh));
+            //Setting the angular orientation of bounding box to be same as updated shape
+            bbox.RenderTransform = sh.RenderTransform;
+
             return cn;
         }
 

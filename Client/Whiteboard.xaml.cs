@@ -192,11 +192,12 @@ namespace Client
                 switch (viewModel.GetActiveTool())
                 {
                     case (WhiteBoardViewModel.WBTools.Selection):
+                        //sets the end point for usage in TranslateShape/RotateShape
+                        this.viewModel.end = e.GetPosition(MyCanvas);
 
-                        if (this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y)
+                            if (this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y)
                         //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
-                        {
-                            
+                        {                           
                             //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
                             if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
                             {                               
@@ -204,12 +205,8 @@ namespace Client
                             }
 
                             else
-                            {
-                                //sets the end point for usage in TranslateShape/RotateShape
-                                this.viewModel.end = e.GetPosition(MyCanvas);
-
+                            {                               
                                 this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, new List<string> (viewModel.shapeManager.selectedShapes) , false);
-
                                 //Resetting the value of 'start' to perform the next Move functions
                                 this.viewModel.start = e.GetPosition(MyCanvas);
                             }
