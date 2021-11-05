@@ -11,8 +11,8 @@ namespace Content
 
         public ChatContextServer(ContentDatabase contentDatabase)
         {
-            this._allMessages = new List<ChatContext>();
             this._contentDatabase = contentDatabase;
+            this._allMessages = _contentDatabase.RetrieveChatContexts();
         }
 
         public void Receive(MessageData messageData)

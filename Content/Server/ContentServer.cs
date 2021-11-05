@@ -1,5 +1,6 @@
 ﻿using Networking;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Content
 {
@@ -20,7 +21,7 @@ namespace Content
             _communicator = CommunicationFactory.GetCommunicator();
             _contentDatabase = new ContentDatabase();
             _notificationHandler = new ContentServerNotificationHandler();
-            _fileServer = new FileServer();
+            _fileServer = new FileServer(_contentDatabase);
             _chatServer = new ChatServer(_contentDatabase);
             _chatContextServer = new ChatContextServer(_contentDatabase);
             _serializer = new Serializer();
@@ -32,27 +33,35 @@ namespace Content
             MessageData messageData = _serializer.Deserialize<MessageData>(data);
             MessageData receiveMessageData = null;
 
+            Debug.Assert(messageData != null, "[ContentServer] Received null from Deserializer");
+
             switch (messageData.Type)
             {
                 case MessageType.Chat:
-                    receiveMessageData = (MessageData)_chatServer.Receive(messageData);
+                    receiveMessageData = _chatServer.Receive(messageData);
                     break;
 
                 case MessageType.File:
-                    _fileServer.Receive(messageData);
+                    receiveMessageData = _fileServer.Receive(messageData);
                     break;
 
                 default:
-                    throw new System.Exception();
+                    Debug.Assert(false, "[ContentServer] Unknown Message Type");
+                    break;
             }
+
+            Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer/FileServer");
 
             if (messageData.Event != MessageEvent.Download)
             {
                 _chatContextServer.Receive(receiveMessageData);
-                Noyify(messageData);
+                Notify(messageData);
+                Send(messageData);
             }
-
-            Send(messageData);
+            else
+            {
+                SendFile(receiveMessageData);
+            }
         }
 
         private void Send(MessageData messageData)
@@ -71,7 +80,13 @@ namespace Content
             }
         }
 
-        private void Noyify(ReceiveMessageData receiveMessageData)
+        private void SendFile(MessageData messageData)
+        {
+            string message = _serializer.Serialize<MessageData>(messageData);
+            _communicator.Send(message, "Content", messageData.SenderId.ToString());
+        }
+
+        private void Notify(ReceiveMessageData receiveMessageData)
         {
             foreach (IContentListener subscriber in _subscribers)
             {

@@ -1,22 +1,40 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 
 namespace Content
 {
     internal class FileServer
     {
-        public void Receive(MessageData messageData)
+        private ContentDatabase _contentDatabase;
+
+        public FileServer(ContentDatabase contentDatabase)
         {
-            throw new NotImplementedException();
+            this._contentDatabase = contentDatabase;
         }
 
-        private string SaveFile(MessageData messageData)
+        public MessageData Receive(MessageData messageData)
         {
-            return "";
+            switch (messageData.Event)
+            {
+                case MessageEvent.NewMessage:
+                    return SaveFile(messageData);
+
+                case MessageEvent.Download:
+                    return FetchFile(messageData.MessageId);
+
+                default:
+                    throw new SystemException();
+            }
         }
 
-        private MessageData FetchFile(string file)
+        private MessageData SaveFile(MessageData messageData)
         {
-            return new MessageData();
+            return _contentDatabase.Store(messageData);
+        }
+
+        private MessageData FetchFile(ObjectId id)
+        {
+            return _contentDatabase.RetrieveMessage(id);
         }
     }
 }
