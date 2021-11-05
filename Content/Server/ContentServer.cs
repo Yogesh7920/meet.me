@@ -64,9 +64,9 @@ namespace Content
             }
             else
             {
-                foreach (string userId in messageData.ReceiverIds)
+                foreach (int userId in messageData.ReceiverIds)
                 {
-                    communicator.Send(message, "Content", userId);
+                    communicator.Send(message, "Content", userId.ToString());
                 }
             }
         }
@@ -92,10 +92,10 @@ namespace Content
         }
 
         /// <inheritdoc />
-        public void SSendAllMessagesToClient(string userId)
+        public void SSendAllMessagesToClient(int userId)
         {
             string allMessagesSerialized = serializer.Serialize<List<ChatContext>>(chatContextServer.GetAllMessages());
-            communicator.Send(allMessagesSerialized, "Content", userId);
+            communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
     }
 }
