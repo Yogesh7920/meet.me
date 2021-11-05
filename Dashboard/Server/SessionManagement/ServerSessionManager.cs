@@ -68,7 +68,7 @@ namespace Dashboard.Server.SessionManagement
         /// <returns> A MeetingCredentials Object </returns>
         public MeetingCredentials GetPortsAndIPAddress()
         {
-            ICommunicator communicator = CommunicationFactory.GetCommunicator();
+            ICommunicator communicator = CommunicationFactory.GetCommunicator(false);
             Trace.WriteLine("Fetching IP Address and port from the networking module");
             string meetAddress = communicator.Start();
 
