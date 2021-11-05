@@ -6,12 +6,24 @@ namespace Content
     internal class ContentClient : IContentClient
     {
         private int userId;
-        public int UserId { get => userId; set => userId = value; }
-        
+        public int UserId 
+        { 
+            get => userId; 
+            set
+            {
+                userId = value;
+                fileHandler.UserId = value;
+                // chatHandler.UserId = value;
+            }
+        }
+
         private List<IContentListener> subscribers;
         private Queue<SendMessageData> sendQueue;
         private List<ChatContext> allMessages;
         Dictionary<int, int> threadMap;
+
+        private FileClient fileHandler;
+        // private ChatClient chatHandler;
 
         public ContentClient()
         {
@@ -20,12 +32,27 @@ namespace Content
             sendQueue = new Queue<SendMessageData>();
             allMessages = new List<ChatContext>();
             threadMap = new Dictionary<int, int>();
+            fileHandler = new FileClient();
+            // chatHandler = new ChatClient();
         }
 
         /// <inheritdoc/>
         public void CSend(SendMessageData toSend)
         {
-            throw new NotImplementedException();
+            switch(toSend.Type)
+            {
+                case MessageType.Chat:
+                    // chatHandler.Send(toSend);
+                    break;
+                
+                case MessageType.File:
+                    fileHandler.Send(toSend);
+                    break;
+
+                default:
+                    throw new ArgumentException("Invalid MessageType field. Must be one of MessageType.Chat or MessageType.File");
+
+            }
         }
 
         /// <inheritdoc/>

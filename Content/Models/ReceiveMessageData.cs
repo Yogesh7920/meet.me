@@ -5,6 +5,7 @@ using System;
 namespace Content
 {
     [BsonIgnoreExtraElements]
+    [Serializable()]
     public class ReceiveMessageData
     {
         /// <summary>
