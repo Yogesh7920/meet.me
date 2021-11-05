@@ -38,8 +38,8 @@ namespace Client
     public class ShapeManager : IWhiteBoardUpdater
     {
 
-        public List<string> selectedShapes = new List<string>();
-        public Dictionary<string, string> BBmap = new Dictionary<string, string>();
+        private List<string> selectedShapes = new List<string>();
+        private Dictionary<string, string> BBmap = new Dictionary<string, string>();
         int counter = 0;
 
         /// <summary>
@@ -89,26 +89,52 @@ namespace Client
         }
 
 
-        public Canvas DeleteSelectionBB(Canvas cn, Shape sh, IWhiteBoardOperationHandler WBOp)
+        public Canvas DeleteSelectionBB(Canvas cn, string uId, IWhiteBoardOperationHandler WBOp)
         {
-            string BBId = BBmap[sh.Uid.ToString()];
+            string BBId = BBmap[uId.ToString()];
             IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == BBId);
             cn.Children.Remove(iterat.ToList()[0]);
 
-            BBmap.Remove(sh.Uid.ToString());
+            BBmap.Remove(uId.ToString());
 
             return cn;
         }
 
         public Canvas UnselectAllBB(Canvas cn, IWhiteBoardOperationHandler WBOp)
         {
-            foreach (var item in BBmap.Keys)
+            /*foreach (var item in BBmap.Keys)
             {
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == item);
                 Shape sh = (iterat.ToList()[0]) as Shape;
                 cn = DeleteSelectionBB(cn, sh, WBOp);
                 selectedShapes.Remove(sh.Uid.ToString());
+            }*/
+
+            foreach (var item in selectedShapes)
+            {
+                cn = DeleteSelectionBB(cn, item, WBOp);
             }
+
+            selectedShapes.Clear();
+
+            return cn;
+        }
+
+        public Canvas DeleteSelectedShapes(Canvas cn, IWhiteBoardOperationHandler WBOp)
+        {
+
+
+            //remove shapes 
+            foreach (var item in selectedShapes)
+            {
+                IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == item);
+                Shape sh = (iterat.ToList()[0]) as Shape;
+                cn.Children.Remove(sh);
+            }
+
+            //remove bounding boxes 
+            cn = UnselectAllBB(cn, WBOp);
+
             return cn;
         }
 
@@ -126,10 +152,16 @@ namespace Client
             {
                 //single shape selection case
                 case 0:
-                    if (selectedShapes.Contains(sh.Uid.ToString()))
+                    //If selected shape is already selected 
+                    if (selectedShapes.Count > 0)
                     {
-                        cn = DeleteSelectionBB(cn, sh, WBOp);
-                        selectedShapes.Remove(sh.Uid.ToString());
+                        cn = UnselectAllBB(cn, WBOp);
+                        return cn;
+                    }
+                    //If selected shape is the selection box rectangle 
+                    else if (BBmap.ContainsValue(sh.Uid))
+                    {
+                        cn = UnselectAllBB(cn, WBOp);
                     }
                     else
                     {
@@ -141,8 +173,12 @@ namespace Client
                 case 1:
                     if (selectedShapes.Contains(sh.Uid.ToString()))
                     {
-                        cn = DeleteSelectionBB(cn, sh, WBOp);
+                        cn = DeleteSelectionBB(cn, sh.Uid.ToString(), WBOp);
                         selectedShapes.Remove(sh.Uid.ToString());
+                    }
+                    else if (BBmap.ContainsValue(sh.Uid))
+                    {
+                        cn = UnselectAllBB(cn, WBOp);
                     }
                     else
                     {
