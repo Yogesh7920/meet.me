@@ -6,13 +6,13 @@ namespace Content
 {
     internal class ChatContextServer
     {
-        private List<ChatContext> allMessages;
-        private ContentDatabase contentDatabase;
+        private List<ChatContext> _allMessages;
+        private ContentDatabase _contentDatabase;
 
         public ChatContextServer(ContentDatabase contentDatabase)
         {
-            allMessages = new List<ChatContext>();
-            this.contentDatabase = contentDatabase;
+            this._contentDatabase = contentDatabase;
+            this._allMessages = _contentDatabase.RetrieveChatContexts();
         }
 
         public void Receive(MessageData messageData)
@@ -22,14 +22,14 @@ namespace Content
 
         public List<ChatContext> GetAllMessages()
         {
-            return allMessages;
+            return _allMessages;
         }
 
         private void UpdateChatContext(ReceiveMessageData receiveMessageData)
         {
             if (receiveMessageData.ReplyThreadId != ObjectId.Empty)
             {
-                ChatContext chatContext = allMessages.FirstOrDefault(chatContext => chatContext.ThreadId == receiveMessageData.ReplyThreadId);
+                ChatContext chatContext = _allMessages.FirstOrDefault(chatContext => chatContext.ThreadId == receiveMessageData.ReplyThreadId);
                 switch (receiveMessageData.Event)
                 {
                     case MessageEvent.NewMessage:
@@ -49,7 +49,7 @@ namespace Content
                         throw new System.Exception();
                 }
 
-                contentDatabase.UpdateChatContext(chatContext.ThreadId, chatContext);
+                _contentDatabase.UpdateChatContext(chatContext.ThreadId, chatContext);
             }
             else
             {
@@ -58,8 +58,8 @@ namespace Content
                 chatContext.NumOfMessages = 1;
                 chatContext.MsgList = new List<ReceiveMessageData>();
                 chatContext.MsgList.Add(receiveMessageData);
-                contentDatabase.Store(chatContext);
-                allMessages.Add(chatContext);
+                _contentDatabase.Store(chatContext);
+                _allMessages.Add(chatContext);
             }
         }
 
