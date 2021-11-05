@@ -201,7 +201,7 @@ namespace Client
                     case (Whiteboard.ShapeType.ELLIPSE):
                         lock (this)
                         {
-                            Ellipse eps = (Ellipse)shp.WindowsShape;
+                            System.Windows.Shapes.Ellipse eps = (System.Windows.Shapes.Ellipse)shp.WindowsShape;
                             int topleft_x = (int)Canvas.GetLeft(eps);
                             int topleft_y = (int)Canvas.GetTop(eps);
                             int bottomright_x = (int)(topleft_x + eps.Width);
@@ -217,7 +217,7 @@ namespace Client
                     case (Whiteboard.ShapeType.RECTANGLE):
                         lock (this)
                         {
-                            Rectangle rect = (Rectangle)shp.WindowsShape;
+                            System.Windows.Shapes.Rectangle rect = (System.Windows.Shapes.Rectangle)shp.WindowsShape;
                             int topleft_x = (int)Canvas.GetLeft(rect);
                             int topleft_y = (int)Canvas.GetTop(rect);
                             int bottomright_x = (int)(topleft_x + rect.Width);
@@ -234,7 +234,7 @@ namespace Client
                         //TODO: Verify the working of this
                         lock (this)
                         {
-                            Line lin = (Line)shp.WindowsShape;
+                            System.Windows.Shapes.Line lin = (System.Windows.Shapes.Line)shp.WindowsShape;
                             int topleft_x = (int)Canvas.GetLeft(lin);
                             int topleft_y = (int)Canvas.GetTop(lin);
                             int bottomright_x = (int)(topleft_x + lin.Width);
