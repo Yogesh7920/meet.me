@@ -12,9 +12,12 @@ using System.Diagnostics;
 /// <author>Tausif Iqbal </author>
 namespace Networking
 {
-    public class RecieveSocketListener{
+    public class RecieveSocketListener
+    {
         private Thread _listen;
-        private volatile bool _listenRun =false ;
+
+        private volatile bool _listenRun = false;
+
         // define the threashold size
         const int _threshold = 1025;
 
@@ -29,15 +32,17 @@ namespace Networking
         /// <param name="queue">queue.</param>
         /// <param name="clientSocket">clientSocket.</param>
         /// </summary>
-        public RecieveSocketListener(IQueue queue,TcpClient clientSocket){
-            this._queue=queue;
-            this._clientSocket=clientSocket;
+        public RecieveSocketListener(IQueue queue, TcpClient clientSocket)
+        {
+            this._queue = queue;
+            this._clientSocket = clientSocket;
         }
 
         /// <summary>
         /// This method is for starting the thread
         /// </summary>
-        public void Start(){
+        public void Start()
+        {
             _listen = new Thread(() => Listen());
             _listenRun = true;
             _listen.Start();
@@ -49,21 +54,22 @@ namespace Networking
         ///  /// <returns>Packet </returns>
         private Packet GetPacket(String msg)
         {
-            Packet packet= new Packet();
+            Packet packet = new Packet();
             string[] s = msg.Split(":");
             packet.ModuleIdentifier = s[0];
             string data = s[1];
             string serializedData = "";
             // have to make it more readable 
-            for(int i = 0; i < data.Length - 3; i++)
+            for (int i = 0; i < data.Length - 3; i++)
             {
-                if(data[i]=='E' && data[i+1]=='O'&& data[i + 2] == 'F')
+                if (data[i] == 'E' && data[i + 1] == 'O' && data[i + 2] == 'F')
                 {
                     break;
                 }
+
                 serializedData += data[i];
             }
-            
+
             packet.SerializedData = serializedData;
             return packet;
         }
@@ -91,11 +97,10 @@ namespace Networking
                             break;
                         }
                     }
-                    
+
                     Packet packet = GetPacket(message);
                     _queue.Enqueue(packet);
                     Trace.WriteLine("message reiceved and equeued into queue");
-
                 }
                 catch (Exception ex)
                 {
@@ -108,14 +113,16 @@ namespace Networking
         /// <summary>
         /// This method closes the listen thread
         /// </summary>
-        public void Stop(){
+        public void Stop()
+        {
             _listenRun = false;
         }
 
         /// <summary>
         /// This method is for pushing the data into the queue
         /// </summary>
-        private void PushToQueue(string data, string moduleIdentifier){
+        private void PushToQueue(string data, string moduleIdentifier)
+        {
             throw new NotImplementedException();
         }
     }
