@@ -11,30 +11,36 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Whiteboard;
 
 namespace Client
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Interaction logic for Whiteboard.xaml
     /// </summary>
-    /// 
     public partial class WhiteBoardView : Window
     {
-
         private Button activeButton;
+        private WhiteBoardViewModel viewModel;
+        public Canvas GlobCanvas;
         private string buttonDefaultColor = "#D500F9";
         private string buttonSelectedColor = "#007C9C";
+
 
         public WhiteBoardView()
         {
             InitializeComponent();
-            WhiteBoardViewModel viewModel = new WhiteBoardViewModel();
+            this.GlobCanvas = MyCanvas; 
+            viewModel = new WhiteBoardViewModel(GlobCanvas);
         }
 
         // Canvas Mouse actions 
         private void OnCanvasMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+           if (e.LeftButton == MouseButtonState.Pressed){
+                this.viewModel.start = e.GetPosition(MyCanvas);
+           }
+            
         }
 
         private void OnCanvasMouseButtonUp(object sender, MouseButtonEventArgs e)
@@ -76,7 +82,7 @@ namespace Client
                 activeButton.ClearValue(Button.BackgroundProperty);
             }
 
-            if(this.SelectToolBar.Visibility == Visibility.Collapsed)
+            if (this.SelectToolBar.Visibility == Visibility.Collapsed)
             {
                 this.SelectToolBar.Visibility = Visibility.Visible;
             }
@@ -220,11 +226,10 @@ namespace Client
                 MessageBox.Show("Toggled Off");
             }
         }
-
         //Parent Window click event
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed)
             {
                 DragMove();
             }
