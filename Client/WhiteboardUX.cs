@@ -39,7 +39,7 @@ namespace Client
     public class ShapeManager : IWhiteBoardUpdater
     {
 
-        private List<string> selectedShapes = new List<string>();
+        public List<string> selectedShapes = new List<string>();
         private Dictionary<string, string> BBmap = new Dictionary<string, string>();
         int counter = 0;
 
@@ -76,6 +76,10 @@ namespace Client
             rect.StrokeThickness = 1;
             rect.Stroke = strokeColor;
             rect.Uid = counter.ToString();
+
+            //For the selection boundary to have the same borders as the selected shape
+            rect.RenderTransform = sh.RenderTransform;
+
             counter++;
             Canvas.SetLeft(rect, topleft_x);
             Canvas.SetTop(rect, topleft_y);
@@ -133,6 +137,10 @@ namespace Client
             foreach (var item in selectedShapes)
             {
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == item);
+
+                //Check Condition 
+                Debug.Assert(iterat.Count() == 1);
+
                 Shape sh = (iterat.ToList()[0]) as Shape;
                 cn.Children.Remove(sh);
             }
@@ -206,6 +214,33 @@ namespace Client
             return cn;
         }
 
+
+        /// <summary>
+        /// Sycronizes the border of selected shapes which are moved/rotated by user input or server updates
+        /// </summary>
+        /// <param name="cn"> Main Canvas instance to which the shape is to be added </param>
+        /// <param name="WBOp"> Shape operation handler class instance provided by the Whiteboard library </param>
+        /// <param name="shUID"> UID of Selected Shape in Canvas that is moved/rotated and needs to have updated dotted-selection boundary</param>
+        /// <returns> Updated Canvas instance with the updated boundary of moved/rotated shape </returns>
+        public Canvas SyncBorders(Canvas cn, IWhiteBoardOperationHandler WBOp,string shUID)
+        {
+            //Finding shape that was moved/rotated
+            Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
+
+            string bbUID = BBmap[shUID];
+            //Finding bounding box
+            Shape bbox = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == bbUID).ToList()[0];
+            //Setting the position of bounding box to be same as updated shape
+            Canvas.SetLeft(bbox, Canvas.GetLeft(sh));
+            Canvas.SetTop(bbox, Canvas.GetTop(sh));
+            //Setting the angular orientation of bounding box to be same as updated shape
+            bbox.RenderTransform = sh.RenderTransform;
+
+            return cn;
+        }
+
+
+
         /// <summary>
         /// Handles Shape creation requests by the user 
         /// </summary>
@@ -267,19 +302,51 @@ namespace Client
         /// <param name="shps"> shps is the 'selectedShapes' list in the ViewModel </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, System.Windows.Point strt, System.Windows.Point end, List<UXShape> shps, bool shapeComp)
+        public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, List<string> shps, bool shapeComp)
         {
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
             List<UXShape> toRender;
 
-            foreach (UXShape shp in shps)
+            lock (this)
             {
-                lock (this)
+                foreach (string shUID in shps)
                 {
-                    toRender = WBOps.TranslateShape(C_strt, C_end, shp.WindowsShape.Uid, shapeComp);
-                    cn = this.RenderUXElement(toRender, cn);
-                }
+                    //UNCOMMENT LATER
+                    /*lock (this)
+                    {
+                        toRender = WBOps.TranslateShape(C_strt, C_end, shpUID, shapeComp);
+                        cn = this.RenderUXElement(toRender, cn);
+                    }*/
+
+                    /* Temporary WB Module code to test functionality */             
+                    IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
+
+                    //Check Condition 
+                    Debug.Assert(iterat.Count() == 1);
+
+                    int topleft_x = (int)Canvas.GetLeft(iterat.ToList()[0]);
+                    int topleft_y = (int)Canvas.GetTop(iterat.ToList()[0]);
+
+
+
+                    //MessageBox.Show("Entered MoveShape event");
+                    //MessageBox.Show(topleft_x.ToString(), topleft_y.ToString());
+
+                    int diff_topleft_x = (int)strt.X - (int)end.X;
+                    int diff_topleft_y = (int)strt.Y - (int)end.Y;
+
+                    //MessageBox.Show(diff_topleft_x.ToString(), diff_topleft_y.ToString());
+
+                    Canvas.SetLeft(iterat.ToList()[0], topleft_x - diff_topleft_x);
+                    Canvas.SetTop(iterat.ToList()[0], topleft_y - diff_topleft_y);
+                    /* Temporary WB Module code to test functionality */
+
+
+
+                    //Necessary step to synchronize borders on rotation of selected shapes
+                    cn = SyncBorders(cn, WBOps, shUID);
+                }               
             }
 
             return cn;
@@ -297,27 +364,67 @@ namespace Client
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
 
-        public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, System.Windows.Point strt, System.Windows.Point end, List<UXShape> shps, bool shapeComp)
+        public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, List<string> shps, bool shapeComp)
         {
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
 
             List<UXShape> toRender;
-            foreach (UXShape shp in shps)
+            foreach (string shUID in shps)
             {
-                lock (this)
+                //UNCOMMENT LATER
+                /*lock (this)
                 {
-                    toRender = WBOps.RotateShape(C_strt, C_end, shp.WindowsShape.Uid, shapeComp);
+                    toRender = WBOps.RotateShape(C_strt, C_end, shpUID, shapeComp);
                     cn = this.RenderUXElement(toRender, cn);
-                }
+                }*/
+                /* Temporary WB Module code to test functionality */
+                IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
+
+                //Check Condition 
+                Debug.Assert(iterat.Count() == 1);
+
+                Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
+
+                /*Code to find the angle made by start & end point on the center of the shape*/
+                int topleft_x = (int)Canvas.GetLeft(sh);
+                int topleft_y = (int)Canvas.GetTop(sh);
+                int center_x = (int)(topleft_x + sh.Width/2);
+                int center_y = (int)(topleft_y + sh.Height/2);
+
+                Point strt_shifted = new Point(strt.X - center_x, strt.Y - center_y);
+                Point end_shifted = new Point(end.X - center_x, end.Y - center_y);
+
+                double radians_strt = Math.Atan2( strt_shifted.Y , strt_shifted.X );
+                double angle_strt = radians_strt * (180 / Math.PI);
+
+                double radians_end = Math.Atan2(end_shifted.Y, end_shifted.X);
+                double angle_end = radians_end * (180 / Math.PI);
+
+
+                int ang = (int)(angle_end - angle_strt);
+                /*Code to find the angle made by start & end point on the center of the shape*/
+
+                RotateTransform rotateTransform = new RotateTransform
+                {
+                    Angle = ang,
+                    CenterX = (sh.Width / 2), //topleft_x,
+                    CenterY = (sh.Height / 2) //topleft_y
+                };
+                sh.RenderTransform = rotateTransform;
+                /* Temporary WB Module code to test functionality */
+
+
+                //Necessary step to synchronize borders on rotation of selected shapes
+                cn = SyncBorders(cn, WBOps, shUID);
             }
             return cn;
         }
 
         /// <summary>
-        /// Rotate the selected shape by input degrees  
+        /// Duplicate the selected shape by input degrees  
         /// </summary>
-        /// <param name="cn"> Main Canvas instance to which the shape is to be added </param>
+        /// <param name="cn"> Main Canvas instance to which the duplicated shape is to be added </param>
         /// <param name="WBOps"> Shape operation handler class instance provided by the Whiteboard library </param>
         /// <param name="shps"> shps is the 'selectedShapes' list in the ViewModel </param>
         /// <param name="strokeWidth"> Float determining the thickness of border of drawn shape (OR) thickness of the stroke in freehand drawing </param>
@@ -405,6 +512,10 @@ namespace Client
                         break;
                     case (UXOperation.DELETE):
                         IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
+
+                        //Check Condition 
+                        Debug.Assert(iterat.Count() == 1);
+
                         cn.Children.Remove(iterat.ToList()[0]);
                         break;
                 }
@@ -457,7 +568,7 @@ namespace Client
         /// <param name="end"> System.Windows.Point instance showing representing the point where MouseUp event occured </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, List<UXShape> shps, System.Windows.Point strt, System.Windows.Point end, bool shapeComp)
+        public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, List<UXShape> shps, Point strt, Point end, bool shapeComp)
         {
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));

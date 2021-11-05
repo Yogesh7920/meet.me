@@ -6,10 +6,13 @@
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         Title="Window1" Height="450" Width="800"
-        WindowStyle="None"
-        ResizeMode="NoResize"
+
         Background="#cfcfcf"
+        FocusManager.FocusedElement= "{Binding ElementName = MyCanvas}" 
         >
+    <!--    ResizeMode="NoResize"
+        WindowStyle="None" -->
+
     <!--<UserControl x:Class="Client.WhiteBoardView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -22,7 +25,8 @@
         >-->
 
     <!--Parent Grid-->
-    <Grid MouseDown="Grid_MouseDown">
+    <!--<Grid MouseDown="Grid_MouseDown">-->
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
@@ -696,7 +700,7 @@
 
         <!--Middle Column Containing Canvas-->
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <Canvas Name="MyCanvas" MouseDown="OnCanvasMouseButtonDown" MouseUp="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="White" Height="400" Width="580" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Canvas Name="MyCanvas" Focusable="True" MouseDown="OnCanvasMouseButtonDown" MouseMove="OnCanvasMouseMove"  MouseUp ="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="White" Height="379" Width="580" HorizontalAlignment="Center">
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
