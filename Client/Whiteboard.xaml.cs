@@ -64,7 +64,7 @@ namespace Client
                         {
                             if (e.OriginalSource is Shape)
                             {
-                                MessageBox.Show("Shape Found");
+                                //MessageBox.Show("Shape Found");
                                 //Create Shape -> Creates a temp Rectangle for bounding box with height and width same as selected shape
                                 //Add this Shape to selected shape
                                 Shape selectedShape = e.OriginalSource as Shape;

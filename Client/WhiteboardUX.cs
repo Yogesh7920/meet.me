@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Diagnostics;
 using Whiteboard;
 
 
@@ -93,6 +94,10 @@ namespace Client
         {
             string BBId = BBmap[uId.ToString()];
             IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == BBId);
+
+            //Check Condition 
+            Debug.Assert(iterat.Count() == 1);
+
             cn.Children.Remove(iterat.ToList()[0]);
 
             BBmap.Remove(uId.ToString());
@@ -152,16 +157,25 @@ namespace Client
             {
                 //single shape selection case
                 case 0:
-                    //If selected shape is already selected 
-                    if (selectedShapes.Count > 0)
-                    {
-                        cn = UnselectAllBB(cn, WBOp);
-                        return cn;
-                    }
                     //If selected shape is the selection box rectangle 
-                    else if (BBmap.ContainsValue(sh.Uid))
+                    if (BBmap.ContainsValue(sh.Uid))
                     {
                         cn = UnselectAllBB(cn, WBOp);
+                    }
+                    //If selected shape is already selected or we select a different shape  
+                    else if (selectedShapes.Count > 0)
+                    {
+                        if (selectedShapes.Contains(sh.Uid.ToString()))
+                        {
+                            cn = DeleteSelectionBB(cn, sh.Uid.ToString(), WBOp);
+                            selectedShapes.Remove(sh.Uid.ToString());
+                        }
+                        else
+                        {
+                            cn = UnselectAllBB(cn, WBOp);
+                            selectedShapes.Add(sh.Uid.ToString());
+                            cn = CreateSelectionBB(cn, sh, WBOp, strokeColor);
+                        }
                     }
                     else
                     {
