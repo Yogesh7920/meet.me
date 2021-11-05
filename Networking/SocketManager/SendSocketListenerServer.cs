@@ -6,20 +6,21 @@ using System.Threading;
 
 namespace Networking
 {
-    public class SendSocketListenerServer{
-
+    public class SendSocketListenerServer
+    {
         // It contains the packets which needs to be sent over the network
         private IQueue _queue;
-        private Hashtable _clientIdSocket ;
+        private Hashtable _clientIdSocket;
         private TcpClient _tcpSocket;
         private Thread _listen;
         private bool _listenRun = false;
         const int _threshold = 1025;
+
         /// <summary>
         /// This method is the constructor of the class which initializes the params
         /// <param name="queue">queue</param>
         /// </summary>
-        public SendSocketListenerServer(IQueue queue , Hashtable clientIdSocket)
+        public SendSocketListenerServer(IQueue queue, Hashtable clientIdSocket)
         {
             this._queue = queue;
             this._clientIdSocket = clientIdSocket;
@@ -93,8 +94,10 @@ namespace Networking
                                 return;
                             }
                         }
+
                         buffer = buffer.Insert(buffer.Length, msg[i].ToString());
                     }
+
                     if (buffer.Length > 0)
                     {
                         try
@@ -111,11 +114,9 @@ namespace Networking
                             return;
                         }
                     }
-
                 }
 
                 Trace.WriteLine("Message has been sent to server from client");
-
             }
         }
 

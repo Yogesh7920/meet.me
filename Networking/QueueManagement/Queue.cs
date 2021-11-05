@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Networking
 {
-    public class Queue: IQueue
+    public class Queue : IQueue
     {
         private ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
         private ConcurrentDictionary<string, int> _priorityMap;
@@ -40,20 +40,20 @@ namespace Networking
             {
                 throw new Exception("Priority should be positive integer");
             }
-            
+
             // Adding <moduleId, Queue> keyValuePair to the _multiLevelQueue dictionary 
             if (!(_multiLevelQueue.TryAdd(moduleId, new ConcurrentQueue<Packet>())))
             {
                 throw new Exception("Adding Queue to MultiLevelQueue Failed!");
             }
-            
+
             // Adding <moduleId, priority> keyValuePair to the _priorityMap dictionary
             if (!(_priorityMap.TryAdd(moduleId, priority)))
             {
                 _multiLevelQueue.TryRemove(moduleId, out ConcurrentQueue<Packet> queue);
                 throw new Exception("Priority Map cannot overwrite existing key");
             }
-            
+
             // Getting the moduleIds in the priority order
             IOrderedEnumerable<KeyValuePair<string, int>> orderedIdPairs = _priorityMap.OrderByDescending(s => s.Value);
             _moduleIdentifiers = new List<string>();
@@ -71,10 +71,10 @@ namespace Networking
             {
                 _currentQueue = _moduleIdentifiers.FindIndex(x => x == _currentModuleIdentifier);
             }
-            
+
             Trace.WriteLine("Module Registered");
         }
-        
+
         /// <summary>
         /// Size of the queue.
         /// </summary>
@@ -87,9 +87,10 @@ namespace Networking
             {
                 totalPackets += keyValuePair.Value.Count;
             }
+
             return totalPackets;
         }
-        
+
         /// <summary>
         /// Dequeues all the elements.
         /// </summary>
@@ -115,7 +116,7 @@ namespace Networking
         public void Enqueue(Packet item)
         {
             string moduleIdentifier = item.ModuleIdentifier;
-            
+
             // Check if the _multiLevelQueue dictionary contains the moduleIdentifier
             if (_multiLevelQueue.ContainsKey(moduleIdentifier))
             {
@@ -125,6 +126,7 @@ namespace Networking
             {
                 throw new Exception("Key Error: Packet holds invalid module identifier");
             }
+
             Trace.WriteLine("Packet Enqueued");
         }
 
@@ -138,7 +140,7 @@ namespace Networking
             {
                 Packet packet;
                 FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
-                
+
                 string moduleIdentifier = _moduleIdentifiers[_currentQueue];
                 _multiLevelQueue[moduleIdentifier].TryDequeue(out packet);
                 _currentWeight -= 1;
@@ -151,7 +153,7 @@ namespace Networking
                 throw new Exception("Cannot Dequeue empty queue");
             }
         }
-        
+
         /// <summary>
         /// Peeks into the first element of the queue.
         /// </summary>
@@ -161,11 +163,11 @@ namespace Networking
             if (!(IsEmpty()))
             {
                 Packet packet;
-                FindNext();// Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
-                
+                FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
+
                 string moduleIdentifier = _moduleIdentifiers[_currentQueue];
                 _multiLevelQueue[moduleIdentifier].TryPeek(out packet);
-                
+
                 Trace.WriteLine("Peeking into the queue");
                 return packet;
             }
@@ -174,7 +176,7 @@ namespace Networking
                 throw new Exception("Cannot Peek into empty queue");
             }
         }
-        
+
         /// <summary>
         /// Checks if the queue is empty or not.
         /// </summary>
@@ -192,12 +194,12 @@ namespace Networking
         private void FindNext()
         {
             string moduleIdentifier = _moduleIdentifiers[_currentQueue];
-            
+
             if (_currentWeight == 0)
             {
                 // Go to the next queue and set the _currentWeight
                 _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
-                moduleIdentifier = _moduleIdentifiers[_currentQueue];   
+                moduleIdentifier = _moduleIdentifiers[_currentQueue];
                 _currentWeight = _priorityMap[moduleIdentifier];
                 _currentModuleIdentifier = moduleIdentifier;
                 FindNext(); // To circumvent the case of the next queue having no packets
@@ -214,7 +216,7 @@ namespace Networking
                         moduleIdentifier = _moduleIdentifiers[_currentQueue];
                         _currentWeight = _priorityMap[moduleIdentifier];
                         _currentModuleIdentifier = moduleIdentifier;
-                    }    
+                    }
                 }
             }
         }

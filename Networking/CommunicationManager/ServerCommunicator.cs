@@ -16,15 +16,17 @@ namespace Networking
 {
     public class ServerCommunicator : ICommunicator
     {
-        private Dictionary<string, INotificationHandler> _subscribedModules = new Dictionary<string, INotificationHandler>();
+        private Dictionary<string, INotificationHandler> _subscribedModules =
+            new Dictionary<string, INotificationHandler>();
+
         private Hashtable _clientIdSocket = new Hashtable();
         private Queue _recieveQueue = new Queue();
 
         private Thread _acceptRequest;
         private bool _acceptRequestRun = false;
         private SendSocketListenerServer _sendSocketListenerServer;
-       
-       private HashSet<RecieveSocketListener> clientListener = new HashSet<RecieveSocketListener>();
+
+        private HashSet<RecieveSocketListener> clientListener = new HashSet<RecieveSocketListener>();
 
         /// <summary>
         /// It finds IP4 address of machine which does not end with .1
@@ -39,16 +41,16 @@ namespace Networking
                 {
                     string address = ip.ToString();
                     int n = address.Length;
-                    if(address.Split(".")[3] != "1")
+                    if (address.Split(".")[3] != "1")
                     {
                         return ip.ToString();
                     }
-                    
                 }
             }
+
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
-        
+
         /// <summary>
         /// scan for free Tcp port.
         /// </summary>
@@ -58,11 +60,11 @@ namespace Networking
             IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
             TcpListener tcp = new TcpListener(ip, 0);
             tcp.Start();
-            int port = ((IPEndPoint)tcp.LocalEndpoint).Port;
+            int port = ((IPEndPoint) tcp.LocalEndpoint).Port;
             tcp.Stop();
             return port;
         }
-        
+
         /// <summary>
         /// start the server and return ip and port
         /// </summary>
@@ -73,19 +75,19 @@ namespace Networking
             IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
             TcpListener serverSocket = new TcpListener(ip, port);
             serverSocket.Start();
-            
+
             Trace.WriteLine("Server has started with ip = " +
-            IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString()) +
-            " and port number = " + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString());
-            
-            _sendSocketListenerServer = new SendSocketListenerServer(_recieveQueue, _clientIdSocket); 
+                            IPAddress.Parse(((IPEndPoint) serverSocket.LocalEndpoint).Address.ToString()) +
+                            " and port number = " + ((IPEndPoint) serverSocket.LocalEndpoint).Port.ToString());
+
+            _sendSocketListenerServer = new SendSocketListenerServer(_recieveQueue, _clientIdSocket);
             _sendSocketListenerServer.Start();
             _acceptRequest = new Thread(() => AcceptRequest(serverSocket));
             _acceptRequestRun = true;
             _acceptRequest.Start();
 
-            return IPAddress.Parse(((IPEndPoint)serverSocket.LocalEndpoint).Address.ToString())+ 
-                    ":" + ((IPEndPoint)serverSocket.LocalEndpoint).Port.ToString();
+            return IPAddress.Parse(((IPEndPoint) serverSocket.LocalEndpoint).Address.ToString()) +
+                   ":" + ((IPEndPoint) serverSocket.LocalEndpoint).Port.ToString();
         }
 
         /// <summary>
@@ -113,12 +115,12 @@ namespace Networking
         {
             _acceptRequestRun = false;
             // run a loop and stop  recieveSocketListener of all the clients
-            foreach( RecieveSocketListener r in clientListener)
+            foreach (RecieveSocketListener r in clientListener)
             {
                 r.Stop();
             }
+
             _sendSocketListenerServer.Stop();
-            
         }
 
         /// <summary>
@@ -126,35 +128,37 @@ namespace Networking
         /// also adds corresponding listener to a set
         /// </summary>
         /// <returns> void </returns>
-        void ICommunicator.AddClient<T>(string clientID, T socketObject) 
+        void ICommunicator.AddClient<T>(string clientID, T socketObject)
         {
             _clientIdSocket[clientID] = socketObject;
-            RecieveSocketListener recieveSocketListener =new RecieveSocketListener(_recieveQueue, (TcpClient)(object)socketObject);
+            RecieveSocketListener recieveSocketListener =
+                new RecieveSocketListener(_recieveQueue, (TcpClient) (object) socketObject);
             clientListener.Add(recieveSocketListener);
             recieveSocketListener.Start();
-            
-
         }
+
         /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientID)
         {
             throw new NotImplementedException();
         }
+
         /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier)
         {
             throw new NotImplementedException();
         }
+
         /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier, string destination)
         {
             throw new NotImplementedException();
         }
+
         /// <inheritdoc />
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
         {
             _subscribedModules.Add(identifier, handler);
         }
-        
     }
 }

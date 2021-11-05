@@ -12,7 +12,7 @@ namespace Networking
         /// <summary>
         /// ReceiveQueueListener constructor initializes the queue and the notification handler passed.
         /// </summary>
-        public ReceiveQueueListener(IQueue queue, Dictionary<string , INotificationHandler> notificationHandlers)
+        public ReceiveQueueListener(IQueue queue, Dictionary<string, INotificationHandler> notificationHandlers)
         {
             _receieveQueue = queue;
             _notificationHandlers = notificationHandlers;
@@ -28,21 +28,18 @@ namespace Networking
                 Packet packet = _receieveQueue.Dequeue();
                 string data = packet.SerializedData;
                 string moduleIdentifier = packet.ModuleIdentifier;
-            
+
                 // If the _notificationHandlers dictionary contains the moduleIdentifier
                 if (_notificationHandlers.ContainsKey(moduleIdentifier))
                 {
                     INotificationHandler handler = _notificationHandlers[moduleIdentifier];
-                    _ = Task.Run(() =>
-                    {
-                        handler.OnDataReceived(data);
-                    });
+                    _ = Task.Run(() => { handler.OnDataReceived(data); });
                 }
                 else
                 {
                     throw new Exception("Handler does not exist");
                 }
-            }        
+            }
         }
     }
 }

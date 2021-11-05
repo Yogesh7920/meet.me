@@ -5,14 +5,15 @@ using System.Threading;
 
 namespace Networking
 {
-    public class SendSocketListenerClient{
-
+    public class SendSocketListenerClient
+    {
         // It contains the packets which needs to be sent over the network
         private IQueue _queue;
         private TcpClient _tcpSocket;
         private Thread _listen;
-        private bool _listenRun = false;
+        private volatile bool _listenRun = false;
         const int _threshold = 1025;
+
         /// <summary>
         /// This method is the constructor of the class which initializes the params
         /// <param name="queue">queue</param>
@@ -22,15 +23,15 @@ namespace Networking
             this._queue = queue;
             this._tcpSocket = tcpsocket;
         }
-        
+
         /// <summary>
         /// This method is for starting the thread
         /// </summary>
-        public void Start(){
-             _listen = new Thread(() => Listen());
-             _listenRun = true;
-            // problem := this thread is causing problem 
-            // _listen.Start();
+        public void Start()
+        {
+            _listen = new Thread(() => Listen());
+            _listenRun = true;
+            _listen.Start();
         }
 
         /// <summary>
@@ -43,7 +44,7 @@ namespace Networking
             msg += ":";
             msg += packet.SerializedData;
             msg += "EOF";
-            return msg ;
+            return msg;
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace Networking
             while (_listenRun)
             {
                 // dequeue from queue and write to network Stream
-               while (!_queue.IsEmpty())
+                while (!_queue.IsEmpty())
                 {
                     Packet packet = _queue.Dequeue();
                     // call get message function to form string from packet
@@ -66,20 +67,22 @@ namespace Networking
                         {
                             try
                             {
-                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);    
+                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
                                 NetworkStream networkStream = _tcpSocket.GetStream();
                                 networkStream.Write(outStream, 0, outStream.Length);
                                 networkStream.Flush();
                                 buffer = "";
                             }
                             catch (Exception e)
-                           {
+                            {
                                 Trace.WriteLine(e);
                                 return;
                             }
                         }
+
                         buffer = buffer.Insert(buffer.Length, msg[i].ToString());
                     }
+
                     if (buffer.Length > 0)
                     {
                         try
@@ -89,25 +92,24 @@ namespace Networking
                             networkStream.Write(outStream, 0, outStream.Length);
                             networkStream.Flush();
                             buffer = "";
-                       }
+                        }
                         catch (Exception e)
-                       {
+                        {
                             Trace.WriteLine(e);
                             return;
                         }
                     }
-
                 }
 
                 Trace.WriteLine("Message has been sent to server from client");
-
             }
         }
 
         /// <summary>
         /// This method is for stopping the thread
         /// </summary>
-        public void Stop(){
+        public void Stop()
+        {
             _listenRun = false;
         }
     }
