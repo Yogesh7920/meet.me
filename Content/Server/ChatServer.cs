@@ -5,11 +5,11 @@ namespace Content
 {
     internal class ChatServer
     {
-        private ContentDatabase contentDatabase;
+        private ContentDatabase _contentDatabase;
 
         public ChatServer(ContentDatabase contentDatabase)
         {
-            this.contentDatabase = contentDatabase;
+            this._contentDatabase = contentDatabase;
         }
 
         public MessageData Receive(MessageData messageData)
@@ -32,7 +32,7 @@ namespace Content
 
         private MessageData Update(ObjectId id, MessageData messageData)
         {
-            contentDatabase.UpdateMessageData(id, messageData);
+            _contentDatabase.UpdateMessageData(id, messageData);
             return messageData;
         }
 
@@ -40,18 +40,18 @@ namespace Content
         {
             MessageData messageData = Fetch(id);
             messageData.Starred = !messageData.Starred;
-            contentDatabase.UpdateMessageData(id, messageData);
+            _contentDatabase.UpdateMessageData(id, messageData);
             return messageData;
         }
 
         private MessageData Store(MessageData messageData)
         {
-            return contentDatabase.Store(messageData);
+            return _contentDatabase.Store(messageData);
         }
 
         private MessageData Fetch(ObjectId messageId)
         {
-            return contentDatabase.RetrieveMessage(messageId);
+            return _contentDatabase.RetrieveMessage(messageId);
         }
     }
 }
