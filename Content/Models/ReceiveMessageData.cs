@@ -41,7 +41,7 @@ namespace Content
         /// <summary>
         /// Id of thread to which this message belongs
         /// </summary>
-        public int ReplyThreadId;
+        public ObjectId ReplyThreadId;
 
         /// <summary>
         /// Time at which message was sent

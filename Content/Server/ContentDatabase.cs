@@ -35,18 +35,13 @@ namespace Content
             chatContexts.InsertOne(chatContext);
         }
 
-        public void Store(SendFileData fileData)
-        {
-            files.InsertOne(fileData);
-        }
-
         public void UpdateMessageData(ObjectId id, MessageData messageData)
         {
             var filter = Builders<MessageData>.Filter.Eq("MessageId", id);
             messages.ReplaceOne(filter, messageData);
         }
 
-        public void UpdateChatContext(int id, ChatContext chatContext)
+        public void UpdateChatContext(ObjectId id, ChatContext chatContext)
         {
             var filter = Builders<ChatContext>.Filter.Eq("ThreadId", id);
             chatContexts.ReplaceOne(filter, chatContext);
@@ -66,11 +61,6 @@ namespace Content
         public List<ChatContext> RetrieveChatContexts()
         {
             return chatContexts.Find(chatContexts => true).ToList();
-        }
-
-        public SendFileData RetrieveFile(ObjectId messageId)
-        {
-            return files.Find(file => file.messageId == messageId).FirstOrDefault();
         }
     }
 }

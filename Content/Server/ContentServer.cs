@@ -22,7 +22,7 @@ namespace Content
             notificationHandler = new ContentServerNotificationHandler();
             fileServer = new FileServer();
             chatServer = new ChatServer(contentDatabase);
-            chatContextServer = new ChatContextServer();
+            chatContextServer = new ChatContextServer(contentDatabase);
             serializer = new Serializer();
             communicator.Subscribe("ContentServer", notificationHandler);
         }

@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace Content
         /// <summary>
         /// Id of the thread
         /// </summary>
-        public int ThreadId;
+        [BsonId]
+        public ObjectId ThreadId;
 
         /// <summary>
         /// Number of messages in the thread
