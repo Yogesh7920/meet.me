@@ -11,7 +11,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Whiteboard;
 
 namespace Client
 {
@@ -23,24 +22,76 @@ namespace Client
         private Button activeButton;
         private WhiteBoardViewModel viewModel;
         public Canvas GlobCanvas;
+
+        //Button Dynamic Colors 
         private string buttonDefaultColor = "#D500F9";
         private string buttonSelectedColor = "#007C9C";
+
+        //Canvas BG available Colors 
+        private string canvasBg1 = "#FFFFFF";
+        private string canvasBg2 = "#FF0000";
+        private string canvasBg3 = "#00FF00";
+        private string canvasBg4 = "#0000FF";
+        private string canvasBg5 = "#FFFF00";
 
 
         public WhiteBoardView()
         {
             InitializeComponent();
-            this.GlobCanvas = MyCanvas; 
+            this.GlobCanvas = MyCanvas;
             viewModel = new WhiteBoardViewModel(GlobCanvas);
         }
 
         // Canvas Mouse actions 
         private void OnCanvasMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
-           if (e.LeftButton == MouseButtonState.Pressed){
-                this.viewModel.start = e.GetPosition(MyCanvas);
-           }
-            
+
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+
+
+                MessageBox.Show(viewModel.GetActiveTool().ToString());
+                switch (viewModel.GetActiveTool())
+                {
+                    case (WhiteBoardViewModel.WBTools.FreeHand):
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewLine):
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewRectangle):
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewEllipse):
+                        break;
+                    case (WhiteBoardViewModel.WBTools.Selection):
+
+
+
+                        if (e.OriginalSource is Shape && !viewModel.shapeManager.BBmap.ContainsValue((e.OriginalSource as Shape).Uid))
+                        {
+                            MessageBox.Show("Shape Found");
+                            //Create Shape -> Creates a temp Rectangle for bounding box with height and width same as selected shape
+                            //Add this Shape to selected shape
+                            Shape selectedShape = e.OriginalSource as Shape;
+
+                            //this.SelectionBox.Visibility = Visibility.Visible;
+                            //GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas,viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle,...) 
+
+                            GlobCanvas = viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps, 0);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Entered Else");
+                            viewModel.shapeManager.UnselectAllBB(GlobCanvas, viewModel.WBOps);
+                            //this.SelectionBox.Visibility = Visibility.Collapsed;
+                        }
+
+                        break;
+                    case (WhiteBoardViewModel.WBTools.Eraser):
+                        break;
+                }
+                //this.viewModel.start = e.GetPosition(MyCanvas);
+            }
+
         }
 
         private void OnCanvasMouseButtonUp(object sender, MouseButtonEventArgs e)
