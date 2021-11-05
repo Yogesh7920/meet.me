@@ -6,23 +6,23 @@ namespace Content
     internal class ContentServer : IContentServer
     {
         private List<IContentListener> subscribers;
-        private List<ChatContext> allMessages;
         private ICommunicator communicator;
         private INotificationHandler notificationHandler;
         private ContentDatabase contentDatabase;
         private ISerializer serializer;
         private FileServer fileServer;
         private ChatServer chatServer;
+        private ChatContextServer chatContextServer;
 
         public ContentServer()
         {
             subscribers = new List<IContentListener>();
-            allMessages = new List<ChatContext>();
             communicator = CommunicationFactory.GetCommunicator();
             contentDatabase = new ContentDatabase();
             notificationHandler = new ContentServerNotificationHandler();
             fileServer = new FileServer();
             chatServer = new ChatServer(contentDatabase);
+            chatContextServer = new ChatContextServer();
             serializer = new Serializer();
             communicator.Subscribe("ContentServer", notificationHandler);
         }
@@ -30,12 +30,12 @@ namespace Content
         public void Receive(string data)
         {
             MessageData messageData = serializer.Deserialize<MessageData>(data);
-            ReceiveMessageData receiveMessageData = null;
+            MessageData receiveMessageData = null;
 
             switch (messageData.Type)
             {
                 case MessageType.Chat:
-                    receiveMessageData = chatServer.Receive(messageData);
+                    receiveMessageData = (MessageData)chatServer.Receive(messageData);
                     break;
 
                 case MessageType.File:
@@ -46,20 +46,17 @@ namespace Content
                     throw new System.Exception();
             }
 
-            foreach (ChatContext chatContext in allMessages)
+            if (messageData.Event != MessageEvent.Download)
             {
-                if (receiveMessageData != null && receiveMessageData.ReplyThreadId == chatContext.ThreadId)
-                {
-                    chatContext.MsgList.Add(receiveMessageData);
-                    break;
-                }
+                chatContextServer.Receive(receiveMessageData);
+                Noyify(messageData);
             }
 
-            foreach (IContentListener subscriber in subscribers)
-            {
-                subscriber.OnMessage(receiveMessageData);
-            }
+            Send(messageData);
+        }
 
+        private void Send(MessageData messageData)
+        {
             string message = serializer.Serialize<MessageData>(messageData);
             if (messageData.ReceiverIds.Length == 0)
             {
@@ -74,6 +71,14 @@ namespace Content
             }
         }
 
+        private void Noyify(ReceiveMessageData receiveMessageData)
+        {
+            foreach (IContentListener subscriber in subscribers)
+            {
+                subscriber.OnMessage(receiveMessageData);
+            }
+        }
+
         /// <inheritdoc />
         public void SSubscribe(IContentListener subscriber)
         {
@@ -83,13 +88,13 @@ namespace Content
         /// <inheritdoc />
         public List<ChatContext> SGetAllMessages()
         {
-            return allMessages;
+            return chatContextServer.GetAllMessages();
         }
 
         /// <inheritdoc />
         public void SSendAllMessagesToClient(string userId)
         {
-            string allMessagesSerialized = serializer.Serialize<List<ChatContext>>(allMessages);
+            string allMessagesSerialized = serializer.Serialize<List<ChatContext>>(chatContextServer.GetAllMessages());
             communicator.Send(allMessagesSerialized, "Content", userId);
         }
     }
