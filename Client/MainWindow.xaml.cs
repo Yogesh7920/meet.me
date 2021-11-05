@@ -81,7 +81,7 @@ namespace Client
 
         private void Whiteboard_Clicked(object sender, RoutedEventArgs e)
         {
-            DataContext = new WhiteBoardViewModel();
+            /*DataContext = new WhiteBoardViewModel();
             _wbFlag = true;
             if (_chatFlag.Equals(true))
             {
@@ -95,7 +95,7 @@ namespace Client
                 _usersListFlag = false;
             }
             SSwb.SetValue(Grid.ColumnProperty, 2);
-            SSwb.SetValue(Grid.ColumnSpanProperty, 5);
+            SSwb.SetValue(Grid.ColumnSpanProperty, 5);*/
 
         }
 
