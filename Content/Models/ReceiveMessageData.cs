@@ -31,17 +31,17 @@ namespace Content
         /// <summary>
         /// User id of the message sender
         /// </summary>
-        public string SenderId;
+        public int SenderId;
 
         /// <summary>
         /// List of ids for receviers, all if empty
         /// </summary>
-        public string[] ReceiverIds;
+        public int[] ReceiverIds;
 
         /// <summary>
         /// Id of thread to which this message belongs
         /// </summary>
-        public int ReplyThreadId;
+        public ObjectId ReplyThreadId;
 
         /// <summary>
         /// Time at which message was sent
