@@ -2,11 +2,9 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0-windows</TargetFramework>
-<<<<<<< HEAD
-		<UseWindowsForms>true</UseWindowsForms>
-=======
 
->>>>>>> 2469a2c48213cc85ec05a780d3c822cc0d3b63f0
+		<UseWindowsForms>true</UseWindowsForms>
+
 	    <UseWPF>true</UseWPF>
 	    <ApplicationIcon />
 	    <OutputType>Library</OutputType>

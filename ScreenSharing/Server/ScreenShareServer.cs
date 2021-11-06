@@ -30,9 +30,7 @@ namespace ScreenSharing
 		//Timer will be used to sense disconnection issues.
 		public Timer timer;
 		//Stores the user Id of the user currently sharing the screen.
-		public int userId;
-
-		public static string identifier;
+		public string userId;
 
 		/// <summary>
 		/// Public Constructor which will initialize most of the attributes.
@@ -40,8 +38,7 @@ namespace ScreenSharing
 		public ScreenShareServer()
 		{
 			_communicator = CommunicationFactory.GetCommunicator();
-			//_communicator.Subscribe();
-			throw new NotImplementedException();
+			_communicator.Subscribe(this.GetType().Namespace, this);
 		}
 
 		/// <summary>

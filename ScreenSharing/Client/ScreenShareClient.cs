@@ -23,11 +23,13 @@ namespace ScreenSharing
 	{
 		//Store the Communicator instance which is used to send screen over the network.
 		public ICommunicator _communicator;
-		//Boolean to indicate whether screen sharing is currently on or not.
+		//Boolean to indicate whether other clients are screen sharing.
 		public bool otherSharing;
 
+		// boolean to check whether current client is screen sharing.
 		public bool thisSharing;
 
+		// boolean to control the notifying thread
 		public bool isNotifying;
 		//Stores a thread which shares the images.
 		public Thread _sharingThread;
@@ -47,17 +49,18 @@ namespace ScreenSharing
 		/// <summary>
 		/// Public Constructor which will initialize most of the attributes.
 		/// </summary>
-		public ScreenShareClient(string identifier)
+		public ScreenShareClient()
         {
 			_communicator = CommunicationFactory.GetCommunicator();
-			_communicator.Subscribe(identifier,this);
+			_communicator.Subscribe(this.GetType().Namespace,this);
 
 			// creating a thread to capture and send the screen
 			_sharingThread = new Thread(captureAndSend);
 
-			// creating a thread to notify the UX
+			// creating a thread to notify the UX and starting its execution
 			isNotifying = true;
 			_notifyingThread = new Thread(notifyUx);
+			_notifyingThread.Start();
 		}
 
 		/// <summary>
@@ -110,6 +113,8 @@ namespace ScreenSharing
 
 				Graphics graphics = Graphics.FromImage(bitmap);
 				graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
+				Size curSize = new Size(32, 32);
+				Cursors.Default.Draw(graphics, new Rectangle(Cursor.Position, curSize));
 				Bitmap bitmap480p = new Bitmap(720, 480);
 				Graphics graphics480p = Graphics.FromImage(bitmap480p);
 				graphics480p.DrawImage(bitmap, 0, 0, 720, 480);

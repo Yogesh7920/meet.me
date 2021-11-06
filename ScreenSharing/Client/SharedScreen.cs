@@ -7,7 +7,6 @@
 
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 
 
 namespace ScreenSharing
@@ -15,16 +14,16 @@ namespace ScreenSharing
 
     public class SharedScreen
     {
-        //Stores the user Id of the user sharing the screen
-        public int userId;
+        // Stores the user Id of the user sharing the screen
+        public string userId;
 
-        //Stores the user name of the user sharing the screen
+        // Stores the user name of the user sharing the screen
         public string username;
 
-        //Stores the type of message
+        // Stores the type of message
         public int messageType;
 
-        //Stores the screen
+        // Stores the screen
         public Bitmap screen;
     }
 }
