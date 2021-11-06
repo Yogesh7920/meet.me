@@ -60,6 +60,8 @@ namespace Content
             }
             else
             {
+                // store file path on which the file will be downloaded on the client's system
+                receiveMessageData.Message = messageData.Message;
                 SendFile(receiveMessageData);
             }
         }
