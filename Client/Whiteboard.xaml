@@ -309,8 +309,6 @@
 
             </local:ToggleButton>
 
-            <!--Restore Frame Button-->
-
             <!--Restore Frame Pop up-->
             <Popup Name="RestoreFramePopUp"
                     IsOpen="{Binding ElementName=RestoreFrameButton, Path=IsChecked}"
@@ -362,7 +360,8 @@
                     </ListBox>
                 </Grid>
             </Popup>
-
+            
+            <!--Restore Frame Button-->
             <ToggleButton Content="Retore Frame" 
                     Name ="RestoreFrameButton"
                     Grid.Column="5" 
@@ -468,7 +467,85 @@
 
                                 <!--Buttons-->
                                 <Grid Grid.Row="0">
-                                    <!--Paint Brush Button-->
+                                    <!--<Popup Name="FreeHandPopUp"
+                                        IsOpen="{Binding ElementName=PenTool, Path=IsChecked}"
+                                        PlacementTarget="{Binding ElementName=PenTool}"
+                                        AllowsTransparency="True"
+                                        PopupAnimation="Slide"
+                                        StaysOpen="False"  
+                                        Height="125"
+                                        Width="110">
+
+                                        <Grid Name="FreeHandDropdown" Background="#cfcfcf">
+
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="2*"></RowDefinition>
+                                                <RowDefinition Height="2*"></RowDefinition>
+                                                <RowDefinition Height="3*"></RowDefinition>
+                                            </Grid.RowDefinitions>
+
+                                            <StackPanel Grid.Row="0">
+                                                <TextBlock Text="Border Color"
+                                                           Foreground="Black"
+                                                           FontSize="14"
+                                                           FontWeight="light"
+                                                           VerticalAlignment="Center"
+                                                           Margin="10 10 0 5"
+                                                ></TextBlock>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <RadioButton Grid.Column="0" Margin="5 0 0 10"  VerticalAlignment="Center" Background="White" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBorder1Checked">
+                                                        <RadioButton.RenderTransform>
+                                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                        </RadioButton.RenderTransform>
+                                                    </RadioButton>
+                                                    <RadioButton Grid.Column="1" Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBorder2Checked">
+                                                        <RadioButton.RenderTransform>
+                                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                        </RadioButton.RenderTransform>
+                                                    </RadioButton>
+                                                    <RadioButton Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBorder3Checked">
+                                                        <RadioButton.RenderTransform>
+                                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                        </RadioButton.RenderTransform>
+                                                    </RadioButton>
+                                                    <RadioButton Grid.Column="3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBorder4Checked">
+                                                        <RadioButton.RenderTransform>
+                                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                        </RadioButton.RenderTransform>
+                                                    </RadioButton>
+                                                    <RadioButton Grid.Column="4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBorder5Checked">
+                                                        <RadioButton.RenderTransform>
+                                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+                                                        </RadioButton.RenderTransform>
+                                                    </RadioButton>
+                                                </Grid>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Row="2">
+                                                <TextBlock Text="Stroke Thickness"
+                                                           Foreground="Black"
+                                                           FontSize="12"
+                                                           FontWeight="light"
+                                                           VerticalAlignment="Center"
+                                                           Margin="10 0 0 0"
+                                                ></TextBlock>
+                                                <Slider x:Name="StrokeThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="StrokeThicknessSlider_ValueChanged"></Slider>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Popup>-->
+                                    
+                                    <!--Free Hand Button-->
                                     <Button x:Name="PenTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedFreehandTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/Pen.png" Margin="2 2 2 2"></Image>
@@ -751,14 +828,15 @@
 
                                 <!--Buttons-->
                                 <Grid Grid.Row="0">
-
+                                    
+                                    <!-- Pop up : Set Shape Border and Thickness -->
                                     <Popup Name="SetShapeBorderPopUp"
                                         IsOpen="{Binding ElementName=FillShapeBorderButton, Path=IsChecked}"
                                         PlacementTarget="{Binding ElementName=FillShapeBorderButton}"
                                         AllowsTransparency="True"
                                         PopupAnimation="Slide"
                                         StaysOpen="False"  
-                                        Height="65"
+                                        Height="125"
                                         Width="110">
 
                                         <Grid Name="SetShapeBorderDropdown" Background="#cfcfcf">
@@ -766,6 +844,7 @@
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="2*"></RowDefinition>
                                                 <RowDefinition Height="2*"></RowDefinition>
+                                                <RowDefinition Height="3*"></RowDefinition>
                                             </Grid.RowDefinitions>
 
                                             <StackPanel Grid.Row="0">
@@ -815,6 +894,17 @@
                                                     </RadioButton>
                                                 </Grid>
                                             </StackPanel>
+
+                                            <StackPanel Grid.Row="2">
+                                                <TextBlock Text="Stroke Thickness"
+                                                           Foreground="Black"
+                                                           FontSize="12"
+                                                           FontWeight="light"
+                                                           VerticalAlignment="Center"
+                                                           Margin="10 0 0 0"
+                                                ></TextBlock>
+                                                <Slider x:Name="StrokeThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="StrokeThicknessSlider_ValueChanged"></Slider>
+                                            </StackPanel>
                                         </Grid>
                                     </Popup>
                                     
@@ -859,7 +949,7 @@
 
                                 <Grid Grid.Row="1">
                                     
-                                    <!-- Pop Up : Fill shape -->
+                                    <!-- Pop Up : Fill shape color -->
                                     <Popup Name="SetShapeFillPopUp"
                                         IsOpen="{Binding ElementName=FillShapeColorButton, Path=IsChecked}"
                                         PlacementTarget="{Binding ElementName=FillShapeColorButton}"

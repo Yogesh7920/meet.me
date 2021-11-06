@@ -41,6 +41,7 @@ namespace Client
 
         public List<string> selectedShapes = new List<string>();
         private Dictionary<string, string> BBmap = new Dictionary<string, string>();
+
         int counter = 0;
 
         /// <summary>
@@ -571,7 +572,7 @@ namespace Client
         /// <param name="WBOps"> Shape operation handler class instance provided by the Whiteboard library </param>
         /// <param name="shps"> Shapes that are to be altered, expected to be 'selectedShapes' attribute of the aggregating ViewModel instance </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas CustomizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, string hexCode, int Fill = 0)
+        public Canvas CustomizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, string property, string hexCode, float thickness)
         {
             List<UXShape> toRender;
             SolidColorBrush color = (SolidColorBrush)(new BrushConverter().ConvertFrom(hexCode));
@@ -591,14 +592,18 @@ namespace Client
                 //Check Condition 
                 Debug.Assert(iterat.Count() == 1);
 
-                Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
+                //Convert the UI element to Shape type 
+                Shape sh = (Shape)iterat.ToList()[0];
 
-                switch (Fill)
+                switch (property)
                 {
-                    case 0:
-                        sh.Stroke = color; 
+                    case "Stroke":
+                        sh.Stroke = color;
                         break;
-                    case 1:
+                    case "StrokeThickness":
+                        sh.StrokeThickness = thickness;
+                        break;
+                    case "Fill":
                         sh.Fill = color; 
                         break;
                 }
@@ -652,9 +657,6 @@ namespace Client
         /// <summary>
         /// Render FreeHand instances shape updates on canvas  
         /// </summary>
-        /// 
-
-
         public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
         {
             //Write implementation code
@@ -664,13 +666,13 @@ namespace Client
         public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false)
         {
 
+            SolidColorBrush yellowBrush = new SolidColorBrush();
+            yellowBrush.Color = Colors.White;
+            SolidColorBrush blackBrush = new SolidColorBrush();
+            blackBrush.Color = Colors.Black;
+
             if (creation)
             {
-                SolidColorBrush yellowBrush = new SolidColorBrush();
-                yellowBrush.Color = Colors.White;
-                SolidColorBrush blackBrush = new SolidColorBrush();
-                blackBrush.Color = Colors.Black;
-
                 poly = new System.Windows.Shapes.Polyline();
                 poly.Stroke = yellowBrush;
                 poly.StrokeThickness = 3;
@@ -684,6 +686,11 @@ namespace Client
             }
 
             return cn;  
+        }
+
+        public Canvas CustomizePolyline(Canvas cn, IWhiteBoardOperationHandler WBOps)
+        {
+            return cn;
         }
     }
 
