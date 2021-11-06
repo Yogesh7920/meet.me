@@ -16,7 +16,7 @@ namespace Dashboard.Server.Summary
 		/// </summary>
 		public Summarizer()
 		{
-			throw new NotImplementedException();
+			_processor = new ChatProcessor();
 		}
 
 		/// <summary>
@@ -29,9 +29,19 @@ namespace Dashboard.Server.Summary
 		/// <returns>
 		/// String which is the summary of the discussion
 		/// </returns>
-		public string GetSummary(ChatContext[] chats)
+		public string GetSummary(ChatContext[] chats, double fraction = 0.2)
 		{
-			throw new NotImplementedException();
+			string discussionChat = "";
+			int numChats = 0;
+			foreach (ChatContext chat in chats)
+			{
+				foreach (ReceiveMessageData msg in chat.MsgList)
+				{
+					discussionChat += msg.Message;
+					numChats++;
+				}
+			}
+			return _processor.Summarize(discussionChat, fraction);
 		}
 
 		/// <summary>
@@ -46,9 +56,12 @@ namespace Dashboard.Server.Summary
 		/// Error code denoting the success or failure 
 		/// of the operation
 		/// </returns>
-		public int SaveSummary(ChatContext[] chats)
+		public bool SaveSummary(ChatContext[] chats, double fraction = 0.2)
 		{
+			string summary = GetSummary(chats, fraction);
 			throw new NotImplementedException();
 		}
+
+		private readonly ChatProcessor _processor;
 	}
 }
