@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using System.Threading;
 using Networking;
 
@@ -23,7 +24,11 @@ namespace ScreenSharing
 		//Store the Communicator instance which is used to send screen over the network.
 		public ICommunicator _communicator;
 		//Boolean to indicate whether screen sharing is currently on or not.
-		public bool isShared;
+		public bool otherSharing;
+
+		public bool thisSharing;
+
+		public bool isNotifying;
 		//Stores a thread which shares the images.
 		public Thread _sharingThread;
 		//Stores the thread which will be used to notify UX regarding the shared screen.
@@ -37,15 +42,22 @@ namespace ScreenSharing
 		// This will be an instance of the UX class which will subscribe for notifications
 		public IScreenShare _Ux;
 		//Timer will be used to sense disconnection issues.
-		public Timer timer;
+		public System.Windows.Forms.Timer timer;
 
 		/// <summary>
 		/// Public Constructor which will initialize most of the attributes.
 		/// </summary>
-		public ScreenShareClient()
+		public ScreenShareClient(string identifier)
         {
 			_communicator = CommunicationFactory.GetCommunicator();
-			throw new NotImplementedException();
+			_communicator.Subscribe(identifier,this);
+
+			// creating a thread to capture and send the screen
+			_sharingThread = new Thread(captureAndSend);
+
+			// creating a thread to notify the UX
+			isNotifying = true;
+			_notifyingThread = new Thread(notifyUx);
 		}
 
 		/// <summary>
@@ -55,7 +67,9 @@ namespace ScreenSharing
 		/// /// <param name="userName">The user name of the user</param>
 		public void startSharing(int userId, string userName) 
 		{
-			throw new NotImplementedException();
+			thisSharing = true;
+			// starting the execution of the sharing thread
+			_sharingThread.Start();
 		}
 
 		/// <summary>
@@ -63,7 +77,9 @@ namespace ScreenSharing
 		/// </summary>
 		public void stopSharing()
         {
-			throw new NotImplementedException();
+			thisSharing = false;
+			
+			
 		}
 
 		/// <summary>
@@ -79,7 +95,25 @@ namespace ScreenSharing
 		/// </summary>
 		public void captureAndSend()
         {
-			throw new NotImplementedException();
+			if(otherSharing)
+            {
+				// do something
+				return;
+            }
+			while (thisSharing)
+			{
+
+				Bitmap bitmap = new Bitmap(
+					Screen.PrimaryScreen.Bounds.Width,
+					Screen.PrimaryScreen.Bounds.Height
+					);
+
+				Graphics graphics = Graphics.FromImage(bitmap);
+				graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
+				Bitmap bitmap480p = new Bitmap(720, 480);
+				Graphics graphics480p = Graphics.FromImage(bitmap480p);
+				graphics480p.DrawImage(bitmap, 0, 0, 720, 480);
+			}
 		}
 
 		/// <summary>
@@ -95,7 +129,11 @@ namespace ScreenSharing
 		/// </summary>
 		public void notifyUx()
         {
-			throw new NotImplementedException();
+			while(isNotifying)
+            {
+				while (frameQueue.Count == 0) ;
+				// if the queue is not empty do something
+			}
 		}
 
 		/// <summary>

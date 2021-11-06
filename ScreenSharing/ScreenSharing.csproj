@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
 	    <UseWPF>true</UseWPF>
 	    <ApplicationIcon />
 	    <OutputType>Library</OutputType>
