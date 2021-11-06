@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 namespace Content
 {
     public class SendMessageData
@@ -20,6 +21,6 @@ namespace Content
         /// <summary>
         /// Id of the thread if message belongs to an already existing thread else -1
         /// </summary>
-        public int ReplyThreadId;
+        public ObjectId ReplyThreadId;
     }
 }

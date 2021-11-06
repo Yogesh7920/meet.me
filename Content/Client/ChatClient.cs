@@ -26,15 +26,15 @@ namespace Content
             Converted.FileData = null;
             Converted.SenderId = UserId;
             Converted.ReceiverIds = toconvert.ReceiverIds;
-            Converted.ReplyThreadId = new ObjectId(toconvert.ReplyThreadId.ToString());
+            Converted.ReplyThreadId = toconvert.ReplyThreadId;
             Converted.Starred = false;
             Converted.SentTime = DateTime.Now;
             return Converted;
         }
         public void ChatNewMessage(SendMessageData toserver)
         {
-            MessageData tosend = SendToMessage(toserver,MessageEvent.NewMessage);
-            tosend.MessageId = new ObjectId("-1");
+            MessageData tosend = SendToMessage(toserver, MessageEvent.NewMessage);
+            tosend.MessageId = ObjectId.Empty;
             string xml = _serializer.Serialize<MessageData>(tosend);
             _communicator.Send(xml, moduleIdentifier);
 
@@ -45,12 +45,14 @@ namespace Content
             throw new NotImplementedException();
         }
 
-        public void ChatStar(SendMessageData toserver, int messageId)
+        public void ChatStar(ObjectId messageId)
         {
-            MessageData tosend = SendToMessage(toserver, MessageEvent.Star);
-            tosend.Starred = true;
-            tosend.MessageId = new ObjectId(messageId.ToString());
-            string xml = _serializer.Serialize<MessageData>(tosend);
+            MessageData toSend = new MessageData();
+            toSend.MessageId = messageId;
+            toSend.Event = MessageEvent.Star;
+            toSend.SenderId = UserId;
+
+            string xml = _serializer.Serialize<MessageData>(toSend);
             _communicator.Send(xml, moduleIdentifier);
             
         }

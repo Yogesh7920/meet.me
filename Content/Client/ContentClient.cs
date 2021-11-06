@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Networking;
+using MongoDB.Bson;
 
 namespace Content
 {
@@ -21,7 +22,7 @@ namespace Content
         private List<IContentListener> subscribers;
         private Queue<SendMessageData> sendQueue;
         private List<ChatContext> allMessages;
-        Dictionary<int, int> threadMap;
+        Dictionary<ObjectId, int> threadMap;
 
         private FileClient fileHandler;
         private ChatClient chatHandler;
@@ -34,13 +35,14 @@ namespace Content
             subscribers = new List<IContentListener>();
             sendQueue = new Queue<SendMessageData>();
             allMessages = new List<ChatContext>();
-            threadMap = new Dictionary<int, int>();
+            threadMap = new Dictionary<ObjectId, int>();
             fileHandler = new FileClient();
             chatHandler = new ChatClient();
             
             // subscribe to the network
             notifHandler = new ContentClientNotificationHandler();
-            communicator.Subscribe()
+            communicator = CommunicationFactory.GetCommunicator();
+            communicator.Subscribe("Content", notifHandler);
         }
 
         /// <inheritdoc/>
@@ -63,19 +65,19 @@ namespace Content
         }
 
         /// <inheritdoc/>
-        public void CDownload(int messageId, string savePath)
+        public void CDownload(ObjectId messageId, string savePath)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public void CMarkStar(int messageId)
+        public void CMarkStar(ObjectId messageId)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public void CUpdateChat(int messageId, string newMessage)
+        public void CUpdateChat(ObjectId messageId, string newMessage)
         {
             throw new NotImplementedException();
         }
@@ -87,7 +89,7 @@ namespace Content
         }
 
         /// <inheritdoc/>
-        public ChatContext CGetThread(int threadId)
+        public ChatContext CGetThread(ObjectId threadId)
         {
             throw new NotImplementedException();
         }
