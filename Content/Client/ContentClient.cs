@@ -13,7 +13,7 @@ namespace Content
             {
                 userId = value;
                 fileHandler.UserId = value;
-                // chatHandler.UserId = value;
+                chatHandler.UserId = value;
             }
         }
 
@@ -23,7 +23,7 @@ namespace Content
         Dictionary<int, int> threadMap;
 
         private FileClient fileHandler;
-        // private ChatClient chatHandler;
+        private ChatClient chatHandler;
 
         public ContentClient()
         {
@@ -33,7 +33,7 @@ namespace Content
             allMessages = new List<ChatContext>();
             threadMap = new Dictionary<int, int>();
             fileHandler = new FileClient();
-            // chatHandler = new ChatClient();
+            chatHandler = new ChatClient();
         }
 
         /// <inheritdoc/>
@@ -42,7 +42,7 @@ namespace Content
             switch(toSend.Type)
             {
                 case MessageType.Chat:
-                    // chatHandler.Send(toSend);
+                    chatHandler.ChatNewMessage(toSend);
                     break;
                 
                 case MessageType.File:
