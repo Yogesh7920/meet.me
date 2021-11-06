@@ -12,6 +12,11 @@ namespace Content
         private ICommunicator _communicator;
         private ISerializer _serializer;
 
+        public ChatClient()
+        {
+             _communicator = CommunicationFactory.GetCommunicator();
+             _serializer = new Serializer();
+        }
         private MessageData SendToMessage(SendMessageData toconvert, MessageEvent ChatEvent)
         {
             MessageData Converted = new MessageData();
