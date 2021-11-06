@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Networking;
 
 namespace Content
 {
@@ -24,6 +25,8 @@ namespace Content
 
         private FileClient fileHandler;
         // private ChatClient chatHandler;
+        private INotificationHandler notifHandler;
+        private ICommunicator communicator;
 
         public ContentClient()
         {
@@ -34,6 +37,10 @@ namespace Content
             threadMap = new Dictionary<int, int>();
             fileHandler = new FileClient();
             // chatHandler = new ChatClient();
+            
+            // subscribe to the network
+            notifHandler = new ContentClientNotificationHandler();
+            communicator.Subscribe()
         }
 
         /// <inheritdoc/>
@@ -85,5 +92,13 @@ namespace Content
             throw new NotImplementedException();
         }
 
+        
+        public void Notify(ReceiveMessageData message)
+        {
+            foreach (IContentListener subscriber in subscribers)
+            {
+                subscriber.OnMessage(message);
+            }
+        }
     }
 }
