@@ -55,9 +55,10 @@ namespace ScreenSharing
 			// creating a thread to capture and send the screen
 			_sharingThread = new Thread(captureAndSend);
 
-			// creating a thread to notify the UX
+			// creating a thread to notify the UX and starting its execution
 			isNotifying = true;
 			_notifyingThread = new Thread(notifyUx);
+			_notifyingThread.Start();
 		}
 
 		/// <summary>
