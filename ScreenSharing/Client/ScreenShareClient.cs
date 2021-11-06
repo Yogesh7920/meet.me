@@ -121,7 +121,7 @@ namespace ScreenSharing
 		/// </summary>
 		public void subscribe(IScreenShare listener)
         {
-			throw new NotImplementedException();
+			_Ux = listener;
 		}
 
 		/// <summary>

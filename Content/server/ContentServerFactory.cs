@@ -2,7 +2,7 @@ namespace Content
 {
     public class ContentServerFactory
     {
-        private static IContentServer contentServer;
+        private static IContentServer _contentServer;
 
         /// <summary>
         /// Singleton factory for ContentServer
@@ -12,13 +12,13 @@ namespace Content
         /// </returns>
         public static IContentServer GetInstance()
         {
-            if (contentServer != null)
+            if (_contentServer != null)
             {
-                return contentServer;
+                return _contentServer;
             }
 
-            contentServer = new ContentServer();
-            return contentServer;
+            _contentServer = new ContentServer();
+            return _contentServer;
         }
     }
 }
