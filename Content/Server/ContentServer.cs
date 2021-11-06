@@ -18,7 +18,7 @@ namespace Content
         public ContentServer()
         {
             _subscribers = new List<IContentListener>();
-            _communicator = CommunicationFactory.GetCommunicator();
+            _communicator = CommunicationFactory.GetCommunicator(false);
             _contentDatabase = new ContentDatabase();
             _notificationHandler = new ContentServerNotificationHandler();
             _fileServer = new FileServer(_contentDatabase);
@@ -60,6 +60,8 @@ namespace Content
             }
             else
             {
+                // store file path on which the file will be downloaded on the client's system
+                receiveMessageData.Message = messageData.Message;
                 SendFile(receiveMessageData);
             }
         }
