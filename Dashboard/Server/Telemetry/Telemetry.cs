@@ -50,24 +50,36 @@ namespace Dashboard.Server.Telemetry{
         }
 
         /// <summary>
-        ///     returns a dictionary of SessionData as key and Score(int) as value
-        ///     which indicates score for each session
+        ///     returns a dictionary which indicates score for each session
         /// </summary>
-        /// <params> Takes the list of ServerData </params>
+        /// <params> Takes the list of ServerDataToSave, which contains information about each session </params>
+        /// <returns>
+        ///     Dictionary with SessionData as key and its score(chatcount * no. of users) as value
+        /// </returns>
         Dictionary<SessionData, int> sessionVsScore(List<ServerDataToSave> AllSessionData ){
             throw new NotImplementedException();
         }
+
+
         /// <summary>
-        ///     Gives the session wise analysis of the server. Show plots for users and session
+        ///     returns a dictionary which indicates user count in each session
         /// </summary>
-        /// <params> Takes the list of ServerData </params>
+        /// <params> Takes the list of ServerDataToSave, which contains information about each session </params>
+        /// <returns>
+        ///     Dictionary with SessionData as key and User as value
+        /// </returns>
         Dictionary<SessionData, int > sessionVsUserCount(List<ServerDataToSave> AllSessionData){
             throw new NotImplementedException();
         }
+
+
         /// <summary>
-        ///     Gives the session wise analysis of the server. Show plots of chats vs session.
+        ///     returns a dictionary which indicates chat count in each session
         /// </summary>
-        /// <params> Takes the list of ServerData </params>
+        /// <params> Takes the list of ServerDataToSave, which contains information about each session </params>
+        /// <returns>
+        ///     Dictionary with SessionData as key and Chat count(int) as value
+        /// </returns>
         Dictionary<SessionData, int > sessionVsChatCount(List<ServerDataToSave> AllSessionData){
             throw new NotImplementedException();
         }
@@ -80,10 +92,24 @@ namespace Dashboard.Server.Telemetry{
             throw new NotImplementedException();
         }
 
+
+        /// <summary>
+        ///     used by SM to simplify the ChatContext and save it by persistance module.
+        /// </summary>
+        /// <params> Array of ChatContext objects which contains information about messages of each thread </params>    
         public void SaveAllAnalytics(ChatContext[] AllMessages){
             throw new NotImplementedException();
         }
 
+
+        /// <summary>
+        ///     Used by SM to get the TelemetryAnalyticsModel to transfer
+        ///     back to UX module to display the analytics
+        /// </summary>
+        /// <params> Array of ChatContext objects which contains information about messages of each thread </params>
+        /// <returns>
+        ///     Returns TelemetryAnalyticsModel object which contains analytics of session
+        /// </returns>
         public TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages){
             throw new NotImplementedException();
         }
