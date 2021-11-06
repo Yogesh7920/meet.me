@@ -41,6 +41,7 @@ namespace Client
 
         public List<string> selectedShapes = new List<string>();
         private Dictionary<string, string> BBmap = new Dictionary<string, string>();
+
         int counter = 0;
 
         /// <summary>
@@ -152,7 +153,7 @@ namespace Client
         }
 
         /// <summary>
-        /// Handle input events for selection  
+        /// Handle input events for selection : this includes evnents for single shape selection and multiple shape selection  
         /// </summary>
         /// <param name="sh"> System.Windows.Shape instance to be selected </param>
         /// <param name="mode"> mode=0 if shape selected without Ctrl pressed, else mode=1 </param>
@@ -302,15 +303,20 @@ namespace Client
         /// <param name="shps"> shps is the 'selectedShapes' list in the ViewModel </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, List<string> shps, bool shapeComp)
+        public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape shp, bool shapeComp)
         {
+            if (!selectedShapes.Contains(shp.Uid))
+            {
+                return cn; 
+            }
+
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
             List<UXShape> toRender;
 
             lock (this)
             {
-                foreach (string shUID in shps)
+                foreach (string shUID in selectedShapes)
                 {
                     //UNCOMMENT LATER
                     /*lock (this)
@@ -325,24 +331,31 @@ namespace Client
                     //Check Condition 
                     Debug.Assert(iterat.Count() == 1);
 
+
+                    Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
+                    
                     int topleft_x = (int)Canvas.GetLeft(iterat.ToList()[0]);
                     int topleft_y = (int)Canvas.GetTop(iterat.ToList()[0]);
-
-
 
                     //MessageBox.Show("Entered MoveShape event");
                     //MessageBox.Show(topleft_x.ToString(), topleft_y.ToString());
 
                     int diff_topleft_x = (int)strt.X - (int)end.X;
                     int diff_topleft_y = (int)strt.Y - (int)end.Y;
+                    int center_x = (int)(topleft_x - diff_topleft_x + sh.Width / 2);
+                    int center_y = (int)(topleft_y - diff_topleft_y + sh.Height / 2);
 
                     //MessageBox.Show(diff_topleft_x.ToString(), diff_topleft_y.ToString());
 
-                    Canvas.SetLeft(iterat.ToList()[0], topleft_x - diff_topleft_x);
-                    Canvas.SetTop(iterat.ToList()[0], topleft_y - diff_topleft_y);
-                    /* Temporary WB Module code to test functionality */
+                    if (center_x > 0 && center_x < cn.Width)
+                    {
+                        Canvas.SetLeft(iterat.ToList()[0], topleft_x - diff_topleft_x);
+                    }
 
-
+                    if(center_y > 0 && center_y < cn.Height)
+                    {
+                        Canvas.SetTop(iterat.ToList()[0], topleft_y - diff_topleft_y);
+                    }
 
                     //Necessary step to synchronize borders on rotation of selected shapes
                     cn = SyncBorders(cn, WBOps, shUID);
@@ -364,13 +377,19 @@ namespace Client
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
 
-        public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, List<string> shps, bool shapeComp)
+        public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape shp, bool shapeComp)
         {
+
+            if (!selectedShapes.Contains(shp.Uid))
+            {
+                return cn;
+            }
+
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
 
             List<UXShape> toRender;
-            foreach (string shUID in shps)
+            foreach (string shUID in selectedShapes)
             {
                 //UNCOMMENT LATER
                 /*lock (this)
@@ -553,9 +572,44 @@ namespace Client
         /// <param name="WBOps"> Shape operation handler class instance provided by the Whiteboard library </param>
         /// <param name="shps"> Shapes that are to be altered, expected to be 'selectedShapes' attribute of the aggregating ViewModel instance </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas CustomizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, List<UXShape> shps)
+        public Canvas CustomizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, string property, string hexCode, float thickness)
         {
-            throw new NotImplementedException();
+            List<UXShape> toRender;
+            SolidColorBrush color = (SolidColorBrush)(new BrushConverter().ConvertFrom(hexCode));
+            foreach (string shUID in selectedShapes)
+            {
+
+                //UNCOMMENT LATER
+                /*lock (this)
+                {
+                    toRender = WBOps.RotateShape(C_strt, C_end, shpUID, shapeComp);
+                    cn = this.RenderUXElement(toRender, cn);
+                }*/
+                /* Temporary WB Module code to test functionality */
+
+                IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
+
+                //Check Condition 
+                Debug.Assert(iterat.Count() == 1);
+
+                //Convert the UI element to Shape type 
+                Shape sh = (Shape)iterat.ToList()[0];
+
+                switch (property)
+                {
+                    case "Stroke":
+                        sh.Stroke = color;
+                        break;
+                    case "StrokeThickness":
+                        sh.StrokeThickness = thickness;
+                        break;
+                    case "Fill":
+                        sh.Fill = color; 
+                        break;
+                }
+            }
+
+            return cn; 
         }
 
         /// <summary>
@@ -583,16 +637,6 @@ namespace Client
             }
             return cn;
         }
-
-
-        /// <summary>
-        /// Set background color of the selected shape   
-        /// </summary>
-        public void SetBackgroundColor()
-        {
-            throw new NotImplementedException();
-        }
-
     }
 
     /// <summary>
@@ -600,7 +644,8 @@ namespace Client
     /// </summary>
     public class FreeHand : IWhiteBoardUpdater
     {
-
+        private System.Windows.Shapes.Polyline poly; 
+        private PointCollection polygonPoints = new PointCollection();
         /// <summary>
         /// Fetch FreeHand instances updates from IWhiteBoardState for rendering in the view   
         /// </summary>
@@ -618,6 +663,35 @@ namespace Client
             return cn;
         }
 
+        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false)
+        {
+
+            SolidColorBrush yellowBrush = new SolidColorBrush();
+            yellowBrush.Color = Colors.White;
+            SolidColorBrush blackBrush = new SolidColorBrush();
+            blackBrush.Color = Colors.Black;
+
+            if (creation)
+            {
+                poly = new System.Windows.Shapes.Polyline();
+                poly.Stroke = yellowBrush;
+                poly.StrokeThickness = 3;
+
+                poly.Points.Add(pt);
+                cn.Children.Add(poly);
+            }
+            else
+            {
+                poly.Points.Add(pt);
+            }
+
+            return cn;  
+        }
+
+        public Canvas CustomizePolyline(Canvas cn, IWhiteBoardOperationHandler WBOps)
+        {
+            return cn;
+        }
     }
 
     /// <summary>
@@ -705,7 +779,6 @@ namespace Client
         public WBTools GetActiveTool()
         {
             return activeTool;
-
         }
 
         /// <summary>
@@ -720,7 +793,7 @@ namespace Client
         /// <summary>
         /// Checkpoints the drawn shapes on canvas  
         /// </summary>
-        /*public void SaveFrame(Canvas GlobCanvas)
+        public void SaveFrame(Canvas GlobCanvas)
         {
             throw new NotImplementedException();
         }
@@ -731,6 +804,6 @@ namespace Client
         public void RestoreFrame(Canvas GlobCanvas)
         {
             throw new NotImplementedException();
-        }*/
+        }
     }
 }
