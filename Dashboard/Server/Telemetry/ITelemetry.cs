@@ -11,18 +11,22 @@ namespace Dashboard.Server.Telemetry
     public interface ITelemetry
     {
         /// <summary>
-        ///    SM uses it to notify the session is over, and the analytics need to be store
+        ///    SM uses it to notify the session is over, 
+        ///    and the analytics need to be store
         /// </summary>
 
-        /// <params name="AllMessages">The chat data of all the threads</params>
-        void SaveAllAnalytics(List<Content.models.Threads> AllMessages);
+        /// <params name="AllMessages"> Array of ChatContext object, which contains info about threads </params>
+        void SaveAllAnalytics(ChatContext[] AllMessages);
+
 
         /// <summary>
         ///    SM uses it to get the analysed data to pass on to the UI
         /// </summary>
+
+        /// <params name="AllMessages"> The chat data of all the threads </params>
         
         /// <returns> TelemetryAnalyticsModel object </returns>
-        TelemetryAnalyticsModel getTelemetryAnalytics();
-    }    
+        TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages);
+        
     }
 }
