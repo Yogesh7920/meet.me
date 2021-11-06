@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using MongoDB.Bson;
+using Networking;
 
 namespace Content
 {
     internal class ChatClient
     {
-        private int UserId;
+        public int UserId;
         private string module_Indentifier = "Content";
+        private ICommunicator _communicator;
+        private ISerializer _serializer;
 
         private MessageData SendToMessage(SendMessageData toconvert, MessageEvent ChatEvent)
         {
@@ -17,7 +21,7 @@ namespace Content
             Converted.FileData = null;
             Converted.SenderId = UserId;
             Converted.ReceiverIds = toconvert.ReceiverIds;
-            Converted.ReplyThreadId = toconvert.ReplyThreadId;
+            Converted.ReplyThreadId = new ObjectId(toconvert.ReplyThreadId.ToString());
             Converted.Starred = false;
             Converted.SentTime = DateTime.Now;
             return Converted;
@@ -25,9 +29,9 @@ namespace Content
         public void ChatNewMessage(SendMessageData toserver)
         {
             MessageData tosend = SendToMessage(toserver,MessageEvent.NewMessage);
-            tosend.MessageId = -1;
-            string xml = Serializer.Serialize(tosend);
-            communicator.Send(xml,module_Indentifier);
+            tosend.MessageId = new ObjectId("-1");
+            string xml = _serializer.Serialize<MessageData>(tosend);
+            _communicator.Send(xml,module_Indentifier);
 
         }
 
@@ -38,18 +42,15 @@ namespace Content
 
         public void ChatStar(SendMessageData toserver, int messageId)
         {
-            MessageData tosend = SendToMessage(toserver, ChatEvent);
+            MessageData tosend = SendToMessage(toserver, MessageEvent.Star);
             tosend.Starred = true;
-            tosend.MessageId = messageId;
-            string xml = Serializer.Serialize(tosend);
-            communicator.Send(xml,module_Indentifier);
+            tosend.MessageId = new ObjectId(messageId.ToString());
+            string xml = _serializer.Serialize<MessageData>(tosend);
+            _communicator.Send(xml,module_Indentifier);
             
         }
 
-        public void OnReceive()
-        {
-            throw new NotImplementedException();
-        }
+       
 
     }
 
