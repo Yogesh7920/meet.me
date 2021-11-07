@@ -143,7 +143,6 @@ namespace Content
                 subscriber.OnMessage(message);
             }
         }
-
         
         /// <summary>
         /// Notify all subscribers of received entire message history
@@ -287,6 +286,37 @@ namespace Content
             string savepath = savedirpath + message.FileData.fileName;
 
             File.WriteAllBytes(savepath, message.FileData.fileContent);
+        }
+
+        public void OnReceive(MessageData obj)
+        {
+            if(obj.Event == MessageEvent.NewMessage)
+            {
+                obj.FileData = null;
+
+                ReceiveMessageData obj2 = obj as ReceiveMessageData;
+
+                ObjectId key = obj2.ReplyThreadId;
+                bool keyExists = threadMap.ContainsKey(key);
+                if(!keyExists)
+                {
+                    ChatContext newMsgThread = new ChatContext();
+                    newMsgThread.ThreadId = key;
+                    newMsgThread.NumOfMessages = 1;
+                    newMsgThread.MsgList.Add(obj2);
+                    newMsgThread.CreationTime = obj2.SentTime;
+                    allMessages.Add(newMsgThread);
+                    int val = allMessages.Count - 1;
+                    threadMap.Add(key,val);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+
+                }
+                Notify(obj2);
+
+            }
         }
     }
 }
