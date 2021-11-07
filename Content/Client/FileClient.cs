@@ -7,11 +7,17 @@ namespace Content
 {
     class FileClient
     {
-        private int userId;
-        public int UserId { get => userId; set => userId = value; }
+        private int _userId;
+        public int UserId { get => _userId; set => _userId = value; }
         
-        private ISerializer serializer = new Serializer();
-        private ICommunicator communicator = CommunicationFactory.GetCommunicator();
+        private ISerializer _serializer;
+        private ICommunicator _communicator;
+        
+        public FileClient()
+        {
+            _serializer = new Serializer();
+            _communicator = CommunicationFactory.GetCommunicator();
+        }
 
         /// <summary>
         /// Send a file type message to the server
@@ -41,7 +47,7 @@ namespace Content
             toSend.Type = MessageType.File;
             toSend.MessageId = ObjectId.Empty;
             toSend.Message = filedata.fileName;
-            toSend.SenderId = userId;
+            toSend.SenderId = _userId;
             toSend.ReceiverIds = message.ReceiverIds;
             toSend.ReplyThreadId = ObjectId.Empty;
             toSend.SentTime = DateTime.Now;
@@ -50,12 +56,25 @@ namespace Content
             toSend.FileData = filedata;
 
             // serialize the message
-            string toSendSerialized = serializer.Serialize(toSend);
+            string toSendSerialized = _serializer.Serialize(toSend);
 
             // send the message
-            communicator.Send(toSendSerialized, "Content");
+            _communicator.Send(toSendSerialized, "Content");
         }
 
+        public void Download(ObjectId messageId, string savepath)
+        {
+            MessageData toSend = new MessageData();
 
+            toSend.Event = MessageEvent.Download;
+            toSend.Type = MessageType.File;
+            toSend.MessageId = messageId;
+            toSend.Message = savepath;
+            toSend.FileData = null;
+
+            // serialize the message and send via network
+            string toSendSerialized = _serializer.Serialize(toSend);
+            _communicator.Send(toSendSerialized, "Content");
+        }
     }
 }

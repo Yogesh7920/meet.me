@@ -7,8 +7,10 @@ namespace Content
 {
     internal class ChatClient
     {
-        public int UserId;
-        private string moduleIdentifier = "Content";
+        private int _userId;
+        
+        public int UserId { get => _userId ; set => _userId = value; }
+        private string _moduleIdentifier = "Content";
         private ICommunicator _communicator;
         private ISerializer _serializer;
 
@@ -24,7 +26,7 @@ namespace Content
             Converted.Type = toconvert.Type;
             Converted.Message = toconvert.Message;
             Converted.FileData = null;
-            Converted.SenderId = UserId;
+            Converted.SenderId = _userId;
             Converted.ReceiverIds = toconvert.ReceiverIds;
             Converted.ReplyThreadId = toconvert.ReplyThreadId;
             Converted.Starred = false;
@@ -36,7 +38,7 @@ namespace Content
             MessageData tosend = SendToMessage(toserver, MessageEvent.NewMessage);
             tosend.MessageId = ObjectId.Empty;
             string xml = _serializer.Serialize<MessageData>(tosend);
-            _communicator.Send(xml, moduleIdentifier);
+            _communicator.Send(xml, _moduleIdentifier);
 
         }
 
@@ -50,10 +52,10 @@ namespace Content
             MessageData toSend = new MessageData();
             toSend.MessageId = messageId;
             toSend.Event = MessageEvent.Star;
-            toSend.SenderId = UserId;
+            toSend.SenderId = _userId;
 
             string xml = _serializer.Serialize<MessageData>(toSend);
-            _communicator.Send(xml, moduleIdentifier);
+            _communicator.Send(xml, _moduleIdentifier);
             
         }
 
