@@ -25,7 +25,7 @@ namespace Content
             _chatServer = new ChatServer(_contentDatabase);
             _chatContextServer = new ChatContextServer(_contentDatabase);
             _serializer = new Serializer();
-            _communicator.Subscribe("ContentServer", _notificationHandler);
+            _communicator.Subscribe("Content", _notificationHandler);
         }
 
         public void Receive(string data)
