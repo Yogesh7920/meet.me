@@ -25,7 +25,7 @@ namespace Content
             _chatServer = new ChatServer(_contentDatabase);
             _chatContextServer = new ChatContextServer(_contentDatabase);
             _serializer = new Serializer();
-            _communicator.Subscribe("Content", _notificationHandler);
+            _communicator.Subscribe("ContentServer", _notificationHandler);
         }
 
         public void Receive(string data)
@@ -60,7 +60,6 @@ namespace Content
             }
             else
             {
-                receiveMessageData.Event = MessageEvent.Download;
                 SendFile(receiveMessageData);
             }
         }
