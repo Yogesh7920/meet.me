@@ -29,7 +29,12 @@ namespace Content
 
         private MessageData SaveFile(MessageData messageData)
         {
-            return _contentDatabase.Store(messageData);
+            messageData = _contentDatabase.Store(messageData);
+            // the object is going to be typecasted to ReceiveMessageData
+            // to be sent to clients, so make filedata null because the filedata
+            // will continue to be in memory despite the typecasting
+            messageData.FileData = null;
+            return messageData;
         }
 
         private MessageData FetchFile(ObjectId id)

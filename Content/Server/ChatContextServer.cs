@@ -54,7 +54,7 @@ namespace Content
             else
             {
                 ChatContext chatContext = new ChatContext();
-                chatContext.CreationTime = System.DateTime.Now;
+                chatContext.CreationTime = receiveMessageData.SentTime;
                 chatContext.NumOfMessages = 1;
                 chatContext.MsgList = new List<ReceiveMessageData>();
                 chatContext.MsgList.Add(receiveMessageData);
