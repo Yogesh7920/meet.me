@@ -34,6 +34,9 @@ namespace Client
         private string buttonSelectedColor = "#007C9C";
 
         //Canvas BG available Colors 
+        private string curCanvasBg = "#FFFFFF";
+        private string curPenColor = "#000000";
+
         private string canvasBg1 = "#FFFFFF";
         private string canvasBg2 = "#FF0000";
         private string canvasBg3 = "#00FF00";
@@ -58,10 +61,12 @@ namespace Client
                 switch (viewModel.GetActiveTool())
                 {
                     case (WhiteBoardViewModel.WBTools.FreeHand):
-
-                        //Set the starting point of FreeHand drawing i.e. Polyline 
-                        Point pt = e.GetPosition(GlobCanvas);
-                        this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, pt, true);   //Note : Creation == True
+                        Point fh_pt = e.GetPosition(GlobCanvas);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, curPenColor);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.Eraser):
+                        Point er_pt = e.GetPosition(GlobCanvas);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, true, curCanvasBg, true);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewLine):
                         break;
@@ -98,8 +103,12 @@ namespace Client
                     switch (viewModel.GetActiveTool())
                     {
                         case (WhiteBoardViewModel.WBTools.FreeHand):
-                            Point pt = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, pt);
+                            Point fh_pt = e.GetPosition(GlobCanvas);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, curPenColor);
+                            break;
+                        case (WhiteBoardViewModel.WBTools.Eraser):
+                            Point er_pt = e.GetPosition(GlobCanvas);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, curCanvasBg, true);
                             break;
                         case (WhiteBoardViewModel.WBTools.Selection):
 
@@ -219,8 +228,12 @@ namespace Client
                 switch (viewModel.GetActiveTool())
                 {
                     case (WhiteBoardViewModel.WBTools.FreeHand):
-                        Point pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, pt);
+                        Point fh_pt = e.GetPosition(GlobCanvas);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, curPenColor);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.Eraser):
+                        Point er_pt = e.GetPosition(GlobCanvas);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, curCanvasBg, true);
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
                         //if(e.OriginalSource is Shape)
@@ -271,26 +284,31 @@ namespace Client
         private void ColorBtn1Checked(object sender, RoutedEventArgs e)
         {
             GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg1);
+            curCanvasBg = canvasBg1;
         }
 
         private void ColorBtn2Checked(object sender, RoutedEventArgs e)
         {
             GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg2);
+            curCanvasBg = canvasBg2;
         }
 
         private void ColorBtn3Checked(object sender, RoutedEventArgs e)
         {
             GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg3);
+            curCanvasBg = canvasBg3;
         }
 
         private void ColorBtn4Checked(object sender, RoutedEventArgs e)
         {
             GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg4);
+            curCanvasBg = canvasBg4;
         }
 
         private void ColorBtn5Checked(object sender, RoutedEventArgs e)
         {
             GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg5);
+            curCanvasBg = canvasBg5;
         }
 
         //Restore Canvas Frame Pop-Up
@@ -599,5 +617,7 @@ namespace Client
                 MessageBox.Show("Toggled Off");
             }
         }
+
+        
     }
 }
