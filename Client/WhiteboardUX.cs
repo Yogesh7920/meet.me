@@ -176,8 +176,7 @@ namespace Client
                     {
                         if (selectedShapes.Contains(sh.Uid.ToString()))
                         {
-                            cn = DeleteSelectionBB(cn, sh.Uid.ToString(), WBOp);
-                            selectedShapes.Remove(sh.Uid.ToString());
+                            cn = UnselectAllBB(cn, WBOp);
                         }
                         else
                         {
@@ -303,12 +302,22 @@ namespace Client
         /// <param name="shps"> shps is the 'selectedShapes' list in the ViewModel </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape shp, bool shapeComp)
+        public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
-            if (!selectedShapes.Contains(shp.Uid))
+
+            if (mouseDownSh == null)
             {
-                return cn; 
+                return cn;
             }
+            else if (mouseDownSh != null && !selectedShapes.Contains(mouseDownSh.Uid))
+            {
+                if ( !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                {
+                    cn = UnselectAllBB(cn, WBOps);
+                }
+                cn = SelectShape(cn, mouseDownSh, WBOps, 1);
+            }
+
 
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
@@ -345,9 +354,69 @@ namespace Client
                     int center_x = (int)(topleft_x - diff_topleft_x + sh.Width / 2);
                     int center_y = (int)(topleft_y - diff_topleft_y + sh.Height / 2);
 
+                    if (sh is System.Windows.Shapes.Ellipse)
+                    {
+                        System.Windows.Shapes.Ellipse newEl = new System.Windows.Shapes.Ellipse();
+                        newEl.Width = sh.Width;
+                        newEl.Height = sh.Height;
+                        newEl.Fill = sh.Fill;
+                        newEl.Stroke = sh.Stroke;
+                        newEl.StrokeThickness = sh.StrokeThickness;
+                        newEl.Uid = sh.Uid;
+                        if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newEl, topleft_x - diff_topleft_x);
+                        else if (center_x > cn.Width) Canvas.SetLeft(newEl, Canvas.GetLeft(sh));
+                        else Canvas.SetLeft(newEl, Canvas.GetLeft(sh));
+
+                        if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(newEl, topleft_y - diff_topleft_y);
+                        else if (center_y > cn.Height) Canvas.SetTop(newEl, Canvas.GetTop(sh));
+                        else Canvas.SetTop(newEl, Canvas.GetTop(sh));
+
+                        cn.Children.Remove(sh);
+                        cn.Children.Add(newEl);
+                    }
+                    else if (sh is System.Windows.Shapes.Rectangle)
+                    {
+                        System.Windows.Shapes.Rectangle newRec = new System.Windows.Shapes.Rectangle();
+                        newRec.Width = sh.Width;
+                        newRec.Height = sh.Height;
+                        newRec.Fill = sh.Fill;
+                        newRec.Stroke = sh.Stroke;
+                        newRec.StrokeThickness = sh.StrokeThickness;
+                        newRec.Uid = sh.Uid;
+                        if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newRec, topleft_x - diff_topleft_x);
+                        else if (center_x > cn.Width) Canvas.SetLeft(newRec, cn.Width);
+                        else Canvas.SetLeft(newRec, 0);
+
+                        if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(newRec, topleft_y - diff_topleft_y);
+                        else if (center_y > cn.Height) Canvas.SetTop(newRec, cn.Height);
+                        else Canvas.SetTop(newRec, 0);
+                        cn.Children.Remove(sh);
+                        cn.Children.Add(newRec);
+                    }
+                    else if (sh is System.Windows.Shapes.Line)
+                    {
+                        System.Windows.Shapes.Rectangle newLine = new System.Windows.Shapes.Rectangle();
+                        newLine.Width = sh.Width;
+                        newLine.Height = sh.Height;
+                        newLine.Fill = sh.Fill;
+                        newLine.Stroke = sh.Stroke;
+                        newLine.StrokeThickness = sh.StrokeThickness;
+                        newLine.Uid = sh.Uid;
+                        if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newLine, topleft_x - diff_topleft_x);
+                        else if (center_x > cn.Width) Canvas.SetLeft(newLine, cn.Width);
+                        else Canvas.SetLeft(newLine, 0);
+
+                        if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(newLine, topleft_y - diff_topleft_y);
+                        else if (center_y > cn.Height) Canvas.SetTop(newLine, cn.Height);
+                        else Canvas.SetTop(newLine, 0);
+                        cn.Children.Remove(sh);
+                        cn.Children.Add(newLine);
+                    }
+
+
                     //MessageBox.Show(diff_topleft_x.ToString(), diff_topleft_y.ToString());
 
-                    if (center_x > 0 && center_x < cn.Width)
+                    /*if (center_x > 0 && center_x < cn.Width)
                     {
                         Canvas.SetLeft(iterat.ToList()[0], topleft_x - diff_topleft_x);
                     }
@@ -355,7 +424,7 @@ namespace Client
                     if(center_y > 0 && center_y < cn.Height)
                     {
                         Canvas.SetTop(iterat.ToList()[0], topleft_y - diff_topleft_y);
-                    }
+                    }*/
 
                     //Necessary step to synchronize borders on rotation of selected shapes
                     cn = SyncBorders(cn, WBOps, shUID);
@@ -377,12 +446,20 @@ namespace Client
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
 
-        public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape shp, bool shapeComp)
+        public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
 
-            if (!selectedShapes.Contains(shp.Uid))
+            if (mouseDownSh == null)
             {
                 return cn;
+            }
+            else if (mouseDownSh != null && !selectedShapes.Contains(mouseDownSh.Uid))
+            {
+                if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                {
+                    cn = UnselectAllBB(cn, WBOps);
+                }
+                cn = SelectShape(cn, mouseDownSh, WBOps, 1);
             }
 
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
@@ -526,7 +603,17 @@ namespace Client
                 switch (shp.UxOperation)
                 {
                     case (UXOperation.CREATE):
-                        //Take care of rendering Shape Geomatry and Orientation
+                        //Rendering the new shape with the appropriate geometry in terms of translation and rotation
+                        Canvas.SetLeft(shp.WindowsShape, shp.TranslationCoordinate.C);
+                        Canvas.SetTop(shp.WindowsShape, shp.TranslationCoordinate.R);
+                        //Setting the angular orientation of bounding box to be same as updated shape
+                        RotateTransform rotateTransform = new RotateTransform
+                        {
+                            Angle = shp.AngleOfRotation,
+                            CenterX = (shp.WindowsShape.Width / 2), //topleft_x,
+                            CenterY = (shp.WindowsShape.Height / 2) //topleft_y
+                        };
+                        shp.WindowsShape.RenderTransform = rotateTransform;
                         cn.Children.Add(shp.WindowsShape);
                         break;
                     case (UXOperation.DELETE):
@@ -637,6 +724,12 @@ namespace Client
             }
             return cn;
         }
+
+        public string getUserId(Shape sh, IWhiteBoardOperationHandler WBOps)
+        {
+            return WBOps.GetUserName(sh.Uid);
+        }
+
     }
 
     /// <summary>
@@ -663,20 +756,28 @@ namespace Client
             return cn;
         }
 
-        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false)
+        /// <summary>
+        /// ViewModel method to draw PolyLine/Eraser requested by the user
+        /// </summary>
+        /// <param name="cn"> Canvas instance to be altered </param>
+        /// <param name="WBOps"> Shape operation handler class instance provided by the Whiteboard library </param>
+        /// <param name="pt"> New point to be added into the PolyLine PointCollection </param>
+        /// <param name="creation"> Boolean which is true if the first MouseDown event occured, i.e, user has just started to draw the new polyline</param>
+        /// <param name="strokeColor"> Represents the hexcode of the color of polyline to be drawn </param>
+        /// <param name="isEraser"> Boolean which is true if the drawn polyline is supposed to be an Eraser instance, used to set the Windows.Shapes.Tag property which is used by 'ChangeWbBackground' method locally</param>
+        /// <returns> The updated Canvas </returns>
+        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, String strokeColor = "#000000", bool isEraser = false)
         {
 
-            SolidColorBrush yellowBrush = new SolidColorBrush();
-            yellowBrush.Color = Colors.White;
-            SolidColorBrush blackBrush = new SolidColorBrush();
-            blackBrush.Color = Colors.Black;
+            SolidColorBrush brush = new SolidColorBrush {Color = (Color)ColorConverter.ConvertFromString(strokeColor) };
 
             if (creation)
             {
                 poly = new System.Windows.Shapes.Polyline();
-                poly.Stroke = yellowBrush;
+                poly.Stroke = brush;
                 poly.StrokeThickness = 3;
-
+                if (isEraser == true) poly.Tag = "ERASER";
+                else poly.Tag = "FREEHAND";
                 poly.Points.Add(pt);
                 cn.Children.Add(poly);
             }
@@ -738,9 +839,22 @@ namespace Client
         /// <summary>
         /// Changes the Background color of Canvas in View 
         /// </summary>
-        public Canvas ChangeWbBackground(Canvas cn, String hexCode)
+        /// <param name="cn"> Canvas instance to be altered </param>
+        /// <param name="hexCode"> Shape operation handler class instance provided by the Whiteboard library </param>
+        /// <returns> The updated Canvas </returns>
+        public Canvas ChangeWbBackground(Canvas cn, String WbhexCode)
         {
-            cn.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(hexCode));
+            cn.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(WbhexCode));
+
+            //Setting the color of the Eraser polylines to be the same as the new canvas background color LOCALLY
+            foreach (Shape sh in cn.Children)
+            {
+                if (sh is System.Windows.Shapes.Polyline && (string)sh.Tag == "ERASER")
+                {
+                    sh.Fill = cn.Background;
+                    sh.Stroke = cn.Background;
+                }
+            }
             return cn;
         }
         /// <summary>
