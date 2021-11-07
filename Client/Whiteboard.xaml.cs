@@ -24,7 +24,10 @@ namespace Client
         private Button activeSelectToolbarButton;
         private WhiteBoardViewModel viewModel;
         public Canvas GlobCanvas;
+
         private int mouseLeftBtnMoveFlag = 0;
+        private Shape mouseDownSh;
+
 
         //Button Dynamic Colors 
         private string buttonDefaultColor = "#D500F9";
@@ -69,6 +72,17 @@ namespace Client
                     case (WhiteBoardViewModel.WBTools.Selection):
                         //sets the starting point for usage in TranslateShape/RotateShape
                         this.viewModel.start = e.GetPosition(MyCanvas);
+
+                        if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
+                        {
+                            Shape mouseDownShape = e.OriginalSource as Shape;
+                            mouseDownSh = mouseDownShape;
+                        }
+                        else
+                        {
+                            mouseDownSh = null;
+                        }
+
                         break;
                 }
             }
@@ -106,11 +120,11 @@ namespace Client
 
                                     if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
                                     {
-                                        this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, selectedShape, true);
+                                        this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
                                     }
                                     else
                                     {
-                                        this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, selectedShape, true);
+                                        this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
                                     }
                                 }
                                 //Resetting the value of 'start' to perform the next Move functions
@@ -144,7 +158,7 @@ namespace Client
                             //IF-ELSE to handle Select operations, i.e, Single & Multi select.
                             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                             {
-                                if (e.OriginalSource is Shape)
+                                if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
                                 {
                                     //MessageBox.Show("Shape Found");
                                     //Create Shape -> Creates a temp Rectangle for bounding box with height and width same as selected shape
@@ -165,7 +179,7 @@ namespace Client
                             }
                             else
                             {
-                                if (e.OriginalSource is Shape)
+                                if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
                                 {
                                     //MessageBox.Show("Shape Found");
                                     //Create Shape -> Creates a temp Rectangle for bounding box with height and width same as selected shape
@@ -173,7 +187,7 @@ namespace Client
                                     Shape selectedShape = e.OriginalSource as Shape;
 
                                     //this.SelectionBox.Visibility = Visibility.Visible;
-                                    //GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas,viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle,...) 
+                                    //GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanhvas,viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle,...) 
 
                                     GlobCanvas = viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps, 0);
                                 }
@@ -209,28 +223,29 @@ namespace Client
                         GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, pt);
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
-                        if(e.OriginalSource is Shape)
-                        {
-                            Shape selectedShape = e.OriginalSource as Shape;
-                            //sets the end point for usage in TranslateShape/RotateShape
-                            this.viewModel.end = e.GetPosition(MyCanvas);
+                        //if(e.OriginalSource is Shape)
+                        //{
+                        Shape selectedShape = e.OriginalSource as Shape;
+                        //sets the end point for usage in TranslateShape/RotateShape
+                        this.viewModel.end = e.GetPosition(MyCanvas);
 
-                            if (this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y)
-                            //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                        if (this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y)
+                        //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                        {
+                            //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
+                            if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
                             {
-                                //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
-                                if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
-                                {
-                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, selectedShape, false);
-                                }
-                                else
-                                {
-                                    this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, selectedShape, false);
-                                    //Resetting the value of 'start' to perform the next Move functions
-                                    this.viewModel.start = e.GetPosition(MyCanvas);
-                                }
+                                //if (e.OriginalSource is Shape)                                   
+                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                            }
+                            else
+                            {
+                                this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh , false);
+                                //Resetting the value of 'start' to perform the next Move functions
+                                this.viewModel.start = e.GetPosition(MyCanvas);
                             }
                         }
+                        //}
                         break;
                 }
             }

@@ -176,8 +176,7 @@ namespace Client
                     {
                         if (selectedShapes.Contains(sh.Uid.ToString()))
                         {
-                            cn = DeleteSelectionBB(cn, sh.Uid.ToString(), WBOp);
-                            selectedShapes.Remove(sh.Uid.ToString());
+                            cn = UnselectAllBB(cn, WBOp);
                         }
                         else
                         {
@@ -303,12 +302,22 @@ namespace Client
         /// <param name="shps"> shps is the 'selectedShapes' list in the ViewModel </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape shp, bool shapeComp)
+        public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
-            if (!selectedShapes.Contains(shp.Uid))
+
+            if (mouseDownSh == null)
             {
-                return cn; 
+                return cn;
             }
+            else if (mouseDownSh != null && !selectedShapes.Contains(mouseDownSh.Uid))
+            {
+                if ( !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                {
+                    cn = UnselectAllBB(cn, WBOps);
+                }
+                cn = SelectShape(cn, mouseDownSh, WBOps, 1);
+            }
+
 
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
@@ -377,12 +386,20 @@ namespace Client
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
 
-        public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape shp, bool shapeComp)
+        public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
 
-            if (!selectedShapes.Contains(shp.Uid))
+            if (mouseDownSh == null)
             {
                 return cn;
+            }
+            else if (mouseDownSh != null && !selectedShapes.Contains(mouseDownSh.Uid))
+            {
+                if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                {
+                    cn = UnselectAllBB(cn, WBOps);
+                }
+                cn = SelectShape(cn, mouseDownSh, WBOps, 1);
             }
 
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
