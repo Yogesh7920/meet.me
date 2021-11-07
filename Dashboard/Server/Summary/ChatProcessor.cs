@@ -189,8 +189,8 @@ namespace Dashboard.Server.Summary
 		/// <param name="input">
 		/// Input string which is concatenation of all the chat strings
 		/// </param>
-		/// <param name="size">
-		/// Size / length of the summary string in sentences
+		/// <param name="fraction">
+		/// Fraction of the original input size for length of summary
 		/// </param>
 		/// <returns>
 		/// List of strings which are sampled using the 
@@ -250,8 +250,8 @@ namespace Dashboard.Server.Summary
 		/// <param name="chat">
 		/// Input chat in the discussion after the concatenation
 		/// </param>
-		/// <param name="size">
-		/// Size of the summary string in sentences
+		/// <param name="fraction">
+		/// Fraction of the original input size for length of summary
 		/// </param>
 		/// <returns>
 		/// A summary string which presents the summary as 
