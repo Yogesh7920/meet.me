@@ -4,7 +4,7 @@ using Networking;
 using System;
 using System.Collections.Generic;
 
-namespace Testing.Content
+namespace Testing
 {
     public class Tests
     {

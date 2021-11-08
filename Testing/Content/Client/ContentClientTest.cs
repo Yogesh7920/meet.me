@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Networking;
 using MongoDB.Bson;
 
-namespace Testing.Content
+namespace Testing
 {
     public class Tests
     {

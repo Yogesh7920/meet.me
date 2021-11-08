@@ -5,7 +5,7 @@ using System.IO;
 using Networking;
 using MongoDB.Bson;
 
-namespace Testing.Content
+namespace Testing
 {
     public class Tests
     {

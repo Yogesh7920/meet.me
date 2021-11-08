@@ -3,7 +3,7 @@ using Content;
 using Networking;
 using System;
 
-namespace Testing.Content
+namespace Testing
 {
     public class Tests
     {
