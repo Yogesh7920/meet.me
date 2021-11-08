@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using System;
+using System.Diagnostics;
 
 namespace Content
 {
@@ -14,16 +15,20 @@ namespace Content
 
         public MessageData Receive(MessageData messageData)
         {
+            Trace.WriteLine("[FileServer] Received message from ContentServer");
             switch (messageData.Event)
             {
                 case MessageEvent.NewMessage:
+                    Trace.WriteLine("[FileServer] MessageEvent is NewMessage, Storing this file");
                     return SaveFile(messageData);
 
                 case MessageEvent.Download:
+                    Trace.WriteLine("[FileServer] MessageEvent is Download, Fetching the file");
                     return FetchFile(messageData.MessageId);
 
                 default:
-                    throw new SystemException();
+                    Debug.Assert(false, "[File Server] Unknown Event");
+                    return null;
             }
         }
 

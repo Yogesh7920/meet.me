@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using System;
+using System.Diagnostics;
 
 namespace Content
 {
@@ -14,19 +15,24 @@ namespace Content
 
         public MessageData Receive(MessageData messageData)
         {
+            Trace.WriteLine("[ChatServer] Received message from ContentServer");
             switch (messageData.Event)
             {
                 case MessageEvent.NewMessage:
+                    Trace.WriteLine("[ChatServer] MessageEvent is NewMessage, Storing this message");
                     return Store(messageData);
 
                 case MessageEvent.Star:
+                    Trace.WriteLine("[ChatServer] MessageEvent is Star, Starring this message");
                     return Star(messageData.MessageId);
 
                 case MessageEvent.Update:
+                    Trace.WriteLine("[ChatServer] MessageEvent is Update, Updating this message");
                     return Update(messageData.MessageId, messageData);
 
                 default:
-                    throw new NotImplementedException();
+                    Debug.Assert(false, "[ChatServer] Unknown Event");
+                    return null;
             }
         }
 
