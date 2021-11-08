@@ -46,15 +46,23 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Boolean denoting the success or failure whether the user was added. </returns>
         public bool AddClient(string ipAddress, int port, string username)
         {
-            string connectionStatus = _communicator.Start(ipAddress,port.ToString());
 
-            if(connectionStatus == "0")
+            string serializedClientName;
+            
+            lock (this)
             {
-                return false;
-            }
+                string connectionStatus = _communicator.Start(ipAddress, port.ToString());
 
-            ClientToServerData clientName = new ClientToServerData("addClient",username);
-            string serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
+                // if the IP address and/or the port number are incorrect
+                if (connectionStatus == "0")
+                {
+                    return false;
+                }
+
+                ClientToServerData clientName = new ClientToServerData("addClient", username);
+                serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
+            }
+            
             _communicator.Send(serializedClientName,moduleIdentifier);
             return true;
         }
@@ -94,7 +102,10 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="identifier"> The identifier of the subscriber. </param>
         public void SubscribeSession(IClientSessionNotifications listener)
         {
-            _clients.Add(listener);
+            lock(this)
+            {
+                _clients.Add(listener);
+            }
         }
 
         /// <summary>

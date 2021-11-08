@@ -137,8 +137,32 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="socketObject"></param>
         public void OnClientJoined<T>(T socketObject)
         {
-            userCount += 1;
+            lock(this)
+            {
+                userCount += 1;
+            }
             _communicator.AddClient<T>(userCount.ToString(), socketObject);
+        }
+
+        private void ClientArrivalProcedure(ClientToServerData arrivedClient)
+        {
+            // create a new user and add it to the session. 
+            UserData user = CreateUser(arrivedClient.username);
+            AddUserToSession(user);
+            // Give Whiteboard, Content and screenshare the userID's
+
+            // Notify Telemetry about the change in the session object.
+            NotifyTelemetryModule();
+
+            // serialize and broadcast the data back to the client side.
+            ServerToClientData serverToClientData;
+            lock (this)
+            {
+                serverToClientData = new ServerToClientData("addClient", _sessionData);
+            }
+
+            string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
+            _communicator.Send(serializedSessionData, moduleIdentifier);
         }
 
         /// <summary>
@@ -152,25 +176,15 @@ namespace Dashboard.Server.SessionManagement
             // the object is obtained by deserializing the string and handling the cases 
             // based on the 'eventType' field of the deserialized object. 
             ClientToServerData deserializedObj = _serializer.Deserialize<ClientToServerData>(serializedObject);
-            if (deserializedObj.eventType == "addClient")
+
+            switch (deserializedObj.eventType)
             {
-                // create a new user and add it to the session. 
-                UserData user = CreateUser(deserializedObj.username);
-                AddUserToSession(user);
-                // Give Whiteboard, Content and screenshare the userID's
+                case "addClient":
+                    ClientArrivalProcedure(deserializedObj);
+                    return;
 
-                // Notify Telemetry about the change in the session object.
-                NotifyTelemetryModule();
-
-                // serialize and broadcast the data back to the client side.
-                ServerToClientData serverToClientData;
-                lock (this)
-                {
-                    serverToClientData = new ServerToClientData("addClient", _sessionData);
-                }
-
-                string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
-                _communicator.Send(serializedSessionData, moduleIdentifier);
+                default:
+                    throw new NotImplementedException();
             }
         }
 
