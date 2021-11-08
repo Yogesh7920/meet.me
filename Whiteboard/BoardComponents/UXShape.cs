@@ -30,7 +30,7 @@ namespace Whiteboard
         {
             UxOperation = uxOperation;
             ShapeIdentifier = s.ShapeIdentifier;
-            TranslationCoordinate = s.GetCenter().Clone();
+            TranslationCoordinate = s.Center.Clone();
             AngleOfRotation = s.AngleOfRotation;
             CheckPointNumber = checkPointNumber;
             OperationType = operationType;
