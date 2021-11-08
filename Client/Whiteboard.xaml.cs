@@ -14,34 +14,75 @@ using System.Windows.Shapes;
 
 namespace Client
 {
+    public class SimpleCircleAdorner : Adorner
+    {
+        // Be sure to call the base class constructor.
+        public SimpleCircleAdorner(UIElement adornedElement)
+          : base(adornedElement)
+        {
+        }
+
+        // A common way to implement an adorner's rendering behavior is to override the OnRender
+        // method, which is called by the layout system as part of a rendering pass.
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            Rect adornedElementRect = new Rect(this.AdornedElement.DesiredSize);
+
+            // Some arbitrary drawing implements.
+            SolidColorBrush renderBrush = new SolidColorBrush(Colors.Green);
+            renderBrush.Opacity = 0.2;
+            Pen renderPen = new Pen(new SolidColorBrush(Colors.Navy), 1.5);
+            double renderRadius = 5.0;
+
+            // Draw a circle at each corner.
+            drawingContext.DrawRectangle(renderBrush, renderPen, adornedElementRect);
+            drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopLeft, renderRadius, renderRadius);
+            drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopRight, renderRadius, renderRadius);
+            drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomLeft, renderRadius, renderRadius);
+            drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomRight, renderRadius, renderRadius);
+        }
+    }
+
     /// <summary>
     /// Interaction logic for Whiteboard.xaml
     /// </summary>
     public partial class WhiteBoardView : UserControl
     {
         //init variables 
-        private Button activeMainToolbarButton;
+        private System.Windows.Controls.Primitives.ToggleButton activeMainToolbarButton;
         private Button activeSelectToolbarButton;
         private WhiteBoardViewModel viewModel;
         public Canvas GlobCanvas;
 
         private int mouseLeftBtnMoveFlag = 0;
+        private int mouseDownFlag = 0;
         private Shape mouseDownSh;
-
 
         //Button Dynamic Colors 
         private string buttonDefaultColor = "#D500F9";
         private string buttonSelectedColor = "#007C9C";
 
-        //Canvas BG available Colors 
-        private string curCanvasBg = "#FFFFFF";
-        private string curPenColor = "#000000";
+        //Color Palette 
+        private string Black = "#000000";
+        private string White = "#FFFFFF";
+        private string Red = "#FF0000";
+        private string Green = "#00FF00";
+        private string Blue = "#0000FF";
+        private string Yellow = "#FFFF00";
 
+        //Canvas BG available Colors 
         private string canvasBg1 = "#FFFFFF";
         private string canvasBg2 = "#FF0000";
         private string canvasBg3 = "#00FF00";
         private string canvasBg4 = "#0000FF";
         private string canvasBg5 = "#FFFF00";
+
+       //pen and eraser properties 
+        private string curCanvasBg = "#FFFFFF";
+        private string curPenColor = "#000000";
+
+        private float penThickness = 5; 
+        private float eraserThickness = 5;
 
         public WhiteBoardView()
         {
@@ -58,15 +99,20 @@ namespace Client
             mouseLeftBtnMoveFlag = 0;   //init mouse move flag 
             if (e.LeftButton == MouseButtonState.Pressed)   //check if left mouse button is pressed 
             {
+                mouseDownFlag = 1;
                 switch (viewModel.GetActiveTool())
                 {
                     case (WhiteBoardViewModel.WBTools.FreeHand):
                         Point fh_pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, curPenColor);
+                        this.viewModel.freeHand.SetColor(curPenColor);
+                        this.viewModel.freeHand.SetThickness(penThickness);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true);
                         break;
                     case (WhiteBoardViewModel.WBTools.Eraser):
                         Point er_pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, true, curCanvasBg, true);
+                        this.viewModel.freeHand.SetColor(curCanvasBg);
+                        this.viewModel.freeHand.SetThickness(eraserThickness);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, true, true);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewLine):
                         break;
@@ -104,11 +150,13 @@ namespace Client
                     {
                         case (WhiteBoardViewModel.WBTools.FreeHand):
                             Point fh_pt = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, curPenColor);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
+                            mouseDownFlag = 0;
                             break;
                         case (WhiteBoardViewModel.WBTools.Eraser):
                             Point er_pt = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, curCanvasBg, true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, true);
+                            mouseDownFlag = 0;
                             break;
                         case (WhiteBoardViewModel.WBTools.Selection):
 
@@ -198,6 +246,9 @@ namespace Client
                                     //this.SelectionBox.Visibility = Visibility.Visible;
                                     //GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanhvas,viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle,...) 
 
+
+                                    //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(selectedShape);
+                                    //myAdornerLayer.Add(new SimpleCircleAdorner(selectedShape));
                                     GlobCanvas = viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps, 0);
                                 }
                                 else
@@ -228,12 +279,19 @@ namespace Client
                 switch (viewModel.GetActiveTool())
                 {
                     case (WhiteBoardViewModel.WBTools.FreeHand):
-                        Point fh_pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, curPenColor);
+
+                        if(mouseDownFlag == 1)
+                        {
+                            Point fh_pt = e.GetPosition(GlobCanvas);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
+                        }
                         break;
                     case (WhiteBoardViewModel.WBTools.Eraser):
-                        Point er_pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, curCanvasBg, true);
+                        if (mouseDownFlag == 1)
+                        {
+                            Point er_pt = e.GetPosition(GlobCanvas);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, true);
+                        }
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
                         //if(e.OriginalSource is Shape)
@@ -267,7 +325,6 @@ namespace Client
 
 
         //Pop-up togglers 
-
         //Canvas BG color Pop-Up
         private void OpenPopupButton_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -374,7 +431,7 @@ namespace Client
         //Fill Border Check Buttons 
         private void ColorBorder1Checked(object sender, RoutedEventArgs e)
         {
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg1, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Black, 0);
         }
 
         private void ColorBorder2Checked(object sender, RoutedEventArgs e)
@@ -404,7 +461,86 @@ namespace Client
 
             if (thickness > 0)
             {
-                this.viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "StrokeThickness", "#000000", thickness);
+                this.viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "StrokeThickness", Black, thickness);
+            }
+
+        }
+
+        //Main Toolbar Pop-Ups 
+        //Free Hand Pop-Up
+        private void OpenPopupFreeHandButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            FreeHandPopUp.StaysOpen = true;
+        }
+
+        private void OpenPopupFreeHandButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            FreeHandPopUp.StaysOpen = false;
+        }
+
+        //Pen Color Check Buttons 
+        private void ColorPen1Checked(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.freeHand.SetColor(Black);
+            curPenColor = Black;
+        }
+
+        private void ColorPen2Checked(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.freeHand.SetColor(Red);
+            curPenColor = Red; 
+        }
+
+        private void ColorPen3Checked(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.freeHand.SetColor(Green);
+            curPenColor = Green;
+        }
+
+        private void ColorPen4Checked(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.freeHand.SetColor(Blue);
+            curPenColor = Blue;
+        }
+
+        private void ColorPen5Checked(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.freeHand.SetColor(Yellow);
+            curPenColor = Yellow;
+        }
+
+        //Stroke Thickness Slider Control 
+        private void PenThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float thickness = (byte)FreeHandThicknessSlider.Value;
+
+            if (thickness > 0)
+            {
+                this.viewModel.freeHand.SetThickness(thickness);
+                penThickness = thickness;
+            }
+
+        }
+
+        //Eraser Pop-up
+        private void OpenPopupEraserButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            EraserPopUp.StaysOpen = true;
+        }
+
+        private void OpenPopupEraserButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            EraserPopUp.StaysOpen = false;
+        }
+
+        private void EraserThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            float thickness = (byte)EraserThicknessSlider.Value;
+
+            if (thickness > 0)
+            {
+                this.viewModel.freeHand.SetThickness(thickness);
+                eraserThickness = thickness;
             }
 
         }
@@ -416,7 +552,7 @@ namespace Client
             if (activeMainToolbarButton != null)
             {
                 activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(Button.BackgroundProperty);
+                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
             if (this.SelectToolBar.Visibility == Visibility.Collapsed)
@@ -424,7 +560,7 @@ namespace Client
                 this.SelectToolBar.Visibility = Visibility.Visible;
             }
 
-            activeMainToolbarButton = sender as Button;
+            activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             return;
@@ -436,7 +572,7 @@ namespace Client
             if (activeMainToolbarButton != null)
             {
                 activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(Button.BackgroundProperty);
+                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
             if (this.SelectToolBar.Visibility == Visibility.Visible)
@@ -444,7 +580,7 @@ namespace Client
                 this.SelectToolBar.Visibility = Visibility.Collapsed;
             }
 
-            activeMainToolbarButton = sender as Button;
+            activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             return;
@@ -456,7 +592,7 @@ namespace Client
             if (activeMainToolbarButton != null)
             {
                 activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(Button.BackgroundProperty);
+                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
             if (this.SelectToolBar.Visibility == Visibility.Visible)
@@ -464,19 +600,20 @@ namespace Client
                 this.SelectToolBar.Visibility = Visibility.Collapsed;
             }
 
-            activeMainToolbarButton = sender as Button;
+            activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             return;
         }
 
         //Toolbar FreeHand tool
-        private void ClickedFreehandTool(object sender, RoutedEventArgs e)
+        private void CheckedFreehandTool(object sender, RoutedEventArgs e)
         {
+            // Code for Un-Checked state
             if (activeMainToolbarButton != null)
             {
                 activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(Button.BackgroundProperty);
+                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
             if (this.SelectToolBar.Visibility == Visibility.Visible)
@@ -484,7 +621,7 @@ namespace Client
                 this.SelectToolBar.Visibility = Visibility.Collapsed;
             }
 
-            activeMainToolbarButton = sender as Button;
+            activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             return;
@@ -496,7 +633,7 @@ namespace Client
             if (activeMainToolbarButton != null)
             {
                 activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(Button.BackgroundProperty);
+                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
             if (this.SelectToolBar.Visibility == Visibility.Visible)
@@ -504,7 +641,7 @@ namespace Client
                 this.SelectToolBar.Visibility = Visibility.Collapsed;
             }
 
-            activeMainToolbarButton = sender as Button;
+            activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             return;
@@ -516,7 +653,7 @@ namespace Client
             if (activeMainToolbarButton != null)
             {
                 activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(Button.BackgroundProperty);
+                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
             if (this.SelectToolBar.Visibility == Visibility.Visible)
@@ -524,11 +661,12 @@ namespace Client
                 this.SelectToolBar.Visibility = Visibility.Collapsed;
             }
 
-            activeMainToolbarButton = sender as Button;
+            activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             return;
         }
+
 
         //Selection Toolbar
         //Fill Border Tool Button

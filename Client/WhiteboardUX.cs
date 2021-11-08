@@ -305,7 +305,7 @@ namespace Client
         public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
 
-            if (mouseDownSh == null)
+            if (mouseDownSh == null || BBmap.ContainsValue(mouseDownSh.Uid))
             {
                 return cn;
             }
@@ -363,6 +363,7 @@ namespace Client
                         newEl.Stroke = sh.Stroke;
                         newEl.StrokeThickness = sh.StrokeThickness;
                         newEl.Uid = sh.Uid;
+                        newEl.RenderTransform = sh.RenderTransform; 
                         if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newEl, topleft_x - diff_topleft_x);
                         else if (center_x > cn.Width) Canvas.SetLeft(newEl, Canvas.GetLeft(sh));
                         else Canvas.SetLeft(newEl, Canvas.GetLeft(sh));
@@ -383,6 +384,7 @@ namespace Client
                         newRec.Stroke = sh.Stroke;
                         newRec.StrokeThickness = sh.StrokeThickness;
                         newRec.Uid = sh.Uid;
+                        newRec.RenderTransform = sh.RenderTransform;
                         if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newRec, topleft_x - diff_topleft_x);
                         else if (center_x > cn.Width) Canvas.SetLeft(newRec, cn.Width);
                         else Canvas.SetLeft(newRec, 0);
@@ -402,6 +404,7 @@ namespace Client
                         newLine.Stroke = sh.Stroke;
                         newLine.StrokeThickness = sh.StrokeThickness;
                         newLine.Uid = sh.Uid;
+                        newLine.RenderTransform = sh.RenderTransform;
                         if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newLine, topleft_x - diff_topleft_x);
                         else if (center_x > cn.Width) Canvas.SetLeft(newLine, cn.Width);
                         else Canvas.SetLeft(newLine, 0);
@@ -449,7 +452,7 @@ namespace Client
         public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
 
-            if (mouseDownSh == null)
+            if (mouseDownSh == null || BBmap.ContainsValue(mouseDownSh.Uid))
             {
                 return cn;
             }
@@ -737,8 +740,37 @@ namespace Client
     /// </summary>
     public class FreeHand : IWhiteBoardUpdater
     {
-        private System.Windows.Shapes.Polyline poly; 
-        private PointCollection polygonPoints = new PointCollection();
+        private System.Windows.Shapes.Polyline poly;
+        private SolidColorBrush polyLineColor;
+        private float polyLineThickness;
+
+        //Consructor for the class 
+        public FreeHand()
+        {
+            polyLineColor = new SolidColorBrush(Colors.Black);
+            polyLineThickness = 5;
+        }
+
+        public SolidColorBrush GetColor()
+        {
+            return polyLineColor;
+        }
+
+        public void SetColor(string hexCode)
+        {
+            polyLineColor = (SolidColorBrush)(new BrushConverter().ConvertFrom(hexCode));
+        }
+
+        public float GetThickness()
+        {
+            return polyLineThickness;
+        }
+
+        public void SetThickness(float thick)
+        {
+            polyLineThickness = thick;
+        }
+
         /// <summary>
         /// Fetch FreeHand instances updates from IWhiteBoardState for rendering in the view   
         /// </summary>
@@ -766,18 +798,25 @@ namespace Client
         /// <param name="strokeColor"> Represents the hexcode of the color of polyline to be drawn </param>
         /// <param name="isEraser"> Boolean which is true if the drawn polyline is supposed to be an Eraser instance, used to set the Windows.Shapes.Tag property which is used by 'ChangeWbBackground' method locally</param>
         /// <returns> The updated Canvas </returns>
-        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, String strokeColor = "#000000", bool isEraser = false)
+        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false)
         {
-
-            SolidColorBrush brush = new SolidColorBrush {Color = (Color)ColorConverter.ConvertFromString(strokeColor) };
-
             if (creation)
             {
                 poly = new System.Windows.Shapes.Polyline();
-                poly.Stroke = brush;
-                poly.StrokeThickness = 3;
-                if (isEraser == true) poly.Tag = "ERASER";
-                else poly.Tag = "FREEHAND";
+
+
+                if (isEraser == true)
+                {
+                    poly.Tag = "ERASER";
+                }
+                else
+                {
+                    poly.Tag = "FREEHAND";
+                }
+
+                poly.Stroke = polyLineColor;
+                poly.StrokeThickness = polyLineThickness;
+
                 poly.Points.Add(pt);
                 cn.Children.Add(poly);
             }
