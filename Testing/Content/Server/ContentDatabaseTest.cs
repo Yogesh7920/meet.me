@@ -5,9 +5,9 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Testing.Content
+namespace Testing
 {
-    public class Tests
+    public class ContentDatabaseTests
     {
         [SetUp]
         public void Setup()

@@ -4,9 +4,9 @@ using Networking;
 using System;
 using System.Collections.Generic;
 
-namespace Testing.Content
+namespace Testing
 {
-    public class Tests
+    public class ContentClientNotificationHandlerTests
     {
         [SetUp]
         public void Setup()

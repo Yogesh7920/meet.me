@@ -2,9 +2,9 @@ using NUnit.Framework;
 using Content;
 using System;
 
-namespace Testing.Content
+namespace Testing
 {
-    public class Tests
+    public class ContentClientFactoryTests
     {
         [SetUp]
         public void Setup()

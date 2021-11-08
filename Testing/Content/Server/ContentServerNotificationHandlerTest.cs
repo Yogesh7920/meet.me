@@ -3,9 +3,9 @@ using Content;
 using Networking;
 using System;
 
-namespace Testing.Content
+namespace Testing
 {
-    public class Tests
+    public class ContentServerNotificationHandlerTests
     {
         [SetUp]
         public void Setup()

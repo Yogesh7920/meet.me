@@ -7,7 +7,8 @@ using MongoDB.Bson;
 
 namespace Testing
 {
-    public class FileClientTests
+
+    public class ContentModuleTests
     {
         [SetUp]
         public void Setup()

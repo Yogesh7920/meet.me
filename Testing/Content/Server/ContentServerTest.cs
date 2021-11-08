@@ -4,9 +4,9 @@ using Networking;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Testing.Content
+namespace Testing
 {
-    public class Tests
+    public class ContentServerTests
     {
         [SetUp]
         public void Setup()

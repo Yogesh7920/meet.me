@@ -4,9 +4,9 @@ using MongoDB.Bson;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Testing.Content
+namespace Testing
 {
-    public class Tests
+    public class ChatContextServerTests
     {
         [SetUp]
         public void Setup()
