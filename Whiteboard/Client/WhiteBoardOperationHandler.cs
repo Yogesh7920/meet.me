@@ -187,7 +187,7 @@ namespace Whiteboard
         /// <returns> User Name. </returns>
         public string GetUserName(string shapeId)
         {
-            throw new NotImplementedException();
+            return _boardState.GetUserName(shapeId);
         }
 
         /// <summary>

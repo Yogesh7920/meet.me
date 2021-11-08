@@ -45,7 +45,6 @@ namespace Whiteboard
             }
         }
 
-        private IClientBoardStateManagerInternal _stateManager;
         private _lastDrawnDetails _lastDrawn;
 
         public ActiveBoardOperationsHandler()
@@ -63,7 +62,7 @@ namespace Whiteboard
         /// <param name="shapeFill">Modified fill color of the shape..</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId)
+        public override List<UXShape> ChangeShapeFill([NotNull]BoardColor shapeFill, [NotNull]string shapeId)
         {
             // get the actual BoardServer object stored in the server
             BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
@@ -88,7 +87,7 @@ namespace Whiteboard
         /// <param name="strokeColor">Modified fill color of outline stroke of shape..</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> ChangeStrokeColor(BoardColor strokeColor, string shapeId)
+        public override List<UXShape> ChangeStrokeColor([NotNull] BoardColor strokeColor, [NotNull] string shapeId)
         {
             // get the actual BoardServer object stored in the server
             BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
@@ -113,7 +112,7 @@ namespace Whiteboard
         /// <param name="strokeWidth">Width of stroke.</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> ChangeStrokeWidth(float strokeWidth, string shapeId)
+        public override List<UXShape> ChangeStrokeWidth(float strokeWidth, [NotNull] string shapeId)
         {
             // get the actual BoardServer object stored in the server
             BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
@@ -140,7 +139,7 @@ namespace Whiteboard
         /// <param name="newBoardShape">BoardShape after modification.</param>
         /// <param name="operationType">The type of operation being performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        private List<UXShape> UpdateManager(BoardShape oldBoardShape, BoardShape newBoardShape, Operation operationType)
+        private List<UXShape> UpdateManager([NotNull] BoardShape oldBoardShape, [NotNull] BoardShape newBoardShape, Operation operationType)
         {
             // Whenever Update goes to the Manager, the last operation saved locally is discarded.
             // Set prev drawings to null in case any exists.
@@ -183,8 +182,8 @@ namespace Whiteboard
         /// <param name="shapeId">Id of the shape.</param>
         /// <param name="shapeComp">Denotes whether the shape is complete, or if it is for real-time rendering.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> CreateShape(ShapeType shapeType, Coordinate start, Coordinate end,
-                                                  float strokeWidth, BoardColor strokeColor, string shapeId = null,
+        public override List<UXShape> CreateShape(ShapeType shapeType, [NotNull] Coordinate start, [NotNull] Coordinate end,
+                                                  float strokeWidth, [NotNull] BoardColor strokeColor, string shapeId = null,
                                                   bool shapeComp = false)
         {
 
@@ -254,7 +253,9 @@ namespace Whiteboard
 
         }
 
-        public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, [NotNull]string shapeId, bool shapeComp = false)
+        public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation,
+                                                          [NotNull] Coordinate start, [NotNull] Coordinate end,
+                                                          [NotNull] string shapeId, bool shapeComp = false)
         {
 
             // List of Operations to be send to UX
@@ -336,7 +337,7 @@ namespace Whiteboard
             return operations;
         }
 
-        public override List<UXShape> Delete(string shapeId)
+        public override List<UXShape> Delete([NotNull] string shapeId)
         {
             // List of Operations to be send to UX
             List<UXShape> operations = new List<UXShape>();

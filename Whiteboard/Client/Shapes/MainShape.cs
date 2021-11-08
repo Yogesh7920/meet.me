@@ -116,15 +116,6 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Gets the Coordinate of the Center of the Shape.
-        /// </summary>
-        /// <returns></returns>
-        public Coordinate GetCenter()
-        {
-            return new Coordinate(Start.R + Height/2, Start.C + Width/2);
-        }
-
-        /// <summary>
         /// Deep Copy for the Shape.
         /// </summary>
         /// <returns>Deep Copy for the Shape.</returns>

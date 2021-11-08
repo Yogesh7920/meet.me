@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace Whiteboard
     abstract public class BoardOperationsState
     {
         public int UserLevel { get; set; }
+
+        protected IClientBoardStateManagerInternal _stateManager;
 
         abstract public List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId);
 
@@ -34,5 +37,16 @@ namespace Whiteboard
         abstract public List<UXShape> Delete(string shapeId);
 
         abstract public List<UXShape> Undo();
+
+        public string GetUserName(string shapeId)
+        {
+            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+            if (shapeFromManager == null)
+            {
+                Trace.WriteLine("[Warning] Invalid Shape Id: No shape with given shape Id exists for GetUser operation.");
+                return null;
+            }
+            return shapeFromManager.ShapeOwnerId;
+        }
     }
 }
