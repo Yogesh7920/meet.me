@@ -17,6 +17,7 @@ namespace Networking
                 return stringStream.ToString();
             }
         }
+
         /// <inheritdoc />
         string ISerializer.GetObjectType(string serializedString, string nameSpace)
         {
@@ -26,16 +27,18 @@ namespace Networking
             {
                 throw new FormatException();
             }
+
             string typ = nameSpace + "." + xmlReader.Name;
             return typ;
         }
+
         /// <inheritdoc />
         T ISerializer.Deserialize<T>(string serializedString)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(T));
             using (StringReader stringReader = new StringReader(serializedString))
             {
-                return (T)serializer.Deserialize(stringReader);
+                return (T) serializer.Deserialize(stringReader);
             }
         }
     }
