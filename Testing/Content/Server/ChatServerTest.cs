@@ -5,7 +5,7 @@ using System;
 
 namespace Testing
 {
-    public class Tests
+    public class ChatServerTests
     {
         [SetUp]
         public void Setup()

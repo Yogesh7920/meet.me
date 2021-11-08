@@ -3,7 +3,7 @@ using Content;
 
 namespace Testing
 {
-    public class Tests
+    public class ContentTests
     {
         [SetUp]
         public void Setup()

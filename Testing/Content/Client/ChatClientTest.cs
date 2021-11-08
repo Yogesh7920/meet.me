@@ -7,7 +7,7 @@ using Networking;
 
 namespace Testing
 {
-    public class Tests
+    public class ChatClientTests
     {
         [SetUp]
         public void Setup()

@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace Testing
 {
-    public class Tests
+    public class ContentDatabaseTests
     {
         [SetUp]
         public void Setup()

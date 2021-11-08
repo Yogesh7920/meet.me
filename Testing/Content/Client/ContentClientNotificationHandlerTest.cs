@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Testing
 {
-    public class Tests
+    public class ContentClientNotificationHandlerTests
     {
         [SetUp]
         public void Setup()

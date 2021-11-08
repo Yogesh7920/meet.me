@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Testing
 {
-    public class Tests
+    public class ContentServerTests
     {
         [SetUp]
         public void Setup()
