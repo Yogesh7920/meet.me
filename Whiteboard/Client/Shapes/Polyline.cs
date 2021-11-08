@@ -21,11 +21,10 @@ namespace Whiteboard
         /// <param name="height">Hright of Polyline.</param>
         /// <param name="width">Width of Polyline.</param>
         /// <param name="start">The left botton coordinate of the smallest rectangle enclosing the shape.</param>
-        public Polyline(int height, int width, Coordinate start) : base(ShapeType.POLYLINE)
+        public Polyline(Coordinate start) : base(ShapeType.POLYLINE)
         {
-            this.Height = height;
-            this.Width = width;
             this.Start = start.Clone();
+            Points.Add(Start.Clone());
         }
 
         /// <summary>
@@ -45,12 +44,11 @@ namespace Whiteboard
                          BoardColor strokeColor,
                          BoardColor shapeFill,
                          Coordinate start,
+                         Coordinate center,
                          List<Coordinate> points,
                          float angle) :
-                         base(ShapeType.POLYLINE, height, width, strokeWidth, strokeColor, shapeFill, start, points, angle)
+                         base(ShapeType.POLYLINE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
-            this.AddToList(start.Clone());
-            this.AddToList(new Coordinate(start.R+ height, start.C + width));
         }
 
         /// <summary>
@@ -71,15 +69,11 @@ namespace Whiteboard
         {
             if (prevPolyline == null)
             {
-                return new Polyline(start.R - end.R, start.C - end.C, start);
-            }
-            else
-            {
-                prevPolyline.Height = end.R - prevPolyline.Start.R;
-                prevPolyline.Width = end.C - prevPolyline.Start.C;
+                Polyline polyline = new Polyline(start);
                 AddToList(end.Clone());
-                return prevPolyline;
             }
+            AddToList(end.Clone());
+            return prevPolyline;
         }
 
         /// <summary>
@@ -88,7 +82,7 @@ namespace Whiteboard
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            return new Polyline(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, new List<Coordinate>(), AngleOfRotation);
+            return new Polyline(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, Center, Points, AngleOfRotation);
         }
     }
 }

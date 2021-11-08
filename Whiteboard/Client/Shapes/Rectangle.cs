@@ -22,11 +22,12 @@ namespace Whiteboard
         /// <param name="height">Hright of Rectangle.</param>
         /// <param name="width">Width of Rectangle.</param>
         /// <param name="start">The left botton coordinate of the smallest rectangle enclosing the shape.</param>
-        public Rectangle(int height, int width, Coordinate start) : base(ShapeType.RECTANGLE)
+        public Rectangle(int height, int width, Coordinate start, Coordinate center) : base(ShapeType.RECTANGLE)
         {
             this.Height = height;
             this.Width = width;
             this.Start = start.Clone();
+            this.Center = center.Clone();
         }
 
         /// <summary>
@@ -46,9 +47,10 @@ namespace Whiteboard
                          BoardColor strokeColor,
                          BoardColor shapeFill,
                          Coordinate start,
+                         Coordinate center,
                          List<Coordinate> points,
                          float angle) :
-                         base(ShapeType.RECTANGLE, height, width, strokeWidth, strokeColor, shapeFill, start, points, angle)
+                         base(ShapeType.RECTANGLE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
         }
 
@@ -70,12 +72,16 @@ namespace Whiteboard
         {
             if (prevRectangle == null)
             {
-                return new Rectangle(start.R - end.R, start.C - end.C, start);
+                int height = Math.Abs(start.R - end.R);
+                int width = Math.Abs(start.C - end.C);
+                Coordinate center = (end - start) / 2;
+                return new Rectangle(height, width, start, center);
             }
             else
             {
-                prevRectangle.Height = end.R - prevRectangle.Start.R;
-                prevRectangle.Width = end.C - prevRectangle.Start.C;
+                prevRectangle.Height = Math.Abs(end.R - prevRectangle.Start.R);
+                prevRectangle.Width = Math.Abs(end.C - prevRectangle.Start.C);
+                Coordinate center = (end - prevRectangle.Start) / 2;
                 return prevRectangle;
             }
         }
@@ -86,7 +92,7 @@ namespace Whiteboard
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            return new Rectangle(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, new List<Coordinate>(), AngleOfRotation);
+            return new Rectangle(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, Center, new List<Coordinate>(), AngleOfRotation);
         }
     }
 }

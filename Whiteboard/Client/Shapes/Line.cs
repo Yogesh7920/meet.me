@@ -23,13 +23,14 @@ namespace Whiteboard
         /// <param name="height">Height of Line.</param>
         /// <param name="width">Width of Line.</param>
         /// <param name="start">The left botton coordinate of the smallest rectangle enclosing the shape.</param>
-        public Line(int height, int width, Coordinate start) : base(ShapeType.LINE)
+        public Line(int height, int width, Coordinate start, Coordinate end, Coordinate center) : base(ShapeType.LINE)
         {
             this.Height = height;
             this.Width = width;
             this.Start = start.Clone();
+            this.Center = center.Clone();
             this.AddToList(start.Clone());
-            this.AddToList(new Coordinate(start.R + height, start.C + width));
+            this.AddToList(end.Clone());
         }
 
         /// <summary>
@@ -49,9 +50,10 @@ namespace Whiteboard
                     BoardColor strokeColor,
                     BoardColor shapeFill,
                     Coordinate start,
+                    Coordinate center,
                     List<Coordinate> points,
                     float angle) :
-                    base(ShapeType.LINE, height, width, strokeWidth, strokeColor, shapeFill, start, points, angle)
+                    base(ShapeType.LINE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
             this.AddToList(start.Clone());
             this.AddToList(new Coordinate(start.R + height, start.C + width));
@@ -75,12 +77,16 @@ namespace Whiteboard
         {
             if (prevLine == null)
             {
-                return new Polyline(start.R - end.R, start.C - end.C, start);
+                int height = Math.Abs(start.R - end.R);
+                int width = Math.Abs(start.C - end.C);
+                Coordinate center = (end - start) / 2;
+                return new Line(height, width, start, end, center);
             }
             else
             {
                 prevLine.Height = end.R - prevLine.Start.R;
                 prevLine.Width = end.C - prevLine.Start.C;
+                prevLine.Center = (end - prevLine.Start) / 2;
                 PopLastElementFromList();
                 AddToList(end.Clone());
                 return prevLine;
@@ -93,7 +99,7 @@ namespace Whiteboard
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            return new Line(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, new List<Coordinate>(), AngleOfRotation);
+            return new Line(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, Center, new List<Coordinate>(), AngleOfRotation);
         }
     }
 }

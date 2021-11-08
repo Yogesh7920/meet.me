@@ -10,54 +10,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Shapes;
-using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace Whiteboard
 {
+    public enum RealTimeOperation
+    {
+        TRANSLATE,
+        ROTATE,
+        RESIZE_HEIGHT,
+        RESIZE_WIDTH,
+        CREATE,
+        RESIZE
+
+    }
     class ActiveBoardOperationsHandler : BoardOperationsState
     {
 
-        private BoardShape _lastDrawn;
-        private bool _isLastDrawPending;
+        private class _lastDrawnDetails{
+            public BoardShape _shape;
+            public Coordinate _end;
+            public RealTimeOperation _operation;
+
+            public _lastDrawnDetails()
+            {
+                _shape = null;
+                _end = null;
+            }
+
+            public bool isPending()
+            {
+                return (_shape == null) ? false : true;
+            }
+        }
+
         private IClientBoardStateManagerInternal _stateManager;
-        private int _userLevel;
         private Coordinate _canvasSize;
+        private _lastDrawnDetails _lastDrawn;
 
         public ActiveBoardOperationsHandler(Coordinate canvasSize)
         {
-            _isLastDrawPending = false;
-            _lastDrawn = null;
+            _lastDrawn = new _lastDrawnDetails();
             _stateManager = ClientBoardStateManager.Instance;
             _canvasSize = canvasSize;
+            UserLevel = 0;
         }
         
-        /// <summary>
-        /// Change the Height of the shape.
-        /// </summary>
-        /// <param name="start">Start Coordinate of mouse drag.</param>
-        /// <param name="end">End Coordinate of mouse drag.</param>
-        /// <param name="shapeId">The ShapeId to perform the operation.</param>
-        /// <param name="shapeComp">Determines whether shape creation is complete and can be sent to manager.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Changes the Width of the shape.
-        /// </summary>
-        /// <param name="start">Start Coordinate of mouse drag.</param>
-        /// <param name="end">End Coordinate of mouse drag.</param>
-        /// <param name="shapeId">The ShapeId to perform the operation.</param>
-        /// <param name="shapeComp">Determines whether shape creation is complete and can be sent to manager.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
-        }
         //public delete - to implemented
 
         /// <summary>
@@ -133,7 +130,6 @@ namespace Whiteboard
             // Whenever Update goes to the Manager, the last operation saved locally is discarded.
             // Set prev drawings to null in case any exists.
             _lastDrawn = null;
-            _isLastDrawPending = false;
 
             // List of UXShapes to be sent to the server.
             List<UXShape> operations = new List<UXShape>();
@@ -176,32 +172,21 @@ namespace Whiteboard
                                                   float strokeWidth, BoardColor strokeColor, string shapeId = null,
                                                   bool shapeComp = false)
         {
-            // shapeId null signifies a new shape creation.
-            if(shapeId == null)
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
             {
-                _lastDrawn = null;
-                _isLastDrawPending = false;
+                // throw exception
             }
 
             // List of Operations to be send to UX
             List<UXShape> operations = new List<UXShape>();
- 
-            // required to clear the previous shape in internal storage for real time rendering, before forming the new shape
-            if ((_lastDrawn != null) && (shapeType != _lastDrawn.MainShapeDefiner.ShapeIdentifier))
-            {
-                // Delete the Object that was already created in the canvas
-                string oldShapeId = _lastDrawn.Uid;
-                UXShape oldShape = new UXShape(UXOperation.DELETE, _lastDrawn.MainShapeDefiner, oldShapeId);
-                operations.Add(oldShape);
+            string prevShapeId;
 
-                // In this case previous shape won't be used for creating new shape
+            // A new shape creation.
+            if (shapeId == null)
+            {
                 _lastDrawn = null;
-            }
 
-            //creation of a completely new shape
-            string newShapeId = null;
-            if (_lastDrawn == null)
-            {
                 MainShape newMainShape = ShapeFactory.MainShapeCreatorFactory(shapeType, start, end, null);
 
                 // setting params for new shape
@@ -209,93 +194,128 @@ namespace Whiteboard
                 newMainShape.StrokeWidth = strokeWidth;
 
                 UXShape newUxShape = new UXShape(UXOperation.CREATE, newMainShape, null);
-                newShapeId = newUxShape.WindowsShape.Uid;
+                prevShapeId = newUxShape.WindowsShape.Uid;
                 operations.Add(newUxShape);
 
-                int userLevel = 0; // to be changed
                 string userId = _stateManager.GetUser();
 
-                // creating the new BoardShape to send to server
-                _lastDrawn = new BoardShape(newMainShape, userLevel, DateTime.Now, DateTime.Now, newShapeId, userId, Operation.CREATE);
+                _lastDrawn = new _lastDrawnDetails();
+                _lastDrawn._shape = new BoardShape(newMainShape, UserLevel, DateTime.Now, DateTime.Now, prevShapeId, userId, Operation.CREATE);
+                _lastDrawn._end = end;
+                _lastDrawn._operation = RealTimeOperation.CREATE;
+
+            }
+            // check to ensure shape is same as the one previously rendering
+            else if (_lastDrawn.isPending() && _lastDrawn._shape.Uid == shapeId && _lastDrawn._operation == RealTimeOperation.CREATE)
+            {
+
+                // Delete the Object that was already created in the canvas because of real time rendering
+                prevShapeId = _lastDrawn._shape.Uid;
+                UXShape oldShape = new UXShape(UXOperation.DELETE, _lastDrawn._shape.MainShapeDefiner, prevShapeId);
+                operations.Add(oldShape);
+
+                // modify the MainshapeDefiner and also provide another reference to it.
+                MainShape modifiedPrevShape = ShapeFactory.MainShapeCreatorFactory(shapeType, _lastDrawn._end, end, _lastDrawn._shape.MainShapeDefiner);
+                UXShape newUxShape = new UXShape(UXOperation.CREATE, modifiedPrevShape, prevShapeId);
+                operations.Add(newUxShape);
+
+                _lastDrawn._shape.LastModifiedTime = DateTime.Now;
+                _lastDrawn._shape.RecentOperation = Operation.CREATE;
+
             }
             else
             {
-                MainShape modifiedPrevShape = ShapeFactory.MainShapeCreatorFactory(shapeType, start, end, _lastDrawn.MainShapeDefiner);
-                UXShape newUxShape = new UXShape(UXOperation.CREATE, modifiedPrevShape, null);
-                newShapeId = newUxShape.WindowsShape.Uid;
-                operations.Add(newUxShape);
-
-                _lastDrawn.MainShapeDefiner = modifiedPrevShape;
-                _lastDrawn.LastModifiedTime = DateTime.Now;
-                _lastDrawn.RecentOperation = Operation.CREATE;
+                // throw exception
             }
-            
-            // sending the Updates to the Client Side Server
-            _isLastDrawPending = true;
+
             if (shapeComp)
             {
                 // send updates to server .. clone of _lastDrawn
-                BoardShape newBoardShape = _lastDrawn.Clone();
-                newBoardShape.RecentOperation = Operation.CREATE;
-                newBoardShape.Uid = newShapeId;
+                BoardShape newBoardShape = _lastDrawn._shape.Clone();
                 newBoardShape.LastModifiedTime = DateTime.Now;
                 newBoardShape.CreationTime = DateTime.Now;
                 _stateManager.SaveOperation(newBoardShape);
-               
+
                 //reset the variables
                 _lastDrawn = null;
-                _isLastDrawPending = false;
             }
 
             return operations;
+
         }
 
-        /// <summary>
-        /// Perform Redo Operation.
-        /// </summary>
-        ///  <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> Redo()
+        public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            throw new NotImplementedException();
-        }
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
+            {
+                // throw exception
+            }
 
-        /// <summary>
-        /// Resize the shape.
-        /// </summary>
-        /// <param name="start">Start of mouse drag.</param>
-        /// <param name="end">End of mouse Drag.</param>
-        /// <param name="shapeId">Id of the shape translated.</param>
-        /// <param name="shapeComp">Denotes whether the shape is complete, or if it is for real-time rendering.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
-        }
+            // List of Operations to be send to UX
+            List<UXShape> operations = new List<UXShape>();
 
-        /// <summary>
-        /// Rotate the shape.
-        /// </summary>
-        /// <param name="start">Start of mouse drag.</param>
-        /// <param name="end">End of mouse Drag.</param>
-        /// <param name="shapeId">Id of the shape translated.</param>
-        /// <param name="shapeComp">Denotes whether the shape is complete, or if it is for real-time rendering.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
-        }
+            if (shapeId == null)
+            {
+                // throw error
+            }
 
-        /// <summary>
-        /// Translate on shape.
-        /// </summary>
-        /// <param name="start">Start of mouse drag.</param>
-        /// <param name="end">End of mouse Drag.</param>
-        /// <param name="shapeId">Id of the shape translated.</param>
-        /// <param name="shapeComp">Denotes whether the shape is complete, or if it is for real-time rendering.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
+            if (_lastDrawn == null)
+            {
+                // get the actual BoardServer object stored in the server
+                BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+                _lastDrawn = new _lastDrawnDetails();
+                _lastDrawn._shape = shapeFromManager.Clone();
+                _lastDrawn._operation = realTimeOperation;
+                _lastDrawn._shape.RecentOperation = Operation.MODIFY;
+                _lastDrawn._end = end;
+            }
+            else if (_lastDrawn.isPending() && _lastDrawn._shape.Uid == shapeId && _lastDrawn._operation == realTimeOperation)
+            {
+                // Append the object already rendered on local client for deletion
+                string prevShapeId = _lastDrawn._shape.Uid;
+                UXShape oldShape = new UXShape(UXOperation.DELETE, _lastDrawn._shape.MainShapeDefiner, prevShapeId);
+                operations.Add(oldShape);
+            }
+            else
+            {
+                // throw an error
+            }
+
+            // modify the _lastDrawn Object
+            MainShape lastDrawnMainShape = _lastDrawn._shape.MainShapeDefiner;
+            if (realTimeOperation == RealTimeOperation.TRANSLATE)
+            {
+                Coordinate delta = end - _lastDrawn._end;
+                lastDrawnMainShape.Center.Add(delta);
+                lastDrawnMainShape.Start.Add(delta);
+
+            }
+            else if (realTimeOperation == RealTimeOperation.ROTATE)
+            {
+                Coordinate v1 = _lastDrawn._end - lastDrawnMainShape.Center;
+                Coordinate v2 = end - lastDrawnMainShape.Center;
+                float rotAngle = (float)Math.Atan2(v2.C - v1.C, v2.R - v1.R);
+                lastDrawnMainShape.AngleOfRotation += rotAngle;
+            }
+            else
+            {
+                // throw exception
+            }
+
+            if (shapeComp)
+            {
+                // send updates to server .. clone of _lastDrawn
+                BoardShape newBoardShape = _lastDrawn._shape.Clone();
+                newBoardShape.LastModifiedTime = DateTime.Now;
+                newBoardShape.CreationTime = DateTime.Now;
+                _stateManager.SaveOperation(newBoardShape);
+
+                //reset the variables
+                _lastDrawn = null;
+            }
+
+            return operations;
         }
 
         /// <summary>
@@ -304,7 +324,16 @@ namespace Whiteboard
         ///  <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> Undo()
         {
-            throw new NotImplementedException();
+            return _stateManager.DoUndo();
+        }
+
+        /// <summary>
+        /// Perform Redo Operation.
+        /// </summary>
+        ///  <returns>The List of operations on Shapes for UX to render.</returns>
+        public override List<UXShape> Redo()
+        {
+            return _stateManager.DoRedo();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Whiteboard
 {
     abstract public class BoardOperationsState
     {
-        abstract public List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        public int UserLevel { get; set; }
 
         abstract public List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId);
 
@@ -23,17 +23,13 @@ namespace Whiteboard
 
         abstract public List<UXShape> ChangeStrokeWidth(float strokeWidth, string shapeId);
 
-        abstract public List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
-
-        abstract public List<UXShape> CreateShape(ShapeType shapeType, Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false);
+        abstract public List<UXShape> CreateShape(ShapeType shapeType, Coordinate start, Coordinate end,
+                                                  float strokeWidth, BoardColor strokeColor, string shapeId = null,
+                                                  bool shapeComp = false);
 
         abstract public List<UXShape> Redo();
 
-        abstract public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
-
-        abstract public List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
-
-        abstract public List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        abstract public List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
 
         abstract public List<UXShape> Undo();
     }

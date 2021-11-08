@@ -22,10 +22,11 @@ namespace Whiteboard
         /// <param name="height">Hright of Ellipse.</param>
         /// <param name="width">Width of Ellipse.</param>
         /// <param name="start">The left botton coordinate of the smallest rectangle enclosing the shape.</param>
-        public Ellipse(int height, int width, Coordinate start) : base(ShapeType.ELLIPSE)
+        public Ellipse(int height, int width, Coordinate start, Coordinate center) : base(ShapeType.ELLIPSE)
         {
             this.Height = height;
             this.Width = width;
+            this.Center = center;
             this.Start = start.Clone();
         }
 
@@ -46,9 +47,10 @@ namespace Whiteboard
                        BoardColor strokeColor, 
                        BoardColor shapeFill, 
                        Coordinate start,
+                       Coordinate center,
                        List<Coordinate> points,
                        float angle) :
-                       base(ShapeType.ELLIPSE, height, width, strokeWidth, strokeColor, shapeFill, start, points, angle)
+                       base(ShapeType.ELLIPSE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
         }
 
@@ -70,12 +72,17 @@ namespace Whiteboard
         {
             if (prevEllipse == null)
             {
-                return new Ellipse(start.R - end.R, start.C - end.C, start);
+                int height = Math.Abs(start.R - end.R);
+                int width = Math.Abs(start.C - end.C);
+                Coordinate center = (end - start) / 2;
+                return new Ellipse(height, width, start, center);
             }
             else
             {
-                prevEllipse.Height = end.R - prevEllipse.Start.R;
-                prevEllipse.Width = end.C - prevEllipse.Start.C;
+
+                prevEllipse.Height = Math.Abs(end.R - prevEllipse.Start.R);
+                prevEllipse.Width = Math.Abs(end.C - prevEllipse.Start.C);
+                prevEllipse.Center = (end - prevEllipse.Start) / 2;
                 return prevEllipse;
             }
         }
@@ -86,7 +93,7 @@ namespace Whiteboard
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            return new Ellipse(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, new List<Coordinate> (), AngleOfRotation);
+            return new Ellipse(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, Center, new List<Coordinate> (), AngleOfRotation);
         }
 
     }

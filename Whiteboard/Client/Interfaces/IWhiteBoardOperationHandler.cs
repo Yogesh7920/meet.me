@@ -172,5 +172,7 @@ namespace Whiteboard
         /// <returns></returns>
         List<UXShape> DeleteShape(string shapeId);
 
+        void SetUserLevel(int userLevel);
+
     }
 }

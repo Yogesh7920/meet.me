@@ -29,6 +29,7 @@ namespace Whiteboard
             this.ShapeFill = new BoardColor(255, 255, 255);
             this.StrokeColor = new BoardColor(0, 0, 0);
             this.Start = new Coordinate(0, 0);
+            this.Center = new Coordinate(0, 0);
             this.Points = new List<Coordinate>();
             this.AngleOfRotation = 0;
         }
@@ -45,7 +46,9 @@ namespace Whiteboard
         /// <param name="start">The left bottom coordinate of the smallest rectangle surrounding the shape.</param>
         /// <param name="points">Points in case it is a polyline or a line.</param>
         /// <param name="angle">Angle of Rotation of the Shape</param>
-        public MainShape(ShapeType s, int height, int width, float strokeWidth, BoardColor strokeColor, BoardColor shapeFill, Coordinate start, List<Coordinate> points, float angle)
+        public MainShape(
+            ShapeType s, int height, int width, float strokeWidth, BoardColor strokeColor, BoardColor shapeFill,
+            Coordinate start, Coordinate center, List<Coordinate> points, float angle)
         {
             this.ShapeIdentifier = s;
             this.Height = height;
@@ -54,6 +57,7 @@ namespace Whiteboard
             this.StrokeColor = strokeColor.Clone();
             this.ShapeFill = shapeFill.Clone();
             this.Start = start.Clone();
+            this.Center = center.Clone();
             this.Points = points.Select(cord => new Coordinate(cord.R, cord.C)).ToList();
             this.AngleOfRotation = angle;
         }
@@ -65,6 +69,7 @@ namespace Whiteboard
         public BoardColor StrokeColor { get; set; }
         public BoardColor ShapeFill { get; set; }
         public Coordinate Start { get; set; }
+        public Coordinate Center { get; set; }
         public float AngleOfRotation { get; set; }
         protected List<Coordinate> Points;
 

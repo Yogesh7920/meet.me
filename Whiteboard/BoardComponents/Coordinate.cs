@@ -39,5 +39,36 @@ namespace Whiteboard
             return new Coordinate(R,C);
         }
 
+        public bool IsLessThan(Coordinate coordinate)
+        {
+            return (R < coordinate.R && C < coordinate.C) ? true : false;
+        }
+
+        public void Subtract(Coordinate coordinate)
+        {
+            R -= coordinate.R;
+            C -= coordinate.C;
+        }
+
+        public void Add(Coordinate coordinate)
+        {
+            R += coordinate.R;
+            C += coordinate.C;
+        }
+
+        public static Coordinate operator + (Coordinate x, Coordinate y)
+        {
+            return new Coordinate(x.R + y.R, x.C + y.C);
+        }
+
+        public static Coordinate operator -(Coordinate x, Coordinate y)
+        {
+            return new Coordinate(x.R - y.R, x.C - y.C);
+        }
+
+        public static Coordinate operator /(Coordinate x, int y)
+        {
+            return new Coordinate(x.R/2, x.C/2);
+        }
     }
 }
