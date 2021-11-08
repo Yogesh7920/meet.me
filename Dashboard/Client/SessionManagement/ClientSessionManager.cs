@@ -27,6 +27,7 @@ namespace Dashboard.Client.SessionManagement
             _communicator = CommunicationFactory.GetCommunicator();
             Session session = new();
             session.TraceListener();
+           
 
             if(_clients == null)
             {
@@ -34,7 +35,7 @@ namespace Dashboard.Client.SessionManagement
             }
             _clientSessionData = new SessionData();
             moduleIdentifier = "clientSessionManager";
-
+            chatSummary = null;
         }
 
         /// <summary>
@@ -91,7 +92,20 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Summary of the chats as a string. </returns>
         public string GetSummary()
         {
-            throw new NotImplementedException();
+            string summary = "";
+            ClientToServerData clientToServerData = new ClientToServerData("getSummary", _user.username, _user.userID);
+            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
+            _communicator.Send(serializedData, moduleIdentifier);
+            
+            while(chatSummary == null)
+            {
+
+            }
+
+            summary = chatSummary;
+            chatSummary = null;
+
+            return summary;
         }
 
         /// <summary>
@@ -143,17 +157,33 @@ namespace Dashboard.Client.SessionManagement
 
             // check the event type and get the object sent from the server side
             string eventType = deserializedObject.eventType;
-            IRecievedFromServer receivedObject = deserializedObject.GetObject();
+            IRecievedFromServer receivedObjectFromClient = deserializedObject.GetObject();
+            UserData receivedUserFromClient = deserializedObject.GetUser();
 
             // based on the type of event, calling the appropriate functions 
             switch(eventType)
             {
                 case "addClient":
-                    UpdateClientSessionData(receivedObject);
+                    UpdateClientSessionData(deserializedObject);
+                    return;
+
+                case "getSummary":
+                    SendSummary(deserializedObject);
                     return;
 
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+        private void SendSummary(ServerToClientData receivedData)
+        {
+            SummaryData receivedSummary = (SummaryData) receivedData.GetObject();
+            UserData receivedUser = receivedData.GetUser();
+
+            if(receivedUser.userID == _user.userID)
+            {
+                chatSummary = receivedSummary.summary;
             }
         }
 
@@ -162,11 +192,18 @@ namespace Dashboard.Client.SessionManagement
         /// client side data if they are different.
         /// </summary>
         /// <param name="recievedSessionData"> The sessionData received from the server side. </param>
-        private void UpdateClientSessionData(IRecievedFromServer recievedSessionData)
+        private void UpdateClientSessionData(ServerToClientData receivedData)
         {
+            SessionData recievedSessionData = (SessionData)receivedData.GetObject();
+            UserData user = receivedData.GetUser();
+
             if (recievedSessionData == _clientSessionData)
                 return;
 
+            if(_clientSessionData == null)
+            {
+                _user = user;
+            }
             lock(this)
             {
                 _clientSessionData = (SessionData)recievedSessionData;
@@ -179,5 +216,7 @@ namespace Dashboard.Client.SessionManagement
         private readonly ISerializer _serializer;
         private readonly string moduleIdentifier;
         private readonly List<IClientSessionNotifications> _clients;
+        private string chatSummary;
+        private UserData _user;
     }
 }
