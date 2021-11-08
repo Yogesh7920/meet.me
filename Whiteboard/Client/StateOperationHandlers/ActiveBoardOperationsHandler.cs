@@ -7,6 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +24,6 @@ namespace Whiteboard
         RESIZE_WIDTH,
         CREATE,
         RESIZE
-
     }
     class ActiveBoardOperationsHandler : BoardOperationsState
     {
@@ -44,14 +46,12 @@ namespace Whiteboard
         }
 
         private IClientBoardStateManagerInternal _stateManager;
-        private Coordinate _canvasSize;
         private _lastDrawnDetails _lastDrawn;
 
-        public ActiveBoardOperationsHandler(Coordinate canvasSize)
+        public ActiveBoardOperationsHandler()
         {
             _lastDrawn = new _lastDrawnDetails();
             _stateManager = ClientBoardStateManager.Instance;
-            _canvasSize = canvasSize;
             UserLevel = 0;
         }
         
@@ -67,6 +67,11 @@ namespace Whiteboard
         {
             // get the actual BoardServer object stored in the server
             BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+            if (shapeFromManager == null) 
+            {
+                Trace.WriteLine("Invalid Shape Id: Shape Id provided for ChangeShapeFill does not exist in State Manager.");
+                return new List<UXShape>();
+            }
 
             // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
             BoardShape newBoardShape = shapeFromManager.Clone();
@@ -87,6 +92,11 @@ namespace Whiteboard
         {
             // get the actual BoardServer object stored in the server
             BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+            if (shapeFromManager == null)
+            {
+                Trace.WriteLine("Invalid Shape Id: Shape Id provided for ChangeShapeFill does not exist in State Manager.");
+                return new List<UXShape>();
+            }
 
             // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
             BoardShape newBoardShape = shapeFromManager.Clone();
@@ -107,6 +117,11 @@ namespace Whiteboard
         {
             // get the actual BoardServer object stored in the server
             BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+            if (shapeFromManager == null)
+            {
+                Trace.WriteLine("Invalid Shape Id: Shape Id provided for ChangeShapeFill does not exist in State Manager.");
+                return new List<UXShape>();
+            }
 
             // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
             BoardShape newBoardShape = shapeFromManager.Clone();
@@ -172,11 +187,6 @@ namespace Whiteboard
                                                   float strokeWidth, BoardColor strokeColor, string shapeId = null,
                                                   bool shapeComp = false)
         {
-            // checking start and end coordinates are not outside the canvas
-            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
-            {
-                // throw exception
-            }
 
             // List of Operations to be send to UX
             List<UXShape> operations = new List<UXShape>();
@@ -187,12 +197,12 @@ namespace Whiteboard
             {
                 _lastDrawn = null;
 
+                // Creation and setting params for new shape
                 MainShape newMainShape = ShapeFactory.MainShapeCreatorFactory(shapeType, start, end, null);
-
-                // setting params for new shape
                 newMainShape.StrokeColor = strokeColor.Clone();
                 newMainShape.StrokeWidth = strokeWidth;
 
+                // Creating corresponding UX shape to be sent to the UX
                 UXShape newUxShape = new UXShape(UXOperation.CREATE, newMainShape, null);
                 prevShapeId = newUxShape.WindowsShape.Uid;
                 operations.Add(newUxShape);
@@ -244,26 +254,21 @@ namespace Whiteboard
 
         }
 
-        public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
+        public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, [NotNull]string shapeId, bool shapeComp = false)
         {
-            // checking start and end coordinates are not outside the canvas
-            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
-            {
-                // throw exception
-            }
 
             // List of Operations to be send to UX
             List<UXShape> operations = new List<UXShape>();
-
-            if (shapeId == null)
-            {
-                // throw error
-            }
 
             if (_lastDrawn == null)
             {
                 // get the actual BoardServer object stored in the server
                 BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+                if (shapeFromManager == null)
+                {
+                    Trace.WriteLine("Invalid Shape Id: Shape Id provided for Modification of Shape does not exist in State Manager.");
+                    return new List<UXShape>();
+                }
                 _lastDrawn = new _lastDrawnDetails();
                 _lastDrawn._shape = shapeFromManager.Clone();
                 _lastDrawn._operation = realTimeOperation;
@@ -298,10 +303,23 @@ namespace Whiteboard
                 float rotAngle = (float)Math.Atan2(v2.C - v1.C, v2.R - v1.R);
                 lastDrawnMainShape.AngleOfRotation += rotAngle;
             }
+            else if (realTimeOperation == RealTimeOperation.RESIZE)
+            {
+
+            }
+            else if (realTimeOperation == RealTimeOperation.RESIZE_HEIGHT)
+            {
+
+            }
+            else if (realTimeOperation == RealTimeOperation.RESIZE_WIDTH)
+            {
+
+            }
             else
             {
                 // throw exception
             }
+            
 
             if (shapeComp)
             {
@@ -316,6 +334,33 @@ namespace Whiteboard
             }
 
             return operations;
+        }
+
+        public override List<UXShape> Delete(string shapeId)
+        {
+            // List of Operations to be send to UX
+            List<UXShape> operations = new List<UXShape>();
+
+            // get the actual BoardServer object stored in the server
+            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+            if (shapeFromManager == null)
+            {
+                Trace.WriteLine("Invalid Shape Id: Shape Id provided for Deletion of Shape does not exist in State Manager.");
+                return new List<UXShape>();
+            }
+
+            UXShape oldShape = new UXShape(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeFromManager.Uid);
+            operations.Add(oldShape);
+
+            BoardShape shapeFromManagerClone = shapeFromManager.Clone();
+            shapeFromManagerClone.RecentOperation = Operation.DELETE;
+            shapeFromManagerClone.LastModifiedTime = DateTime.Now;
+
+            _stateManager.SaveOperation(shapeFromManagerClone);
+
+            _lastDrawn = null;
+            return operations;
+
         }
 
         /// <summary>

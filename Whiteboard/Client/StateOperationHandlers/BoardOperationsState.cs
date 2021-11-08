@@ -31,6 +31,8 @@ namespace Whiteboard
 
         abstract public List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
 
+        abstract public List<UXShape> Delete(string shapeId);
+
         abstract public List<UXShape> Undo();
     }
 }

@@ -11,9 +11,36 @@ namespace Whiteboard
 {
     public class BoardColor : IEquatable<BoardColor>
     {
-        public int R;
-        public int G;
-        public int B;
+        public int R {
+            get 
+            {
+                return this.R;
+            }
+            set 
+            {
+                this.R = (value > 255) ? 255 : value;
+            } 
+        }
+        public int G {
+            get
+            {
+                return this.G;
+            }
+            set
+            {
+                this.G = (value > 255) ? 255 : value;
+            }
+        }
+        public int B {
+            get
+            {
+                return this.B;
+            }
+            set
+            {
+                this.B = (value > 255) ? 255 : value;
+            }
+        }
 
         public BoardColor(int r, int g, int b)
         {

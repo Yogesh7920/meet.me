@@ -16,13 +16,11 @@ namespace Whiteboard
     class InactiveBoardOperationsHandler : BoardOperationsState
     {
 
-        private Coordinate _canvasSize;
-
-        public InactiveBoardOperationsHandler(Coordinate canvasSize)
+        public InactiveBoardOperationsHandler()
         {
-            _canvasSize = canvasSize;
             UserLevel = 0;
         }
+
         public override List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId)
         {
             return new List<UXShape>();
@@ -47,6 +45,11 @@ namespace Whiteboard
 
         public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start,
                                                           Coordinate end, string shapeId, bool shapeComp = false)
+        {
+            return new List<UXShape>();
+        }
+
+        public override List<UXShape> Delete(string shapeId)
         {
             return new List<UXShape>();
         }

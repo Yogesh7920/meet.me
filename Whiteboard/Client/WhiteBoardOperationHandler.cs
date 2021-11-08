@@ -25,8 +25,8 @@ namespace Whiteboard
         public WhiteBoardOperationHandler(Coordinate canvasSize)
         {
             _canvasSize = canvasSize;
-            _activeBoardOperationsHandler = new ActiveBoardOperationsHandler(_canvasSize);
-            _inactiveBoardOperationsHandler = new InactiveBoardOperationsHandler(_canvasSize);
+            _activeBoardOperationsHandler = new ActiveBoardOperationsHandler();
+            _inactiveBoardOperationsHandler = new InactiveBoardOperationsHandler();
             _boardState = _activeBoardOperationsHandler;
             _boardStateIdentifier = BoardState.ACTIVE;
         }
@@ -102,6 +102,11 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
+            {
+                // throw exception
+            }
             return _boardState.CreateShape(ShapeType.ELLIPSE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
@@ -117,6 +122,11 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
+            {
+                // throw exception
+            }
             return _boardState.CreateShape(ShapeType.LINE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
@@ -132,6 +142,11 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
+            {
+                // throw exception
+            }
             return _boardState.CreateShape(ShapeType.POLYLINE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
@@ -147,6 +162,11 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
+            {
+                // throw exception
+            }
             return _boardState.CreateShape(ShapeType.RECTANGLE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
@@ -157,7 +177,7 @@ namespace Whiteboard
         /// <returns></returns>
         public List<UXShape> DeleteShape(string shapeId)
         {
-            throw new NotImplementedException();
+            return _boardState.Delete(shapeId);
         }
 
         /// <summary>
@@ -189,6 +209,11 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
+            {
+                // throw exception
+            }
             return _boardState.ModifyShapeRealTime(RealTimeOperation.RESIZE, start, end, shapeId, shapeComp);
         }
 
@@ -202,6 +227,11 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
+            {
+                // throw exception
+            }
             return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, shapeComp);
         }
 
@@ -234,6 +264,11 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
+            // checking start and end coordinates are not outside the canvas
+            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
+            {
+                // throw exception
+            }
             return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, shapeComp);
         }
 
