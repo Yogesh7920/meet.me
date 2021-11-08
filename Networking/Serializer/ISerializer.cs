@@ -9,6 +9,7 @@
         /// <param name="objectToSerialize">Object to serialize.</param>
         /// <returns>Serialized XML string.</returns>
         string Serialize<T>(T objectToSerialize);
+
         /// <summary>
         /// Returns the type of object serialized as the XML string.
         /// </summary>
@@ -16,6 +17,7 @@
         /// <param name="nameSpace">Namespace of the module deserializng the string.</param>
         /// <returns>Object Type.</returns>
         string GetObjectType(string serializedString, string nameSpace);
+
         /// <summary>
         /// Deserializes the XML string into the corresponding object.
         /// </summary>
