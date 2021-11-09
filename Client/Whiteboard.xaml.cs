@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -42,6 +43,8 @@ namespace Client
             drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomRight, renderRadius, renderRadius);
         }
     }
+
+
 
     /// <summary>
     /// Interaction logic for Whiteboard.xaml
@@ -225,6 +228,9 @@ namespace Client
                                     //this.SelectionBox.Visibility = Visibility.Visible;
                                     //GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas,viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle,...) 
 
+                                    //AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(selectedShape);
+                                    //adornerLayer.Add(new BorderAdorner(selectedShape));
+
                                     GlobCanvas = viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps, 1);
                                 }
                                 else
@@ -247,8 +253,8 @@ namespace Client
                                     //GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanhvas,viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle,...) 
 
 
-                                    //AdornerLayer myAdornerLayer = AdornerLayer.GetAdornerLayer(selectedShape);
-                                    //myAdornerLayer.Add(new SimpleCircleAdorner(selectedShape));
+     
+                                    
                                     GlobCanvas = viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps, 0);
                                 }
                                 else
