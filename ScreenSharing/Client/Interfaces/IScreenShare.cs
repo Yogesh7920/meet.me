@@ -18,7 +18,10 @@ namespace ScreenSharing
         /// <summary>
         /// handles the reception of update from screen share client. 
         /// </summary>
-        /// <param name="screen">SharedScreen type object.</param>
-        public void onScreenRecieved(string uid,string uname,Bitmap screen);
+        /// <param name="uid"> Stores the Id of the user sharing the screen.</param>
+        /// <param name="uname"> Stores the username of the user sharing the screen.</param>
+        /// <param name="mtype"> Stores the message type.</param>
+        /// <param name="screen"> Stores the screen in the Bitmap format.</param>
+        public void OnScreenRecieved(string uid,string uname,int mtype,Bitmap screen);
     }
 }

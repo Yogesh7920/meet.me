@@ -25,6 +25,7 @@ namespace ScreenSharing
 	{
 		// Store the Communicator instance which is used to send screen over the network.
 		public ICommunicator _communicator;
+
 		// Boolean to indicate whether other clients are screen sharing.
 		public bool otherSharing;
 
@@ -51,10 +52,14 @@ namespace ScreenSharing
 
 		// This will be an instance of the UX class which will subscribe for notifications
 		public IScreenShare _Ux;
+
 		// Timer will be used to sense disconnection issues.
 		public System.Windows.Forms.Timer timer;
 
+		// stores the userId of the client
 		public string userId;
+
+		// stores the userName of the client
 		public string userName;
 
 		/// <summary>
@@ -69,28 +74,31 @@ namespace ScreenSharing
 			serializer = new Serializer();
 
 			// creating a thread to capture and send the screen
-			_sharingThread = new Thread(captureAndSend);
+			_sharingThread = new Thread(CaptureAndSend);
 
 			// creating a thread to notify the UX and starting its execution
 			isNotifying = true;
-			_notifyingThread = new Thread(notifyUx);
+			_notifyingThread = new Thread(NotifyUx);
 			_notifyingThread.Start();
 		}
 
 		/// <summary>
 		/// This method will be used by the UX to start sharing the screen.
 		/// </summary>
-		public void startSharing() 
+		public void StartSharing() 
 		{
-			thisSharing = true;
-			// starting the execution of the sharing thread
-			_sharingThread.Start();
+			lock (this)
+			{
+				thisSharing = true;
+				// starting the execution of the sharing thread
+				_sharingThread.Start();
+			}
 		}
 
 		/// <summary>
 		/// This method will be used by the UX to stop sharing the screen.
 		/// </summary>
-		public void stopSharing()
+		public void StopSharing()
         {
 			thisSharing = false;
 		}
@@ -107,7 +115,7 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method is used to convert a bitmap into a byte array. This method is used to facilitate serialization.
 		/// </summary>
-		private static byte[] getBytes(Bitmap image)
+		private static byte[] GetBytes(Bitmap image)
         {
             using (var output = new MemoryStream())
             {
@@ -120,7 +128,7 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will be used to convert the byte array to bitmap. This method is used to facilitate serialization.
 		/// </summary>
-        private static Bitmap getImage(byte[] data)
+        private static Bitmap GetImage(byte[] data)
         {
             //Do not dispose of the stream!!
             return new Bitmap(new MemoryStream(data));
@@ -129,11 +137,11 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will include the logic for capturing and sending the screen.
 		/// </summary>
-		public void captureAndSend()
+		public void CaptureAndSend()
         {
 			if(otherSharing)
             {
-				// do something
+				thisSharing = false;
 				return;
             }
 			while (thisSharing)
@@ -152,10 +160,18 @@ namespace ScreenSharing
 				Graphics graphics480p = Graphics.FromImage(bitmap480p);
 				graphics480p.DrawImage(bitmap, 0, 0, 720, 480);
 
-				byte[] data = getBytes(bitmap480p);
+				byte[] data = GetBytes(bitmap480p);
 
-				SharedScreen message = new SharedScreen(userId,userName,1,data);
-				string scrn=serializer.Serialize<SharedScreen>(message);
+				SharedScreen message;
+				if (thisSharing)
+				{
+					message = new SharedScreen(userId, userName, 1, data);
+				}
+                else
+                {
+					message = new SharedScreen(userId, userName, 0, null);
+				}
+				string scrn = serializer.Serialize<SharedScreen>(message);
 				_communicator.Send(scrn, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
 				Thread.Sleep(100);
 			}
@@ -164,7 +180,7 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will be used by the UX to subscribe for notifications.
 		/// </summary>
-		public void subscribe(IScreenShare listener)
+		public void Subscribe(IScreenShare listener)
         {
 			_Ux = listener;
 		}
@@ -172,17 +188,24 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will notify the UX.
 		/// </summary>
-		public void notifyUx()
+		public void NotifyUx()
         {
 			while(isNotifying)
             {
 				while (frameQueue.Count == 0) ;
 				// if the queue is not empty do something
+				otherSharing = true;
 				SharedScreen currScreen = frameQueue.Dequeue();
+				int mtype = currScreen.messageType;
 				string uid = currScreen.userId;
 				string uname = currScreen.username;
-				Bitmap screen = getImage(currScreen.screen);
-				_Ux.onScreenRecieved(uid, uname, screen);
+				if (mtype == 0)
+				{
+					otherSharing = false;
+					_Ux.OnScreenRecieved(uid, uname, mtype, null);
+				}
+				Bitmap screen = GetImage(currScreen.screen);
+				_Ux.OnScreenRecieved(uid,uname,mtype, screen);
 
 			}
 		}
@@ -190,7 +213,7 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will be invoked when no updates are recieved for a certain amount of time.
 		/// </summary>
-		public void onTimeout()
+		public void OnTimeout()
         {
 			throw new NotImplementedException();
 		}

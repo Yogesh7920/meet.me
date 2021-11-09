@@ -52,7 +52,7 @@ namespace ScreenSharing
 			serializer = new Serializer();
 
 			isSharing = true;
-			_sharingThread = new Thread(share);
+			_sharingThread = new Thread(Share);
 			_sharingThread.Start();
 		}
 
@@ -68,7 +68,7 @@ namespace ScreenSharing
 		/// <summary>
         /// This method will implement the logic of sharing the required signal.
         /// </summary>
-		public void share()
+		public void Share()
         {
 			while(isSharing)
             {
@@ -95,7 +95,7 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will be invoked when no updates are recieved for a certain amount of time.
 		/// </summary>
-		public void onTimeout()
+		public void OnTimeout()
         {
 			throw new NotImplementedException();
 		}
