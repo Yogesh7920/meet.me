@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Networking;
 using System.Diagnostics;
+using Dashboard.Server.Summary;
+using Content;
+
 
 namespace Dashboard.Server.SessionManagement
 {
@@ -16,6 +19,29 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public ServerSessionManager()
         {
+
+            _contentServer = ContentServerFactory.GetInstance();
+            _sessionData = new SessionData();
+            _serializer = new Serializer();
+            _telemetrySubscribers = new List<ITelemetryNotifications>();
+            _summarizer = SummarizerFactory.GetSummarizer();
+
+            Session session = new Session();
+            session.TraceListener();
+
+            userCount = 0;
+            moduleIdentifier = "serverSessionManager";
+
+            _communicator = CommunicationFactory.GetCommunicator(false);
+            _communicator.Subscribe(moduleIdentifier, this);
+        }
+
+        /// <summary>
+        /// Constructor for the ServerSessionManager, calls the 
+        /// tracelistener and creates a list for telemetry subscribers.
+        /// </summary>
+        public ServerSessionManager(ICommunicator communicator)
+        {
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
@@ -25,8 +51,8 @@ namespace Dashboard.Server.SessionManagement
 
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
-            
-            _communicator = CommunicationFactory.GetCommunicator(false);
+
+            _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
         }
 
@@ -43,6 +69,25 @@ namespace Dashboard.Server.SessionManagement
         }
 
         /// <summary>
+        /// This function updates the session, notifies telemetry and 
+        /// broadcast the new session data
+        /// </summary>
+        /// <param name="arrivedClient"></param>
+        private void ClientArrivalProcedure(ClientToServerData arrivedClient)
+        {
+            // create a new user and add it to the session. 
+            UserData user = CreateUser(arrivedClient.username);
+            AddUserToSession(user);
+            // Give Whiteboard, Content and screenshare the userID's
+
+            // Notify Telemetry about the change in the session object.
+            NotifyTelemetryModule();
+
+            // serialize and broadcast the data back to the client side.
+            SendDataToClient("addClient", _sessionData, user);
+        }
+
+        /// <summary>
         /// Creates a new user based on the data arrived from the
         /// client side.
         /// </summary>
@@ -54,11 +99,19 @@ namespace Dashboard.Server.SessionManagement
             return user;
         }
 
+        private SummaryData CreateSummary()
+        {
+            double amountOfSummary = 0.6;
+            ChatContext[] allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
+            string summary = _summarizer.GetSummary(allChatsTillNow, amountOfSummary);
+            return new SummaryData(summary);
+        }
+
         /// <summary>
         /// Returns the credentials required to 
         /// Join or start the meeting
         /// </summary>
-        /// <returns> A MeetingCredentials Object </returns>
+        /// <returns> A MeetingCredentials Object containing the port and IP address</returns>
         public MeetingCredentials GetPortsAndIPAddress()
         {
 
@@ -70,7 +123,7 @@ namespace Dashboard.Server.SessionManagement
                 Trace.WriteLine("IP Address is not valid, returning null");
                 return null;
             }
-
+            
             Trace.WriteLine("Returning the IP Address to the UX");
             //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
             string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
@@ -79,6 +132,15 @@ namespace Dashboard.Server.SessionManagement
 
 
             return _meetingCredentials = new MeetingCredentials(ipAddress, port);
+        }
+
+
+        private void GetSummaryProcedure(ClientToServerData receivedObject)
+        {
+            SummaryData summaryData = CreateSummary();
+            UserData user = new UserData(receivedObject.username, receivedObject.userID);
+
+            SendDataToClient("getSummary", summaryData, user);
         }
 
         /// <summary>
@@ -144,27 +206,6 @@ namespace Dashboard.Server.SessionManagement
             _communicator.AddClient<T>(userCount.ToString(), socketObject);
         }
 
-        private void ClientArrivalProcedure(ClientToServerData arrivedClient)
-        {
-            // create a new user and add it to the session. 
-            UserData user = CreateUser(arrivedClient.username);
-            AddUserToSession(user);
-            // Give Whiteboard, Content and screenshare the userID's
-
-            // Notify Telemetry about the change in the session object.
-            NotifyTelemetryModule();
-
-            // serialize and broadcast the data back to the client side.
-            ServerToClientData serverToClientData;
-            lock (this)
-            {
-                serverToClientData = new ServerToClientData("addClient", _sessionData);
-            }
-
-            string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
-            _communicator.Send(serializedSessionData, moduleIdentifier);
-        }
-
         /// <summary>
         /// Networking module calls this function once the data is sent from the client side.
         /// The SerializedObject is the data sent by the client module which is first deserialized
@@ -183,9 +224,25 @@ namespace Dashboard.Server.SessionManagement
                     ClientArrivalProcedure(deserializedObj);
                     return;
 
+                case "getSummary":
+                    GetSummaryProcedure(deserializedObj);
+                    return;
+
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        private void SendDataToClient(string eventName,IRecievedFromServer objectToSend, UserData user)
+        {
+            ServerToClientData serverToClientData;
+            lock (this)
+            {
+                serverToClientData = new ServerToClientData(eventName, objectToSend, user);
+            }
+
+            string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
+            _communicator.Send(serializedSessionData, moduleIdentifier);
         }
 
         /// <summary>
@@ -210,5 +267,7 @@ namespace Dashboard.Server.SessionManagement
 
         private readonly SessionData _sessionData;
         private MeetingCredentials _meetingCredentials;
+        private readonly ISummarizer _summarizer;
+        private readonly IContentServer _contentServer;
     }
 }
