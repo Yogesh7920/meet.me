@@ -60,7 +60,7 @@ namespace Dashboard.Client.SessionManagement
                     return false;
                 }
 
-                ClientToServerData clientName = new ClientToServerData("addClient", username);
+                ClientToServerData clientName = new("addClient", username);
                 serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
             }
             
@@ -93,7 +93,7 @@ namespace Dashboard.Client.SessionManagement
         public string GetSummary()
         {
             string summary = "";
-            ClientToServerData clientToServerData = new ClientToServerData("getSummary", _user.username, _user.userID);
+            ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
             string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
             _communicator.Send(serializedData, moduleIdentifier);
             
@@ -160,8 +160,6 @@ namespace Dashboard.Client.SessionManagement
 
             // check the event type and get the object sent from the server side
             string eventType = deserializedObject.eventType;
-            IRecievedFromServer receivedObjectFromClient = deserializedObject.GetObject();
-            UserData receivedUserFromClient = deserializedObject.GetUser();
 
             // based on the type of event, calling the appropriate functions 
             switch(eventType)

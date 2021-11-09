@@ -26,7 +26,7 @@ namespace Dashboard.Server.SessionManagement
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
 
-            Session session = new Session();
+            Session session = new();
             session.TraceListener();
 
             userCount = 0;
@@ -46,7 +46,7 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
 
-            Session session = new Session();
+            Session session = new();
             session.TraceListener();
 
             userCount = 0;
@@ -97,7 +97,7 @@ namespace Dashboard.Server.SessionManagement
         /// <returns></returns>
         private UserData CreateUser(string username)
         {
-            UserData user = new UserData(username, userCount);
+            UserData user = new(username, userCount);
             return user;
         }
 
