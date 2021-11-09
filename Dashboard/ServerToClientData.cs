@@ -34,6 +34,10 @@ namespace Dashboard
             return _receivedObject;
         }
 
+        /// <summary>
+        /// Method to access the UserData object 
+        /// </summary>
+        /// <returns> A UserData object containing the details of a user. </returns>
         public UserData GetUser()
         {
             return _user;

@@ -101,11 +101,25 @@ namespace Dashboard.Server.SessionManagement
             return user;
         }
 
+        /// <summary>
+        /// Used to create a summary by fetching all the chats from the 
+        /// content moudule and then calling the summary module to create a summary
+        /// </summary>
+        /// <returns> A SummaryData object that contains the summary of all the chats 
+        /// sent present in the meeting. </returns>
         private SummaryData CreateSummary()
         {
+            // this double is reprent the ratio of summary size to the original content size.
+            // the plans are to take this input from the UX, it will be changed accordingly
             double amountOfSummary = 0.6;
+
+            // fetching all the chats from the content module.
             ChatContext[] allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
+
+            // creating the summary from the chats
             string summary = _summarizer.GetSummary(allChatsTillNow, amountOfSummary);
+
+            // returning the summary
             return new SummaryData(summary);
         }
 
@@ -136,7 +150,12 @@ namespace Dashboard.Server.SessionManagement
             return _meetingCredentials = new MeetingCredentials(ipAddress, port);
         }
 
-
+        /// <summary>
+        /// This method is called when a request for getting summary reaches the server side.
+        /// A summary is created along with a user object (with the ID and the name of the user who requested the summary)
+        /// This data is then sent back to the client side.
+        /// </summary>
+        /// <param name="receivedObject"></param>
         private void GetSummaryProcedure(ClientToServerData receivedObject)
         {
             SummaryData summaryData = CreateSummary();

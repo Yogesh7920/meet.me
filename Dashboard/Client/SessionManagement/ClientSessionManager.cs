@@ -97,14 +97,17 @@ namespace Dashboard.Client.SessionManagement
             string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
             _communicator.Send(serializedData, moduleIdentifier);
             
+            // This loop will run till the summary is received from the server side.
             while(chatSummary == null)
             {
 
             }
 
-            summary = chatSummary;
-            chatSummary = null;
-
+            lock(this)
+            {
+                summary = chatSummary;
+                chatSummary = null;
+            }
             return summary;
         }
 
@@ -168,7 +171,7 @@ namespace Dashboard.Client.SessionManagement
                     return;
 
                 case "getSummary":
-                    SendSummary(deserializedObject);
+                    UpdateSummary(deserializedObject);
                     return;
 
                 default:
@@ -176,14 +179,26 @@ namespace Dashboard.Client.SessionManagement
             }
         }
 
-        private void SendSummary(ServerToClientData receivedData)
+        /// <summary>
+        /// Updates the locally stored summary at the client side to the summary received from the 
+        /// server side. The summary will only be updated fro the user who requsted it.
+        /// </summary>
+        /// <param name="receivedData"> A ServerToClientData object that contains the summary 
+        /// created at the server side of the session manager.</param>
+        private void UpdateSummary(ServerToClientData receivedData)
         {
+            // Extract the summary string and the user.
             SummaryData receivedSummary = (SummaryData) receivedData.GetObject();
             UserData receivedUser = receivedData.GetUser();
 
+            // check if the current user is the one who requested to get the 
+            // summary
             if(receivedUser.userID == _user.userID)
             {
-                chatSummary = receivedSummary.summary;
+                lock(this)
+                {
+                    chatSummary = receivedSummary.summary;
+                }
             }
         }
 
