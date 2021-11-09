@@ -16,7 +16,14 @@ using System.Windows.Documents;
 
 namespace Client
 {
-
+    /// Enum used to pass the info about the dragged corner of the shape in case of Resize operation
+    public enum AdornerDragPos
+    {
+        TopRight,
+        TopLeft,
+        BotLeft,
+        BotRight
+    };
 
     /// <summary>
     /// Interface which listens to fetched server updates by IWhiteBoardState and local updates by IShapeOperation
@@ -73,12 +80,7 @@ namespace Client
             {
                 EnforceSize(adornedElement);
 
-                //Coordinate strt = new Coordinate((int)Canvas.GetLeft(adornedElement), (int)Canvas.GetTop(adornedElement));
-                //Coordinate end = new Coordinate((int)(Canvas.GetLeft(adornedElement) + e.HorizontalChange), (int)(Canvas.GetTop(adornedElement) + e.VerticalChange));
-                //WbOp.ResizeShape()
-
-                this.shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, bottomRightCorner, 0); 
-                
+                this.shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, bottomRightCorner, AdornerDragPos.BotRight);                 
                 /*double oldWidth = adornedElement.Width;
                 double oldHeight = adornedElement.Height;
 
@@ -99,7 +101,7 @@ namespace Client
             {
                 EnforceSize(adornedElement);
 
-                this.shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, topRightCorner, 1);
+                this.shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, topRightCorner, AdornerDragPos.TopRight);
 
                 /*double oldWidth = adornedElement.Width;
                 double oldHeight = adornedElement.Height;
@@ -124,7 +126,7 @@ namespace Client
             {
                 EnforceSize(adornedElement);
 
-                this.shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, topLeftCorner, 2);
+                this.shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, topLeftCorner, AdornerDragPos.TopLeft);
 
                 /*double oldWidth = adornedElement.Width;
                 double oldHeight = adornedElement.Height;
@@ -153,7 +155,7 @@ namespace Client
             {
                 EnforceSize(adornedElement);
 
-                this.shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, bottomLeftCorner, 3);
+                this.shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, bottomLeftCorner, AdornerDragPos.BotLeft);
 
                 /*double oldWidth = adornedElement.Width;
                 double oldHeight = adornedElement.Height;
@@ -233,7 +235,6 @@ namespace Client
         private AdornerLayer adornerLayer;
 
         int counter = 0;
-
         public ShapeManager()
         {
 
@@ -280,7 +281,6 @@ namespace Client
 
                 //Check Condition 
                 Debug.Assert(iterat.Count() == 1);
-
                 Shape sh = (iterat.ToList()[0]) as Shape;
                 cn = DeleteSelectionBB(cn, sh, WBOp);
             }
@@ -305,10 +305,7 @@ namespace Client
                 Shape sh = (iterat.ToList()[0]) as Shape;
                 cn.Children.Remove(sh);
             }
-
-            //remove bounding boxes 
-            cn = UnselectAllBB(cn, WBOp);
-
+            selectedShapes.Clear();
             return cn;
         }
 
@@ -704,7 +701,7 @@ namespace Client
 
 
                 //Necessary step to synchronize borders on rotation of selected shapes
-                cn = SyncBorders(cn, WBOps, sh);
+                //cn = SyncBorders(cn, WBOps, sh);
             }
 
 
@@ -902,13 +899,15 @@ namespace Client
         /// Resize the list of selected shapes 'selectedShapes' based on start and end points 
         /// </summary>
         /// <param name="cn"> Canvas instance to be altered </param>
-        /// <param name="WBOps"> Shape operation handler class instance provided by the Whiteboard library </param>
-        /// <param name="shps"> Shapes that are to be altered, expected to be 'selectedShapes' attribute of the aggregating ViewModel instance </param>
-        /// <param name="strt"> System.Windows.Point instance showing representing the point where first MouseDown event occured</param>
-        /// <param name="end"> System.Windows.Point instance showing representing the point where MouseUp event occured </param>
+        /// <param name="WBOp"> Shape operation handler class instance provided by the Whiteboard library </param>
+        /// <param name="adornedElement"> Shape instance that is to be resized </param>
+        /// <param name="horizontalDrag"> Displacement of the cursor on drag in horizontal direction </param>
+        /// <param name="verticalDrag"> Displacement of the cursor on drag in horizontal direction </param>
+        /// <param name="corner"> Thumb primitive control representing the corner of the Shape that is dragged for resizing </param>
+        /// <param name="pos"> AdornerDragPos enum type that represents the positive of the dragged corner of the Shape </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOp, Shape adornedElement, double horizontalDrag, double verticalDrag, Thumb corner, int pos)
+        public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOp, Shape adornedElement, double horizontalDrag, double verticalDrag, Thumb corner, AdornerDragPos pos, bool shapeComp = false)
         {
 
             double oldWidth, newWidth, oldHeight, newHeight;
@@ -928,10 +927,13 @@ namespace Client
             }
             return cn;*/
 
+            //Coordinate strt = new Coordinate((int)Canvas.GetLeft(adornedElement), (int)Canvas.GetTop(adornedElement));
+            //Coordinate end = new Coordinate((int)(Canvas.GetLeft(adornedElement) + e.HorizontalChange), (int)(Canvas.GetTop(adornedElement) + e.VerticalChange));
+            //WbOp.ResizeShape()
             switch (pos)
             {
                 //Bottom Right Corner 
-                case 0:
+                case AdornerDragPos.BotRight:
                     oldWidth = adornedElement.Width;
                     oldHeight = adornedElement.Height;
 
@@ -942,7 +944,7 @@ namespace Client
                     adornedElement.Height = newHeight;
                     break;
                 //Top Right Corner 
-                case 1:
+                case AdornerDragPos.TopRight:
                     oldWidth = adornedElement.Width;
                     oldHeight = adornedElement.Height;
 
@@ -956,7 +958,7 @@ namespace Client
                     Canvas.SetTop(adornedElement, newTop);
                     break;
                 //Top Left Corner 
-                case 2:
+                case AdornerDragPos.TopLeft:
                     oldWidth = adornedElement.Width;
                     oldHeight = adornedElement.Height;
 
@@ -974,7 +976,7 @@ namespace Client
                     Canvas.SetTop(adornedElement, newTop);
                     break;
                 //Bottom Left Corner 
-                case 3:
+                case AdornerDragPos.BotLeft:
                     oldWidth = adornedElement.Width;
                     oldHeight = adornedElement.Height;
 
@@ -1065,7 +1067,7 @@ namespace Client
         public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false)
         {
             if (creation)
-            {
+            {               
                 poly = new System.Windows.Shapes.Polyline();
 
 
