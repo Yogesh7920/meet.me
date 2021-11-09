@@ -78,7 +78,9 @@ namespace Dashboard.Server.SessionManagement
             // create a new user and add it to the session. 
             UserData user = CreateUser(arrivedClient.username);
             AddUserToSession(user);
-            // Give Whiteboard, Content and screenshare the userID's
+
+            // sending the all the messages to the new user
+            _contentServer.SSendAllMessagesToClient(user.userID);
 
             // Notify Telemetry about the change in the session object.
             NotifyTelemetryModule();
