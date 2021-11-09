@@ -164,8 +164,10 @@ namespace Client
             SolidColorBrush strokeColor = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
             switch (mode)
             {
+                //selectedShapes.ToString()
                 //single shape selection case
                 case 0:
+                    Trace.WriteLine("Selection of shape with Uid = " + sh.Uid.ToString() + "requested by user with Ctrl NOT pressed");
                     //If selected shape is the selection box rectangle 
                     if (BBmap.ContainsValue(sh.Uid))
                     {
@@ -193,6 +195,7 @@ namespace Client
                     break;
                 //multiple shape selection case
                 case 1:
+                    Trace.WriteLine("Selection of shape with Uid = " + sh.Uid.ToString() + "requested by user with Ctrl pressed");
                     if (selectedShapes.Contains(sh.Uid.ToString()))
                     {
                         cn = DeleteSelectionBB(cn, sh.Uid.ToString(), WBOp);
@@ -211,6 +214,7 @@ namespace Client
                     break;
 
             }
+            Trace.WriteLine("List of Uids of selected shapes at the end of Client.ShapeManager.SelectShape is: " + selectedShapes.ToString());
             return cn;
         }
 
@@ -251,42 +255,57 @@ namespace Client
         /// <param name="end"> System.Windows.Point instance showing representing the point where MouseUp event occured </param>
         /// <param name="cn"> Main Canvas instance to which the shape is to be added </param>
         /// <param name="strokeWidth"> Float determining the thickness of border of drawn shape (OR) thickness of the stroke in freehand drawing</param>
-        /// <param name="strokeColor"> Float determining the fill color of the drawn shape </param>
+        /// <param name="strokeColor"> Hex code representing the color of the drawn shape </param>
         /// <param name="shapeId"> Attribute to recursively keep track of the drawn shape visually by the user, initialised as null and equal to the UID assigned by the WB module for the remaining iterations </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> Final Canvas instance with the newly rendered/deleted shapes </returns>
-        public Canvas CreateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, WhiteBoardViewModel.WBTools activeTool, Point strt, Point end, float strokeWidth, SolidColorBrush strokeColor, string shapeId = null, bool shapeComp = false)
+        public Canvas CreateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, WhiteBoardViewModel.WBTools activeTool, Point strt, Point end, float strokeWidth = 1, string strokeColor = "#FFFFFF", string shapeId = null, bool shapeComp = false)
         {
             List<UXShape> toRender;
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
 
-            BoardColor strk_clr = new BoardColor(strokeColor.Color.R, strokeColor.Color.G, strokeColor.Color.B);
+            SolidColorBrush strokeColorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(strokeColor));
+            BoardColor strk_clr = new BoardColor(strokeColorBrush.Color.R, strokeColorBrush.Color.G, strokeColorBrush.Color.B);
+
+
+            if (end.X < 0 || end.Y < 0 || end.X > cn.Width || end.Y > cn.Height) MessageBox.Show("!!!!!");
+
+
+            //If the mouse touches the border of the canvas, then shape is final
+            if (end.X == 0 || end.Y == 0 || end.X == cn.Width || end.Y == cn.Height) shapeComp = true;
 
             switch (activeTool)
             {
                 case WhiteBoardViewModel.WBTools.NewLine:
                     lock (this)
-                    {
-                        toRender = WBOps.CreateLine(C_strt, C_end, strokeWidth, strk_clr, shapeId, shapeComp); //return is of form List of UXShape
-                        cn = this.RenderUXElement(toRender, cn);
+                    { 
+                        Trace.WriteLine("User requested creation of a line with start = "+ strt.ToString() + "end = " + end.ToString());
+                        //toRender = WBOps.CreateLine(C_strt, C_end, strokeWidth, strk_clr, shapeId, shapeComp); //return is of form List of UXShape
+                        //cn = this.RenderUXElement(toRender, cn);
                     }
                     break;
                 case WhiteBoardViewModel.WBTools.NewRectangle:
                     lock (this)
                     {
-                        toRender = WBOps.CreateRectangle(C_strt, C_end, strokeWidth, strk_clr, shapeId, shapeComp);
-                        cn = this.RenderUXElement(toRender, cn);
+                        Trace.WriteLine("User requested creation of a rectangle with start = " + strt.ToString() + "end = " + end.ToString());
+                        //toRender = WBOps.CreateRectangle(C_strt, C_end, strokeWidth, strk_clr, shapeId, shapeComp);
+                        //cn = this.RenderUXElement(toRender, cn);
                     }
                     break;
                 case WhiteBoardViewModel.WBTools.NewEllipse:
                     lock (this)
                     {
-                        toRender = WBOps.CreateEllipse(C_strt, C_end, strokeWidth, strk_clr, shapeId, shapeComp);
-                        cn = this.RenderUXElement(toRender, cn);
+                        Trace.WriteLine("User requested creation of an ellipse with start = " + strt.ToString() + "end = " + end.ToString());
+                        //toRender = WBOps.CreateEllipse(C_strt, C_end, strokeWidth, strk_clr, shapeId, shapeComp);
+                        //cn = this.RenderUXElement(toRender, cn);
                     }
                     break;
             }
+
+
+
+            if (shapeComp == true) MessageBox.Show("start = " + strt.ToString() + ", end = " + end.ToString());
             return cn;
         }
 
@@ -304,7 +323,7 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
-
+            
             if (mouseDownSh == null)
             {
                 return cn;
@@ -317,7 +336,8 @@ namespace Client
                 }
                 cn = SelectShape(cn, mouseDownSh, WBOps, 1);
             }
-
+            Trace.WriteLine("Beginning moving shape with Uid" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() + "to end point " + end.ToString());
+            Trace.WriteLine("List of Uids of selected shapes affected by move:" + selectedShapes.ToString());
 
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
@@ -430,7 +450,8 @@ namespace Client
                     cn = SyncBorders(cn, WBOps, shUID);
                 }               
             }
-
+            Trace.WriteLine("Sent move request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
+                "to end point " + end.ToString() + ", where list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());
             return cn;
         }
 
@@ -461,6 +482,8 @@ namespace Client
                 }
                 cn = SelectShape(cn, mouseDownSh, WBOps, 1);
             }
+            Trace.WriteLine("Beginning rotating shape with Uid" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() + "to end point " + end.ToString());
+            Trace.WriteLine("List of Uids of selected shapes affected by rotate:" + selectedShapes.ToString());
 
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
@@ -514,6 +537,11 @@ namespace Client
                 //Necessary step to synchronize borders on rotation of selected shapes
                 cn = SyncBorders(cn, WBOps, shUID);
             }
+
+
+            Trace.WriteLine("Sent rotate request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() + 
+                "to end point " + end.ToString() + ", where the list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());
+            
             return cn;
         }
 
@@ -640,6 +668,7 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas DeleteShape(Canvas cn, IWhiteBoardOperationHandler WBOps, List<UXShape> shps)
         {
+            Trace.WriteLine("List of Uids of selected shapes that are supposed to be deleted:", selectedShapes.ToString());
             List<UXShape> toRender;
             foreach (UXShape shp in shps)
             {
@@ -649,6 +678,7 @@ namespace Client
                     cn = this.RenderUXElement(toRender, cn);
                 }
             }
+            Trace.WriteLine("Sent delete requests to the Client for the selected shapes with Uids:", selectedShapes.ToString());
             return cn;
         }
 

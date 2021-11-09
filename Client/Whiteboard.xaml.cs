@@ -69,14 +69,20 @@ namespace Client
                         GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, true, curCanvasBg, true);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewLine):
+                        //sets the starting point for the creation of new line
+                        this.viewModel.start = e.GetPosition(GlobCanvas);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewRectangle):
+                        //sets the starting point for the creation of new rectangle
+                        this.viewModel.start = e.GetPosition(GlobCanvas);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewEllipse):
+                        //sets the starting point for the creation of new ellipse
+                        this.viewModel.start = e.GetPosition(GlobCanvas);
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
                         //sets the starting point for usage in TranslateShape/RotateShape
-                        this.viewModel.start = e.GetPosition(MyCanvas);
+                        this.viewModel.start = e.GetPosition(GlobCanvas);
 
                         if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
                         {
@@ -97,27 +103,40 @@ namespace Client
         {
             if (e.LeftButton == MouseButtonState.Released)
             {
-                //If mouse was moved after pressing left click and then released, then move/rotate operations would be executed WITHOUT unselecting any shape
-                if (mouseLeftBtnMoveFlag > 5)
+                switch (viewModel.GetActiveTool())
                 {
-                    switch (viewModel.GetActiveTool())
-                    {
-                        case (WhiteBoardViewModel.WBTools.FreeHand):
-                            Point fh_pt = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, curPenColor);
-                            break;
-                        case (WhiteBoardViewModel.WBTools.Eraser):
-                            Point er_pt = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, curCanvasBg, true);
-                            break;
-                        case (WhiteBoardViewModel.WBTools.Selection):
+                    case (WhiteBoardViewModel.WBTools.FreeHand):
+                        Point fh_pt = e.GetPosition(GlobCanvas);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, curPenColor);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.Eraser):
+                        Point er_pt = e.GetPosition(GlobCanvas);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, curCanvasBg, true);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewLine):
+                        //sets the end point for the creation of new line
+                        this.viewModel.end = e.GetPosition(GlobCanvas);
+                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, shapeComp: true);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewRectangle):
+                        //sets the end point for the creation of new rectangle
+                        this.viewModel.end = e.GetPosition(GlobCanvas);
+                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, shapeComp: true);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewEllipse):
+                        //sets the end point for the creation of new ellipse
+                        this.viewModel.end = e.GetPosition(GlobCanvas);
+                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, shapeComp: true);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.Selection):
 
-                            //MessageBox.Show( this.viewModel.end.X.ToString(), this.viewModel.end.Y.ToString());
-                            //MessageBox.Show(this.viewModel.start.X.ToString(), this.viewModel.start.Y.ToString() );
+                        //MessageBox.Show( this.viewModel.end.X.ToString(), this.viewModel.end.Y.ToString());
+                        //MessageBox.Show(this.viewModel.start.X.ToString(), this.viewModel.start.Y.ToString() );
 
-                            //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated
-                            
-                            if(e.OriginalSource is Shape)
+                        //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
+                        if (mouseLeftBtnMoveFlag > 5)
+                        {
+                            if (e.OriginalSource is Shape)
                             {
                                 Shape selectedShape = e.OriginalSource as Shape;
                                 if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
@@ -139,26 +158,11 @@ namespace Client
                                 //Resetting the value of 'start' to perform the next Move functions
                                 this.viewModel.start = e.GetPosition(MyCanvas);
                             }
+                        }
 
-                            break;
-                    }
-                }
-                //If mouse was not moved after left clicking, then shapes would be selected/unselected
-                else
-                {
-                    //MessageBox.Show(viewModel.GetActiveTool().ToString());
-                    switch (viewModel.GetActiveTool())
-                    {
-                        case (WhiteBoardViewModel.WBTools.FreeHand):
-                            break;
-                        case (WhiteBoardViewModel.WBTools.NewLine):
-                            break;
-                        case (WhiteBoardViewModel.WBTools.NewRectangle):
-                            break;
-                        case (WhiteBoardViewModel.WBTools.NewEllipse):
-                            break;
-                        case (WhiteBoardViewModel.WBTools.Selection):
-
+                        //If mouse was not moved after left clicking, then shapes would be selected/unselected
+                        else
+                        {
                             //sets the starting point for usage in TranslateShape/RotateShape
                             this.viewModel.start = e.GetPosition(MyCanvas);
 
@@ -207,11 +211,9 @@ namespace Client
                                     //this.SelectionBox.Visibility = Visibility.Collapsed;
                                 }
                             }
-                            break;
-                        case (WhiteBoardViewModel.WBTools.Eraser):
-                            break;
-                    }
+                        }
 
+                        break;
                 }
             }
             //Resetting the flag for next usage
@@ -234,6 +236,21 @@ namespace Client
                     case (WhiteBoardViewModel.WBTools.Eraser):
                         Point er_pt = e.GetPosition(GlobCanvas);
                         GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, curCanvasBg, true);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewLine):
+                        //sets the end point for the creation of new line
+                        this.viewModel.end = e.GetPosition(GlobCanvas);
+                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, shapeComp: false);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewRectangle):
+                        //sets the end point for the creation of new rectangle
+                        this.viewModel.end = e.GetPosition(GlobCanvas);
+                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, shapeComp: false);
+                        break;
+                    case (WhiteBoardViewModel.WBTools.NewEllipse):
+                        //sets the end point for the creation of new ellipse
+                        this.viewModel.end = e.GetPosition(GlobCanvas);
+                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, shapeComp: false);
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
                         //if(e.OriginalSource is Shape)
