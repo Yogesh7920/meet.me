@@ -8,7 +8,7 @@
              >
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="140"/>
+            <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="0.01*"/>
             <ColumnDefinition Width="10*"/>
@@ -24,7 +24,7 @@
             <RowDefinition Height="7*"/>
         </Grid.RowDefinitions>
         
-        <StackPanel x:Name="UsersListPane" Background="#FF340051" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="1" Visibility="Visible" Margin="0,5,100,0">
+        <StackPanel x:Name="UsersListPane" Background="#FF340051" Grid.Row="0" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="1" Visibility="Visible">
             <Grid Background="White" VerticalAlignment="Top" Height="20">
                 <TextBlock x:Name="UserListHead" HorizontalAlignment="Center" Text="Active Users"/>
                 <Button Height="20" Width="20" Name="UsersListShow" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" Click="Users_List_Click">

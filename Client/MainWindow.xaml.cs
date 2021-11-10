@@ -24,9 +24,9 @@ namespace Client
         //
         
         //
-        private static Chat _chat;
+        //private static Chat _chat;
         private static UsersList _userslist;
-        private ScreenShare _screenshare;
+        //private ScreenShare _screenshare;
         public MainWindow()
         {
             InitializeComponent();
@@ -37,9 +37,9 @@ namespace Client
             this.SSwb.Content = _whiteboard;
 
             //uncomment below lines after the respective user controls are done
-            _chat = new Chat();
-            _screenshare = new ScreenShare();
-            this.Chat.Content = _chat;
+           // _chat = new Chat();
+           // _screenshare = new ScreenShare();
+           // this.Chat.Content = _chat;
 
             _userslist = new UsersList();
             this.UsersListControl.Content = _userslist;
@@ -106,7 +106,7 @@ namespace Client
 
             //ACTUAL IMPLEMENTATION
             _ssFlag = true;   //uncomment below line after screenshare user control is done
-            this.SSwb.Content = _screenshare;
+            //this.SSwb.Content = _screenshare;
             if (_chatFlag.Equals(true))
             {
                 Chat.Visibility = Visibility.Collapsed;
