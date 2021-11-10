@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="MainWindow" MouseDown="Window_MouseDown" WindowStyle="None" ResizeMode="NoResize" Height="780" Width="470">
+        Title="MainWindow" MouseDown="OnWindowMouseDown" WindowStyle="None" ResizeMode="NoResize" Height="780" Width="470">
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="ReplyText">
             <Style.Triggers>
@@ -139,7 +139,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Grid.Column="0" Source="Icons/ChatUX/file3.png" Width="25" Height="25"/>
                                     <TextBlock Grid.Column="1" Foreground="White" Text="{Binding TextMessage}" x:Name="MainText" TextWrapping="Wrap" Width="200" FontSize="18" Padding="8,5,8,5"/>
-                                    <Button Grid.Column="2" Background="Transparent"  BorderBrush="Transparent" HorizontalAlignment="Right" Width="40" Margin="0,0,0,0" Click="Button_Click">
+                                    <Button Grid.Column="2" Background="Transparent"  BorderBrush="Transparent" HorizontalAlignment="Right" Width="40" Margin="0,0,0,0" Click="OnDownloadButtonClick">
                                         <Image Source="Icons/ChatUX/download.png" Width="30" Height="30"/>
                                     </Button>
                                 </Grid>
@@ -255,7 +255,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Image Grid.Column="0" Source="Icons/ChatUX/file3.png" Width="25" Height="25"/>
                                 <TextBlock Grid.Column="1" Foreground="White" Text="{Binding TextMessage}" x:Name="MainText" TextWrapping="Wrap" Width="200" FontSize="18" Padding="8,5,8,5"/>
-                                <Button Grid.Column="2" Background="Transparent"  BorderBrush="Transparent" HorizontalAlignment="Right" Width="40" Margin="0,0,0,0" Click="Button_Click">
+                                <Button Grid.Column="2" Background="Transparent"  BorderBrush="Transparent" HorizontalAlignment="Right" Width="40" Margin="0,0,0,0" Click="OnDownloadButtonClick">
                                     <Image Source="Icons/ChatUX/download.png" Width="30" Height="30"/>
                                 </Button>
                             </Grid>

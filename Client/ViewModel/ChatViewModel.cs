@@ -55,10 +55,13 @@ namespace Client.ViewModel
             msg.ReplyThreadId = replyMsgId;
             _model.CSend(msg);
         }
-
-        public void StarChat(int MsgId)
+        public void StarChat(int msgId)
         {
-            _model.CMarkStar(MsgId);
+            _model.CMarkStar(msgId);
+        }
+        public void DownloadFile(int msgId, string path)
+        {
+            _model.CDownload(msgId, path);
         }
         public void OnMessage(ReceiveMessageData messageData)
         {
@@ -79,6 +82,10 @@ namespace Client.ViewModel
                                         {
                                             ReplyMsg = _messages[messageData.ReplyThreadId];
                                         }
+                                        else
+                                        {
+                                            ReplyMsg = "";
+                                        }
                                         this.OnPropertyChanged("ReceivedFile");
                                     }
                                     else
@@ -88,18 +95,13 @@ namespace Client.ViewModel
                                         {
                                             ReplyMsg = _messages[messageData.ReplyThreadId];
                                         }
+                                        else
+                                        {
+                                            ReplyMsg = "";
+                                        }
                                         this.OnPropertyChanged("ReceivedMsg");
                                     }
                                 }
-                                else if(messageData.Event == MessageEvent.Star)
-                                {
-
-                                }
-                                else if(messageData.Event == MessageEvent.Download)
-                                {
-
-                                }
-
                             }
                         }),
                         messageData);
@@ -107,7 +109,7 @@ namespace Client.ViewModel
 
         public void OnAllMessages(List<Thread> allMessages)
         {
-
+            throw new NotImplementedException();
         }
 
         /// <summary>

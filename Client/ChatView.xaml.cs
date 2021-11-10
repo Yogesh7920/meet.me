@@ -16,8 +16,7 @@ namespace Client
     {
         public string ReplyMsg { get; set; }
         public int ReplyMsgId { get; set; }
-        public string FilePath { get; set; }
-        //public string FileName { get; set; }
+
         ObservableCollection<Message> allmessages;
         public ChatView()
         {
@@ -43,33 +42,33 @@ namespace Client
             ChatViewModel viewModel = this.DataContext as ChatViewModel;
             if (propertyName == "ReceivedFile")
             {
-                allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, Type = false ,Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
+                if (String.IsNullOrEmpty(viewModel.ReplyMsg))
+                {
+                    allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, ReplyMessage = "", Type = false, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
+
+                }
+                else
+                {
+                    allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, ReplyMessage = viewModel.ReplyMsg, Type = false, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
+
+                }
             }
             else if(propertyName == "ReceivedMsg")
             {
-                allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, Type = true, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
+                if (String.IsNullOrEmpty(viewModel.ReplyMsg))
+                {
+                    allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, ReplyMessage = "", Type = true, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
+                }
+                else
+                {
+                    allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, ReplyMessage = viewModel.ReplyMsg, Type = true, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
+                }
             }
             UpdateScrollBar(myChat);
         }
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
-        }
-        private void OnUploadButtonClick(object sender, RoutedEventArgs e)
-        {
-            // Create OpenFileDialog
-            Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
-
-            // Launch OpenFileDialog by calling ShowDialog method
-            Nullable<bool> result = openFileDlg.ShowDialog();
-            // Get the selected file name and display in a TextBox.
-            // Load content of file in a TextBlock
-            if (result == true)
-            {
-                FilePath = openFileDlg.FileName;
-                allmessages.Add(new Message { TextMessage = FilePath.ToString(), Type = false, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = true });
-                //TextBlock1.Text = System.IO.File.ReadAllText(openFileDlg.FileName);
-            }
         }
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
@@ -84,6 +83,29 @@ namespace Client
             }
             ReplyMsg = "";
         }
+        private void OnUploadButtonClick(object sender, RoutedEventArgs e)
+        {
+            ChatViewModel viewModel = this.DataContext as ChatViewModel;
+            // Create OpenFileDialog
+            Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
+
+            // Launch OpenFileDialog by calling ShowDialog method
+            Nullable<bool> result = openFileDlg.ShowDialog();
+            // Get the selected file name and display in a TextBox.
+            // Load content of file in a TextBlock
+            if (result == true)
+            {
+                if (String.IsNullOrEmpty(ReplyMsg))
+                {
+                    viewModel.SendFile(openFileDlg.FileName, -1);
+                }
+                else
+                {
+                    viewModel.SendFile(openFileDlg.FileName, ReplyMsgId);
+                }
+                ReplyMsg = "";
+            }
+        }
         private void OnReplyButtonClick(object sender, RoutedEventArgs e)
         {
             if (sender is Button)
@@ -97,7 +119,6 @@ namespace Client
                     //System.Diagnostics.Debug.WriteLine(m.TextMessage);
                 }
             }
-            
         }
         private void OnStarButtonClick(object sender, RoutedEventArgs e)
         {
@@ -113,14 +134,47 @@ namespace Client
                 }
             }
         }
+        private void OnDownloadButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button)
+            {
+                ChatViewModel viewModel = this.DataContext as ChatViewModel;
+                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+                dlg.FileName = "Document"; // Default file name
+                dlg.DefaultExt = ".text"; // Default file extension
+                dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+
+                // Show save file dialog box
+                Nullable<bool> result = dlg.ShowDialog();
+
+                Button cmd = (Button)sender;
+                if (cmd.DataContext is Message)
+                {
+                    Message m = (Message)cmd.DataContext;
+
+                    // Process save file dialog box results
+                    if (result == true)
+                    {
+                        // Save document
+                        //string filename = dlg.FileName;
+                        //System.Diagnostics.Debug.WriteLine(dlg.FileName);
+                        //System.Diagnostics.Debug.WriteLine(m.TextMessage);
+                        viewModel.DownloadFile(m.MessageId, dlg.FileName);
+                    }
+                }
+            }
+            
+        }
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        private void OnWindowMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
+            {
                 this.DragMove();
+            }
         }
         private void UpdateScrollBar(ListBox listBox)
         {
@@ -130,12 +184,6 @@ namespace Client
                 var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
                 scrollViewer.ScrollToBottom();
             }
-
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
