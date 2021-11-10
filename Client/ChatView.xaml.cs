@@ -14,9 +14,8 @@ namespace Client
     /// </summary>
     public partial class ChatView : Window
     {
-        public string ReplyMsg { get; set; }
         public int ReplyMsgId { get; set; }
-
+        
         ObservableCollection<Message> allmessages;
         public ChatView()
         {
@@ -28,13 +27,11 @@ namespace Client
             this.DataContext = viewModel;
 
             allmessages = new ObservableCollection<Message>();
-            allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = true });
-            allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
-            allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
-            allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = true });
+            allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToString(), ToFrom = true });
+            allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToString(), ToFrom = false });
+            allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToString(), ToFrom = false });
+            allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToString(), ToFrom = true });
             this.myChat.ItemsSource = allmessages;
-
-            //System.Diagnostics.Debug.WriteLine(allmessages.Count);
         }
         private void Listner(object sender, PropertyChangedEventArgs e)
         {
@@ -42,46 +39,27 @@ namespace Client
             ChatViewModel viewModel = this.DataContext as ChatViewModel;
             if (propertyName == "ReceivedFile")
             {
-                if (String.IsNullOrEmpty(viewModel.ReplyMsg))
-                {
-                    allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, ReplyMessage = "", Type = false, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
-
-                }
-                else
-                {
-                    allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, ReplyMessage = viewModel.ReplyMsg, Type = false, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
-
-                }
-            }
-            else if(propertyName == "ReceivedMsg")
-            {
-                if (String.IsNullOrEmpty(viewModel.ReplyMsg))
-                {
-                    allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, ReplyMessage = "", Type = true, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
-                }
-                else
-                {
-                    allmessages.Add(new Message { TextMessage = viewModel.ReceivedMsg, ReplyMessage = viewModel.ReplyMsg, Type = true, Time = DateTime.Now.ToString(), Status = "Sent", ToFrom = false });
-                }
+                allmessages.Add(viewModel.ReceivedMsg);
             }
             UpdateScrollBar(myChat);
         }
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
-            ChatViewModel viewModel = this.DataContext as ChatViewModel;
-            if (String.IsNullOrEmpty(ReplyMsg))
+            //System.Diagnostics.Debug.WriteLine(this.SendTextBox.Text);
+            if (!string.IsNullOrEmpty(this.SendTextBox.Text))
             {
-                viewModel.SendChat(this.SendTextBox.Text, -1);
+                ChatViewModel viewModel = this.DataContext as ChatViewModel;
+                if (string.IsNullOrEmpty(this.ReplyTextBox.Text))
+                {
+                    viewModel.SendChat(this.SendTextBox.Text, -1);
+                }
+                else
+                {
+                    viewModel.SendChat(this.SendTextBox.Text, ReplyMsgId);
+                }
+                this.SendTextBox.Text = string.Empty;
+                this.ReplyTextBox.Text = "";
             }
-            else
-            {
-                viewModel.SendChat(this.SendTextBox.Text, ReplyMsgId);
-            }
-            ReplyMsg = "";
         }
         private void OnUploadButtonClick(object sender, RoutedEventArgs e)
         {
@@ -95,7 +73,7 @@ namespace Client
             // Load content of file in a TextBlock
             if (result == true)
             {
-                if (String.IsNullOrEmpty(ReplyMsg))
+                if (string.IsNullOrEmpty(this.ReplyTextBox.Text))
                 {
                     viewModel.SendFile(openFileDlg.FileName, -1);
                 }
@@ -103,7 +81,7 @@ namespace Client
                 {
                     viewModel.SendFile(openFileDlg.FileName, ReplyMsgId);
                 }
-                ReplyMsg = "";
+                this.ReplyTextBox.Text = "";
             }
         }
         private void OnReplyButtonClick(object sender, RoutedEventArgs e)
@@ -114,7 +92,7 @@ namespace Client
                 if (cmd.DataContext is Message)
                 {
                     Message m = (Message)cmd.DataContext;
-                    ReplyMsg = m.TextMessage;
+                    this.ReplyTextBox.Text = m.TextMessage;
                     ReplyMsgId = m.MessageId;
                     //System.Diagnostics.Debug.WriteLine(m.TextMessage);
                 }
@@ -142,7 +120,7 @@ namespace Client
                 Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
                 dlg.FileName = "Document"; // Default file name
                 dlg.DefaultExt = ".text"; // Default file extension
-                dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+                //dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
 
                 // Show save file dialog box
                 Nullable<bool> result = dlg.ShowDialog();

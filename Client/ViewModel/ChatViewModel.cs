@@ -13,29 +13,23 @@ namespace Client.ViewModel
     {
 
         IDictionary<int, string> _messages;
+        public int UserId
+        {
+            get; private set;
+        }
         /// <summary>
         /// The received caption.
         /// </summary>
-        public string ReceivedMsg
+        public Message ReceivedMsg
         {
             get; private set;
         }
-
-        public string ReceivedFile
-        {
-            get; private set;
-        }
-
-        public string ReplyMsg
-        {
-            get; private set;
-        }
-
         public ChatViewModel()
         {
             _messages = new Dictionary<int, string>();
             _model = ContentClientFactory.getInstance();
             _model.CSubscribe(this);
+            //this.UserId = _model.GetUserId();
         }
 
         public void SendChat(string message, int replyMsgId)
@@ -75,32 +69,14 @@ namespace Client.ViewModel
                                 if(messageData.Event == MessageEvent.NewMessage)
                                 {
                                     _messages.Add(messageData.MessageId, messageData.Message);
-                                    if (messageData.Type == MessageType.File)
-                                    {
-                                        this.ReceivedFile = messageData.Message;
-                                        if(messageData.ReplyThreadId != -1)
-                                        {
-                                            ReplyMsg = _messages[messageData.ReplyThreadId];
-                                        }
-                                        else
-                                        {
-                                            ReplyMsg = "";
-                                        }
-                                        this.OnPropertyChanged("ReceivedFile");
-                                    }
-                                    else
-                                    {
-                                        this.ReceivedMsg = messageData.Message;
-                                        if (messageData.ReplyThreadId != -1)
-                                        {
-                                            ReplyMsg = _messages[messageData.ReplyThreadId];
-                                        }
-                                        else
-                                        {
-                                            ReplyMsg = "";
-                                        }
-                                        this.OnPropertyChanged("ReceivedMsg");
-                                    }
+                                    ReceivedMsg = new Message();
+                                    ReceivedMsg.MessageId = messageData.MessageId;
+                                    ReceivedMsg.TextMessage = messageData.Message;
+                                    ReceivedMsg.Time = messageData.SentTime.ToString();
+                                    ReceivedMsg.ToFrom = UserId == messageData.MessageId;
+                                    ReceivedMsg.ReplyMessage = messageData.ReplyThreadId == -1 ? "" : _messages[messageData.ReplyThreadId];
+                                    ReceivedMsg.Type = messageData.Type == MessageType.Chat;
+                                    this.OnPropertyChanged("ReceivedMsg");
                                 }
                             }
                         }),
