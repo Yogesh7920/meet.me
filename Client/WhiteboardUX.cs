@@ -421,11 +421,21 @@ namespace Client
             BoardColor strk_clr = new BoardColor(strokeColorBrush.Color.R, strokeColorBrush.Color.G, strokeColorBrush.Color.B);
 
 
-            if (end.X < 0 || end.Y < 0 || end.X > cn.Width || end.Y > cn.Height) MessageBox.Show("!!!!!");
+            if (end.X < 0 || end.Y < 0 || end.X > cn.Width || end.Y > cn.Height) MessageBox.Show("Cursor went out of screen");
 
 
             //If the mouse touches the border of the canvas, then shape is final
             if (end.X == 0 || end.Y == 0 || end.X == cn.Width || end.Y == cn.Height) shapeComp = true;
+
+            if (shapeComp == true)
+            {
+                //MessageBox.Show("SHAPECOMP!, start = " + strt.ToString() + ", end = " + end.ToString());
+                //Resetting the "uidShapeCreate" value for next iteration
+                uidShapeCreate = null;
+                counter = counter + 1;
+                //MessageBox.Show(counter.ToString());
+            }
+
 
             switch (activeTool)
             {
@@ -454,7 +464,6 @@ namespace Client
                         {
                             newLine.Uid = counter.ToString();
                             uidShapeCreate = counter.ToString();
-                            counter = counter + 1;
                             cn.Children.Add(newLine);
                         }
                         else
@@ -485,13 +494,6 @@ namespace Client
                     break;
             }
 
-
-            if (shapeComp == true) {
-                MessageBox.Show("start = " + strt.ToString() + ", end = " + end.ToString());
-                //Resetting the "uidShapeCreate" value for next iteration
-                uidShapeCreate = null;
-                MessageBox.Show(counter.ToString());
-            }
             return cn;
         }
 
