@@ -27,6 +27,7 @@ namespace Dashboard.Client.SessionManagement
             _communicator = CommunicationFactory.GetCommunicator();
             Session session = new();
             session.TraceListener();
+           
 
             if(_clients == null)
             {
@@ -34,7 +35,7 @@ namespace Dashboard.Client.SessionManagement
             }
             _clientSessionData = new SessionData();
             moduleIdentifier = "clientSessionManager";
-
+            chatSummary = null;
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace Dashboard.Client.SessionManagement
                     return false;
                 }
 
-                ClientToServerData clientName = new ClientToServerData("addClient", username);
+                ClientToServerData clientName = new("addClient", username);
                 serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
             }
             
@@ -91,7 +92,23 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Summary of the chats as a string. </returns>
         public string GetSummary()
         {
-            throw new NotImplementedException();
+            string summary = "";
+            ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
+            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
+            _communicator.Send(serializedData, moduleIdentifier);
+            
+            // This loop will run till the summary is received from the server side.
+            while(chatSummary == null)
+            {
+
+            }
+
+            lock(this)
+            {
+                summary = chatSummary;
+                chatSummary = null;
+            }
+            return summary;
         }
 
         /// <summary>
@@ -143,13 +160,16 @@ namespace Dashboard.Client.SessionManagement
 
             // check the event type and get the object sent from the server side
             string eventType = deserializedObject.eventType;
-            IRecievedFromServer receivedObject = deserializedObject.GetObject();
 
             // based on the type of event, calling the appropriate functions 
             switch(eventType)
             {
                 case "addClient":
-                    UpdateClientSessionData(receivedObject);
+                    UpdateClientSessionData(deserializedObject);
+                    return;
+
+                case "getSummary":
+                    UpdateSummary(deserializedObject);
                     return;
 
                 default:
@@ -158,15 +178,45 @@ namespace Dashboard.Client.SessionManagement
         }
 
         /// <summary>
+        /// Updates the locally stored summary at the client side to the summary received from the 
+        /// server side. The summary will only be updated fro the user who requsted it.
+        /// </summary>
+        /// <param name="receivedData"> A ServerToClientData object that contains the summary 
+        /// created at the server side of the session manager.</param>
+        private void UpdateSummary(ServerToClientData receivedData)
+        {
+            // Extract the summary string and the user.
+            SummaryData receivedSummary = (SummaryData) receivedData.GetObject();
+            UserData receivedUser = receivedData.GetUser();
+
+            // check if the current user is the one who requested to get the 
+            // summary
+            if(receivedUser.userID == _user.userID)
+            {
+                lock(this)
+                {
+                    chatSummary = receivedSummary.summary;
+                }
+            }
+        }
+
+        /// <summary>
         /// Compares the server side session data to the client side and update the 
         /// client side data if they are different.
         /// </summary>
         /// <param name="recievedSessionData"> The sessionData received from the server side. </param>
-        private void UpdateClientSessionData(IRecievedFromServer recievedSessionData)
+        private void UpdateClientSessionData(ServerToClientData receivedData)
         {
+            SessionData recievedSessionData = (SessionData)receivedData.GetObject();
+            UserData user = receivedData.GetUser();
+
             if (recievedSessionData == _clientSessionData)
                 return;
 
+            if(_clientSessionData == null)
+            {
+                _user = user;
+            }
             lock(this)
             {
                 _clientSessionData = (SessionData)recievedSessionData;
@@ -179,5 +229,7 @@ namespace Dashboard.Client.SessionManagement
         private readonly ISerializer _serializer;
         private readonly string moduleIdentifier;
         private readonly List<IClientSessionNotifications> _clients;
+        private string chatSummary;
+        private UserData _user;
     }
 }
