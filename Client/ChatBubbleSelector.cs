@@ -1,25 +1,40 @@
-﻿using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace Client
 {
     public class ChatBubbleSelector : DataTemplateSelector
     {
-        public DataTemplate toBubble { get; set; }
-        public DataTemplate fromBubble { get; set; }
+        public DataTemplate ToMsgBubble { get; set; }
+        public DataTemplate FromMsgBubble { get; set; }
+        public DataTemplate ToFileBubble { get; set; }
+        public DataTemplate FromFileBubble { get; set; }
+
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             Message message = item as Message;
-            if (message.tofrom == true)
+            if (message.ToFrom == true)
             {
-                return toBubble;
+                if (message.Type == true)
+                {
+                    return ToMsgBubble;
+                }
+                else
+                {
+                    return ToFileBubble;
+                }
             }
             else
             {
-                return fromBubble;
+                if (message.Type == true)
+                {
+                    return FromMsgBubble;
+                }
+                else
+                {
+                    return FromFileBubble;
+                }
             }
         }
     }

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Content;
 
@@ -16,7 +12,7 @@ namespace Client.ViewModel
         IContentListener // Notifies clients that has a message has been received.
     {
 
-        IDictionary<int, Message> _messages;
+        IDictionary<int, string> _messages;
         /// <summary>
         /// The received caption.
         /// </summary>
@@ -30,29 +26,39 @@ namespace Client.ViewModel
             get; private set;
         }
 
+        public string ReplyMsg
+        {
+            get; private set;
+        }
+
         public ChatViewModel()
         {
-            _messages = new Dictionary<int, Message>();
+            _messages = new Dictionary<int, string>();
             _model = ContentClientFactory.getInstance();
             _model.CSubscribe(this);
         }
 
-        public void SendChat(string message)
+        public void SendChat(string message, int replyMsgId)
         {
             SendMessageData msg = new SendMessageData();
             msg.Type = MessageType.Chat;
             msg.Message = message;
-            msg.ReplyThreadId = -1;
+            msg.ReplyThreadId = replyMsgId;
             _model.CSend(msg);
         }
 
-        public void SendFile(string message)
+        public void SendFile(string message, int replyMsgId)
         {
             SendMessageData msg = new SendMessageData();
             msg.Type = MessageType.File;
             msg.Message = message;
-            msg.ReplyThreadId = -1;
+            msg.ReplyThreadId = replyMsgId;
             _model.CSend(msg);
+        }
+
+        public void StarChat(int MsgId)
+        {
+            _model.CMarkStar(MsgId);
         }
         public void OnMessage(ReceiveMessageData messageData)
         {
@@ -65,14 +71,23 @@ namespace Client.ViewModel
 
                                 if(messageData.Event == MessageEvent.NewMessage)
                                 {
+                                    _messages.Add(messageData.MessageId, messageData.Message);
                                     if (messageData.Type == MessageType.File)
                                     {
                                         this.ReceivedFile = messageData.Message;
+                                        if(messageData.ReplyThreadId != -1)
+                                        {
+                                            ReplyMsg = _messages[messageData.ReplyThreadId];
+                                        }
                                         this.OnPropertyChanged("ReceivedFile");
                                     }
                                     else
                                     {
                                         this.ReceivedMsg = messageData.Message;
+                                        if (messageData.ReplyThreadId != -1)
+                                        {
+                                            ReplyMsg = _messages[messageData.ReplyThreadId];
+                                        }
                                         this.OnPropertyChanged("ReceivedMsg");
                                     }
                                 }
