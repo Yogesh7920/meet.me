@@ -54,13 +54,13 @@ namespace Networking
         /// <inheritdoc />
         void ICommunicator.AddClient<T>(string clientID, T socketObject)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientID)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <inheritdoc />
