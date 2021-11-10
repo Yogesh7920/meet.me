@@ -106,6 +106,7 @@ namespace Client
             return;
         }
 
+
         //Canvas Mouse Down 
         private void OnCanvasMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -167,7 +168,7 @@ namespace Client
         }
 
         private void OnCanvasMouseButtonUp(object sender, MouseButtonEventArgs e)
-        {
+        { 
             if (e.LeftButton == MouseButtonState.Released)
             {
                 switch (viewModel.GetActiveTool())
@@ -195,17 +196,18 @@ namespace Client
                     case (WhiteBoardViewModel.WBTools.NewLine):
                         //sets the end point for the creation of new line
                         this.viewModel.end = e.GetPosition(GlobCanvas);
-                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, shapeComp: true);
+                        MessageBox.Show("NewLine: start = " + viewModel.start.ToString() + " end = " + viewModel.end.ToString());
+                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, shapeComp: true);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewRectangle):
                         //sets the end point for the creation of new rectangle
                         this.viewModel.end = e.GetPosition(GlobCanvas);
-                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, shapeComp: true);
+                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, shapeComp: true);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewEllipse):
                         //sets the end point for the creation of new ellipse
                         this.viewModel.end = e.GetPosition(GlobCanvas);
-                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, shapeComp: true);
+                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, shapeComp: true);
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
 
@@ -351,17 +353,18 @@ namespace Client
                     case (WhiteBoardViewModel.WBTools.NewLine):
                         //sets the end point for the creation of new line
                         this.viewModel.end = e.GetPosition(GlobCanvas);
-                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, shapeComp: false);
+                        //MessageBox.Show("NewLine: start = " + viewModel.start.ToString() + " end = " + viewModel.end.ToString());
+                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, shapeComp: false);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewRectangle):
                         //sets the end point for the creation of new rectangle
                         this.viewModel.end = e.GetPosition(GlobCanvas);
-                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, shapeComp: false);
+                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, shapeComp: false);
                         break;
                     case (WhiteBoardViewModel.WBTools.NewEllipse):
                         //sets the end point for the creation of new ellipse
                         this.viewModel.end = e.GetPosition(GlobCanvas);
-                        this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, shapeComp: false);
+                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, shapeComp: false);
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
                         //if(e.OriginalSource is Shape)

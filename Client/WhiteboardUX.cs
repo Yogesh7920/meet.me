@@ -63,6 +63,7 @@ namespace Client
             this.dragStart = new Point {X = 0, Y = 0};
             this.dragEnd = new Point { X = 0, Y = 0 };
 
+
             //adding thumbs for drawing adorner rectangle and setting cursor
             BuildAdornerCorners(ref topLeft, Cursors.SizeNWSE);
             BuildAdornerCorners(ref topRight, Cursors.SizeNESW);
@@ -85,6 +86,7 @@ namespace Client
             bottomRight.DragDelta += BottomRight_DragDelta;
             bottomRight.PreviewMouseLeftButtonUp += Adorner_MouseUp;
             bottomRight.PreviewMouseLeftButtonDown += Adorner_MouseDown;
+
         }
 
         private void Adorner_MouseDown(object sender, MouseButtonEventArgs e)
@@ -220,6 +222,9 @@ namespace Client
         private Dictionary<string, string> BBmap = new Dictionary<string, string>();
         public IWhiteBoardOperationHandler WBOps;
         private AdornerLayer adornerLayer;
+
+        //Variable to keep track of the Uid of the new shape that is currently under creation
+        private string uidShapeCreate = null;
 
         int counter = 0;
         public ShapeManager()
@@ -406,7 +411,7 @@ namespace Client
         /// <param name="shapeId"> Attribute to recursively keep track of the drawn shape visually by the user, initialised as null and equal to the UID assigned by the WB module for the remaining iterations </param>
         /// <param name="shapeComp"> Attribute to keep track of temporary/final operations of Client in order to send only the final queries to the Server by the WB module </param>
         /// <returns> Final Canvas instance with the newly rendered/deleted shapes </returns>
-        public Canvas CreateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, WhiteBoardViewModel.WBTools activeTool, Point strt, Point end, float strokeWidth = 1, string strokeColor = "#FFFFFF", string shapeId = null, bool shapeComp = false)
+        public Canvas CreateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, WhiteBoardViewModel.WBTools activeTool, Point strt, Point end, float strokeWidth = 1, string strokeColor = "#FFFFFF", bool shapeComp = false)
         {
             List<UXShape> toRender;
             Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
@@ -430,6 +435,36 @@ namespace Client
                         Trace.WriteLine("User requested creation of a line with start = "+ strt.ToString() + "end = " + end.ToString());
                         //toRender = WBOps.CreateLine(C_strt, C_end, strokeWidth, strk_clr, shapeId, shapeComp); //return is of form List of UXShape
                         //cn = this.RenderUXElement(toRender, cn);
+                        System.Windows.Shapes.Line newLine = new System.Windows.Shapes.Line();
+
+                        newLine.X1 = 0;
+                        newLine.X2 = end.X - strt.X;
+                        newLine.Y1 = 0;
+                        newLine.Y2 = end.Y - strt.Y;
+
+                        SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
+                        newLine.Stroke = blackBrush;
+                        newLine.StrokeThickness = 4;
+                
+                        Canvas.SetLeft(newLine, strt.X);
+                        Canvas.SetTop(newLine, strt.Y);
+
+                        //TEMP: Logic to simulate continuous deletion & addition while drawing new shapes
+                        if (this.uidShapeCreate == null)
+                        {
+                            newLine.Uid = counter.ToString();
+                            uidShapeCreate = counter.ToString();
+                            counter = counter + 1;
+                            cn.Children.Add(newLine);
+                        }
+                        else
+                        {
+                            Shape oldSh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == uidShapeCreate).ToList()[0];
+                            cn.Children.Remove(oldSh);
+                            newLine.Uid = uidShapeCreate;
+                            cn.Children.Add(newLine);
+                        }
+
                     }
                     break;
                 case WhiteBoardViewModel.WBTools.NewRectangle:
@@ -451,8 +486,12 @@ namespace Client
             }
 
 
-
-            if (shapeComp == true) MessageBox.Show("start = " + strt.ToString() + ", end = " + end.ToString());
+            if (shapeComp == true) {
+                MessageBox.Show("start = " + strt.ToString() + ", end = " + end.ToString());
+                //Resetting the "uidShapeCreate" value for next iteration
+                uidShapeCreate = null;
+                MessageBox.Show(counter.ToString());
+            }
             return cn;
         }
 
@@ -532,12 +571,12 @@ namespace Client
                         newEl.Uid = sh.Uid;
                         newEl.RenderTransform = sh.RenderTransform; 
                         if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newEl, topleft_x - diff_topleft_x);
-                        else if (center_x > cn.Width) Canvas.SetLeft(newEl, Canvas.GetLeft(sh));
-                        else Canvas.SetLeft(newEl, Canvas.GetLeft(sh));
+                        else if (center_x > cn.Width) Canvas.SetLeft(newEl, Canvas.GetLeft(sh) - 2);
+                        else Canvas.SetLeft(newEl, Canvas.GetLeft(sh) + 2);
 
                         if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(newEl, topleft_y - diff_topleft_y);
-                        else if (center_y > cn.Height) Canvas.SetTop(newEl, Canvas.GetTop(sh));
-                        else Canvas.SetTop(newEl, Canvas.GetTop(sh));
+                        else if (center_y > cn.Height) Canvas.SetTop(newEl, Canvas.GetTop(sh) - 2);
+                        else Canvas.SetTop(newEl, Canvas.GetTop(sh) + 2);
 
                         cn.Children.Remove(sh);
                         cn.Children.Add(newEl);
@@ -554,33 +593,43 @@ namespace Client
                         newRec.Uid = sh.Uid;
                         newRec.RenderTransform = sh.RenderTransform;
                         if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newRec, topleft_x - diff_topleft_x);
-                        else if (center_x > cn.Width) Canvas.SetLeft(newRec, cn.Width);
-                        else Canvas.SetLeft(newRec, 0);
+                        else if (center_x > cn.Width) Canvas.SetLeft(newRec, Canvas.GetLeft(sh) - 2);
+                        else Canvas.SetLeft(newRec, Canvas.GetLeft(sh) + 2);
 
                         if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(newRec, topleft_y - diff_topleft_y);
-                        else if (center_y > cn.Height) Canvas.SetTop(newRec, cn.Height);
-                        else Canvas.SetTop(newRec, 0);
+                        else if (center_y > cn.Height) Canvas.SetTop(newRec, Canvas.GetTop(sh) - 2);
+                        else Canvas.SetTop(newRec, Canvas.GetTop(sh) + 2);
                         cn.Children.Remove(sh);
                         cn.Children.Add(newRec);
                         sh = newRec;
                     }
                     else if (sh is System.Windows.Shapes.Line)
                     {
-                        System.Windows.Shapes.Rectangle newLine = new System.Windows.Shapes.Rectangle();
-                        newLine.Width = sh.Width;
-                        newLine.Height = sh.Height;
-                        newLine.Fill = sh.Fill;
-                        newLine.Stroke = sh.Stroke;
-                        newLine.StrokeThickness = sh.StrokeThickness;
-                        newLine.Uid = sh.Uid;
-                        newLine.RenderTransform = sh.RenderTransform;
-                        if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newLine, topleft_x - diff_topleft_x);
+                        System.Windows.Shapes.Line newLine = new System.Windows.Shapes.Line();
+                        System.Windows.Shapes.Line shLine = (System.Windows.Shapes.Line)sh;
+
+                        newLine.X1 = shLine.X1;
+                        newLine.X2 = shLine.X2 ;
+                        newLine.Y1 = shLine.Y1;
+                        newLine.Y2 = shLine.Y2 ;
+
+                        Canvas.SetLeft(newLine, Canvas.GetLeft(shLine) - diff_topleft_x);
+                        Canvas.SetTop(newLine, Canvas.GetTop(shLine) - diff_topleft_y);
+
+                        newLine.Stroke = shLine.Stroke;
+                        newLine.StrokeThickness = shLine.StrokeThickness;
+
+                        newLine.Uid = shLine.Uid;
+                        newLine.RenderTransform = shLine.RenderTransform;
+
+                        /*if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(newLine, topleft_x - diff_topleft_x);
                         else if (center_x > cn.Width) Canvas.SetLeft(newLine, cn.Width);
                         else Canvas.SetLeft(newLine, 0);
 
                         if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(newLine, topleft_y - diff_topleft_y);
                         else if (center_y > cn.Height) Canvas.SetTop(newLine, cn.Height);
-                        else Canvas.SetTop(newLine, 0);
+                        else Canvas.SetTop(newLine, 0); */
+
                         cn.Children.Remove(sh);
                         cn.Children.Add(newLine);
                         sh = newLine;
@@ -652,40 +701,74 @@ namespace Client
                 }*/
                 /* Temporary WB Module code to test functionality */
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
+                Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
                 //Check Condition 
                 Debug.Assert(iterat.Count() == 1);
 
-                Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
-
-                /*Code to find the angle made by start & end point on the center of the shape*/
-                int topleft_x = (int)Canvas.GetLeft(sh);
-                int topleft_y = (int)Canvas.GetTop(sh);
-                int center_x = (int)(topleft_x + sh.Width/2);
-                int center_y = (int)(topleft_y + sh.Height/2);
-
-                Point strt_shifted = new Point(strt.X - center_x, strt.Y - center_y);
-                Point end_shifted = new Point(end.X - center_x, end.Y - center_y);
-
-                double radians_strt = Math.Atan2( strt_shifted.Y , strt_shifted.X );
-                double angle_strt = radians_strt * (180 / Math.PI);
-
-                double radians_end = Math.Atan2(end_shifted.Y, end_shifted.X);
-                double angle_end = radians_end * (180 / Math.PI);
-
-
-                int ang = (int)(angle_end - angle_strt);
-                /*Code to find the angle made by start & end point on the center of the shape*/
-
-                RotateTransform rotateTransform = new RotateTransform
+                if (sh is System.Windows.Shapes.Line)
                 {
-                    Angle = ang,
-                    CenterX = (sh.Width / 2), //topleft_x,
-                    CenterY = (sh.Height / 2) //topleft_y
-                };
-                sh.RenderTransform = rotateTransform;
-                /* Temporary WB Module code to test functionality */
+                    System.Windows.Shapes.Line lin = (System.Windows.Shapes.Line)sh;
+                    int topleft_x = (int)Canvas.GetLeft(lin);
+                    int topleft_y = (int)Canvas.GetTop(lin);
+                    int center_x = (int)(topleft_x + lin.X2 / 2);
+                    int center_y = (int)(topleft_y + lin.Y2 / 2);
 
+                    Point strt_shifted = new Point(strt.X - center_x, strt.Y - center_y);
+                    Point end_shifted = new Point(end.X - center_x, end.Y - center_y);
+
+                    double radians_strt = Math.Atan2(strt_shifted.Y, strt_shifted.X);
+                    double angle_strt = radians_strt * (180 / Math.PI);
+
+                    double radians_end = Math.Atan2(end_shifted.Y, end_shifted.X);
+                    double angle_end = radians_end * (180 / Math.PI);
+
+                    int ang = (int)(angle_end - angle_strt);
+                    /*Code to find the angle made by start & end point on the center of the shape*/
+
+                    RotateTransform rotateTransform = new RotateTransform
+                    {
+                        Angle = ang,
+                        CenterX = (lin.X2 / 2), //topleft_x,
+                        CenterY = (lin.Y2 / 2) //topleft_y
+                    };
+                    sh.RenderTransform = rotateTransform;
+                    //sh = (Shape)lin;
+
+                }
+                else
+                {
+                    
+
+                    /*Code to find the angle made by start & end point on the center of the shape*/
+                    int topleft_x = (int)Canvas.GetLeft(sh);
+                    int topleft_y = (int)Canvas.GetTop(sh);
+                    int center_x = (int)(topleft_x + sh.Width / 2);
+                    int center_y = (int)(topleft_y + sh.Height / 2);
+
+                    Point strt_shifted = new Point(strt.X - center_x, strt.Y - center_y);
+                    Point end_shifted = new Point(end.X - center_x, end.Y - center_y);
+
+                    double radians_strt = Math.Atan2(strt_shifted.Y, strt_shifted.X);
+                    double angle_strt = radians_strt * (180 / Math.PI);
+
+                    double radians_end = Math.Atan2(end_shifted.Y, end_shifted.X);
+                    double angle_end = radians_end * (180 / Math.PI);
+
+
+                    int ang = (int)(angle_end - angle_strt);
+                    /*Code to find the angle made by start & end point on the center of the shape*/
+
+                    RotateTransform rotateTransform = new RotateTransform
+                    {
+                        Angle = ang,
+                        CenterX = (sh.Width / 2), //topleft_x,
+                        CenterY = (sh.Height / 2) //topleft_y
+                    };
+                    sh.RenderTransform = rotateTransform;
+                    /* Temporary WB Module code to test functionality */
+
+                }
 
                 //Necessary step to synchronize borders on rotation of selected shapes
                 //cn = SyncBorders(cn, WBOps, sh);
@@ -901,66 +984,111 @@ namespace Client
             double oldLeft, newLeft;
             double oldTop, newTop;
 
-            switch (pos)
+            if (adornedElement is System.Windows.Shapes.Line)
             {
-                //Bottom Right Corner 
-                case AdornerDragPos.BotRight:
-                    oldWidth = adornedElement.Width;
-                    oldHeight = adornedElement.Height;
+                System.Windows.Shapes.Line adornedLine = (System.Windows.Shapes.Line)adornedElement;
+                switch (pos)
+                {
+                    //Bottom Right Corner 
+                    case AdornerDragPos.BotRight:
+                        oldWidth = adornedLine.Width;
+                        oldHeight = adornedLine.Height;
 
-                    newWidth = Math.Max(adornedElement.Width + horizontalDrag, corner.DesiredSize.Width);
-                    newHeight = Math.Max(verticalDrag + adornedElement.Height, corner.DesiredSize.Height);
+                        newWidth = Math.Max(adornedLine.Width + horizontalDrag, corner.DesiredSize.Width);
+                        newHeight = Math.Max(verticalDrag + adornedLine.Height, corner.DesiredSize.Height);
 
-                    adornedElement.Width = newWidth;
-                    adornedElement.Height = newHeight;
-                    break;
-                //Top Right Corner 
-                case AdornerDragPos.TopRight:
-                    oldWidth = adornedElement.Width;
-                    oldHeight = adornedElement.Height;
+                        adornedLine.Width = newWidth;
+                        adornedLine.Height = newHeight;
 
-                    newWidth = Math.Max(adornedElement.Width + horizontalDrag, corner.DesiredSize.Width);
-                    newHeight = Math.Max(adornedElement.Height - verticalDrag, corner.DesiredSize.Height);
-                    adornedElement.Width = newWidth;
+                        adornedLine.X2 = newWidth;
+                        adornedLine.Y2 = newHeight;
+                        break;
+                    //Top Left Corner 
+                    case AdornerDragPos.TopLeft:
+                        oldWidth = adornedElement.Width;
+                        oldHeight = adornedElement.Height;
 
-                    oldTop = Canvas.GetTop(adornedElement);
-                    newTop = oldTop - (newHeight - oldHeight);
-                    adornedElement.Height = newHeight;
-                    Canvas.SetTop(adornedElement, newTop);
-                    break;
-                //Top Left Corner 
-                case AdornerDragPos.TopLeft:
-                    oldWidth = adornedElement.Width;
-                    oldHeight = adornedElement.Height;
+                        newWidth = Math.Max(adornedElement.Width - horizontalDrag, corner.DesiredSize.Width);
+                        newHeight = Math.Max(adornedElement.Height - verticalDrag, corner.DesiredSize.Height);
 
-                    newWidth = Math.Max(adornedElement.Width - horizontalDrag, corner.DesiredSize.Width);
-                    newHeight = Math.Max(adornedElement.Height - verticalDrag, corner.DesiredSize.Height);
+                        oldLeft = Canvas.GetLeft(adornedElement);
+                        newLeft = oldLeft - (newWidth - oldWidth);
+                        adornedElement.Width = newWidth;
+                        Canvas.SetLeft(adornedElement, newLeft);
 
-                    oldLeft = Canvas.GetLeft(adornedElement);
-                    newLeft = oldLeft - (newWidth - oldWidth);
-                    adornedElement.Width = newWidth;
-                    Canvas.SetLeft(adornedElement, newLeft);
+                        oldTop = Canvas.GetTop(adornedElement);
+                        newTop = oldTop - (newHeight - oldHeight);
+                        adornedElement.Height = newHeight;
+                        Canvas.SetTop(adornedElement, newTop);
 
-                    oldTop = Canvas.GetTop(adornedElement);
-                    newTop = oldTop - (newHeight - oldHeight);
-                    adornedElement.Height = newHeight;
-                    Canvas.SetTop(adornedElement, newTop);
-                    break;
-                //Bottom Left Corner 
-                case AdornerDragPos.BotLeft:
-                    oldWidth = adornedElement.Width;
-                    oldHeight = adornedElement.Height;
+                        adornedLine.X2 = newWidth;
+                        adornedLine.Y2 = newHeight;
+                        break;
+                }
+            }
+            else
+            {
+                switch (pos)
+                {
+                    //Bottom Right Corner 
+                    case AdornerDragPos.BotRight:
+                        oldWidth = adornedElement.Width;
+                        oldHeight = adornedElement.Height;
 
-                    newWidth = Math.Max(adornedElement.Width - horizontalDrag, corner.DesiredSize.Width);
-                    newHeight = Math.Max(adornedElement.Height + verticalDrag, corner.DesiredSize.Height);
+                        newWidth = Math.Max(adornedElement.Width + horizontalDrag, corner.DesiredSize.Width);
+                        newHeight = Math.Max(verticalDrag + adornedElement.Height, corner.DesiredSize.Height);
 
-                    oldLeft = Canvas.GetLeft(adornedElement);
-                    newLeft = oldLeft - (newWidth - oldWidth);
-                    adornedElement.Width = newWidth;
-                    Canvas.SetLeft(adornedElement, newLeft);
+                        adornedElement.Width = newWidth;
+                        adornedElement.Height = newHeight;
+                        break;
+                    //Top Right Corner 
+                    case AdornerDragPos.TopRight:
+                        oldWidth = adornedElement.Width;
+                        oldHeight = adornedElement.Height;
 
-                    adornedElement.Height = newHeight;
-                    break;
+                        newWidth = Math.Max(adornedElement.Width + horizontalDrag, corner.DesiredSize.Width);
+                        newHeight = Math.Max(adornedElement.Height - verticalDrag, corner.DesiredSize.Height);
+                        adornedElement.Width = newWidth;
+
+                        oldTop = Canvas.GetTop(adornedElement);
+                        newTop = oldTop - (newHeight - oldHeight);
+                        adornedElement.Height = newHeight;
+                        Canvas.SetTop(adornedElement, newTop);
+                        break;
+                    //Top Left Corner 
+                    case AdornerDragPos.TopLeft:
+                        oldWidth = adornedElement.Width;
+                        oldHeight = adornedElement.Height;
+
+                        newWidth = Math.Max(adornedElement.Width - horizontalDrag, corner.DesiredSize.Width);
+                        newHeight = Math.Max(adornedElement.Height - verticalDrag, corner.DesiredSize.Height);
+
+                        oldLeft = Canvas.GetLeft(adornedElement);
+                        newLeft = oldLeft - (newWidth - oldWidth);
+                        adornedElement.Width = newWidth;
+                        Canvas.SetLeft(adornedElement, newLeft);
+
+                        oldTop = Canvas.GetTop(adornedElement);
+                        newTop = oldTop - (newHeight - oldHeight);
+                        adornedElement.Height = newHeight;
+                        Canvas.SetTop(adornedElement, newTop);
+                        break;
+                    //Bottom Left Corner 
+                    case AdornerDragPos.BotLeft:
+                        oldWidth = adornedElement.Width;
+                        oldHeight = adornedElement.Height;
+
+                        newWidth = Math.Max(adornedElement.Width - horizontalDrag, corner.DesiredSize.Width);
+                        newHeight = Math.Max(adornedElement.Height + verticalDrag, corner.DesiredSize.Height);
+
+                        oldLeft = Canvas.GetLeft(adornedElement);
+                        newLeft = oldLeft - (newWidth - oldWidth);
+                        adornedElement.Width = newWidth;
+                        Canvas.SetLeft(adornedElement, newLeft);
+
+                        adornedElement.Height = newHeight;
+                        break;
+                }
             }
             return cn;
         }
