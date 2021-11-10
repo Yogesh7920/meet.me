@@ -1,27 +1,22 @@
-﻿namespace Networking
+﻿using System;
+
+namespace Networking
 {
     public static class CommunicationFactory
     {
-        private static ICommunicator _clientCommunicator;
-        private static ICommunicator _serverCommunicator;
+        // Communicator Instance
+        private static readonly Lazy<ICommunicator> _clientCommunicator = new Lazy<ICommunicator>(() => new ClientCommunicator());
+        private static readonly Lazy<ICommunicator> _serverCommunicator = new Lazy<ICommunicator>(() => new ServerCommunicator());
 
         /// <summary>
         /// Returns the Communicator instance that is running.
         /// </summary>
         /// <returns>ICommunicator.</returns>
-        /// TODO Make this thread-safe: https://www.c-sharpcorner.com/UploadFile/8911c4/singleton-design-pattern-in-C-Sharp/
         public static ICommunicator GetCommunicator(bool isClient = true)
         {
             if (isClient)
-            {
-                if (_clientCommunicator == null)
-                    _clientCommunicator = new ClientCommunicator();
-                return _clientCommunicator;
-            }
-
-            if (_serverCommunicator == null)
-                _serverCommunicator = new ServerCommunicator();
-            return _serverCommunicator;
+                return _clientCommunicator.Value;
+            return _serverCommunicator.Value;
         }
     }
 }
