@@ -30,7 +30,8 @@ namespace Whiteboard
         ELLIPSE,
         RECTANGLE,
         LINE,
-        POLYLINE
+        POLYLINE,
+        NONE
     }
 
     /// <summary>
@@ -39,7 +40,8 @@ namespace Whiteboard
     public enum UXOperation
     {
         CREATE,
-        DELETE
+        DELETE,
+        NONE
     }
 
     /// <summary>
@@ -56,4 +58,16 @@ namespace Whiteboard
         NONE
     }
 
+    public enum DragPos
+    {
+        TOP_RIGHT,
+        TOP_LEFT,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT,
+        RIGHT,
+        LEFT,
+        TOP,
+        BOTTOM,
+        NONE
+    };
 }

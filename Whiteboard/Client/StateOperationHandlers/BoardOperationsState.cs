@@ -38,6 +38,8 @@ namespace Whiteboard
 
         abstract public List<UXShape> Undo();
 
+        abstract public List<UXShape> Resize(Coordinate start, Coordinate end, string shapeId, DragPos dragpos);
+
         public string GetUserName(string shapeId)
         {
             BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);

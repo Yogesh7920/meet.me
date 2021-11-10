@@ -84,5 +84,11 @@ namespace Whiteboard
         {
             return new Polyline(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, Center, Points, AngleOfRotation);
         }
+
+        public override bool Resize(Coordinate start, Coordinate end, DragPos dragPos)
+        {
+            return false;
+        }
+
     }
 }

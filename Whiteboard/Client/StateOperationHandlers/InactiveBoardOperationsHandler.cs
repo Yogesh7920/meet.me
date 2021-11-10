@@ -49,6 +49,11 @@ namespace Whiteboard
             return new List<UXShape>();
         }
 
+        public override List<UXShape> Resize(Coordinate start, Coordinate end, string shapeId, DragPos dragPos)
+        {
+            return new List<UXShape>();
+        }
+
         public override List<UXShape> Delete(string shapeId)
         {
             return new List<UXShape>();

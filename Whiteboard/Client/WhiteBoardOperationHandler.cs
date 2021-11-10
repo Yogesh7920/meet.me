@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Whiteboard
 {
@@ -31,18 +32,6 @@ namespace Whiteboard
             _boardStateIdentifier = BoardState.ACTIVE;
         }
 
-        /// <summary>
-        /// Changes the height of shape with given shape ID.
-        /// </summary>
-        /// <param name="start"> Coordinate of mouse down event. </param>
-        /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
-        /// <param name="shapeId"> Id of the shape. </param>
-        /// <param name="shapeComp"> Indicative of a mouse up event. </param>
-        /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Changes the Fill Color of the shape.
@@ -75,19 +64,6 @@ namespace Whiteboard
         public List<UXShape> ChangeStrokeWidth(float strokeWidth, string shapeId)
         {
             return _boardState.ChangeStrokeWidth(strokeWidth, shapeId);
-        }
-
-        /// <summary>
-        /// Changes the width of the shape with given shape ID.
-        /// </summary>
-        /// <param name="start"> Coordinate of mouse down event. </param>
-        /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
-        /// <param name="shapeId"> Id of the shape. </param>
-        /// <param name="shapeComp"> Indicative of a mouse up event. </param>
-        /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -207,14 +183,10 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. </param>
         /// <param name="shapeComp"> Indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
+        public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false)
         {
-            // checking start and end coordinates are not outside the canvas
-            if (!start.IsLessThan(_canvasSize) || !end.IsLessThan(_canvasSize))
-            {
-                // throw exception
-            }
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.RESIZE, start, end, shapeId, shapeComp);
+            Debug.Assert(shapeComp == true);
+            return _boardState.Resize(start, end, shapeId, dragPos);
         }
 
         /// <summary>

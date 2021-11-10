@@ -70,5 +70,6 @@ namespace Whiteboard
         {
             return new Coordinate(x.R/2, x.C/2);
         }
+
     }
 }

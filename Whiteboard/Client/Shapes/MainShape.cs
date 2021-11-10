@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Windows;
 
 namespace Whiteboard
 {
@@ -129,5 +131,69 @@ namespace Whiteboard
         /// <param name="prevShape">Previous shape to modify, if any.</param>
         /// <returns></returns>
         abstract public MainShape ShapeMaker(Coordinate start, Coordinate end, MainShape prevShape = null);
+
+        public virtual bool Rotate(Coordinate start, Coordinate end)
+        {
+            Coordinate v1 = start - Center;
+            Coordinate v2 = end - Center;
+            float rotAngle = (float)(0.01745 * Vector.AngleBetween(new Vector(v1.R, v1.C), new Vector(v2.R, v2.C)));
+            AngleOfRotation += rotAngle;
+            if (AngleOfRotation > Math.PI) 
+            {
+                AngleOfRotation -= (float)Math.PI;
+            }
+            if (AngleOfRotation < 0) 
+            {
+                AngleOfRotation = (float)(2*Math.PI -AngleOfRotation);
+            }
+            return true;
+        }
+
+        public virtual bool Resize(Coordinate start, Coordinate end, DragPos dragPos)
+        {
+            Vector centerVector = new Vector(Math.Cos(AngleOfRotation), Math.Sin(AngleOfRotation));
+            Coordinate deltaCord = end - start;
+            Vector deltaVector = new Vector(deltaCord.C, deltaCord.R);
+
+            double angleBetween = Vector.AngleBetween(centerVector, deltaVector);
+
+            int deltaNorm = (int)(Math.Sqrt(Math.Pow(deltaCord.R, 2) + Math.Pow(deltaCord.C, 2)));
+            int xDelta = (int)(deltaNorm * Math.Cos(angleBetween));
+            int yDelta = (int)(deltaNorm * Math.Sin(angleBetween));
+
+
+            switch (dragPos)
+            {
+                case DragPos.TOP_RIGHT:
+                    return (Resize(start, end, DragPos.TOP) || Resize(start, end, DragPos.RIGHT));
+                case DragPos.BOTTOM_LEFT:
+                    return (Resize(start, end, DragPos.BOTTOM) || Resize(start, end, DragPos.LEFT));
+                case DragPos.TOP_LEFT:
+                    return (Resize(start, end, DragPos.TOP) || Resize(start, end, DragPos.LEFT));
+                case DragPos.BOTTOM_RIGHT:
+                    return (Resize(start, end, DragPos.BOTTOM) || Resize(start, end, DragPos.RIGHT));
+                case DragPos.LEFT:
+                    Center.Add(new Coordinate((int)((-xDelta/2)*Math.Cos(angleBetween)), (int)((-xDelta/2)*Math.Sin(angleBetween))));
+                    Width += xDelta;
+                    break;
+                case DragPos.RIGHT:
+                    Center.Add(new Coordinate((int)((xDelta/2)*Math.Cos(angleBetween)), (int)((xDelta/2)*Math.Sin(angleBetween))));
+                    Width += xDelta;
+                    break;
+                case DragPos.TOP:
+                    Center.Add(new Coordinate((int)((-xDelta/2)*Math.Sin(angleBetween)),(int) ((xDelta/2)*Math.Cos(angleBetween))));
+                    Height += yDelta;
+                    break;
+                case DragPos.BOTTOM:
+                    Center.Add(new Coordinate((int)((xDelta/2)*Math.Sin(angleBetween)), (int)((-xDelta/2)*Math.Cos(angleBetween))));
+                    Height += yDelta;
+                    break;
+                default:
+                    return false;
+            }
+            
+            return true;
+        }
     }
+
 }

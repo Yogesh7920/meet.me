@@ -101,5 +101,20 @@ namespace Whiteboard
         {
             return new Line(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, Center, new List<Coordinate>(), AngleOfRotation);
         }
+        /*
+        public override bool Resize(Coordinate start, Coordinate end, DragPos dragPos)
+        {
+            if( base.Resize(start, end, dragPos))
+            {
+                PopLastElementFromList();
+                PopLastElementFromList();
+                Coordinate delta = new Coordinate(Height, Width);
+                AddToList(Center - delta);
+                AddToList(Center + delta);
+                return true;
+            }
+            return false;
+        }
+        */
     }
 }

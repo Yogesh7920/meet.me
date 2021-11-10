@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Windows;
 
 using System.Linq;
 using System.Text;
@@ -20,10 +21,7 @@ namespace Whiteboard
     {
         TRANSLATE,
         ROTATE,
-        RESIZE_HEIGHT,
-        RESIZE_WIDTH,
-        CREATE,
-        RESIZE
+        CREATE
     }
     class ActiveBoardOperationsHandler : BoardOperationsState
     {
@@ -257,7 +255,6 @@ namespace Whiteboard
                                                           [NotNull] Coordinate start, [NotNull] Coordinate end,
                                                           [NotNull] string shapeId, bool shapeComp = false)
         {
-
             // List of Operations to be send to UX
             List<UXShape> operations = new List<UXShape>();
 
@@ -290,38 +287,20 @@ namespace Whiteboard
 
             // modify the _lastDrawn Object
             MainShape lastDrawnMainShape = _lastDrawn._shape.MainShapeDefiner;
-            if (realTimeOperation == RealTimeOperation.TRANSLATE)
+            switch (realTimeOperation)
             {
-                Coordinate delta = end - _lastDrawn._end;
-                lastDrawnMainShape.Center.Add(delta);
-                lastDrawnMainShape.Start.Add(delta);
-
-            }
-            else if (realTimeOperation == RealTimeOperation.ROTATE)
-            {
-                Coordinate v1 = _lastDrawn._end - lastDrawnMainShape.Center;
-                Coordinate v2 = end - lastDrawnMainShape.Center;
-                float rotAngle = (float)Math.Atan2(v2.C - v1.C, v2.R - v1.R);
-                lastDrawnMainShape.AngleOfRotation += rotAngle;
-            }
-            else if (realTimeOperation == RealTimeOperation.RESIZE)
-            {
-
-            }
-            else if (realTimeOperation == RealTimeOperation.RESIZE_HEIGHT)
-            {
-
-            }
-            else if (realTimeOperation == RealTimeOperation.RESIZE_WIDTH)
-            {
-
-            }
-            else
-            {
-                // throw exception
+                case RealTimeOperation.TRANSLATE:
+                    Coordinate delta = end - _lastDrawn._end;
+                    lastDrawnMainShape.Center.Add(delta);
+                    break;
+                case RealTimeOperation.ROTATE:
+                    lastDrawnMainShape.Rotate(_lastDrawn._end, end);
+                    break;
+                default:
+                    // indicate and error
+                    break;
             }
             
-
             if (shapeComp)
             {
                 // send updates to server .. clone of _lastDrawn
@@ -335,6 +314,28 @@ namespace Whiteboard
             }
 
             return operations;
+        }
+
+        public override List<UXShape> Resize([NotNull] Coordinate start, [NotNull] Coordinate end,
+                      [NotNull] string shapeId, [NotNull] DragPos dragpos)
+        {
+            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+            if (shapeFromManager == null)
+            {
+                Trace.WriteLine("Invalid Shape Id: Shape Id provided for ChangeShapeFill does not exist in State Manager.");
+                return new List<UXShape>();
+            }
+
+            // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
+            BoardShape newBoardShape = shapeFromManager.Clone();
+            if (newBoardShape.MainShapeDefiner.Resize(start, end, dragpos)) 
+            { 
+                List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
+                return Operations;
+            }
+            return new List<UXShape>();
+
+            
         }
 
         public override List<UXShape> Delete([NotNull] string shapeId)
@@ -380,6 +381,6 @@ namespace Whiteboard
         public override List<UXShape> Redo()
         {
             return _stateManager.DoRedo();
-        }
+        }  
     }
 }
