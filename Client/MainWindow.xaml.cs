@@ -250,7 +250,11 @@ namespace Client
             /*Dashboard dashboard = new Dashboard();
             dashboard.Show();*/
         }
-
+        private void OnLeaveButtonClick(object sender, RoutedEventArgs e)
+        {
+            HomePageViewModel homeviewmodel = this.DataContext as HomePageViewModel;
+            homeviewmodel.LeftClient();
+        }
 
         private bool _usersListFlag = false;
         private bool _chatFlag = false;

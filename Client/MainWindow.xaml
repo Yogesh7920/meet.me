@@ -73,9 +73,14 @@
                 <Image Source="/Icons/MainWindow/icons8-chat-96.png"/>
             </Button>
             </Border>
-            <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50">
+            <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="0 0 5 0">
                 <Button x:Name="Dashboard" Click="Dashboard_Clicked" ToolTip="Dashboard" Width="40" Height="40" BorderThickness="0" Background="White" >
                     <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png"/>
+                </Button>
+            </Border>
+            <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Background="Purple">
+                <Button x:Name="Leave" Click="OnLeaveButtonClick" ToolTip="Leave" Width="40" Height="40" BorderThickness="0" Background="Purple" >
+                    <Image Source="/Icons/Mainwindow/icons8-end-call-96.png"/>
                 </Button>
             </Border>
         </DockPanel>
