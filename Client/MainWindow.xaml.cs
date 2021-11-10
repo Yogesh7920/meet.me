@@ -20,16 +20,44 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static WhiteBoardView _whiteboard ;
+        //
+        
+        //
+        private static Chat _chat;
+        private static UsersList _userslist;
+        private ScreenShare _screenshare;
         public MainWindow()
         {
             InitializeComponent();
-            //  DataContext = new WhiteBoardViewModel();
+            //
+            //
+            CenterWindowOnScreen();
+            _whiteboard = new WhiteBoardView();
+            this.SSwb.Content = _whiteboard;
+
+            //uncomment below lines after the respective user controls are done
+            _chat = new Chat();
+            _screenshare = new ScreenShare();
+            this.Chat.Content = _chat;
+
+            _userslist = new UsersList();
+            this.UsersListControl.Content = _userslist;
+        }
+
+        private void CenterWindowOnScreen()
+        {
+            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+            this.Left = (screenWidth / 2) - (windowWidth / 2);
+            this.Top = (screenHeight / 2) - (windowHeight / 2);
         }
 
 
-        private void Users_List_Clicked(object sender, RoutedEventArgs e)
+        /*private void Users_List_Clicked(object sender, RoutedEventArgs e)
         {
-
             if (_usersListFlag.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
@@ -40,13 +68,12 @@ namespace Client
                     else
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
                 }
-                UsersListPane2.Visibility = System.Windows.Visibility.Visible;
+                UsersListPane2.Visibility = Visibility.Visible;
                 _usersListFlag = true;
             }
             else
             {
-
-                UsersListPane2.Visibility = System.Windows.Visibility.Collapsed;
+                UsersListPane2.Visibility = Visibility.Collapsed;
                 _usersListFlag = false;
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
@@ -56,9 +83,9 @@ namespace Client
                     else
                         SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                 }
-
             }
-        }
+        }*/
+
         private void ScreenShare_Clicked(object sender, RoutedEventArgs e)
         {
             /*DataContext = new ScreenShareViewModel();
@@ -77,6 +104,22 @@ namespace Client
             SSwb.SetValue(Grid.ColumnProperty, 2);
             SSwb.SetValue(Grid.ColumnSpanProperty, 5);*/
 
+            //ACTUAL IMPLEMENTATION
+            _ssFlag = true;   //uncomment below line after screenshare user control is done
+            this.SSwb.Content = _screenshare;
+            if (_chatFlag.Equals(true))
+            {
+                Chat.Visibility = Visibility.Collapsed;
+                _chatFlag = false;
+
+            }
+            if (_usersListFlag.Equals(true))
+            {
+                //UsersListPane2.Visibility = System.Windows.Visibility.Collapsed;
+                _usersListFlag = false;
+            }
+            SSwb.SetValue(Grid.ColumnProperty, 3);
+            SSwb.SetValue(Grid.ColumnSpanProperty, 1);
         }
 
         private void Whiteboard_Clicked(object sender, RoutedEventArgs e)
@@ -97,13 +140,29 @@ namespace Client
             SSwb.SetValue(Grid.ColumnProperty, 2);
             SSwb.SetValue(Grid.ColumnSpanProperty, 5);*/
 
+            //ACTUAL IMPLEMENTATION
+            _wbFlag = true;
+            this.SSwb.Content = _whiteboard;
+            if (_chatFlag.Equals(true))
+            {
+                Chat.Visibility = Visibility.Collapsed;
+                _chatFlag = false;
+
+            }
+            if (_usersListFlag.Equals(true))
+            {
+                //UsersListPane2.Visibility = Visibility.Collapsed;
+                _usersListFlag = false;
+            }
+            SSwb.SetValue(Grid.ColumnProperty, 3);
+            SSwb.SetValue(Grid.ColumnSpanProperty, 1);
         }
 
         private void Chat_Button_Clicked(object sender, RoutedEventArgs e)
         {
 
             // DataContext = new ChatViewModel();
-
+            /*
             if (_chatFlag.Equals(false))
             {
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
@@ -111,18 +170,17 @@ namespace Client
                     if (_usersListFlag.Equals(true))
                     {
                         SSwb.SetValue(Grid.ColumnProperty, 4);
-                        SSwb.SetValue(Grid.ColumnSpanProperty, 1);
+                        SSwb.SetValue(Grid.ColumnSpanProperty, 3);
                     }
 
                     else
                     {
                         SSwb.SetValue(Grid.ColumnProperty, 2);
-                        SSwb.SetValue(Grid.ColumnSpanProperty, 3);
+                        SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                     }
                 }
 
                 ChatPane.Visibility = System.Windows.Visibility.Visible;
-                _chatFlag = true;
             }
             else
             {
@@ -142,13 +200,55 @@ namespace Client
                         SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                     }
                 }
+            }*/
+
+            //ACTUAL IMPLEMENTATION
+            if (_chatFlag.Equals(false))
+            {
+                if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
+                {
+                    if (_usersListFlag.Equals(true))
+                    {
+                        SSwb.SetValue(Grid.ColumnProperty, 4);
+                        SSwb.SetValue(Grid.ColumnSpanProperty, 1);
+                    }
+
+                    else
+                    {
+                        SSwb.SetValue(Grid.ColumnProperty, 2);
+                        SSwb.SetValue(Grid.ColumnSpanProperty, 3);
+                    }
+                }
+
+                //uncomment after Chat user control is done
+                
+                this.Chat.Visibility = Visibility.Visible;
+                _chatFlag = true;
+            }
+            else
+            {
+                this.Chat.Visibility = Visibility.Collapsed;
+                _chatFlag = false;
+                if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
+                {
+                    if (_usersListFlag.Equals(true))
+                    {
+                        SSwb.SetValue(Grid.ColumnProperty, 4);
+                        SSwb.SetValue(Grid.ColumnSpanProperty, 3);
+                    }
+                    else
+                    {
+                        SSwb.SetValue(Grid.ColumnProperty, 2);
+                        SSwb.SetValue(Grid.ColumnSpanProperty, 5);
+                    }
+                }
             }
         }
 
-        private void Dashboard_Clicked(object sender, RoutedEventArgs e)
+        public void Dashboard_Clicked(object sender, RoutedEventArgs e)
         {
-            //DataContext = new DashboardViewModel();
-
+            /*Dashboard dashboard = new Dashboard();
+            dashboard.Show();*/
         }
 
 
