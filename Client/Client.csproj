@@ -17,6 +17,7 @@
       <None Remove="Icons\MainWindow\icons8-chat-96.png" />
       <None Remove="Icons\MainWindow\icons8-dashboard-58.png" />
       <None Remove="Icons\MainWindow\icons8-dashboard-60.png" />
+      <None Remove="Icons\MainWindow\icons8-end-call-96.png" />
       <None Remove="Icons\MainWindow\icons8-present-to-all-50.png" />
       <None Remove="Icons\MainWindow\icons8-whiteboard-150.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
@@ -40,6 +41,9 @@
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
       <Resource Include="Icons\MainWindow\icons8-dashboard-60.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\MainWindow\icons8-end-call-96.png">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
       <Resource Include="Icons\MainWindow\icons8-present-to-all-50.png">

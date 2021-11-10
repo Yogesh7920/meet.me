@@ -78,11 +78,11 @@
                     <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png"/>
                 </Button>
             </Border>
-            <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Background="Purple">
+            <!--<Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Background="Purple">
                 <Button x:Name="Leave" Click="OnLeaveButtonClick" ToolTip="Leave" Width="40" Height="40" BorderThickness="0" Background="Purple" >
                     <Image Source="/Icons/Mainwindow/icons8-end-call-96.png"/>
                 </Button>
-            </Border>
+            </Border> -->
         </DockPanel>
 
         <ContentControl Name="UsersListControl" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4"/>

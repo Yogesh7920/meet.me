@@ -56,5 +56,10 @@ namespace Client
                 UserListHidden = true;
             }
         }
+        private void OnLeaveButtonClick(object sender, RoutedEventArgs e)
+        {
+            HomePageViewModel homeviewmodel = this.DataContext as HomePageViewModel;
+            homeviewmodel.LeftClient();
+        }
     }
 }
