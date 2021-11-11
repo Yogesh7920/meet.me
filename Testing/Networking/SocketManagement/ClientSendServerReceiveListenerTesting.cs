@@ -73,7 +73,7 @@ namespace Testing
 
             Packet p1 = _server.FrontPacket();
             Assert.AreEqual(msg1, p1.SerializedData);
-
+            Thread.Sleep(1000);
             Packet p2 = _server.FrontPacket();
             Assert.AreEqual(msg2, p2.SerializedData);
         }
@@ -99,8 +99,8 @@ namespace Testing
         public void FragmentationClientSendServerReceiveListenerTest()
         {
             string text = "";
-            int length = 1030;
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            int length = 4030;
+            const string chars = "ABCDFGHIJKLMNOPQRSTUVWXYZ0123456789";
             text = new string(Enumerable.Repeat(chars, length).Select(s => s[_random.Next(s.Length)]).ToArray());
    
             _client2.Send(text, "C");

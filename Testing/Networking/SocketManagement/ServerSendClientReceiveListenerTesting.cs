@@ -80,7 +80,7 @@ namespace Testing
         {
             string text = "";
             int length = 1030;
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string chars = "ABCDFGHIJKLMNOPQRSTUVWXYZ0123456789";
             text = new string(Enumerable.Repeat(chars, length).Select(s => s[_random.Next(s.Length)]).ToArray());
 
             _server.Send(text, "C", "1");
