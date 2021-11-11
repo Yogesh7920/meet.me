@@ -5,6 +5,7 @@ using System.Collections;
 using System.Net;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading;
 
@@ -16,10 +17,8 @@ namespace Testing
         private ICommunicator _server;
         private ICommunicator _client2;
         private ICommunicator _client3;
-        private String _line;
-        private StreamReader _sr;
-        private String _text;
-
+        private static Random _random = new Random();
+        
         [SetUp]
         public void Setup()
         {
@@ -56,7 +55,7 @@ namespace Testing
             String identifier = "S";
             _client3.Send(msg, identifier);
 
-            Thread.Sleep(300);
+            Thread.Sleep(1000);
 
             Packet p = _server.FrontPacket();
             Assert.AreEqual(msg, p.SerializedData);
@@ -70,7 +69,7 @@ namespace Testing
             String msg2 = "second packet ";
             _client3.Send(msg1, identifier);
             _client3.Send(msg2, identifier);
-            Thread.Sleep(300);
+            Thread.Sleep(1000);
 
             Packet p1 = _server.FrontPacket();
             Assert.AreEqual(msg1, p1.SerializedData);
@@ -88,7 +87,7 @@ namespace Testing
             String msg2 = "msg from client2 ";
             String identifier2 = "C";
             _client3.Send(msg2, identifier2);
-            Thread.Sleep(300);
+            Thread.Sleep(1000);
             //Result can vary according to thread
             Packet p1 = _server.FrontPacket();
             Assert.AreEqual(msg2, p1.SerializedData);
@@ -99,24 +98,15 @@ namespace Testing
         [Test, Category("pass")]
         public void FragmentationClientSendServerReceiveListenerTest()
         {
-            string workingDirectory = Environment.CurrentDirectory;
-            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
-            
-            var path = Path.Combine(Directory.GetCurrentDirectory()+ "\\testfile.txt");
-            _sr = new StreamReader(path);
-            _line = _sr.ReadLine();
-            //Continue to read until you reach end of file
-            _text = "";
-            while (_line != null)
-            {
-                _text += _line;
-                _line = _sr.ReadLine();
-            }
-            
-            _client2.Send(_text, "C");
-            Thread.Sleep(300);
+            string text = "";
+            int length = 1030;
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            text = new string(Enumerable.Repeat(chars, length).Select(s => s[_random.Next(s.Length)]).ToArray());
+   
+            _client2.Send(text, "C");
+            Thread.Sleep(1000);
             Packet p2 = _server.FrontPacket();
-            Assert.AreEqual(_text, p2.SerializedData);
+            Assert.AreEqual(text, p2.SerializedData);
         }
     }
 }

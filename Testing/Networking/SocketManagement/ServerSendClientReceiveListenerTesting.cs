@@ -5,18 +5,21 @@ using System.Collections;
 using System.Net;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading;
 
 namespace Testing
 {
+    
     [TestFixture]
     public class ServerSendListenerTesting
     {
         private ICommunicator _server;
         private ICommunicator _client2;
         private ICommunicator _client3;
-
+        private static Random _random = new Random();
+        
         [SetUp]
         public void Setup()
         {
@@ -54,7 +57,7 @@ namespace Testing
         {
             String msg = "BroadCastMessage: clients ";
             _server.Send(msg, "S");
-            Thread.Sleep(300);
+            Thread.Sleep(1000);
             Packet p2 = _client2.FrontPacket();
             Assert.AreEqual(msg, p2.SerializedData);
             Packet p3 = _client3.FrontPacket();
@@ -67,7 +70,7 @@ namespace Testing
             String msg = "PrivateMessage";
             _server.Send(msg, "W", "1");
 
-            Thread.Sleep(300);
+            Thread.Sleep(1000);
             Packet p2 = _client2.FrontPacket();
             Assert.AreEqual(msg, p2.SerializedData);
         }
@@ -75,22 +78,14 @@ namespace Testing
         [Test, Category("pass")]
         public void FragmentationServerSendClientReceiveListenerTest()
         {
-            string workingDirectory = Environment.CurrentDirectory;
-            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
-            var path = Path.Combine(projectDirectory +"\\testFile.txt");
-            StreamReader sr = new StreamReader(path);
-            String line = sr.ReadLine();
-            ////Continue to read until you reach end of file
-            String text = "";
-            while (line != null)
-            {
-                text += line;
-                line = sr.ReadLine();
-            }
+            string text = "";
+            int length = 1030;
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            text = new string(Enumerable.Repeat(chars, length).Select(s => s[_random.Next(s.Length)]).ToArray());
 
             _server.Send(text, "C", "1");
 
-            Thread.Sleep(300);
+            Thread.Sleep(1000);
             Packet p2 = _client2.FrontPacket();
             Assert.AreEqual(text, p2.SerializedData);
         }
