@@ -328,7 +328,7 @@ namespace Networking
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);
-            _recieveQueue.RegisterModule(identifier, priority);
+            _receiveQueue.RegisterModule(identifier, priority);
         }
     }
 }
