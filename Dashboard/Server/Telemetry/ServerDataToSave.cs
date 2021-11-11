@@ -12,13 +12,13 @@ namespace Dashboard
       
         /// Dictionary with SessionData as key and its score(ChatCount * No. of users) as value
         
-        Dictionary<SessionData, int> ScoreOfEachSession;
+        Dictionary<int, int> ScoreOfEachSession;
 
         /// Dictionary with SessionData as key and  total user count as value
-        Dictionary<SessionData, int> UserCountForEachSession;
+        Dictionary<int, int> UserCountForEachSession;
 
         /// Dictionary with SessionData as key and total chat count as value
-        Dictionary<SessionData, int> ChatCountForEachSession;
+        Dictionary<int, int> ChatCountForEachSession;
     }
 }
 

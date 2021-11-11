@@ -8,7 +8,7 @@ using Content;
 
 namespace Dashboard.Server.Telemetry
 {
-    public interface ITelemetry
+    public interface ITelemetryAnalysisModel
     {
         /// <summary>
         ///    SM uses it to notify the session is over, 

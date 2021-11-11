@@ -22,7 +22,9 @@ namespace Dashboard.Server.Telemetry{
         ///     A dictionary of DateTime as key and userCount as value
         /// </returns>
         Dictionary< DateTime, int > UserCountVsTimeStamp(SessionData newSession){
+            
             throw new NotImplementedException();
+
         }
 
 
@@ -34,8 +36,14 @@ namespace Dashboard.Server.Telemetry{
         /// <returns> 
         ///     Dictionary of userData as key and int as value
         /// </returns>
-        Dictionary<UserData, int> UserVsChatCount(ChatContext[] AllMess){
-            throw new NotImplementedException();
+        Dictionary<int, int> UserVsChatCount(ChatContext[] AllMess){
+            Dictionary<int, int> UserChatCountDic= new Dictionary<int, int>();
+            foreach(ChatContext currThread in AllMess){
+                foreach(ReceiveMessageData currMessage in currThread.MsgList){
+                    UserChatCountDic[currMessage.SenderId]++;
+                }
+            }
+            return UserChatCountDic;
         }
 
         /// <summary> 
@@ -45,7 +53,7 @@ namespace Dashboard.Server.Telemetry{
         /// </summary>
         /// <params> Takes the session data which contains the list of users </params>
         /// <returns> A list of type UserDat  </returns>
-        List<UserData> irrelevantMembers(SessionData newSession){
+        List<int> irrelevantMembers(SessionData newSession){
             throw new NotImplementedException();
         }
 
