@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -8,19 +10,29 @@ namespace Networking
 {
     public class SendSocketListenerServer
     {
-        // It contains the packets which needs to be sent over the network
+        // Declare the queue variable which is used to dequeue the required the packet 
         private IQueue _queue;
-        private Hashtable _clientIdSocket;
-        private TcpClient _tcpSocket;
+
+        // Declare the dictionary variable which stores client_ID and corresponding socket object 
+        private Dictionary<string, TcpClient> _clientIdSocket = new Dictionary<string, TcpClient>();
+
+        // Declare the TcpClient set variable 
+        private HashSet<TcpClient> _tcpSockets;
+
+        // Declare the thread variable of SendSocketListenerServer 
         private Thread _listen;
-        private bool _listenRun = false;
-        const int _threshold = 1025;
+
+        // Declare variable that dictates the start and stop of the thread _listen
+        private volatile bool _listenRun = false;
+
+        // Fix the maximum size of the message that can be sent  one at a time 
+        private const int Threshold = 1025;
 
         /// <summary>
-        /// This method is the constructor of the class which initializes the params
+        /// This is the constructor of the class which initializes the params
         /// <param name="queue">queue</param>
         /// </summary>
-        public SendSocketListenerServer(IQueue queue, Hashtable clientIdSocket)
+        public SendSocketListenerServer(IQueue queue, Dictionary<string, TcpClient> clientIdSocket)
         {
             this._queue = queue;
             this._clientIdSocket = clientIdSocket;
@@ -38,6 +50,8 @@ namespace Networking
 
         /// <summary>
         /// This method form string from packet object
+        /// it also adds EOF to indicate that the message 
+        /// that has been popped out feom the queue is finished 
         /// </summary>
         ///  /// <returns>String </returns>
         private String GetMessage(Packet packet)
@@ -50,14 +64,30 @@ namespace Networking
         }
 
         /// <summary>
-        /// This method extract destination socket  from packet
+        /// This method extract destination from packet
+        /// if destination is null , then it is case of broadcast so
+        /// it returns all the client socket objects
+        /// else it returns only the socket of that client
         /// </summary>
-        ///  /// <returns> socket  </returns>
-        private TcpClient GetDestination(Packet packet)
+        /// <returns> a set of socket object  </returns>
+        private HashSet<TcpClient> GetDestination(Packet packet)
         {
-            TcpClient tcpSocket = new TcpClient();
-            // need to extract id of client from packet.Serialized Data
-            // and then look into hash map to get corresponding socket
+            HashSet<TcpClient> tcpSocket = new HashSet<TcpClient>();
+
+            // check packet contains destination or not
+            if (packet.Destination == null)
+            {
+                foreach (KeyValuePair<string, TcpClient> tcpClient in _clientIdSocket)
+                {
+                    tcpSocket.Add(tcpClient.Value);
+                }
+            }
+            else
+            {
+                string clientId = packet.Destination;
+                tcpSocket.Add((TcpClient) _clientIdSocket[clientId]);
+            }
+
             return tcpSocket;
         }
 
@@ -68,55 +98,93 @@ namespace Networking
         {
             while (_listenRun)
             {
-                // dequeue from queue and write to network Stream
-                while (!_queue.IsEmpty())
+                // If the queue is not empty, get a packet from the front of the queue and remove that packet
+                // from the queue
+                while (_queue.Size() != 0)
                 {
+                    // Dequeue the front packet of the queue
                     Packet packet = _queue.Dequeue();
-                    // call get message function to form string from packet
+
+                    // Call GetMessage function to form string msg from the packet object 
                     String msg = GetMessage(packet);
-                    _tcpSocket = GetDestination(packet);
+
+                    // Call GetDestination function to know destination from the packet object
+                    _tcpSockets = GetDestination(packet);
+
+                    // Variable used in the process of fragmentation
                     String buffer = "";
+
+                    // Send the message in chunks of threshold number of characters, 
+                    //if the data size is greater than threshold value
                     for (int i = 0; i < msg.Length; i++)
                     {
-                        if (buffer.Length >= _threshold)
+                        if (buffer.Length >= Threshold)
                         {
                             try
                             {
-                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
-                                NetworkStream networkStream = _tcpSocket.GetStream();
-                                networkStream.Write(outStream, 0, outStream.Length);
-                                networkStream.Flush();
+                                // Write the part of the data which is taken from the queue 
+                                //to the client sockets
+                                foreach (TcpClient tcpSocket in _tcpSockets)
+                                {
+                                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
+                                    NetworkStream networkStream = tcpSocket.GetStream();
+                                    networkStream.Write(outStream, 0, outStream.Length);
+                                    networkStream.Flush();
+                                }
+
                                 buffer = "";
                             }
-                            catch (Exception e)
+                            catch (IOException e)
                             {
-                                Trace.WriteLine(e);
+                                // If any exception raises while writing in the socket,
+                                //trace the info and stop the thread 
+
+                                Trace.WriteLine(
+                                    "Networking : An I/O Exception has been raised on server in SendSocketListenerServerThread " +
+                                    e.ToString());
                                 return;
                             }
                         }
 
-                        buffer = buffer.Insert(buffer.Length, msg[i].ToString());
+                        // Append the character of the variable msg at ith position
+                        // to the end of the buffer
+                        buffer = buffer + msg[i];
                     }
+
+                    // Sending the remaining portion of string after
+                    // dividing into chunks of threshold size strings 
 
                     if (buffer.Length > 0)
                     {
                         try
                         {
-                            byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
-                            NetworkStream networkStream = _tcpSocket.GetStream();
-                            networkStream.Write(outStream, 0, outStream.Length);
-                            networkStream.Flush();
+                            // Write the part of the data which is taken from the queue 
+                            //to the client sockets
+                            foreach (TcpClient tcpSocket in _tcpSockets)
+                            {
+                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
+                                NetworkStream networkStream = tcpSocket.GetStream();
+                                networkStream.Write(outStream, 0, outStream.Length);
+                                networkStream.Flush();
+                            }
+
+                            ;
+
                             buffer = "";
                         }
-                        catch (Exception e)
+                        catch (IOException e)
                         {
-                            Trace.WriteLine(e);
+                            // If any exception raises while writing in the socket,
+                            // trace the info and stop the thread 
+                            Trace.WriteLine(
+                                "Networking : An I/O Exception has been raised on server in SendSocketListenerServerThread " +
+                                e);
                             return;
                         }
+
+                        Trace.WriteLine("Message has been sent to server from client");
                     }
                 }
-
-                Trace.WriteLine("Message has been sent to server from client");
             }
         }
 

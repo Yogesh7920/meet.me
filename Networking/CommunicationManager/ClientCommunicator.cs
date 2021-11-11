@@ -9,67 +9,154 @@ namespace Networking
 {
     public class ClientCommunicator : ICommunicator
     {
-        private Dictionary<string, INotificationHandler> subscribedModules =
+        private Dictionary<string, INotificationHandler> _subscribedModules =
             new Dictionary<string, INotificationHandler>();
 
-        private TcpClient _clientSocket = new TcpClient();
-        private Queue _queue = new Queue();
-        private RecieveSocketListener recieveSocketListener;
-        private SendSocketListenerClient sendSocketListenerClient;
+        // Declare socket object for client
+        private TcpClient _clientSocket;
+
+        // Declare queue variable for receiving messages
+        private Queue _receiveQueue = new Queue();
+
+        // Declare queue variable for sending messages
+        private Queue _sendQueue = new Queue();
+
+        // Variable for testing mode
+        private bool _isTesting = false;
+
+        //Constructor that enables testing mode
+        public ClientCommunicator(bool isTesting = false)
+        {
+            _isTesting = isTesting;
+        }
+
+        //Declare ReceiveSocketListener variable for listening messages 
+        private ReceiveSocketListener _receiveSocketListener;
+
+        // Declare sendSocketListenerClient variable for sending messages 
+        private SendSocketListenerClient _sendSocketListenerClient;
 
         /// <summary>
         /// This method connects client to server
-        /// <param name="serverIP">serverIP</param>
+        /// <param name="serverIp">serverIP</param>
         /// <param name="serverPort">serverPort.</param>
         /// </summary>
         ///  /// <returns> String </returns>
-        string ICommunicator.Start(string serverIP, string serverPort)
+        string ICommunicator.Start(string serverIp, string serverPort)
         {
             try
             {
-                IPAddress ip = IPAddress.Parse(serverIP);
+                //try to connect with server
+                IPAddress ip = IPAddress.Parse(serverIp);
                 int port = Int32.Parse(serverPort);
+                _clientSocket = new TcpClient();
+                // _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, false);
+                _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
+
                 _clientSocket.Connect(ip, port);
 
-                recieveSocketListener = new RecieveSocketListener(_queue, _clientSocket);
-                recieveSocketListener.Start();
-                sendSocketListenerClient = new SendSocketListenerClient(_queue, _clientSocket);
-                sendSocketListenerClient.Start();
+                //Start receiveSocketListener of the client  
+                //for listening message from the server
+                _receiveSocketListener = new ReceiveSocketListener(_receiveQueue, _clientSocket);
+                _receiveSocketListener.Start();
+
+                //start sendSocketListener of client for sending message 
+                _sendSocketListenerClient = new SendSocketListenerClient(_sendQueue, _clientSocket);
+                _sendSocketListenerClient.Start();
+
+                //for testing purpose
+                if (_isTesting)
+                {
+                    TestRegisterModule();
+                }
+
                 return "1";
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Trace.WriteLine(e.ToString());
                 return "0";
             }
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// This method is for testing purpose
+        /// </summary>
+        /// <returns> void </returns>
+        void TestRegisterModule()
+        {
+            _sendQueue.RegisterModule("S", 1);
+            _sendQueue.RegisterModule("W", 2);
+            _sendQueue.RegisterModule("C", 3);
+            _sendQueue.RegisterModule("F", 4);
+            _receiveQueue.RegisterModule("S", 1);
+            _receiveQueue.RegisterModule("W", 2);
+            _receiveQueue.RegisterModule("C", 3);
+            _receiveQueue.RegisterModule("F", 4);
+        }
+
+        /// <summary>
+        /// This method is for testing purpose
+        /// and can be called in testing mode
+        /// </summary>
+        /// <returns> packet </returns>
+        public Packet FrontPacket()
+        {
+            if (_isTesting)
+            {
+                Packet packet = new Packet();
+                if (_receiveQueue.Size() != 0)
+                {
+                    packet = _receiveQueue.Dequeue();
+                }
+
+                return packet;
+            }
+
+            throw new Exception("You don't have access");
+        }
+
+        /// <summary>
+        /// This method stops all the running thread
+        ///  of client and closes the connection
+        /// </summary>
+        /// <returns> void </returns>
         void ICommunicator.Stop()
         {
-            sendSocketListenerClient.Stop();
-            recieveSocketListener.Stop();
+            if (_clientSocket.Connected)
+            {
+                // stop the listener of the client 
+                _sendSocketListenerClient.Stop();
+                _receiveSocketListener.Stop();
+
+                //close stream  and connection of the client
+                _clientSocket.GetStream().Close();
+                _clientSocket.Close();
+            }
         }
 
         /// <inheritdoc />
-        void ICommunicator.AddClient<T>(string clientID, T socketObject)
+        void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        void ICommunicator.RemoveClient(string clientID)
+        void ICommunicator.RemoveClient(string clientId)
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// This method is for sending message
+        /// </summary>
+        /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
             Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {
-                _queue.Enqueue(packet);
+                _sendQueue.Enqueue(packet);
             }
             catch (Exception ex)
             {
@@ -86,7 +173,7 @@ namespace Networking
         /// <inheritdoc />
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
         {
-            subscribedModules.Add(identifier, handler);
+            _subscribedModules.Add(identifier, handler);
         }
     }
 }
