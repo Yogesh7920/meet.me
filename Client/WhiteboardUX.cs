@@ -19,9 +19,7 @@ namespace Client
     /// Enum used to pass the info about the dragged corner of the shape in case of Resize operation
     public enum AdornerDragPos
     {
-        TopRight,
         TopLeft,
-        BotLeft,
         BotRight
     };
 
@@ -44,7 +42,7 @@ namespace Client
     public class BorderAdorner : Adorner
     {
         //use thumb for resizing elements
-        Thumb topLeft, topRight, bottomLeft, bottomRight;
+        Thumb topLeft, bottomRight;
         //visual child collection for adorner
         VisualCollection visualChilderns;
         ShapeManager shapeManager;
@@ -66,22 +64,12 @@ namespace Client
 
             //adding thumbs for drawing adorner rectangle and setting cursor
             BuildAdornerCorners(ref topLeft, Cursors.SizeNWSE);
-            BuildAdornerCorners(ref topRight, Cursors.SizeNESW);
-            BuildAdornerCorners(ref bottomLeft, Cursors.SizeNESW);
             BuildAdornerCorners(ref bottomRight, Cursors.SizeNWSE);
 
             //registering drag delta events for thumb drag movement
             topLeft.DragDelta += TopLeft_DragDelta;
             topLeft.PreviewMouseLeftButtonUp += Adorner_MouseUp;
             topLeft.PreviewMouseLeftButtonDown += Adorner_MouseDown;
-
-            topRight.DragDelta += TopRight_DragDelta;
-            topRight.PreviewMouseLeftButtonUp += Adorner_MouseUp;
-            topRight.PreviewMouseLeftButtonDown += Adorner_MouseDown;
-
-            bottomLeft.DragDelta += BottomLeft_DragDelta;
-            bottomLeft.PreviewMouseLeftButtonUp += Adorner_MouseUp;
-            bottomLeft.PreviewMouseLeftButtonDown += Adorner_MouseDown;
 
             bottomRight.DragDelta += BottomRight_DragDelta;
             bottomRight.PreviewMouseLeftButtonUp += Adorner_MouseUp;
@@ -101,8 +89,6 @@ namespace Client
             FrameworkElement adornedElement = this.AdornedElement as FrameworkElement;
             Thumb corner = sender as Thumb;
             if (corner.Equals(topLeft)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on topLeft");
-            else if (corner.Equals(topRight)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on topRight");
-            else if (corner.Equals(bottomLeft)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on bottomLeft");
             else if (corner.Equals(bottomRight)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on bottomRight");
 
             Transform rt = adornedElement.RenderTransform;
@@ -125,15 +111,9 @@ namespace Client
 
 
             if (corner.Equals(topLeft)) MessageBox.Show("Transformed Start = " + transDragStart.ToString() + " ,End = " + transDragEnd.ToString() + " on topLeft");
-            else if (corner.Equals(topRight)) MessageBox.Show("Transformed Start = " + transDragStart.ToString() + " ,End = " + transDragEnd.ToString() + " on topRight");
-            else if (corner.Equals(bottomLeft)) MessageBox.Show("Transformed Start = " + transDragStart.ToString() + " ,End = " + transDragEnd.ToString() + " on bottomLeft");
             else if (corner.Equals(bottomRight)) MessageBox.Show("Transformed Start = " + transDragStart.ToString() + " ,End = " + transDragEnd.ToString() + " on bottomRight");
 
-
-
             if (corner.Equals(topLeft)) shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, dragStart, dragEnd,  AdornerDragPos.TopLeft);
-            else if (corner.Equals(topRight)) shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, dragStart, dragEnd, AdornerDragPos.TopRight);
-            else if (corner.Equals(bottomLeft)) shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, dragStart, dragEnd, AdornerDragPos.BotLeft); 
             else if (corner.Equals(bottomRight)) shapeManager.ResizeShape(cn, WbOp, (Shape)adornedElement, dragStart, dragEnd, AdornerDragPos.BotRight);
 
             return;
@@ -151,18 +131,6 @@ namespace Client
             }
         }
 
-        private void TopRight_DragDelta(object sender, DragDeltaEventArgs e)
-        {
-            FrameworkElement adornedElement = this.AdornedElement as FrameworkElement;
-            Thumb topRightCorner = sender as Thumb;
-            //setting new height, width and canvas top after drag
-            if (adornedElement != null && topRightCorner != null)
-            {
-                EnforceSize(adornedElement);
-                this.shapeManager.ResizeAdorner(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, topRightCorner, AdornerDragPos.TopRight);
-            }
-        }
-
         private void TopLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
             FrameworkElement adornedElement = this.AdornedElement as FrameworkElement;
@@ -172,18 +140,6 @@ namespace Client
             {
                 EnforceSize(adornedElement);
                 this.shapeManager.ResizeAdorner(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, topLeftCorner, AdornerDragPos.TopLeft);
-            }
-        }
-
-        private void BottomLeft_DragDelta(object sender, DragDeltaEventArgs e)
-        {
-            FrameworkElement adornedElement = this.AdornedElement as FrameworkElement;
-            Thumb bottomLeftCorner = sender as Thumb;
-            //setting new height, width and canvas left after drag
-            if (adornedElement != null && bottomLeftCorner != null)
-            {
-                EnforceSize(adornedElement);
-                this.shapeManager.ResizeAdorner(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, bottomLeftCorner, AdornerDragPos.BotLeft);
             }
         }
 
@@ -224,8 +180,6 @@ namespace Client
 
             //arranging thumbs
             topLeft.Arrange(new Rect(-adornerWidth / 2, -adornerHeight / 2, adornerWidth, adornerHeight));
-            topRight.Arrange(new Rect(desireWidth - adornerWidth / 2, -adornerHeight / 2, adornerWidth, adornerHeight));
-            bottomLeft.Arrange(new Rect(-adornerWidth / 2, desireHeight - adornerHeight / 2, adornerWidth, adornerHeight));
             bottomRight.Arrange(new Rect(desireWidth - adornerWidth / 2, desireHeight - adornerHeight / 2, adornerWidth, adornerHeight));
 
             return finalSize;
@@ -1051,35 +1005,39 @@ namespace Client
                         oldWidth = adornedLine.Width;
                         oldHeight = adornedLine.Height;
 
-                        newWidth = Math.Max(adornedLine.Width + horizontalDrag, corner.DesiredSize.Width);
-                        newHeight = Math.Max(verticalDrag + adornedLine.Height, corner.DesiredSize.Height);
+                        newWidth = Math.Max(adornedLine.Width + deltaWidth * 2, corner.DesiredSize.Width);
+                        newHeight = Math.Max(adornedLine.Height + deltaHeight * 2, corner.DesiredSize.Height);
 
                         adornedLine.Width = newWidth;
                         adornedLine.Height = newHeight;
 
                         adornedLine.X2 = newWidth;
                         adornedLine.Y2 = newHeight;
+
+                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) - verticalDrag);
+                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) - horizontalDrag);
+
                         break;
                     //Top Left Corner 
                     case AdornerDragPos.TopLeft:
-                        oldWidth = adornedElement.Width;
-                        oldHeight = adornedElement.Height;
+                        oldWidth = adornedLine.Width;
+                        oldHeight = adornedLine.Height;
 
-                        newWidth = Math.Max(adornedElement.Width - horizontalDrag, corner.DesiredSize.Width);
-                        newHeight = Math.Max(adornedElement.Height - verticalDrag, corner.DesiredSize.Height);
+                        newWidth = Math.Max(adornedLine.Width - deltaWidth * 2, corner.DesiredSize.Width);
+                        newHeight = Math.Max(adornedLine.Height - deltaHeight * 2, corner.DesiredSize.Height);
 
-                        oldLeft = Canvas.GetLeft(adornedElement);
-                        newLeft = oldLeft - (newWidth - oldWidth);
-                        adornedElement.Width = newWidth;
-                        Canvas.SetLeft(adornedElement, newLeft);
-
-                        oldTop = Canvas.GetTop(adornedElement);
-                        newTop = oldTop - (newHeight - oldHeight);
-                        adornedElement.Height = newHeight;
-                        Canvas.SetTop(adornedElement, newTop);
+                        adornedLine.Width = newWidth;
+                        adornedLine.Height = newHeight;
 
                         adornedLine.X2 = newWidth;
                         adornedLine.Y2 = newHeight;
+
+                        adornedLine.X2 = newWidth;
+                        adornedLine.Y2 = newHeight;
+
+                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) + verticalDrag);
+                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) + horizontalDrag);
+
                         break;
                 }
             }
@@ -1092,40 +1050,17 @@ namespace Client
                         oldWidth = adornedElement.Width;
                         oldHeight = adornedElement.Height;
 
-                        /*newWidth = adornedElement.Width + horizontalDrag*2;
-                        newHeight = 2*verticalDrag + adornedElement.Height;
-
-                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) - verticalDrag );
-                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) - horizontalDrag);*/
-
                         newWidth = Math.Max(adornedElement.Width + deltaWidth * 2, corner.DesiredSize.Width);
                         newHeight = Math.Max(adornedElement.Height + deltaHeight * 2, corner.DesiredSize.Height);
-                        /*newWidth = adornedElement.Width + deltaWidth * 2;
-                        newHeight = 2* deltaHeight + adornedElement.Height;*/
 
                         adornedElement.Width = newWidth;
                         adornedElement.Height = newHeight;
-
 
                         Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) - verticalDrag);
                         Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) - horizontalDrag );
 
                         break;
-                    //Top Right Corner 
-                    case AdornerDragPos.TopRight:
-                        oldWidth = adornedElement.Width;
-                        oldHeight = adornedElement.Height;
 
-                        newWidth = Math.Max(adornedElement.Width + deltaWidth * 2, corner.DesiredSize.Width);
-                        newHeight = Math.Max(adornedElement.Height - deltaHeight * 2, corner.DesiredSize.Height);
-
-                        adornedElement.Width = newWidth;
-                        adornedElement.Height = newHeight;
-
-                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) + verticalDrag);
-                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) - horizontalDrag);
-
-                        break;
                     //Top Left Corner 
                     case AdornerDragPos.TopLeft:
                         oldWidth = adornedElement.Width;
@@ -1134,25 +1069,10 @@ namespace Client
                         newWidth = Math.Max(adornedElement.Width - deltaWidth * 2, corner.DesiredSize.Width);
                         newHeight = Math.Max(adornedElement.Height - deltaHeight * 2, corner.DesiredSize.Height);
 
-
                         adornedElement.Width = newWidth;
                         adornedElement.Height = newHeight;
 
                         Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) + verticalDrag);
-                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) + horizontalDrag);
-                        break;
-                    //Bottom Left Corner 
-                    case AdornerDragPos.BotLeft:
-                        oldWidth = adornedElement.Width;
-                        oldHeight = adornedElement.Height;
-
-                        newWidth = Math.Max(adornedElement.Width - deltaWidth * 2, corner.DesiredSize.Width);
-                        newHeight = Math.Max(adornedElement.Height + deltaHeight * 2, corner.DesiredSize.Height);
-
-                        adornedElement.Width = newWidth;
-                        adornedElement.Height = newHeight;
-
-                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) - verticalDrag);
                         Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) + horizontalDrag);
                         break;
                 }
