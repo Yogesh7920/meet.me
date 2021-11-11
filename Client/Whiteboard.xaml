@@ -813,7 +813,7 @@
 
                 <!--Testing shapes-->
                 <!--<Rectangle x:Name="SelectionBox" Stroke="Blue" Height="50" Width="60" StrokeThickness="1" StrokeDashArray="4 4" SnapsToDevicePixels="True" Canvas.Left="260" Canvas.Top="175" Visibility="Collapsed"></Rectangle>-->
-                <Rectangle x:Uid="5000"  Fill="White" Height="50" Width="60" StrokeThickness="2" Stroke="Black" Canvas.Left="260" Canvas.Top="175"></Rectangle>
+                <Rectangle x:Uid="5000"  Fill="White" Height="50" Width="60" StrokeThickness="2" Stroke="Black" Canvas.Left="259" Canvas.Top="282"></Rectangle>
                 <Ellipse x:Uid="6000" Fill="White" Height="50" Width="50" StrokeThickness="2" Stroke="Red" Canvas.Left="400" Canvas.Top="125"></Ellipse>
                 <Line x:Uid="7000" Stroke="Black" StrokeThickness="4" X1="0" Y1="00" X2="90" Y2="90" Canvas.Top="72" Canvas.Left="62" Height="90" Width="89"></Line>
             </Canvas>
