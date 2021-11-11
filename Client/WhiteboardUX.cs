@@ -20,7 +20,9 @@ namespace Client
     public enum AdornerDragPos
     {
         TopLeft,
-        BotRight
+        BotRight,
+        TopRight,
+        BotLeft
     };
 
     /// <summary>
@@ -42,11 +44,12 @@ namespace Client
     public class BorderAdorner : Adorner
     {
         //use thumb for resizing elements
-        Thumb topLeft, bottomRight;
+        Thumb topLeft, bottomRight, topRight, bottomLeft;
         //visual child collection for adorner
         VisualCollection visualChilderns;
         ShapeManager shapeManager;
         Canvas cn;
+        private UIElement adornedShape;
 
         Point dragStart, dragEnd;
         IWhiteBoardOperationHandler WbOp; 
@@ -54,6 +57,7 @@ namespace Client
         public BorderAdorner(UIElement element, ShapeManager shapeManager, Canvas cn, IWhiteBoardOperationHandler WbOp) : base(element)
         {
             visualChilderns = new VisualCollection(this);
+            adornedShape = element as Shape;
             this.shapeManager = shapeManager;
             this.cn = cn;
             this.WbOp = WbOp;
@@ -61,10 +65,20 @@ namespace Client
             this.dragStart = new Point {X = 0, Y = 0};
             this.dragEnd = new Point { X = 0, Y = 0 };
 
-
-            //adding thumbs for drawing adorner rectangle and setting cursor
-            BuildAdornerCorners(ref topLeft, Cursors.SizeNWSE);
-            BuildAdornerCorners(ref bottomRight, Cursors.SizeNWSE);
+            if (element is not System.Windows.Shapes.Line)
+            {
+                //adding thumbs for drawing adorner rectangle and setting cursor
+                BuildAdornerCorners(ref topLeft, Cursors.SizeNWSE);
+                BuildAdornerCorners(ref bottomRight, Cursors.SizeNWSE);
+                BuildAdornerCorners(ref topRight, Cursors.No);
+                BuildAdornerCorners(ref bottomLeft, Cursors.No);
+            }
+            else
+            {
+                //adding thumbs for drawing adorner rectangle and setting cursor
+                BuildAdornerCorners(ref topLeft, Cursors.SizeNWSE);
+                BuildAdornerCorners(ref bottomRight, Cursors.SizeNWSE);
+            }
 
             //registering drag delta events for thumb drag movement
             topLeft.DragDelta += TopLeft_DragDelta;
@@ -178,10 +192,20 @@ namespace Client
             double adornerWidth = this.DesiredSize.Width;
             double adornerHeight = this.DesiredSize.Height;
 
-            //arranging thumbs
-            topLeft.Arrange(new Rect(-adornerWidth / 2, -adornerHeight / 2, adornerWidth, adornerHeight));
-            bottomRight.Arrange(new Rect(desireWidth - adornerWidth / 2, desireHeight - adornerHeight / 2, adornerWidth, adornerHeight));
-
+            if (adornedShape is not System.Windows.Shapes.Line)
+            {
+                //arranging thumbs
+                topLeft.Arrange(new Rect(-adornerWidth / 2, -adornerHeight / 2, adornerWidth, adornerHeight));
+                topRight.Arrange(new Rect(desireWidth - adornerWidth / 2, -adornerHeight / 2, adornerWidth, adornerHeight));
+                bottomLeft.Arrange(new Rect(-adornerWidth / 2, desireHeight - adornerHeight / 2, adornerWidth, adornerHeight));
+                bottomRight.Arrange(new Rect(desireWidth - adornerWidth / 2, desireHeight - adornerHeight / 2, adornerWidth, adornerHeight));
+            }
+            else
+            {
+                //arranging thumbs
+                topLeft.Arrange(new Rect(-adornerWidth / 2, -adornerHeight / 2, adornerWidth, adornerHeight));
+                bottomRight.Arrange(new Rect(desireWidth - adornerWidth / 2, desireHeight - adornerHeight / 2, adornerWidth, adornerHeight));
+            }
             return finalSize;
         }
         protected override int VisualChildrenCount { get { return visualChilderns.Count; } }
