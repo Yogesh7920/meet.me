@@ -53,6 +53,7 @@
         /// </summary>
         /// <param name="identifier">Module Identifier.</param>
         /// <param name="handler">Module implementation of handler; called to notify about an incoming message.</param>
-        void Subscribe(string identifier, INotificationHandler handler);
+        /// <param name="priority">Priority Number indicating the weight in queue to be given to the module.</param>
+        void Subscribe(string identifier, INotificationHandler handler, int priority=1);
     }
 }
