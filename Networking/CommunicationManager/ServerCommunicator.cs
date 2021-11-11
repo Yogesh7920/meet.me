@@ -310,8 +310,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier, string destination)
         {
-            Packet packet = new Packet
-                {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
+            Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
             try
             {
                 _sendQueue.Enqueue(packet);
@@ -326,9 +325,10 @@ namespace Networking
         /// It adds notification handler of module
         /// </summary>
         /// <returns> void </returns>
-        void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
+        void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);
+            _recieveQueue.RegisterModule(identifier, priority);
         }
     }
 }

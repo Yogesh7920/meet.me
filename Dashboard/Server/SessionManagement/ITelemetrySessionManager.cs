@@ -12,8 +12,7 @@ namespace Dashboard.Server.SessionManagement
         /// Subscribes to changes in the session object
         /// </summary>
         /// <param name="listener"> The subscriber. </param>
-        /// <param name="identifier"> The listener of the subscriber </param>
-        void Subscribe(ITelemetryNotifications listener, string identifier)
+        void Subscribe(ITelemetryNotifications listener)
         {
             // Not implemeted
         }

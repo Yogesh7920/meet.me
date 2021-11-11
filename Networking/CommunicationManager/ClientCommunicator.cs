@@ -171,9 +171,10 @@ namespace Networking
         }
 
         /// <inheritdoc />
-        void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
+        void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
-            _subscribedModules.Add(identifier, handler);
+            subscribedModules.Add(identifier, handler);
+            _queue.RegisterModule(identifier, priority);
         }
     }
 }
