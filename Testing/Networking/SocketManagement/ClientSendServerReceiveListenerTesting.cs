@@ -99,6 +99,9 @@ namespace Testing
         [Test, Category("pass")]
         public void FragmentationClientSendServerReceiveListenerTest()
         {
+            string workingDirectory = Environment.CurrentDirectory;
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+            
             var path = Path.Combine(Directory.GetCurrentDirectory()+ "\\testfile.txt");
             _sr = new StreamReader(path);
             _line = _sr.ReadLine();

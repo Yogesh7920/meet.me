@@ -75,7 +75,9 @@ namespace Testing
         [Test, Category("pass")]
         public void FragmentationServerSendClientReceiveListenerTest()
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory()+ "\\testfile.txt");
+            string workingDirectory = Environment.CurrentDirectory;
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+            var path = Path.Combine(projectDirectory +"\\testFile.txt");
             StreamReader sr = new StreamReader(path);
             String line = sr.ReadLine();
             ////Continue to read until you reach end of file
