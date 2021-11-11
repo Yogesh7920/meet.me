@@ -152,13 +152,22 @@ namespace Networking
         /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier, string destination)
         {
-            throw new NotImplementedException();
-        }
+            Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
+            try
+            {
+                _recieveQueue.Enqueue(packet);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+            }
+        }   
 
         /// <inheritdoc />
-        void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
+        void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);
+            _recieveQueue.RegisterModule(identifier, priority);
         }
     }
 }
