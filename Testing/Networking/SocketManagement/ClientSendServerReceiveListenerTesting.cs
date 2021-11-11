@@ -27,7 +27,6 @@ namespace Testing
             // start the server
             _server = CommunicationFactory.GetCommunicator(false, true);
             string address = _server.Start();
-            Console.WriteLine(address);
             string[] s = address.Split(":");
 
             // client2 connection 
@@ -74,18 +73,15 @@ namespace Testing
             Thread.Sleep(300);
 
             Packet p1 = _server.FrontPacket();
-            Console.WriteLine(p1.SerializedData);
             Assert.AreEqual(msg1, p1.SerializedData);
 
             Packet p2 = _server.FrontPacket();
-            Console.WriteLine(p2.SerializedData);
             Assert.AreEqual(msg2, p2.SerializedData);
         }
 
         [Test, Category("pass")]
         public void MultipleClientSendServerReceiveListenerTest()
         {
-            Console.WriteLine("Two client sending message");
             String msg1 = "msg from client3 ";
             String identifier1 = "S";
             _client2.Send(msg1, identifier1);
@@ -103,8 +99,8 @@ namespace Testing
         [Test, Category("pass")]
         public void FragmentationClientSendServerReceiveListenerTest()
         {
-            Console.WriteLine("Client 2 sending a big message to server");
-            _sr = new StreamReader("C:\\test\\data.txt");
+            var path = Path.Combine(Directory.GetCurrentDirectory()+ "\\testfile.txt");
+            _sr = new StreamReader(path);
             _line = _sr.ReadLine();
             //Continue to read until you reach end of file
             _text = "";
@@ -113,7 +109,7 @@ namespace Testing
                 _text += _line;
                 _line = _sr.ReadLine();
             }
-
+            
             _client2.Send(_text, "C");
             Thread.Sleep(300);
             Packet p2 = _server.FrontPacket();

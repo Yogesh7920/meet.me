@@ -24,7 +24,6 @@ namespace Testing
             // start the server
             _server = CommunicationFactory.GetCommunicator(false, true);
             string address = _server.Start();
-            Console.WriteLine(address);
             string[] s = address.Split(":");
 
 
@@ -76,8 +75,8 @@ namespace Testing
         [Test, Category("pass")]
         public void FragmentationServerSendClientReceiveListenerTest()
         {
-            Console.WriteLine("Server sending big message to individual client");
-            StreamReader sr = new StreamReader("C:\\test\\data.txt");
+            var path = Path.Combine(Directory.GetCurrentDirectory()+ "\\testfile.txt");
+            StreamReader sr = new StreamReader(path);
             String line = sr.ReadLine();
             ////Continue to read until you reach end of file
             String text = "";

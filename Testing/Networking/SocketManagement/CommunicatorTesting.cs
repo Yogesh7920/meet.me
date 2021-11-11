@@ -25,7 +25,6 @@ namespace Testing
             // start the server
             ICommunicator server = CommunicationFactory.GetCommunicator(false, true);
             string address = server.Start();
-            Console.WriteLine(address);
             string[] s = address.Split(":");
 
             // client2 connection 
