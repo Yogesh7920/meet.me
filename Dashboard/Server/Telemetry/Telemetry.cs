@@ -5,7 +5,7 @@ using Content;
 
 namespace Dashboard.Server.Telemetry{
     
-    public class Telemetry: ITelemetry
+    public class Telemetry: ITelemetryAnalysisModel
     {
         /// <summary>
         ///     returns a dictionary with DateTime as key and int as value
