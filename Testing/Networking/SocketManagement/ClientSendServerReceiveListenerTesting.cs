@@ -69,11 +69,11 @@ namespace Testing
             String msg2 = "second packet ";
             _client3.Send(msg1, identifier);
             _client3.Send(msg2, identifier);
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
 
             Packet p1 = _server.FrontPacket();
             Assert.AreEqual(msg1, p1.SerializedData);
-            Thread.Sleep(1000);
+            
             Packet p2 = _server.FrontPacket();
             Assert.AreEqual(msg2, p2.SerializedData);
         }
