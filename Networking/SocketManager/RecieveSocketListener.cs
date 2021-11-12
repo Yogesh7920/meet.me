@@ -55,16 +55,16 @@ namespace Networking
         /// it looks for EOF to know the end of message
         /// </summary>
         /// <returns>Packet </returns>
-        private Packet GetPacket(String msg)
+        private Packet GetPacket(String[] msg)
         {
             Packet packet = new Packet();
             packet.ModuleIdentifier = msg[0].ToString();
 
             //get serialized data of packet
-            string data = "";
-            for (int i = 2; i < (msg.Length); i++)
+            string data = msg[1];
+            for (int i = 2; i < msg.Length; i++)
             {
-                data = data + msg[i];
+                data += ":" + msg[i];
             }
 
             String serializedData = "";
@@ -109,7 +109,7 @@ namespace Networking
                         if (message.Contains("EOF"))
                         {
                             //Calls GetPacket method to form packet object out of received message
-                            Packet packet = GetPacket(message);
+                            Packet packet = GetPacket(message.Split(":"));
 
                             //Calls the PushToQueue method to push packet into queue
                             PushToQueue(packet.SerializedData, packet.ModuleIdentifier);

@@ -12,7 +12,7 @@ namespace Networking
         private readonly IQueue _queue;
 
         // Declare the TcpClient  variable 
-        private readonly TcpClient _tcpSocket;
+        private TcpClient _tcpSocket;
 
         // Declare the thread variable of SendSocketListenerServer 
         private Thread _listen;
