@@ -16,6 +16,12 @@ namespace Testing.Networking
         [OneTimeSetUp]
         public void StartServerAndClientJoin_ServerShouldBeNotified()
         {
+            FakeServer.SsHandler.Reset();
+            FakeServer.WbHandler.Reset();
+            FakeMachineA.SsHandler.Reset();
+            FakeMachineA.WbHandler.Reset();
+            FakeMachineB.SsHandler.Reset();
+            FakeMachineB.WbHandler.Reset();
             FakeServer.Communicator = NetworkingGlobals.NewServerCommunicator;
             FakeServer.Communicator.Subscribe(Modules.WhiteBoard, FakeServer.WbHandler, Priorities.WhiteBoard);
             FakeServer.Communicator.Subscribe(Modules.ScreenShare, FakeServer.SsHandler, Priorities.ScreenShare);
