@@ -1,4 +1,3 @@
-using MongoDB.Bson;
 namespace Content
 {
     public interface IContentClient
@@ -14,20 +13,20 @@ namespace Content
         /// </summary>
         /// <param name="messageId">Message Id corresponding to the file to be downloaded</param>
         /// <param name="savePath">Path to which the downloaded file will be saved</param>
-        void CDownload(ObjectId messageId, string savePath);
+        void CDownload(int messageId, string savePath);
 
         /// <summary>
         /// Star a message which prioritises it to be included in dashboard summary
         /// </summary>
         /// <param name="messageId">Message Id of message to be starred</param>
-        void CMarkStar(ObjectId messageId);
+        void CMarkStar(int messageId);
 
         /// <summary>
         /// Update a previously sent chat message
         /// </summary>
         /// <param name="messageId">Messsage Id of the chat message to be updated</param>
         /// <param name="newMessage">New updated chat message</param>
-        void CUpdateChat(ObjectId messageId, string newMessage);
+        void CUpdateChat(int messageId, string newMessage);
 
         /// <summary>
         /// Subscribe to content module for listening to received messages
@@ -40,6 +39,6 @@ namespace Content
         /// </summary>
         /// <param name="threadId">Id of the requested thread</param>
         /// <returns>Thread object corresponding to specified thread Id</returns>
-        ChatContext CGetThread(ObjectId threadId);
+        ChatContext CGetThread(int threadId);
     }
 }
