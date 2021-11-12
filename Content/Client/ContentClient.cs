@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Networking;
-using MongoDB.Bson;
 
 namespace Content
 {
@@ -22,7 +21,7 @@ namespace Content
 
         private List<IContentListener> _subscribers;
         private List<ChatContext> _allMessages;
-        private Dictionary<ObjectId, int> _contextMap;
+        private Dictionary<int, int> _contextMap;
 
         // dictionary that maps message events to their respective handler functions
         private Dictionary<MessageEvent, Action<MessageData> > _messageHandlers;
@@ -37,7 +36,7 @@ namespace Content
             _userId = -1;
             _subscribers = new List<IContentListener>();
             _allMessages = new List<ChatContext>();
-            _contextMap = new Dictionary<ObjectId, int>();
+            _contextMap = new Dictionary<int, int>();
             _fileHandler = new FileClient();
             _chatHandler = new ChatClient();
 
@@ -75,7 +74,7 @@ namespace Content
         }
 
         /// <inheritdoc/>
-        public void CDownload(ObjectId messageId, string savePath)
+        public void CDownload(int messageId, string savePath)
         {
             // check that the message with ID messageID exists and is indeed a file
             int found = 0;
@@ -101,13 +100,13 @@ namespace Content
         }
 
         /// <inheritdoc/>
-        public void CMarkStar(ObjectId messageId)
+        public void CMarkStar(int messageId)
         {
             _chatHandler.ChatStar(messageId);
         }
 
         /// <inheritdoc/>
-        public void CUpdateChat(ObjectId messageId, string newMessage)
+        public void CUpdateChat(int messageId, string newMessage)
         {
             throw new NotImplementedException();
         }
@@ -119,7 +118,7 @@ namespace Content
         }
 
         /// <inheritdoc/>
-        public ChatContext CGetThread(ObjectId threadId)
+        public ChatContext CGetThread(int threadId)
         {
             if (_contextMap.ContainsKey(threadId))
             {
@@ -178,7 +177,7 @@ namespace Content
             ReceiveMessageData receivedMessage = message as ReceiveMessageData;
             
             // add the message to the correct ChatContext in allMessages
-            ObjectId key = receivedMessage.ReplyThreadId;
+            int key = receivedMessage.ReplyThreadId;
             if (_contextMap.ContainsKey(key))
             {
                 int index = _contextMap[key];
@@ -215,7 +214,7 @@ namespace Content
             ReceiveMessageData receivedMessage = message as ReceiveMessageData;
 
             // update the message in _allMessages
-            ObjectId key = receivedMessage.ReplyThreadId;
+            int key = receivedMessage.ReplyThreadId;
             if (_contextMap.ContainsKey(key))
             {
                 int index = _contextMap[key];
@@ -223,7 +222,7 @@ namespace Content
                 int i;
                 for (i = 0; i < numMessages; i++)
                 {
-                    ObjectId id = _allMessages[index].MsgList[i].MessageId;
+                    int id = _allMessages[index].MsgList[i].MessageId;
                     if (id == receivedMessage.MessageId)
                     {
                         _allMessages[index].MsgList[i] = receivedMessage;
@@ -248,8 +247,8 @@ namespace Content
 
         public void StarMessageHandler(MessageData message)
         {
-            ObjectId contextId = message.ReplyThreadId;
-            ObjectId messageId = message.MessageId;
+            int contextId = message.ReplyThreadId;
+            int messageId = message.MessageId;
 
             if (_contextMap.ContainsKey(contextId))
             {
@@ -258,7 +257,7 @@ namespace Content
                 int i;
                 for (i = 0; i < numMessages; i++)
                 {
-                    ObjectId id = _allMessages[index].MsgList[i].MessageId;
+                    int id = _allMessages[index].MsgList[i].MessageId;
                     if (id == messageId)
                     {
                         _allMessages[index].MsgList[i].Starred = true;

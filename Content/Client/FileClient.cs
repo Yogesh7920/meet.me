@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Networking;
-using MongoDB.Bson;
 
 namespace Content
 {
@@ -45,11 +44,11 @@ namespace Content
             // set toSend's fields appropriately
             toSend.Event = MessageEvent.NewMessage;
             toSend.Type = MessageType.File;
-            toSend.MessageId = ObjectId.Empty;
+            toSend.MessageId = -1;
             toSend.Message = filedata.fileName;
             toSend.SenderId = _userId;
             toSend.ReceiverIds = message.ReceiverIds;
-            toSend.ReplyThreadId = ObjectId.Empty;
+            toSend.ReplyThreadId = -1;
             toSend.SentTime = DateTime.Now;
             toSend.Starred = false;
 
@@ -62,7 +61,7 @@ namespace Content
             _communicator.Send(toSendSerialized, "Content");
         }
 
-        public void Download(ObjectId messageId, string savepath)
+        public void Download(int messageId, string savepath)
         {
             MessageData toSend = new MessageData();
 
