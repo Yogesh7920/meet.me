@@ -20,6 +20,9 @@ namespace Networking
             _notificationHandlers = notificationHandlers;
         }
 
+        /// <summary>
+        /// Listens on the receiving queue and calls Notification Handler of the corresponding module.
+        /// </summary>
         public void Start()
         {
             Thread listener = new Thread(ListenQueue);
@@ -27,6 +30,9 @@ namespace Networking
             listener.Start();
         }
         
+        /// <summary>
+        /// Listens on the receiving queue and calls Notification Handler of the corresponding module.
+        /// </summary>
         public void Stop()
         {
             _listenRun = false;
@@ -37,21 +43,24 @@ namespace Networking
         /// </summary>
         public void ListenQueue()
         {
-            while (!_receieveQueue.IsEmpty() && _listenRun)
+            while (_listenRun)
             {
-                Packet packet = _receieveQueue.Dequeue();
-                string data = packet.SerializedData;
-                string moduleIdentifier = packet.ModuleIdentifier;
+                while (!_receieveQueue.IsEmpty())
+                {
+                    Packet packet = _receieveQueue.Dequeue();
+                    string data = packet.SerializedData;
+                    string moduleIdentifier = packet.ModuleIdentifier;
 
-                // If the _notificationHandlers dictionary contains the moduleIdentifier
-                if (_notificationHandlers.ContainsKey(moduleIdentifier))
-                {
-                    INotificationHandler handler = _notificationHandlers[moduleIdentifier];
-                    _ = Task.Run(() => { handler.OnDataReceived(data); });
-                }
-                else
-                {
-                    throw new Exception("Handler does not exist");
+                    // If the _notificationHandlers dictionary contains the moduleIdentifier
+                    if (_notificationHandlers.ContainsKey(moduleIdentifier))
+                    {
+                        INotificationHandler handler = _notificationHandlers[moduleIdentifier];
+                        _ = Task.Run(() => { handler.OnDataReceived(data); });
+                    }
+                    else
+                    {
+                        throw new Exception("Handler does not exist");
+                    }
                 }
             }
         }
