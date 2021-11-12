@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using MongoDB.Bson;
 using Networking;
 
 namespace Content
@@ -36,7 +35,7 @@ namespace Content
         public void ChatNewMessage(SendMessageData toserver)
         {
             MessageData tosend = SendToMessage(toserver, MessageEvent.NewMessage);
-            tosend.MessageId = ObjectId.Empty;
+            tosend.MessageId = -1;
             string xml = _serializer.Serialize<MessageData>(tosend);
             _communicator.Send(xml, _moduleIdentifier);
 
@@ -47,7 +46,7 @@ namespace Content
             throw new NotImplementedException();
         }
 
-        public void ChatStar(ObjectId messageId)
+        public void ChatStar(int messageId)
         {
             MessageData toSend = new MessageData();
             toSend.MessageId = messageId;
