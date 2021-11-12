@@ -1,5 +1,6 @@
 using System;
 using System.Dynamic;
+using System.Threading;
 using Networking;
 
 namespace Testing.Networking
@@ -56,6 +57,11 @@ namespace Testing.Networking
     public class FakeNotificationHandler : INotificationHandler
     {
         public readonly dynamic ReceivedData = new ExpandoObject();
+
+        public void Wait(int waitTime=10)
+        {
+            while (ReceivedData.Event is null) { Thread.Sleep(waitTime); }
+        }
 
         public void OnDataReceived(string data)
         {

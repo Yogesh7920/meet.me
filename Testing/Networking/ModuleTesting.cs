@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace Testing.Networking
 {
-    [TestFixture]
+    [TestFixture, Timeout(10000)]
     public class ModuleTesting
     {
         private ISerializer _serializer = new Serializer();
@@ -81,7 +81,7 @@ namespace Testing.Networking
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
             Assert.DoesNotThrow(() => FakeMachineA.Communicator.Send(message, moduleId));
-            Thread.Sleep(100);
+            FakeServer.WbHandler.Wait();
             Assert.AreNotEqual(NotificationEvents.OnDataReceived, FakeServer.SsHandler.ReceivedData.Event);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeServer.WbHandler.ReceivedData.Event);
             Assert.AreEqual(message, FakeServer.WbHandler.ReceivedData.Data);
@@ -93,7 +93,7 @@ namespace Testing.Networking
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
             Assert.DoesNotThrow(() => FakeServer.Communicator.Send(message, moduleId));
-            Thread.Sleep(100);
+            FakeMachineA.WbHandler.Wait();
             Assert.AreEqual(FakeMachineA.SsHandler.ReceivedData.Event, null);
             Assert.AreNotEqual(NotificationEvents.OnDataReceived, FakeMachineA.SsHandler.ReceivedData.Event);
         }
@@ -104,7 +104,7 @@ namespace Testing.Networking
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
             Assert.DoesNotThrow(() => FakeServer.Communicator.Send(message, moduleId, FakeMachineA.ClientID));
-            Thread.Sleep(100);
+            FakeMachineA.WbHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineA.WbHandler.ReceivedData.Event);
             Assert.AreEqual(null, FakeMachineA.SsHandler.ReceivedData.Event);
             Assert.AreEqual(null, FakeMachineB.WbHandler.ReceivedData.Event);
@@ -136,15 +136,16 @@ namespace Testing.Networking
             FakeChat fakeChat = FakeChat.GetFakeChat();
             string message = _serializer.Serialize(fakeChat);
             Assert.DoesNotThrow(() => FakeMachineA.Communicator.Send(message, moduleId));
-            Thread.Sleep(100);
+            FakeServer.WbHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeServer.WbHandler.ReceivedData.Event);
             FakeChat serverMessage = _serializer.Deserialize<FakeChat>(FakeServer.WbHandler.ReceivedData.Data);
             Assert.AreEqual(serverMessage.ToString(), fakeChat.ToString());
             Assert.DoesNotThrow(() => FakeServer.Communicator.Send(
                 _serializer.Serialize(serverMessage), 
                 moduleId));
-            Thread.Sleep(100);
+            FakeMachineA.WbHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineA.WbHandler.ReceivedData.Event);
+            FakeMachineB.WbHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineB.WbHandler.ReceivedData.Event);
         }
 
@@ -167,9 +168,9 @@ namespace Testing.Networking
             FakeMachineA.Communicator.Subscribe(Modules.WhiteBoard, FakeMachineA.WbHandler, Priorities.WhiteBoard);
             FakeMachineA.Communicator.Subscribe(Modules.ScreenShare, FakeMachineA.SsHandler, Priorities.ScreenShare);
             Assert.AreEqual("1", FakeMachineA.Communicator.Start(_serverIp, _serverPort));
+            FakeServer.WbHandler.Wait();
             Assert.AreEqual(FakeServer.WbHandler.ReceivedData.Event, NotificationEvents.OnClientJoined);
             Assert.AreEqual(FakeServer.SsHandler.ReceivedData.Event, NotificationEvents.OnClientJoined);
-            Console.WriteLine(FakeServer.WbHandler.ReceivedData.Data);
             FakeServer.Communicator.AddClient(FakeMachineA.ClientID, FakeServer.WbHandler.ReceivedData.Data);
         }
 
@@ -179,14 +180,15 @@ namespace Testing.Networking
             string moduleId = Modules.WhiteBoard;
             string message = NetworkingGlobals.GetRandomString(2000);
             Assert.DoesNotThrow(() => FakeMachineA.Communicator.Send(message, moduleId));
-            Thread.Sleep(100);
+            FakeServer.WbHandler.Wait(); 
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeServer.WbHandler.ReceivedData.Event);
             Assert.AreEqual(message, FakeServer.WbHandler.ReceivedData.Data);
             Assert.DoesNotThrow(() => FakeServer.Communicator.Send(
                 FakeServer.WbHandler.ReceivedData.Data, 
                 moduleId));
-            Thread.Sleep(100);
+            FakeMachineA.WbHandler.Wait(); 
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineA.WbHandler.ReceivedData.Event);
+            FakeMachineB.WbHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineB.WbHandler.ReceivedData.Event);
         }
     }
