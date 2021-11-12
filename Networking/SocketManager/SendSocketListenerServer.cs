@@ -186,7 +186,6 @@ namespace Networking
         /// <summary>
         /// This method is for stopping the thread
         /// </summary>
-        /// TODO calling remove client does not remove client from the hashtable here. This causes System.ObjectDisposedException
         public void Stop()
         {
             _listenRun = false;
