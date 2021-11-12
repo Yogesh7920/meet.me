@@ -2,12 +2,13 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/12/2021
- * Date Modified: 10/12/2021
+ * Date Modified: 11/12/2021
 **/
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,12 +21,12 @@ namespace Whiteboard
     /// </summary>
     public sealed class ServerBoardStateManager : IServerBoardStateManager
     {
-        private IServerCheckPointHandler _serverCheckPointHandler;
+        private readonly IServerCheckPointHandler _serverCheckPointHandler;
 
         // data structures to maintain state
-        private Dictionary<string, BoardShape> _mapIdToBoardShape;
-        private Dictionary<string, QueueElement> _mapIdToQueueElement;
-        private BoardPriorityQueue _priorityQueue;
+        private readonly Dictionary<string, BoardShape> _mapIdToBoardShape;
+        private readonly Dictionary<string, QueueElement> _mapIdToQueueElement;
+        private readonly BoardPriorityQueue _priorityQueue;
 
         /// <summary>
         /// Constructor initializing all the attributes. 
@@ -47,7 +48,7 @@ namespace Whiteboard
         /// <param name="checkpointNumber">The identifier/number of the checkpoint which needs to fetched.</param>
         /// <param name="userId">The user who requested the checkpoint.</param>
         /// <returns>BoardServerShape containing all shape information to broadcast to all clients.</returns>
-        public BoardServerShape FetchCheckpoint(int checkpointNumber, string userId)
+        public BoardServerShape FetchCheckpoint([NotNull] int checkpointNumber, [NotNull] string userId)
         {
             try
             {
@@ -69,7 +70,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="userId">The newly joined user who requested the state fetch.</param>
         /// <returns>BoardServerShape containing all shape updates and no. of checkpoints to send to the client.</returns>
-        public BoardServerShape FetchState(string userId)
+        public BoardServerShape FetchState([NotNull] string userId)
         {
             try
             {
@@ -103,7 +104,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="userId">Id of the user who requested to save this checkpoint.</param>
         /// <returns>BoardServerShape object specifying the checkpoint number which was created.</returns>
-        public BoardServerShape SaveCheckpoint(string userId)
+        public BoardServerShape SaveCheckpoint([NotNull] string userId)
         {
             try
             {
@@ -127,9 +128,76 @@ namespace Whiteboard
         /// </summary>
         /// <param name="boardServerShape">Object containing the update information for shape.</param>
         /// <returns>Boolean to indicate success status of update.</returns>
-        public bool SaveUpdate(BoardServerShape boardServerShape)
+        public bool SaveUpdate([NotNull] BoardServerShape boardServerShape)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // expecting one operation update at a time
+                if (boardServerShape.ShapeUpdates.Count != BoardConstants.SINGLE_UPDATE_SIZE)
+                {
+                    throw new NotSupportedException("Multiple shape operation.");
+                }
+
+                if (boardServerShape.OperationFlag == Operation.CREATE)
+                {
+                    // Get the board shape and create a new queue element
+                    BoardShape boardShape = boardServerShape.ShapeUpdates[0];
+                    QueueElement queueElement = new(boardShape.Uid, boardShape.LastModifiedTime);
+
+                    // Checking pre-conditions
+                    PreConditionChecker(boardShape, Operation.CREATE);
+
+                    // Add the update in respective data structures
+                    _mapIdToBoardShape.Add(boardShape.Uid, boardShape);
+                    _priorityQueue.Insert(queueElement);
+                    _mapIdToQueueElement.Add(boardShape.Uid, queueElement);
+                    
+                    return true;
+                }
+
+                else if(boardServerShape.OperationFlag == Operation.MODIFY)
+                {
+                    // Get the modified board shape
+                    BoardShape boardShape = boardServerShape.ShapeUpdates[0];
+
+                    // Checking pre-conditions
+                    PreConditionChecker(boardShape, Operation.MODIFY);
+
+                    // Modify the update in respective data structures
+                    _mapIdToBoardShape[boardShape.Uid] = boardShape;
+                    QueueElement queueElement = _mapIdToQueueElement[boardShape.Uid];
+                    _priorityQueue.IncreaseTimestamp(queueElement, boardShape.LastModifiedTime);
+
+                    return true;
+                }
+
+                else if(boardServerShape.OperationFlag == Operation.DELETE)
+                {
+                    // Get the shape to be deleted
+                    BoardShape boardShape = boardServerShape.ShapeUpdates[0];
+
+                    // Checking pre-conditions
+                    PreConditionChecker(boardShape, Operation.DELETE);
+
+                    // Delete from the respective data structures
+                    _mapIdToBoardShape.Remove(boardShape.Uid);
+                    _priorityQueue.DeleteElement(_mapIdToQueueElement[boardShape.Uid]);
+                    _mapIdToQueueElement.Remove(boardShape.Uid);
+
+                    return true;
+                }
+                else
+                {
+                    // No other flags are supported in SaveUpdate.
+                    throw new NotSupportedException("Operation not supported.");
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("ServerBoardStateManager.SaveUpdate: Exception occurred.");
+                Trace.WriteLine(e.Message);
+            }
+            return false;
         }
 
         /// <summary>
@@ -142,7 +210,7 @@ namespace Whiteboard
             List<BoardShape> boardShapes = new();
 
             // Getting all elements from the queue
-            while (_priorityQueue.GetSize() != 0)
+            while (_priorityQueue.GetSize() != BoardConstants.EMPTY_SIZE)
             {
                 queueElements.Add(_priorityQueue.Extract());
             }
@@ -161,6 +229,50 @@ namespace Whiteboard
             }
 
             return boardShapes;
+        }
+
+        /// <summary>
+        /// Checks pre-condtions for SaveUpdate
+        /// </summary>
+        /// <param name="boardShape">BoardShape signifying the output.</param>
+        /// <param name="operation">The operation specified in BoardServerShape containing boardShape.</param>
+        private void PreConditionChecker(BoardShape boardShape, [NotNull] Operation operation)
+        {
+            if (boardShape == null)
+            {
+                Trace.WriteLine("ServerBoardStateManager.PreConditionChecker: Null BoardShape");
+                throw new NullReferenceException();
+            }
+
+            if(operation != boardShape.RecentOperation)
+            {
+                Trace.WriteLine("ServerBoardStateManager.PreConditionChecker: Operation equality condition failed.");
+                throw new InvalidOperationException("Operation type should be same.");
+            }
+            
+            if(operation == Operation.CREATE)
+            {
+                // Remove the key,value pair from the map if an entry with that key already exist.
+                if (_mapIdToBoardShape.ContainsKey(boardShape.Uid) || _mapIdToQueueElement.ContainsKey(boardShape.Uid))
+                {
+                    Trace.WriteLine("ServerBoardStateManager.PreConditionChecker: Create condition failed.");
+                    throw new InvalidOperationException("Shape with same id already exists.");
+                }
+            }
+            else if(operation == Operation.DELETE || operation == Operation.MODIFY)
+            {
+                // The maps should contain this shape's UID. 
+                if (!_mapIdToBoardShape.ContainsKey(boardShape.Uid) || !_mapIdToQueueElement.ContainsKey(boardShape.Uid))
+                {
+                    Trace.WriteLine("ServerBoardStateManager.PreConditionCheker: Shape to be deleted/modified doesn't exist.");
+                    throw new KeyNotFoundException("Shape id not found.");
+                }
+            }
+            else
+            {
+                Trace.WriteLine("ServerBoardStateManager.PreConditionChecker: Unexpected operation.");
+                throw new InvalidOperationException();
+            }
         }
     }
 }

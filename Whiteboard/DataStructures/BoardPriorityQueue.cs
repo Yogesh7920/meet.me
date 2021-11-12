@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/25/2021
- * Date Modified: 10/25/2021
+ * Date Modified: 11/12/2021
 **/
 
 using System;
@@ -47,7 +47,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="childIndex">Child's index whose parent needs to be found.</param>
         /// <returns>Index of parent.</returns>
-        private int Parent(int childIndex)
+        private static int Parent(int childIndex)
         {
             return (childIndex - 1) / 2;
         }
@@ -57,7 +57,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="parentIndex">Parent's index whose right child needs to be found.</param>
         /// <returns>Index of right child.</returns>
-        private int RightChild(int parentIndex)
+        private static int RightChild(int parentIndex)
         {
             return 2 * parentIndex + 2;
         }
@@ -67,7 +67,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="parentIndex">Parent's index whose left child needs to be found.</param>
         /// <returns>Index of left child.</returns>
-        private int LeftChild(int parentIndex)
+        private static int LeftChild(int parentIndex)
         {
             return 2 * parentIndex + 1;
         }
@@ -80,7 +80,7 @@ namespace Whiteboard
         private void SwapElements(int index1, int index2)
         {
             // checking validity of indexes
-            if (index1 >= GetSize() || index1 < 0 || index2 >= GetSize() || index2 < 0)
+            if (index1 >= GetSize() || index1 < BoardConstants.EMPTY_SIZE || index2 >= GetSize() || index2 < BoardConstants.EMPTY_SIZE)
             {
                 throw new IndexOutOfRangeException("Index value out of range. Swapping can't happen.");
             }
@@ -103,7 +103,7 @@ namespace Whiteboard
         private void Heapify(int index)
         {
             // checking validity of indexes
-            if (index < 0 || index >= GetSize())
+            if (index < BoardConstants.EMPTY_SIZE || index >= GetSize())
             {
                 throw new IndexOutOfRangeException("Index value out of range. Can't Heapify.");
             }
@@ -136,7 +136,7 @@ namespace Whiteboard
         /// <returns>QueueElement having highest priority or null if queue is empty.</returns>
         public QueueElement Top()
         {
-            if (GetSize() == 0)
+            if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 Trace.Indent();
                 Trace.WriteLine("Whiteboard.BoardPriorityQueue.Top: Priority queue empty, returning null");
@@ -168,6 +168,17 @@ namespace Whiteboard
             Trace.Unindent();
         }
 
+        public void Insert(List<QueueElement> queueElements)
+        {
+            Trace.Indent();
+            for (int i = 0; i < queueElements.Count; i++)
+            {
+                Insert(queueElements[i]);
+            }
+            Trace.WriteLine("Whiteboard.BoardPriorityQueue.Insert: Inserted the list of elements successfully.");
+            Trace.Unindent();
+        }
+
         /// <summary>
         /// Removes the latest(in terms of timestamp) element.
         /// </summary>
@@ -175,7 +186,7 @@ namespace Whiteboard
         public QueueElement Extract()
         {
             Trace.Indent();
-            if (GetSize() == 0)
+            if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 Trace.WriteLine("Whiteboard.BoardPriorityQueue.Extract: No element present, returning null.");
                 Trace.Unindent();
@@ -219,10 +230,16 @@ namespace Whiteboard
             int index = queueElement.Index;
 
             // if index is out of range 
-            if (index < 0 || index >= GetSize())
+            if (index < BoardConstants.EMPTY_SIZE || index >= GetSize())
             {
                 Trace.WriteLine("Whiteboard.BoardPriorityQueue.IncreaseTimestamp: Index out of range.");
                 throw new IndexOutOfRangeException("Element index in the queue. IncreaseTimestamp failed.");
+            }
+
+            if(queueElement.Timestamp > dateTime)
+            {
+                Trace.WriteLine("Whiteboard.BoardPriorityQueue.IncreaseTimestamp: Can't decrease timestamp");
+                throw new InvalidOperationException();
             }
 
             // update timestamp and place the element at correct position.

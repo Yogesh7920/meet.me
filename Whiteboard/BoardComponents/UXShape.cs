@@ -96,5 +96,16 @@ namespace Whiteboard
         {
         }
 
+        public UXShape(int checkpointNumber, Operation operationFlag)
+        {
+            CheckPointNumber = checkpointNumber;
+            OperationType = operationFlag;
+            UxOperation = UXOperation.NONE;
+            WindowsShape = null;
+            ShapeIdentifier = ShapeType.NONE;
+            TranslationCoordinate = null;
+            AngleOfRotation = 0;
+        }
+
     }
 }

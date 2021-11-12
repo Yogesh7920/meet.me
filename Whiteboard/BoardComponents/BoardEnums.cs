@@ -30,7 +30,8 @@ namespace Whiteboard
         ELLIPSE,
         RECTANGLE,
         LINE,
-        POLYLINE
+        POLYLINE,
+        NONE
     }
 
     /// <summary>
@@ -39,7 +40,8 @@ namespace Whiteboard
     public enum UXOperation
     {
         CREATE,
-        DELETE
+        DELETE,
+        NONE
     }
 
     /// <summary>
