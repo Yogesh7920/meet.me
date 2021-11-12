@@ -4,6 +4,26 @@ using Networking;
 
 namespace Testing.Networking
 {
+    public static class FakeMachineB
+    {
+        public static string ClientID = "B";
+        public static ICommunicator Communicator;
+        public static FakeNotificationHandler WbHandler = new(), SsHandler = new();
+    }
+
+    public static class FakeServer
+    {
+        public static ICommunicator Communicator;
+        public static FakeNotificationHandler WbHandler = new(), SsHandler = new();
+    }
+
+    public static class FakeMachineA
+    {
+        public static string ClientID = "A";
+        public static ICommunicator Communicator;
+        public static FakeNotificationHandler WbHandler = new(), SsHandler = new();
+    }
+
     public static class Modules
     {
         public const string
@@ -35,13 +55,14 @@ namespace Testing.Networking
 
     public class FakeNotificationHandler : INotificationHandler
     {
-        public readonly dynamic ReceivedData = new ExpandoObject(); 
+        public readonly dynamic ReceivedData = new ExpandoObject();
+
         public void OnDataReceived(string data)
         {
             ReceivedData.Event = NotificationEvents.OnDataReceived;
             ReceivedData.Data = data;
         }
-        
+
         public void OnClientJoined<T>(T socketObject)
         {
             ReceivedData.Event = NotificationEvents.OnClientJoined;
@@ -53,7 +74,12 @@ namespace Testing.Networking
             ReceivedData.Event = NotificationEvents.OnClientLeft;
             ReceivedData.Data = clientId;
         }
-        
+
+        public void Reset()
+        {
+            ReceivedData.Event = null;
+            ReceivedData.Data = null;
+        }
     }
 
     public class FakeChat
@@ -69,13 +95,17 @@ namespace Testing.Networking
             return fakeChat;
         }
     }
-    
+
     public static class NetworkingGlobals
     {
-        public static string GetRandomString(int length=10)
+        public static ICommunicator NewClientCommunicator => CommunicationFactory.GetCommunicator(true, true);
+
+        public static ICommunicator NewServerCommunicator => CommunicationFactory.GetCommunicator(false, true);
+
+        public static string GetRandomString(int length = 10)
         {
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var stringChars = new char[8];
+            var chars = "ABCDEGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var stringChars = new char[length];
             var random = new Random();
 
             for (int i = 0; i < stringChars.Length; i++)

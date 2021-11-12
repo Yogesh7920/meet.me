@@ -19,9 +19,9 @@ namespace Networking
             _receieveQueue = queue;
             _notificationHandlers = notificationHandlers;
         }
-
+        
         /// <summary>
-        /// Listens on the receiving queue and calls Notification Handler of the corresponding module.
+        /// Starts the ReceiveQueueListener on a new thread
         /// </summary>
         public void Start()
         {
@@ -31,7 +31,7 @@ namespace Networking
         }
         
         /// <summary>
-        /// Listens on the receiving queue and calls Notification Handler of the corresponding module.
+        /// Stops the ReceiveQueueListener thread
         /// </summary>
         public void Stop()
         {
@@ -61,7 +61,7 @@ namespace Networking
                     {
                         throw new Exception("Handler does not exist");
                     }
-                }
+                }   
             }
         }
     }

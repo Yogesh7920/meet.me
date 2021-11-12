@@ -16,9 +16,6 @@ namespace Networking
         // Declare the dictionary variable which stores client_ID and corresponding socket object 
         private readonly Dictionary<string, TcpClient> _clientIdSocket = new();
 
-        // Declare the TcpClient set variable 
-        private HashSet<TcpClient> _tcpSockets;
-
         // Declare the thread variable of SendSocketListenerServer 
         private Thread _listen;
 
@@ -85,7 +82,7 @@ namespace Networking
             else
             {
                 string clientId = packet.Destination;
-                tcpSocket.Add((TcpClient) _clientIdSocket[clientId]);
+                tcpSocket.Add(_clientIdSocket[clientId]);
             }
 
             return tcpSocket;
@@ -109,7 +106,7 @@ namespace Networking
                     String msg = GetMessage(packet);
 
                     // Call GetDestination function to know destination from the packet object
-                    _tcpSockets = GetDestination(packet);
+                    HashSet<TcpClient> tcpSockets = GetDestination(packet);
 
                     // Variable used in the process of fragmentation
                     String buffer = "";
@@ -124,7 +121,7 @@ namespace Networking
                             {
                                 // Write the part of the data which is taken from the queue 
                                 //to the client sockets
-                                foreach (TcpClient tcpSocket in _tcpSockets)
+                                foreach (TcpClient tcpSocket in tcpSockets)
                                 {
                                     byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
                                     NetworkStream networkStream = tcpSocket.GetStream();
@@ -160,15 +157,13 @@ namespace Networking
                         {
                             // Write the part of the data which is taken from the queue 
                             //to the client sockets
-                            foreach (TcpClient tcpSocket in _tcpSockets)
+                            foreach (TcpClient tcpSocket in tcpSockets)
                             {
                                 byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
                                 NetworkStream networkStream = tcpSocket.GetStream();
                                 networkStream.Write(outStream, 0, outStream.Length);
                                 networkStream.Flush();
                             }
-
-                            ;
 
                             buffer = "";
                         }
@@ -191,6 +186,7 @@ namespace Networking
         /// <summary>
         /// This method is for stopping the thread
         /// </summary>
+        /// TODO calling remove client does not remove client from the hashtable here. This causes System.ObjectDisposedException
         public void Stop()
         {
             _listenRun = false;

@@ -31,7 +31,7 @@ namespace Networking
             new();
 
         /** Declare dictionary variable to store client Id and corresponding socket object*/
-        private readonly Dictionary<string, TcpClient> _clientIdSocket = new();
+        private Dictionary<string, TcpClient> _clientIdSocket = new();
 
         /** Declare queue variable for receiving messages*/
         private readonly Queue _receiveQueue = new();
@@ -50,8 +50,6 @@ namespace Networking
 
         /** Variable for testing mode*/
         private readonly bool _isTesting;
-
-        TcpClient _clientSocket = new();
 
         /**
          * Constructor that enables testing mode
@@ -125,7 +123,8 @@ namespace Networking
 
             if (_isTesting)
             {
-                TestRegisterModule();
+                // TODO You can remove this call communicator.Subscribe instead
+                // TestRegisterModule();
             }
 
             Trace.WriteLine("Server has started with ip = " + ip.ToString()
@@ -156,12 +155,12 @@ namespace Networking
                     {
                         module.Value.OnClientJoined(clientSocket);
                     }
-
-                    if (_isTesting)
-                    {
-                        testCount++;
-                        TestAddClient(testCount.ToString(), clientSocket);
-                    }
+                    // TODO this shouldn't be here since it affects the testing of other modules
+                    // if (_isTesting)
+                    // {
+                    //     testCount++;
+                    //     TestAddClient(testCount.ToString(), clientSocket);
+                    // }
                 }
                 catch (SocketException e)
                 {
@@ -316,6 +315,10 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier, string destination)
         {
+            if (!_clientIdSocket.ContainsKey(destination))
+            {
+                throw new Exception("Client does not exist in the room!");
+            }
             Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
             try
             {
@@ -334,6 +337,7 @@ namespace Networking
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);
+            _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);
         }
     }

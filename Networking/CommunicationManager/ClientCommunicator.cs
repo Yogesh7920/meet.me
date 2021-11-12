@@ -71,7 +71,8 @@ namespace Networking
                 //for testing purpose
                 if (_isTesting)
                 {
-                    TestRegisterModule();
+                    // TODO You can remove this call communicator.Subscribe instead
+                    // TestRegisterModule();
                 }
 
                 return "1";
@@ -143,13 +144,13 @@ namespace Networking
         /// <inheritdoc />
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientId)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <summary>

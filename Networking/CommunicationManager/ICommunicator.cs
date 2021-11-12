@@ -60,6 +60,9 @@
         /// for testing purpose
         /// </summary>
         /// <returns> Packet</returns>
+        /// TODO
+        /// You cannot use this since before you try to access the front packet the
+        /// ReceiveQueueListener would have dequeued the packet and passed it on to other modules.
         Packet FrontPacket();
     }
 }
