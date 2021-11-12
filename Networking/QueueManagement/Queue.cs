@@ -72,7 +72,7 @@ namespace Networking
                 _currentQueue = _moduleIdentifiers.FindIndex(x => x == _currentModuleIdentifier);
             }
 
-            Trace.WriteLine("Module Registered");
+            Trace.WriteLine($"Module Registered with ModuleIdentifier: {moduleId} and Priority: {priority.ToString()}");
         }
 
         /// <summary>
@@ -81,7 +81,6 @@ namespace Networking
         /// <returns>The number of packets the queue holds.</returns>
         public int Size()
         {
-            Trace.WriteLine("Calculating size of the queue");
             int totalPackets = 0;
             foreach (var keyValuePair in _multiLevelQueue)
             {
@@ -172,7 +171,6 @@ namespace Networking
         /// <returns>True if queue is empty and false otherwise.</returns>
         public bool IsEmpty()
         {
-            Trace.WriteLine("Checking if queue is empty");
             if (Size() == 0) return true;
             return false;
         }
