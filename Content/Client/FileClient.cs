@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Diagnostics;
 using Networking;
 
 namespace Content
@@ -24,6 +25,7 @@ namespace Content
         /// <param name="message">SendMessageData object specifying the file message to send</param>
         public void Send(SendMessageData message)
         {
+            Trace.WriteLine("[FileClient] Received file send request");
             if (message.Type != MessageType.File)
             {
                 throw new ArgumentException("Message argument to FileClient::Send does not have MessageType File");
@@ -55,9 +57,11 @@ namespace Content
             toSend.FileData = filedata;
 
             // serialize the message
+            Trace.WriteLine("[FileClient] Serializing the file data");
             string toSendSerialized = _serializer.Serialize(toSend);
 
             // send the message
+            Trace.WriteLine("[FileClient] Sending the file to server");
             _communicator.Send(toSendSerialized, "Content");
         }
 
@@ -73,6 +77,8 @@ namespace Content
 
             // serialize the message and send via network
             string toSendSerialized = _serializer.Serialize(toSend);
+
+            Trace.WriteLine("[FileClient] Sending file download request to server");
             _communicator.Send(toSendSerialized, "Content");
         }
     }
