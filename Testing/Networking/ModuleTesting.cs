@@ -16,12 +16,6 @@ namespace Testing.Networking
         [OneTimeSetUp]
         public void StartServerAndClientJoin_ServerShouldBeNotified()
         {
-            FakeServer.SsHandler.Reset();
-            FakeServer.WbHandler.Reset();
-            FakeMachineA.SsHandler.Reset();
-            FakeMachineA.WbHandler.Reset();
-            FakeMachineB.SsHandler.Reset();
-            FakeMachineB.WbHandler.Reset();
             FakeServer.Communicator = NetworkingGlobals.NewServerCommunicator;
             FakeServer.Communicator.Subscribe(Modules.WhiteBoard, FakeServer.WbHandler, Priorities.WhiteBoard);
             FakeServer.Communicator.Subscribe(Modules.ScreenShare, FakeServer.SsHandler, Priorities.ScreenShare);
@@ -81,7 +75,7 @@ namespace Testing.Networking
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
             Assert.DoesNotThrow(() => FakeMachineA.Communicator.Send(message, moduleId));
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             Assert.AreNotEqual(NotificationEvents.OnDataReceived, FakeServer.SsHandler.ReceivedData.Event);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeServer.WbHandler.ReceivedData.Event);
             Assert.AreEqual(message, FakeServer.WbHandler.ReceivedData.Data);
@@ -93,7 +87,7 @@ namespace Testing.Networking
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
             Assert.DoesNotThrow(() => FakeServer.Communicator.Send(message, moduleId));
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             Assert.AreEqual(FakeMachineA.SsHandler.ReceivedData.Event, null);
             Assert.AreNotEqual(NotificationEvents.OnDataReceived, FakeMachineA.SsHandler.ReceivedData.Event);
         }
@@ -104,7 +98,7 @@ namespace Testing.Networking
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
             Assert.DoesNotThrow(() => FakeServer.Communicator.Send(message, moduleId, FakeMachineA.ClientID));
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineA.WbHandler.ReceivedData.Event);
             Assert.AreEqual(null, FakeMachineA.SsHandler.ReceivedData.Event);
             Assert.AreEqual(null, FakeMachineB.WbHandler.ReceivedData.Event);
@@ -136,14 +130,14 @@ namespace Testing.Networking
             FakeChat fakeChat = FakeChat.GetFakeChat();
             string message = _serializer.Serialize(fakeChat);
             Assert.DoesNotThrow(() => FakeMachineA.Communicator.Send(message, moduleId));
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeServer.WbHandler.ReceivedData.Event);
             FakeChat serverMessage = _serializer.Deserialize<FakeChat>(FakeServer.WbHandler.ReceivedData.Data);
             Assert.AreEqual(serverMessage.ToString(), fakeChat.ToString());
             Assert.DoesNotThrow(() => FakeServer.Communicator.Send(
                 _serializer.Serialize(serverMessage), 
                 moduleId));
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineA.WbHandler.ReceivedData.Event);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineB.WbHandler.ReceivedData.Event);
         }
@@ -179,13 +173,13 @@ namespace Testing.Networking
             string moduleId = Modules.WhiteBoard;
             string message = NetworkingGlobals.GetRandomString(2000);
             Assert.DoesNotThrow(() => FakeMachineA.Communicator.Send(message, moduleId));
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeServer.WbHandler.ReceivedData.Event);
             Assert.AreEqual(message, FakeServer.WbHandler.ReceivedData.Data);
             Assert.DoesNotThrow(() => FakeServer.Communicator.Send(
                 FakeServer.WbHandler.ReceivedData.Data, 
                 moduleId));
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineA.WbHandler.ReceivedData.Event);
             Assert.AreEqual(NotificationEvents.OnDataReceived, FakeMachineB.WbHandler.ReceivedData.Event);
         }
