@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Testing")]
@@ -8,40 +7,77 @@ namespace Content
 {
     internal class ContentDatabase
     {
-        private Dictionary<int, MessageData> _messages;
-        private Dictionary<int, ChatContext> _chatContexts;
+        private Dictionary<int, MessageData> _files;
+        private List<ChatContext> _chatContexts;
+        private Dictionary<int, int> _chatContextsMap;
+        private Dictionary<int, int> _messageMap;
 
         public ContentDatabase()
         {
-            _messages = new Dictionary<int, MessageData>();
+            _files = new Dictionary<int, MessageData>();
+            _chatContexts = new List<ChatContext>();
+            _chatContextsMap = new Dictionary<int, int>();
+            _messageMap = new Dictionary<int, int>();
         }
 
-        public MessageData Store(MessageData messageData)
+        public MessageData StoreFile(MessageData messageData)
         {
             messageData.MessageId = IdGenerator.getMessageId();
-            _messages[messageData.MessageId] = messageData;
+            _files[messageData.MessageId] = messageData;
+            return StoreMessage(messageData);
+        }
+
+        public MessageData GetFiles(int messageId)
+        {
+            return _files[messageId];
+        }
+
+        public MessageData StoreMessage(MessageData messageData)
+        {
+            messageData.MessageId = IdGenerator.getMessageId();
+            if (_chatContextsMap.ContainsKey(messageData.ReplyThreadId))
+            {
+                int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
+                ChatContext chatContext = _chatContexts[threadIndex];
+                chatContext.MsgList.Add(messageData);
+                chatContext.NumOfMessages++;
+                _messageMap[messageData.MessageId] = chatContext.NumOfMessages - 1;
+            }
+            else
+            {
+                ChatContext chatContext = new ChatContext();
+                chatContext.CreationTime = messageData.SentTime;
+                chatContext.NumOfMessages = 1;
+                chatContext.MsgList = new List<ReceiveMessageData>();
+                chatContext.ThreadId = IdGenerator.getChatContextId();
+                messageData.ReplyThreadId = chatContext.ThreadId;
+                chatContext.MsgList.Add(messageData);
+
+                _messageMap[messageData.MessageId] = 0;
+                _chatContexts.Add(chatContext);
+                _chatContextsMap[chatContext.ThreadId] = _chatContexts.Count - 1;
+            }
+
             return messageData;
         }
 
-        public void Store(ChatContext chatContext)
+        public void UpdateMessage(ReceiveMessageData messageData)
         {
-            chatContext.ThreadId = IdGenerator.getChatContextId();
-            _chatContexts[chatContext.ThreadId] = chatContext;
+            int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
+            int messageIndex = _messageMap[messageData.MessageId];
+            _chatContexts[threadIndex].MsgList[messageIndex] = messageData;
         }
 
-        public void UpdateMessageData(int id, MessageData messageData)
+        public List<ChatContext> GetChatContexts()
         {
-            _messages[id] = messageData;
+            return _chatContexts;
         }
 
-        public void UpdateChatContext(int id, ChatContext chatContext)
+        public ReceiveMessageData GetMessage(MessageData messageData)
         {
-            _chatContexts[id] = chatContext;
-        }
-
-        public MessageData RetrieveMessage(int messageId)
-        {
-            return _messages[messageId];
+            int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
+            int messageIndex = _messageMap[messageData.MessageId];
+            return _chatContexts[threadIndex].MsgList[messageIndex];
         }
     }
 }

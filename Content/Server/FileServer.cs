@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Content
 {
@@ -33,7 +32,7 @@ namespace Content
 
         private MessageData SaveFile(MessageData messageData)
         {
-            messageData = _contentDatabase.Store(messageData);
+            messageData = _contentDatabase.StoreFile(messageData);
             // the object is going to be typecasted to ReceiveMessageData
             // to be sent to clients, so make filedata null because the filedata
             // will continue to be in memory despite the typecasting
@@ -43,7 +42,7 @@ namespace Content
 
         private MessageData FetchFile(int id)
         {
-            return _contentDatabase.RetrieveMessage(id);
+            return _contentDatabase.GetFiles(id);
         }
     }
 }

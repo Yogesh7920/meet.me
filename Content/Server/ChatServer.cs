@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Content
 {
@@ -37,7 +36,7 @@ namespace Content
 
         private MessageData Update(int id, MessageData messageData)
         {
-            _contentDatabase.UpdateMessageData(id, messageData);
+            _contentDatabase.UpdateMessage(messageData);
             return messageData;
         }
 
@@ -45,18 +44,18 @@ namespace Content
         {
             MessageData messageData = Fetch(id);
             messageData.Starred = !messageData.Starred;
-            _contentDatabase.UpdateMessageData(id, messageData);
+            _contentDatabase.UpdateMessage(messageData);
             return messageData;
         }
 
         private MessageData Store(MessageData messageData)
         {
-            return _contentDatabase.Store(messageData);
+            return _contentDatabase.StoreFile(messageData);
         }
 
         private MessageData Fetch(int messageId)
         {
-            return _contentDatabase.RetrieveMessage(messageId);
+            return _contentDatabase.GetFiles(messageId);
         }
     }
 }

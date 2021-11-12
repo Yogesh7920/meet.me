@@ -12,7 +12,6 @@ namespace Content
         private ContentDatabase _contentDatabase;
         private ISerializer _serializer;
         private FileServer _fileServer;
-        private ChatServer _chatServer;
         private ChatContextServer _chatContextServer;
 
         public ContentServer()
@@ -22,7 +21,6 @@ namespace Content
             _contentDatabase = new ContentDatabase();
             _notificationHandler = new ContentServerNotificationHandler();
             _fileServer = new FileServer(_contentDatabase);
-            _chatServer = new ChatServer(_contentDatabase);
             _chatContextServer = new ChatContextServer(_contentDatabase);
             _serializer = new Serializer();
             _communicator.Subscribe("Content", _notificationHandler);
@@ -40,7 +38,7 @@ namespace Content
             {
                 case MessageType.Chat:
                     Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
-                    receiveMessageData = _chatServer.Receive(messageData);
+                    receiveMessageData = (MessageData)_chatContextServer.Receive(messageData);
                     Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
                     break;
 
@@ -57,9 +55,6 @@ namespace Content
 
             if (messageData.Event != MessageEvent.Download)
             {
-                Trace.WriteLine("[ContentServer] Event is " + messageData.Event);
-                Trace.WriteLine("[ContentServer] Updating ChatContext");
-                _chatContextServer.Receive(receiveMessageData);
                 Trace.WriteLine("[ContentServer] Notifying subscribers");
                 Notify(messageData);
                 Trace.WriteLine("[ContentServer] Sending message to clients");
@@ -89,6 +84,7 @@ namespace Content
                 {
                     _communicator.Send(message, "Content", userId.ToString());
                 }
+                _communicator.Send(message, "Content", messageData.SenderId.ToString());
             }
         }
 
