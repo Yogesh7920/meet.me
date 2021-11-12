@@ -1,10 +1,8 @@
-using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.IO;
 
 namespace Content
 {
-    [BsonIgnoreExtraElements]
     [Serializable()]
     public class SendFileData
     {

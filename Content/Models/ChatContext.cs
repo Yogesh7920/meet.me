@@ -1,11 +1,8 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Content
 {
-    [BsonIgnoreExtraElements]
     public class ChatContext
     {
         /// <summary>
@@ -16,8 +13,7 @@ namespace Content
         /// <summary>
         /// Id of the thread
         /// </summary>
-        [BsonId]
-        public ObjectId ThreadId;
+        public int ThreadId;
 
         /// <summary>
         /// Number of messages in the thread

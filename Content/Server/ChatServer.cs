@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson;
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace Content
@@ -36,13 +35,13 @@ namespace Content
             }
         }
 
-        private MessageData Update(ObjectId id, MessageData messageData)
+        private MessageData Update(int id, MessageData messageData)
         {
             _contentDatabase.UpdateMessageData(id, messageData);
             return messageData;
         }
 
-        private MessageData Star(ObjectId id)
+        private MessageData Star(int id)
         {
             MessageData messageData = Fetch(id);
             messageData.Starred = !messageData.Starred;
@@ -55,7 +54,7 @@ namespace Content
             return _contentDatabase.Store(messageData);
         }
 
-        private MessageData Fetch(ObjectId messageId)
+        private MessageData Fetch(int messageId)
         {
             return _contentDatabase.RetrieveMessage(messageId);
         }

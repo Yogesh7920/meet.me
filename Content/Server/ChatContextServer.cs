@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -13,7 +12,7 @@ namespace Content
         public ChatContextServer(ContentDatabase contentDatabase)
         {
             this._contentDatabase = contentDatabase;
-            this._allMessages = _contentDatabase.RetrieveChatContexts();
+            this._allMessages = new List<ChatContext>();
         }
 
         public void Receive(MessageData messageData)
@@ -29,9 +28,8 @@ namespace Content
 
         private void UpdateChatContext(ReceiveMessageData receiveMessageData)
         {
-            if (receiveMessageData.ReplyThreadId != ObjectId.Empty)
+            if (receiveMessageData.ReplyThreadId != -1)
             {
-                
                 ChatContext chatContext = _allMessages.FirstOrDefault(chatContext => chatContext.ThreadId == receiveMessageData.ReplyThreadId);
                 switch (receiveMessageData.Event)
                 {

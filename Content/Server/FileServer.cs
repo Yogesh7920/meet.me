@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson;
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace Content
@@ -42,7 +41,7 @@ namespace Content
             return messageData;
         }
 
-        private MessageData FetchFile(ObjectId id)
+        private MessageData FetchFile(int id)
         {
             return _contentDatabase.RetrieveMessage(id);
         }
