@@ -17,42 +17,64 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    public enum RealTimeOperation
-    {
-        TRANSLATE,
-        ROTATE,
-        CREATE
-    }
+    /// <summary>
+    /// Handler when board is in Active State.
+    /// </summary>
     class ActiveBoardOperationsHandler : BoardOperationsState
     {
-
-        private class _lastDrawnDetails{
+        /// <summary>
+        /// Class for real-time rendering for storing previous temporary object rendered on UX.
+        /// </summary>
+        private class LastDrawnDetails
+        {
+            /// <summary>
+            /// Last drawn shape object.
+            /// </summary>
             public BoardShape _shape;
+
+            /// <summary>
+            /// End coordinate while drawing last temporary object while real-time rendering.
+            /// </summary>
             public Coordinate _end;
+
+            /// <summary>
+            /// Last real-time operation being performed.
+            /// </summary>
             public RealTimeOperation _operation;
 
-            public _lastDrawnDetails()
+            /// <summary>
+            /// Constructor for LastDrawnDetails.
+            /// </summary>
+            public LastDrawnDetails()
             {
                 _shape = null;
                 _end = null;
             }
 
-            public bool isPending()
+            /// <summary>
+            /// Denotes whether last real-time operation is pending.
+            /// </summary>
+            /// <returns></returns>
+            public bool IsPending()
             {
-                return (_shape == null) ? false : true;
+                return _shape != null;
             }
         }
 
-        private _lastDrawnDetails _lastDrawn;
+        /// <summary>
+        /// Last drawn object.
+        /// </summary>
+        private LastDrawnDetails _lastDrawn;
 
+        /// <summary>
+        /// Constructor with initialisation.
+        /// </summary>
         public ActiveBoardOperationsHandler()
         {
-            _lastDrawn = new _lastDrawnDetails();
+            _lastDrawn = new LastDrawnDetails();
             _stateManager = ClientBoardStateManager.Instance;
             UserLevel = 0;
         }
-        
-        //public delete - to implemented
 
         /// <summary>
         /// Changes the shape fill of the shape.
@@ -60,48 +82,58 @@ namespace Whiteboard
         /// <param name="shapeFill">Modified fill color of the shape..</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> ChangeShapeFill([NotNull]BoardColor shapeFill, [NotNull]string shapeId)
+        public override List<UXShape> ChangeShapeFill([NotNull] BoardColor shapeFill, [NotNull] string shapeId)
         {
-            // get the actual BoardServer object stored in the server
-            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
-            if (shapeFromManager == null) 
+            try
             {
-                Trace.WriteLine("Invalid Shape Id: Shape Id provided for ChangeShapeFill does not exist in State Manager.");
-                return new List<UXShape>();
+                Trace.WriteLine("ActiveBoardOperationsHandler:ChangeShapeFill: Performing ChangeShapeFill Operation.");
+                // get the actual BoardServer object stored in the server
+                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+
+                // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
+                BoardShape newBoardShape = shapeFromManager.Clone();
+                newBoardShape.MainShapeDefiner.ShapeFill = shapeFill.Clone();
+
+                List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
+
+                return Operations;
             }
-
-            // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
-            BoardShape newBoardShape = shapeFromManager.Clone();
-            newBoardShape.MainShapeDefiner.ShapeFill = shapeFill.Clone();
-
-            List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
-
-            return Operations;
+            catch(Exception e)
+            {
+                Trace.WriteLine("ActiveBoardOperationsHandler:ChangeShapeFill: Failure in changing Shape Fill.");
+                Trace.WriteLine(e.Message);
+                return null;
+            }
         }
 
         /// <summary>
-        /// Changes the stroke of the shape.
+        /// Changes the stroke color of the shape.
         /// </summary>
         /// <param name="strokeColor">Modified fill color of outline stroke of shape..</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> ChangeStrokeColor([NotNull] BoardColor strokeColor, [NotNull] string shapeId)
         {
-            // get the actual BoardServer object stored in the server
-            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
-            if (shapeFromManager == null)
+            try
             {
-                Trace.WriteLine("Invalid Shape Id: Shape Id provided for ChangeShapeFill does not exist in State Manager.");
-                return new List<UXShape>();
+                Trace.WriteLine("ActiveBoardOperationsHandler:ChangeStrokeColor: Performing Change StrokeColor Operation.");
+                // get the actual BoardServer object stored in the server
+                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+
+                // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
+                BoardShape newBoardShape = shapeFromManager.Clone();
+                newBoardShape.MainShapeDefiner.StrokeColor = strokeColor.Clone();
+
+                List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
+
+                return Operations;
             }
-
-            // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
-            BoardShape newBoardShape = shapeFromManager.Clone();
-            newBoardShape.MainShapeDefiner.StrokeColor = strokeColor.Clone();
-
-            List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
-
-            return Operations;
+            catch(Exception e)
+            {
+                Trace.WriteLine("ActiveBoardOperationsHandler:ChangeStrokeWidth: Failure in changing Stroke Color.");
+                Trace.WriteLine(e.Message);
+                return null;
+            }
         }
 
         /// <summary>
@@ -112,21 +144,26 @@ namespace Whiteboard
         /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> ChangeStrokeWidth(float strokeWidth, [NotNull] string shapeId)
         {
-            // get the actual BoardServer object stored in the server
-            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
-            if (shapeFromManager == null)
+            try
             {
-                Trace.WriteLine("Invalid Shape Id: Shape Id provided for ChangeShapeFill does not exist in State Manager.");
-                return new List<UXShape>();
+                Trace.WriteLine("ActiveBoardOperationsHandler:ChangeStrokeWidth: Performing  Change StrokeWidth Operation.");
+                // get the actual BoardServer object stored in the server
+                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+
+                // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
+                BoardShape newBoardShape = shapeFromManager.Clone();
+                newBoardShape.MainShapeDefiner.StrokeWidth = strokeWidth;
+
+                List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
+
+                return Operations;
             }
-
-            // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
-            BoardShape newBoardShape = shapeFromManager.Clone();
-            newBoardShape.MainShapeDefiner.StrokeWidth = strokeWidth;
-
-            List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
-
-            return Operations;
+            catch(Exception e)
+            {
+                Trace.WriteLine("ActiveBoardOperationsHandler:ChangeStrokeWidth: Failure in changing Stroke Width.");
+                Trace.WriteLine(e.Message);
+                return null;
+            }
         }
 
         /// <summary>
@@ -144,27 +181,27 @@ namespace Whiteboard
             _lastDrawn = null;
 
             // List of UXShapes to be sent to the server.
-            List<UXShape> operations = new List<UXShape>();
+            List<UXShape> operations = new();
 
-            // Shape Id of the shape is kept same, After modification.
-            string oldShapeId = oldBoardShape.ShapeOwnerId;
+            string oldShapeId = oldBoardShape.Uid;
 
             // Creation of UXShapes for old boardshape.
-            UXShape oldShape = new UXShape(UXOperation.DELETE, oldBoardShape.MainShapeDefiner, oldShapeId);
+            UXShape oldShape = new (UXOperation.DELETE, oldBoardShape.MainShapeDefiner, oldShapeId);
 
-            // Creation of UXShape for new boardshape.
-            UXShape uxNewShape = new UXShape(UXOperation.CREATE, newBoardShape.MainShapeDefiner, oldShapeId);
+            // Creation of UXShape for new boardshape. Shape Id of the shape is kept same, After modification.
+            UXShape uxNewShape = new (UXOperation.CREATE, newBoardShape.MainShapeDefiner, oldShapeId);
 
             // Appending them to list of operations to be performed by the UX.
             operations.Add(oldShape);
             operations.Add(uxNewShape);
 
-            // Setting flags in NewBoardShape before sending to Manager.
             newBoardShape.RecentOperation = operationType;
             newBoardShape.LastModifiedTime = DateTime.Now;
 
+            Trace.WriteLine("ActiveBoardOperationsHandler:UpdateManager: Sending Updates to State Manager.");
+
             // saving the state across clients.
-            _stateManager.SaveOperation(newBoardShape);
+            UpdateStateManager(newBoardShape);
 
             return operations;
         }
@@ -178,190 +215,266 @@ namespace Whiteboard
         /// <param name="strokeWidth">Width of the outline stroke.</param>
         /// <param name="strokeColor">Color of the outline stroke.</param>
         /// <param name="shapeId">Id of the shape.</param>
-        /// <param name="shapeComp">Denotes whether the shape is complete, or if it is for real-time rendering.</param>
+        /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> CreateShape(ShapeType shapeType, [NotNull] Coordinate start, [NotNull] Coordinate end,
                                                   float strokeWidth, [NotNull] BoardColor strokeColor, string shapeId = null,
                                                   bool shapeComp = false)
         {
-
-            // List of Operations to be send to UX
-            List<UXShape> operations = new List<UXShape>();
-            string prevShapeId;
-
-            // A new shape creation.
-            if (shapeId == null)
+            try
             {
-                _lastDrawn = null;
+                // List of Operations to be send to UX
+                List<UXShape> operations = new ();
+                string prevShapeId;
 
-                // Creation and setting params for new shape
-                MainShape newMainShape = ShapeFactory.MainShapeCreatorFactory(shapeType, start, end, null);
-                newMainShape.StrokeColor = strokeColor.Clone();
-                newMainShape.StrokeWidth = strokeWidth;
+                // A new shape creation.
+                if (shapeId == null)
+                {
+                    _lastDrawn = null;
 
-                // Creating corresponding UX shape to be sent to the UX
-                UXShape newUxShape = new UXShape(UXOperation.CREATE, newMainShape, null);
-                prevShapeId = newUxShape.WindowsShape.Uid;
-                operations.Add(newUxShape);
+                    Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Initiating Creation of a new Object.");
 
-                string userId = _stateManager.GetUser();
+                    // Creation and setting params for new shape
+                    MainShape newMainShape = ShapeFactory.MainShapeCreatorFactory(shapeType, start, end, null);
+                    newMainShape.StrokeColor = strokeColor.Clone();
+                    newMainShape.StrokeWidth = strokeWidth;
 
-                _lastDrawn = new _lastDrawnDetails();
-                _lastDrawn._shape = new BoardShape(newMainShape, UserLevel, DateTime.Now, DateTime.Now, prevShapeId, userId, Operation.CREATE);
-                _lastDrawn._end = end;
-                _lastDrawn._operation = RealTimeOperation.CREATE;
+                    // Creating corresponding UX shape to be sent to the UX
+                    UXShape newUxShape = new (UXOperation.CREATE, newMainShape, null);
+                    prevShapeId = newUxShape.WindowsShape.Uid;
+                    operations.Add(newUxShape);
 
+                    string userId = _stateManager.GetUser();
+
+                    _lastDrawn = new LastDrawnDetails
+                    {
+                        _shape = new (newMainShape, UserLevel, DateTime.Now, DateTime.Now, prevShapeId, userId, Operation.CREATE),
+                        _end = end,
+                        _operation = RealTimeOperation.CREATE
+                    };
+
+                    Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Shape Creation complete.");
+
+                }
+                // check to ensure shape is same as the one previously rendering
+                else if (_lastDrawn.IsPending() && _lastDrawn._shape.Uid == shapeId && _lastDrawn._operation == RealTimeOperation.CREATE)
+                {
+                    Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Preparing previous object for deletion");
+
+                    // Delete the Object that was already created in the canvas because of real time rendering
+                    prevShapeId = _lastDrawn._shape.Uid;
+                    UXShape oldShape = new(UXOperation.DELETE, _lastDrawn._shape.MainShapeDefiner, prevShapeId);
+                    operations.Add(oldShape);
+
+                    // modify the MainshapeDefiner and also provide another reference to it.
+                    MainShape modifiedPrevShape = ShapeFactory.MainShapeCreatorFactory(shapeType, _lastDrawn._end, end, _lastDrawn._shape.MainShapeDefiner);
+                    UXShape newUxShape = new (UXOperation.CREATE, modifiedPrevShape, prevShapeId);
+                    operations.Add(newUxShape);
+
+                    _lastDrawn._shape.LastModifiedTime = DateTime.Now;
+                    _lastDrawn._shape.RecentOperation = Operation.CREATE;
+
+                    Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Shape updation complete.");
+
+                }
+                else
+                {
+                    throw new InvalidOperationException("Invalid Request paramaters for Method.");
+                }
+
+                if (shapeComp)
+                {
+                    Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Sending Updates to server.");
+
+                    // send updates to server .. clone of _lastDrawn
+                    BoardShape newBoardShape = _lastDrawn._shape.Clone();
+                    newBoardShape.LastModifiedTime = DateTime.Now;
+                    newBoardShape.CreationTime = DateTime.Now;
+
+                    if (!_stateManager.SaveOperation(newBoardShape))
+                    {
+                        throw new Exception("Couldn't update state of state Manager.");
+                    }
+
+                    //reset the variables
+                    _lastDrawn = null;
+                }
+
+                return operations;
             }
-            // check to ensure shape is same as the one previously rendering
-            else if (_lastDrawn.isPending() && _lastDrawn._shape.Uid == shapeId && _lastDrawn._operation == RealTimeOperation.CREATE)
+            catch (Exception e)
             {
-
-                // Delete the Object that was already created in the canvas because of real time rendering
-                prevShapeId = _lastDrawn._shape.Uid;
-                UXShape oldShape = new UXShape(UXOperation.DELETE, _lastDrawn._shape.MainShapeDefiner, prevShapeId);
-                operations.Add(oldShape);
-
-                // modify the MainshapeDefiner and also provide another reference to it.
-                MainShape modifiedPrevShape = ShapeFactory.MainShapeCreatorFactory(shapeType, _lastDrawn._end, end, _lastDrawn._shape.MainShapeDefiner);
-                UXShape newUxShape = new UXShape(UXOperation.CREATE, modifiedPrevShape, prevShapeId);
-                operations.Add(newUxShape);
-
-                _lastDrawn._shape.LastModifiedTime = DateTime.Now;
-                _lastDrawn._shape.RecentOperation = Operation.CREATE;
-
+                Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Failure in creation of shape.");
+                Trace.WriteLine(e.Message);
+                return null;
             }
-            else
-            {
-                // throw exception
-            }
-
-            if (shapeComp)
-            {
-                // send updates to server .. clone of _lastDrawn
-                BoardShape newBoardShape = _lastDrawn._shape.Clone();
-                newBoardShape.LastModifiedTime = DateTime.Now;
-                newBoardShape.CreationTime = DateTime.Now;
-                _stateManager.SaveOperation(newBoardShape);
-
-                //reset the variables
-                _lastDrawn = null;
-            }
-
-            return operations;
-
         }
 
+        /// <summary>
+        /// Perform real-time operation on shape.
+        /// </summary>
+        /// <param name="realTimeOperation">The RealTimeOperation to be performed.</param>
+        /// <param name="start">Start of mouse drag.</param>
+        /// <param name="end">End of mouse drag.</param>
+        /// <param name="shapeId">Id of the shape.</param>
+        /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
+        /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation,
                                                           [NotNull] Coordinate start, [NotNull] Coordinate end,
                                                           [NotNull] string shapeId, bool shapeComp = false)
         {
-            // List of Operations to be send to UX
-            List<UXShape> operations = new List<UXShape>();
-
-            if (_lastDrawn == null)
+            try
             {
-                // get the actual BoardServer object stored in the server
-                BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
-                if (shapeFromManager == null)
+                // List of Operations to be send to UX
+                List<UXShape> operations = new();
+
+                if (_lastDrawn == null)
                 {
-                    Trace.WriteLine("Invalid Shape Id: Shape Id provided for Modification of Shape does not exist in State Manager.");
-                    return new List<UXShape>();
+                    Trace.WriteLine("ActiveBoardOperationsHandler:ModifyShapeRealTime: Initiating new modification procedure for shape.");
+
+                    // get the actual BoardServer object stored in the server
+                    BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+                    _lastDrawn = new LastDrawnDetails
+                    {
+                        _shape = shapeFromManager.Clone(),
+                        _operation = realTimeOperation
+                    };
+                    _lastDrawn._shape.RecentOperation = Operation.MODIFY;
+                    _lastDrawn._end = end;
+
                 }
-                _lastDrawn = new _lastDrawnDetails();
-                _lastDrawn._shape = shapeFromManager.Clone();
-                _lastDrawn._operation = realTimeOperation;
-                _lastDrawn._shape.RecentOperation = Operation.MODIFY;
-                _lastDrawn._end = end;
-            }
-            else if (_lastDrawn.isPending() && _lastDrawn._shape.Uid == shapeId && _lastDrawn._operation == realTimeOperation)
-            {
-                // Append the object already rendered on local client for deletion
-                string prevShapeId = _lastDrawn._shape.Uid;
-                UXShape oldShape = new UXShape(UXOperation.DELETE, _lastDrawn._shape.MainShapeDefiner, prevShapeId);
-                operations.Add(oldShape);
-            }
-            else
-            {
-                // throw an error
-            }
+                else if (_lastDrawn.IsPending() && _lastDrawn._shape.Uid == shapeId && _lastDrawn._operation == realTimeOperation)
+                {
+                    Trace.WriteLine("ActiveBoardOperationsHandler:ModifyShapeRealTime: Deleting previous shape.");
 
-            // modify the _lastDrawn Object
-            MainShape lastDrawnMainShape = _lastDrawn._shape.MainShapeDefiner;
-            switch (realTimeOperation)
-            {
-                case RealTimeOperation.TRANSLATE:
-                    Coordinate delta = end - _lastDrawn._end;
-                    lastDrawnMainShape.Center.Add(delta);
-                    break;
-                case RealTimeOperation.ROTATE:
-                    lastDrawnMainShape.Rotate(_lastDrawn._end, end);
-                    break;
-                default:
-                    // indicate and error
-                    break;
-            }
-            
-            if (shapeComp)
-            {
-                // send updates to server .. clone of _lastDrawn
-                BoardShape newBoardShape = _lastDrawn._shape.Clone();
-                newBoardShape.LastModifiedTime = DateTime.Now;
-                newBoardShape.CreationTime = DateTime.Now;
-                _stateManager.SaveOperation(newBoardShape);
+                    // Append the object already rendered on local client for deletion
+                    string prevShapeId = _lastDrawn._shape.Uid;
+                    UXShape oldShape = new (UXOperation.DELETE, _lastDrawn._shape.MainShapeDefiner, prevShapeId);
+                    operations.Add(oldShape);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Invalid Request paramaters for Method.");
+                }
 
-                //reset the variables
-                _lastDrawn = null;
-            }
+                // modify the _lastDrawn Object
+                MainShape lastDrawnMainShape = _lastDrawn._shape.MainShapeDefiner;
+                switch (realTimeOperation)
+                {
+                    case RealTimeOperation.TRANSLATE:
+                        Coordinate delta = end - _lastDrawn._end;
+                        lastDrawnMainShape.Center.Add(delta);
+                        break;
+                    case RealTimeOperation.ROTATE:
+                        lastDrawnMainShape.Rotate(_lastDrawn._end, end);
+                        break;
+                    default:
+                        throw new Exception("The Operation " + realTimeOperation + "does not support real-time rendering.");
+                }
 
-            return operations;
+                if (shapeComp)
+                {
+                    Trace.WriteLine("ActiveBoardOperationsHandler:ModifyShapeRealTime: Sending updates to state Manager.");
+
+                    // send updates to server .. clone of _lastDrawn
+                    BoardShape newBoardShape = _lastDrawn._shape.Clone();
+                    newBoardShape.LastModifiedTime = DateTime.Now;
+                    newBoardShape.CreationTime = DateTime.Now;
+                    UpdateStateManager(newBoardShape);
+                    
+                    //reset the variables
+                    _lastDrawn = null;
+                }
+
+                return operations;
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine("ActiveBoardOperationsHandler:ModifyShapeRealTime: Failure in real time shape modification.");
+                Trace.WriteLine(e.Message);
+                return null;
+            }
         }
 
+        /// <summary>
+        /// Perform resizing operation on shape.
+        /// </summary>
+        /// <param name="start">Start of mouse drag.</param>
+        /// <param name="end">End of mouse drag.</param>
+        /// <param name="shapeId">Id of the shape.</param>
+        /// <param name="dragpos">The latch used for resizing.</param>
+        /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> Resize([NotNull] Coordinate start, [NotNull] Coordinate end,
-                      [NotNull] string shapeId, [NotNull] DragPos dragpos)
+                                             [NotNull] string shapeId, [NotNull] DragPos dragpos)
         {
-            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
-            if (shapeFromManager == null)
+            try
             {
-                Trace.WriteLine("Invalid Shape Id: Shape Id provided for ChangeShapeFill does not exist in State Manager.");
+                Trace.WriteLine("ActiveBoardOperationsHandler:Resize: Performing resize operation on shape.");
+                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+
+                // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
+                BoardShape newBoardShape = shapeFromManager.Clone();
+
+                if (newBoardShape.MainShapeDefiner.Resize(start, end, dragpos))
+                {
+                    List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
+                    return Operations;
+                }
                 return new List<UXShape>();
             }
-
-            // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
-            BoardShape newBoardShape = shapeFromManager.Clone();
-            if (newBoardShape.MainShapeDefiner.Resize(start, end, dragpos)) 
-            { 
-                List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
-                return Operations;
+            catch (Exception e)
+            {
+                Trace.WriteLine("ActiveBoardOperationsHandler:Resize: Failure in real time shape modification.");
+                Trace.WriteLine(e.Message);
+                return null;
             }
-            return new List<UXShape>();
-
-            
         }
 
+        /// <summary>
+        /// Send update to state Manager, and verify its response.
+        /// </summary>
+        /// <param name="boardShape">Shape to update in stateManager.</param>
+        private void UpdateStateManager(BoardShape boardShape)
+        {
+            if (!_stateManager.SaveOperation(boardShape))
+            {
+                throw new Exception("Couldn't update state of state Manager.");
+            }
+        }
+
+        /// <summary>
+        /// Delete a shape with given shape Id.
+        /// </summary>
+        /// <param name="shapeId">Id of the shape.</param>
+        /// <returns>List of operations to be performed by UX.</returns>
         public override List<UXShape> Delete([NotNull] string shapeId)
         {
-            // List of Operations to be send to UX
-            List<UXShape> operations = new List<UXShape>();
-
-            // get the actual BoardServer object stored in the server
-            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
-            if (shapeFromManager == null)
+            try
             {
-                Trace.WriteLine("Invalid Shape Id: Shape Id provided for Deletion of Shape does not exist in State Manager.");
-                return new List<UXShape>();
+                // List of Operations to be send to UX
+                List<UXShape> operations = new();
+
+                // get the actual BoardServer object stored in the server
+                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+
+                UXShape oldShape = new (UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeFromManager.Uid);
+                operations.Add(oldShape);
+
+                BoardShape shapeFromManagerClone = shapeFromManager.Clone();
+                shapeFromManagerClone.RecentOperation = Operation.DELETE;
+                shapeFromManagerClone.LastModifiedTime = DateTime.Now;
+
+                UpdateStateManager(shapeFromManagerClone);
+
+                _lastDrawn = null;
+                return operations;
             }
-
-            UXShape oldShape = new UXShape(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeFromManager.Uid);
-            operations.Add(oldShape);
-
-            BoardShape shapeFromManagerClone = shapeFromManager.Clone();
-            shapeFromManagerClone.RecentOperation = Operation.DELETE;
-            shapeFromManagerClone.LastModifiedTime = DateTime.Now;
-
-            _stateManager.SaveOperation(shapeFromManagerClone);
-
-            _lastDrawn = null;
-            return operations;
+            catch(Exception e)
+            {
+                Trace.WriteLine("ActiveBoardOperationsHandler:Delete: Failure in Resize Operation.");
+                Trace.WriteLine(e.Message);
+                return null;
+            }
 
         }
 
@@ -381,6 +494,6 @@ namespace Whiteboard
         public override List<UXShape> Redo()
         {
             return _stateManager.DoRedo();
-        }  
+        }
     }
 }

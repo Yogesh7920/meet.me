@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 11/01/2021
+ * Date Modified: 11/12/2021
 **/
 
 using System;
@@ -58,6 +58,19 @@ namespace Whiteboard
         NONE
     }
 
+    /// <summary>
+    /// Operations which should be rendered real-time on UX.
+    /// </summary>
+    public enum RealTimeOperation
+    {
+        TRANSLATE,
+        ROTATE,
+        CREATE
+    }
+
+    /// <summary>
+    /// Latches for Resizing operation.
+    /// </summary>
     public enum DragPos
     {
         TOP_RIGHT,

@@ -13,10 +13,19 @@ using System.Threading.Tasks;
 
 namespace Whiteboard
 {
+    /// <summary>
+    /// Factory for creating mainshape.
+    /// </summary>
     static class ShapeFactory
     {
+        /// <summary>
+        /// MainShape object to use the functionalites provided by the class.
+        /// </summary>
         private static MainShape s;
 
+        /// <summary>
+        /// Constructor of ShapeFactory
+        /// </summary>
         static ShapeFactory()
         {
             s = new Ellipse();
