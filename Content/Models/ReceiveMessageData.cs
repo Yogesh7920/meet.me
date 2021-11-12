@@ -1,10 +1,7 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using System;
 
 namespace Content
 {
-    [BsonIgnoreExtraElements]
     [Serializable()]
     public class ReceiveMessageData
     {
@@ -26,8 +23,7 @@ namespace Content
         /// <summary>
         /// Id of the message
         /// </summary>
-        [BsonId]
-        public ObjectId MessageId;
+        public int MessageId;
 
         /// <summary>
         /// User id of the message sender
@@ -42,7 +38,7 @@ namespace Content
         /// <summary>
         /// Id of thread to which this message belongs
         /// </summary>
-        public ObjectId ReplyThreadId;
+        public int ReplyThreadId;
 
         /// <summary>
         /// Time at which message was sent

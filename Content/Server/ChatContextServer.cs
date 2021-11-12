@@ -1,5 +1,5 @@
-﻿using MongoDB.Bson;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Content
@@ -12,11 +12,12 @@ namespace Content
         public ChatContextServer(ContentDatabase contentDatabase)
         {
             this._contentDatabase = contentDatabase;
-            this._allMessages = _contentDatabase.RetrieveChatContexts();
+            this._allMessages = new List<ChatContext>();
         }
 
         public void Receive(MessageData messageData)
         {
+            Trace.WriteLine("[ContentServer] Received message from ContentServer");
             UpdateChatContext(messageData);
         }
 
@@ -27,32 +28,37 @@ namespace Content
 
         private void UpdateChatContext(ReceiveMessageData receiveMessageData)
         {
-            if (receiveMessageData.ReplyThreadId != ObjectId.Empty)
+            if (receiveMessageData.ReplyThreadId != -1)
             {
                 ChatContext chatContext = _allMessages.FirstOrDefault(chatContext => chatContext.ThreadId == receiveMessageData.ReplyThreadId);
                 switch (receiveMessageData.Event)
                 {
                     case MessageEvent.NewMessage:
+                        Trace.WriteLine("[ChatContextServer] Event is NewMessage, Adding message to existing Thread");
                         chatContext.MsgList.Add(receiveMessageData);
                         chatContext.NumOfMessages++;
                         break;
 
                     case MessageEvent.Star:
+                        Trace.WriteLine("[ChatContextServer] Event is Star, Starring message in existing Thread");
                         StarMessage(receiveMessageData, chatContext);
                         break;
 
                     case MessageEvent.Update:
+                        Trace.WriteLine("[ChatContextServer] Event is Update, Updating message in existing Thread");
                         UpdateMessage(receiveMessageData, chatContext);
                         break;
 
                     default:
-                        throw new System.Exception();
+                        Debug.Assert(false, "[ChatContextServer] Unkown Event");
+                        return;
                 }
 
                 _contentDatabase.UpdateChatContext(chatContext.ThreadId, chatContext);
             }
             else
             {
+                Trace.WriteLine("[ChatContextServer] Creating a new ChatContext and adding message to it");
                 ChatContext chatContext = new ChatContext();
                 chatContext.CreationTime = receiveMessageData.SentTime;
                 chatContext.NumOfMessages = 1;
