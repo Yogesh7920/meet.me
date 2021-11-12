@@ -9,16 +9,16 @@ namespace Networking
     public class SendSocketListenerClient
     {
         // Declare the queue variable which is used to dequeue the required the packet 
-        private IQueue _queue;
+        private readonly IQueue _queue;
 
         // Declare the TcpClient  variable 
-        private TcpClient _tcpSocket;
+        private readonly TcpClient _tcpSocket;
 
         // Declare the thread variable of SendSocketListenerServer 
         private Thread _listen;
 
         // Declare variable that dictates the start and stop of the thread _listen
-        private volatile bool _listenRun = false;
+        private volatile bool _listenRun;
 
         // Fix the maximum size of the message that can be sent  one at a time 
         private const int Threshold = 1025;
@@ -29,8 +29,8 @@ namespace Networking
         /// </summary>
         public SendSocketListenerClient(IQueue queue, TcpClient tcpSocket)
         {
-            this._queue = queue;
-            this._tcpSocket = tcpSocket;
+            _queue = queue;
+            _tcpSocket = tcpSocket;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Networking
         /// </summary>
         public void Start()
         {
-            _listen = new Thread(() => Listen());
+            _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
         }

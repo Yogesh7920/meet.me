@@ -11,10 +11,10 @@ namespace Networking
     public class SendSocketListenerServer
     {
         // Declare the queue variable which is used to dequeue the required the packet 
-        private IQueue _queue;
+        private readonly IQueue _queue;
 
         // Declare the dictionary variable which stores client_ID and corresponding socket object 
-        private Dictionary<string, TcpClient> _clientIdSocket = new Dictionary<string, TcpClient>();
+        private readonly Dictionary<string, TcpClient> _clientIdSocket = new();
 
         // Declare the TcpClient set variable 
         private HashSet<TcpClient> _tcpSockets;
@@ -23,7 +23,7 @@ namespace Networking
         private Thread _listen;
 
         // Declare variable that dictates the start and stop of the thread _listen
-        private volatile bool _listenRun = false;
+        private volatile bool _listenRun;
 
         // Fix the maximum size of the message that can be sent  one at a time 
         private const int Threshold = 1025;
@@ -34,8 +34,8 @@ namespace Networking
         /// </summary>
         public SendSocketListenerServer(IQueue queue, Dictionary<string, TcpClient> clientIdSocket)
         {
-            this._queue = queue;
-            this._clientIdSocket = clientIdSocket;
+            _queue = queue;
+            _clientIdSocket = clientIdSocket;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Networking
         /// </summary>
         public void Start()
         {
-            _listen = new Thread(() => Listen());
+            _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
         }

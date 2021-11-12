@@ -1,13 +1,8 @@
-using NUnit.Framework;
-using Networking;
-using System.Net.Sockets;
-using System.Collections;
-using System.Net;
-using System;
-using System.Net.NetworkInformation;
 using System.Threading;
+using Networking;
+using NUnit.Framework;
 
-namespace Testing
+namespace Testing.Networking.SocketManagement
 {
     [TestFixture]
     public class CommunicatorTesting
@@ -15,13 +10,13 @@ namespace Testing
         [SetUp]
         public void Setup()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
         }
 
         [Test, Category("pass")]
         public void Server_and_Client_StartTest()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
             // start the server
             ICommunicator server = CommunicationFactory.GetCommunicator(false, true);
             string address = server.Start();

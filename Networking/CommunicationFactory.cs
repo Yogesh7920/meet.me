@@ -32,9 +32,8 @@
                 _serverCommunicator = new ServerCommunicator(true);
                 return _serverCommunicator;  
             }
-            if (_serverCommunicator == null)
-                _serverCommunicator = new ServerCommunicator();
-            return _serverCommunicator;
+
+            return _serverCommunicator ??= new ServerCommunicator();
         }
     }
 }

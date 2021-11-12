@@ -15,19 +15,19 @@ namespace Networking
     public class ReceiveSocketListener
     {
         // Declare the queue variable which is used to dequeue the required the packet 
-        private IQueue _queue;
+        private readonly IQueue _queue;
 
         // Declare the thread variable of ReceiveSocketListener 
         private Thread _listen;
 
         // Declare variable that dictates the start and stop of the thread _listen
-        private volatile bool _listenRun = false;
+        private volatile bool _listenRun;
 
         // Fix the maximum size of the message that can be sent  one at a time 
         private const int Threshold = 1025;
 
         // Declare the TcpClient  variable 
-        private TcpClient _clientSocket;
+        private readonly TcpClient _clientSocket;
 
         /// <summary>
         /// This is the constructor of the class which initializes the params
@@ -36,8 +36,8 @@ namespace Networking
         /// </summary>
         public ReceiveSocketListener(IQueue queue, TcpClient clientSocket)
         {
-            this._queue = queue;
-            this._clientSocket = clientSocket;
+            _queue = queue;
+            _clientSocket = clientSocket;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Networking
         /// </summary>
         public void Start()
         {
-            _listen = new Thread(() => Listen());
+            _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
         }
@@ -104,7 +104,7 @@ namespace Networking
                     {
                         byte[] inStream = new byte[Threshold];
                         networkStream.Read(inStream, 0, inStream.Length);
-                        message += System.Text.Encoding.ASCII.GetString(inStream);
+                        message += Encoding.ASCII.GetString(inStream);
 
                         if (message.Contains("EOF"))
                         {

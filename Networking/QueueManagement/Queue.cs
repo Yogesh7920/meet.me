@@ -8,8 +8,8 @@ namespace Networking
 {
     public class Queue : IQueue
     {
-        private ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
-        private ConcurrentDictionary<string, int> _priorityMap;
+        private readonly ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
+        private readonly ConcurrentDictionary<string, int> _priorityMap;
         private List<string> _moduleIdentifiers;
         private int _currentQueue;
         private int _currentWeight;
@@ -99,14 +99,7 @@ namespace Networking
             Trace.WriteLine("Clearing all packets from the queue");
             foreach (var keyValuePair in _multiLevelQueue)
             {
-                while (keyValuePair.Value.Count > 0)
-                {
-                    if (!(keyValuePair.Value.TryDequeue(out Packet packet)))
-                    {
-                        Trace.WriteLine("Cannot dequeue elements from an empty queue");
-                        throw new Exception("Empty Queue cannot be dequeued");
-                    }
-                }
+                keyValuePair.Value.Clear();
             }
         }
 
@@ -148,10 +141,8 @@ namespace Networking
                 Trace.WriteLine("Dequeuing Packet");
                 return packet;
             }
-            else
-            {
-                throw new Exception("Cannot Dequeue empty queue");
-            }
+
+            throw new Exception("Cannot Dequeue empty queue");
         }
 
         /// <summary>
@@ -171,10 +162,8 @@ namespace Networking
                 Trace.WriteLine("Peeking into the queue");
                 return packet;
             }
-            else
-            {
-                throw new Exception("Cannot Peek into empty queue");
-            }
+
+            throw new Exception("Cannot Peek into empty queue");
         }
 
         /// <summary>
@@ -184,7 +173,7 @@ namespace Networking
         public bool IsEmpty()
         {
             Trace.WriteLine("Checking if queue is empty");
-            if (this.Size() == 0) return true;
+            if (Size() == 0) return true;
             return false;
         }
 

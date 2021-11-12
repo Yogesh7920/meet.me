@@ -9,20 +9,19 @@ namespace Networking
 {
     public class ClientCommunicator : ICommunicator
     {
-        private Dictionary<string, INotificationHandler> _subscribedModules =
-            new Dictionary<string, INotificationHandler>();
+        private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
 
         // Declare socket object for client
         private TcpClient _clientSocket;
 
         // Declare queue variable for receiving messages
-        private Queue _receiveQueue = new Queue();
+        private readonly Queue _receiveQueue = new();
 
         // Declare queue variable for sending messages
-        private Queue _sendQueue = new Queue();
+        private readonly Queue _sendQueue = new();
 
         // Variable for testing mode
-        private bool _isTesting = false;
+        private readonly bool _isTesting;
 
         //Constructor that enables testing mode
         public ClientCommunicator(bool isTesting = false)
@@ -35,6 +34,8 @@ namespace Networking
 
         // Declare sendSocketListenerClient variable for sending messages 
         private SendSocketListenerClient _sendSocketListenerClient;
+
+        private ReceiveQueueListener _receiveQueueListener;
 
         /// <summary>
         /// This method connects client to server
@@ -63,6 +64,9 @@ namespace Networking
                 //start sendSocketListener of client for sending message 
                 _sendSocketListenerClient = new SendSocketListenerClient(_sendQueue, _clientSocket);
                 _sendSocketListenerClient.Start();
+
+                _receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModules);
+                _receiveQueueListener.Start();
 
                 //for testing purpose
                 if (_isTesting)
@@ -128,6 +132,7 @@ namespace Networking
                 // stop the listener of the client 
                 _sendSocketListenerClient.Stop();
                 _receiveSocketListener.Stop();
+                _receiveQueueListener.Stop();
 
                 //close stream  and connection of the client
                 _clientSocket.GetStream().Close();
@@ -161,6 +166,7 @@ namespace Networking
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.Message);
+                throw;
             }
         }
 

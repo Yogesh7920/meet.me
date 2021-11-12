@@ -1,15 +1,10 @@
-using NUnit.Framework;
-using Networking;
-using System.Net.Sockets;
-using System.Collections;
-using System.Net;
 using System;
-using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading;
+using Networking;
+using NUnit.Framework;
 
-namespace Testing
+namespace Testing.Networking.SocketManagement
 {
     [TestFixture]
     public class ClientSendServerReceiveListenerTesting
@@ -22,7 +17,7 @@ namespace Testing
         [SetUp]
         public void Setup()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
             // start the server
             _server = CommunicationFactory.GetCommunicator(false, true);
             string address = _server.Start();
@@ -55,7 +50,7 @@ namespace Testing
             String identifier = "S";
             _client3.Send(msg, identifier);
 
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
 
             Packet p = _server.FrontPacket();
             Assert.AreEqual(msg, p.SerializedData);
@@ -87,7 +82,7 @@ namespace Testing
             String msg2 = "msg from client2 ";
             String identifier2 = "C";
             _client3.Send(msg2, identifier2);
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
             //Result can vary according to thread
             Packet p1 = _server.FrontPacket();
             Assert.AreEqual(msg2, p1.SerializedData);
@@ -104,7 +99,7 @@ namespace Testing
             text = new string(Enumerable.Repeat(chars, length).Select(s => s[_random.Next(s.Length)]).ToArray());
    
             _client2.Send(text, "C");
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
             Packet p2 = _server.FrontPacket();
             Assert.AreEqual(text, p2.SerializedData);
         }

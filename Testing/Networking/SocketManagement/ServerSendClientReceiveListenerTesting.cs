@@ -1,15 +1,10 @@
-using NUnit.Framework;
-using Networking;
-using System.Net.Sockets;
-using System.Collections;
-using System.Net;
 using System;
-using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading;
+using Networking;
+using NUnit.Framework;
 
-namespace Testing
+namespace Testing.Networking.SocketManagement
 {
     
     [TestFixture]
@@ -23,7 +18,7 @@ namespace Testing
         [SetUp]
         public void Setup()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
             // start the server
             _server = CommunicationFactory.GetCommunicator(false, true);
             string address = _server.Start();
@@ -57,7 +52,7 @@ namespace Testing
         {
             String msg = "BroadCastMessage: clients ";
             _server.Send(msg, "S");
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
             Packet p2 = _client2.FrontPacket();
             Assert.AreEqual(msg, p2.SerializedData);
             Packet p3 = _client3.FrontPacket();
@@ -70,7 +65,7 @@ namespace Testing
             String msg = "PrivateMessage";
             _server.Send(msg, "W", "1");
 
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
             Packet p2 = _client2.FrontPacket();
             Assert.AreEqual(msg, p2.SerializedData);
         }
@@ -85,7 +80,7 @@ namespace Testing
 
             _server.Send(text, "C", "1");
 
-            Thread.Sleep(1000);
+            Thread.Sleep(300);
             Packet p2 = _client2.FrontPacket();
             Assert.AreEqual(text, p2.SerializedData);
         }

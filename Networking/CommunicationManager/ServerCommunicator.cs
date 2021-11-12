@@ -20,36 +20,38 @@ namespace Networking
         /** Declare sendSocketListenerServer variable for sending messages across the network*/
         private SendSocketListenerServer _sendSocketListenerServer;
 
+        private ReceiveQueueListener _receiveQueueListener;
+
         /** Declare dictionary variable that stores clientId and receiveSocketListener */
-        private Dictionary<String, ReceiveSocketListener> _clientListener =
-            new Dictionary<String, ReceiveSocketListener>();
+        private readonly Dictionary<String, ReceiveSocketListener> _clientListener =
+            new();
 
         /** Declare dictionary variable to store module Id and corresponding handler*/
-        private Dictionary<string, INotificationHandler> _subscribedModules =
-            new Dictionary<string, INotificationHandler>();
+        private readonly Dictionary<string, INotificationHandler> _subscribedModules =
+            new();
 
         /** Declare dictionary variable to store client Id and corresponding socket object*/
-        private Dictionary<string, TcpClient> _clientIdSocket = new Dictionary<string, TcpClient>();
+        private readonly Dictionary<string, TcpClient> _clientIdSocket = new();
 
         /** Declare queue variable for receiving messages*/
-        private Queue _receiveQueue = new Queue();
+        private readonly Queue _receiveQueue = new();
 
         /** Declare queue variable for sending messages*/
-        private Queue _sendQueue = new Queue();
+        private readonly Queue _sendQueue = new();
 
         /** Declare thread variable for accepting request*/
         private Thread _acceptRequest;
 
         /** Declare variable to control acceptRequest thread*/
-        private volatile bool _acceptRequestRun = false;
+        private volatile bool _acceptRequestRun;
 
         /**Declare TcpListener variable of server*/
         private TcpListener _serverSocket;
 
         /** Variable for testing mode*/
-        private bool _isTesting = false;
+        private readonly bool _isTesting;
 
-        TcpClient _clientSocket = new TcpClient();
+        TcpClient _clientSocket = new();
 
         /**
          * Constructor that enables testing mode
@@ -112,6 +114,9 @@ namespace Networking
             //start sendSocketListener of server for sending message 
             _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket);
             _sendSocketListenerServer.Start();
+
+            _receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModules);
+            _receiveQueueListener.Start();
 
             //start acceptRequest thread of server for accepting request
             _acceptRequest = new Thread(() => AcceptRequest(_serverSocket));
@@ -240,6 +245,7 @@ namespace Networking
                 receiveSocketListener.Stop();
             }
 
+            _receiveQueueListener.Stop();
             // stop sendSocketListener of server
             _sendSocketListenerServer.Stop();
         }
