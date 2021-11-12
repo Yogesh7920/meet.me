@@ -47,17 +47,15 @@ namespace Content
 
         private ReceiveMessageData StarMessage(MessageData receiveMessageData)
         {
-            ReceiveMessageData message = _contentDatabase.GetMessage(receiveMessageData);
+            ReceiveMessageData message = _contentDatabase.GetMessage(receiveMessageData.ReplyThreadId, receiveMessageData.MessageId);
             message.Starred = !message.Starred;
-            _contentDatabase.UpdateMessage(message);
             return message;
         }
 
         private ReceiveMessageData UpdateMessage(MessageData receiveMessageData)
         {
-            ReceiveMessageData message = _contentDatabase.GetMessage(receiveMessageData);
+            ReceiveMessageData message = _contentDatabase.GetMessage(receiveMessageData.ReplyThreadId, receiveMessageData.MessageId);
             message.Message = receiveMessageData.Message;
-            _contentDatabase.UpdateMessage(message);
             return message;
         }
     }

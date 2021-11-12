@@ -22,9 +22,9 @@ namespace Content
 
         public MessageData StoreFile(MessageData messageData)
         {
-            messageData.MessageId = IdGenerator.getMessageId();
-            _files[messageData.MessageId] = messageData;
-            return StoreMessage(messageData);
+            MessageData message = StoreMessage(messageData);
+            _files[message.MessageId] = messageData;
+            return message;
         }
 
         public MessageData GetFiles(int messageId)
@@ -61,22 +61,15 @@ namespace Content
             return messageData;
         }
 
-        public void UpdateMessage(ReceiveMessageData messageData)
-        {
-            int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
-            int messageIndex = _messageMap[messageData.MessageId];
-            _chatContexts[threadIndex].MsgList[messageIndex] = messageData;
-        }
-
         public List<ChatContext> GetChatContexts()
         {
             return _chatContexts;
         }
 
-        public ReceiveMessageData GetMessage(MessageData messageData)
+        public ReceiveMessageData GetMessage(int replyThreadId, int messageId)
         {
-            int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
-            int messageIndex = _messageMap[messageData.MessageId];
+            int threadIndex = _chatContextsMap[replyThreadId];
+            int messageIndex = _messageMap[messageId];
             return _chatContexts[threadIndex].MsgList[messageIndex];
         }
     }
