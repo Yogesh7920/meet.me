@@ -55,6 +55,7 @@ namespace Whiteboard
         FETCH_STATE,
         FETCH_CHECKPOINT,
         CREATE_CHECKPOINT,
+        CLEAR_STATE,
         NONE
     }
 

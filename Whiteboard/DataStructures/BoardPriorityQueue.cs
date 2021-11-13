@@ -270,5 +270,13 @@ namespace Whiteboard
             Trace.WriteLine("Whiteboard.BoardPriorityQueue.DeleteElement: Element extracted out.");
             Trace.Unindent();
         }
+
+        /// <summary>
+        /// Removes all elements from priority queue.
+        /// </summary>
+        public void Clear()
+        {
+            _queue.Clear();
+        }
     }
 }

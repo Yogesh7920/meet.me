@@ -128,5 +128,13 @@ namespace Whiteboard
         {
             return GetSize() == BoardConstants.EMPTY_SIZE;
         }
+
+        /// <summary>
+        /// Removes all elements from stack.
+        /// </summary>
+        public void Clear()
+        {
+            _stack.Clear();
+        }
     }
 }
