@@ -19,7 +19,10 @@ namespace Networking
             _receieveQueue = queue;
             _notificationHandlers = notificationHandlers;
         }
-
+        
+        /// <summary>
+        /// Starts the ReceiveQueueListener on a new thread
+        /// </summary>
         public void Start()
         {
             Thread listener = new Thread(ListenQueue);
@@ -27,6 +30,9 @@ namespace Networking
             listener.Start();
         }
         
+        /// <summary>
+        /// Stops the ReceiveQueueListener thread
+        /// </summary>
         public void Stop()
         {
             _listenRun = false;
