@@ -20,7 +20,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Height="450" Width="800"
+      
         Background="#cfcfcf"
         >
 
@@ -802,7 +802,7 @@
 
         <!--Middle Column Containing Canvas-->
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <Canvas Name="MyCanvas" Focusable ="True" MouseDown="OnCanvasMouseButtonDown" MouseMove="OnCanvasMouseMove"  MouseUp ="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="White" Height="379" Width="580" HorizontalAlignment="Center" ClipToBounds="True">
+            <Canvas Name="MyCanvas" Focusable ="True" MouseDown="OnCanvasMouseButtonDown" MouseMove="OnCanvasMouseMove"  MouseUp ="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="White" Height="530" Width="800" HorizontalAlignment="Center" ClipToBounds="True">
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>

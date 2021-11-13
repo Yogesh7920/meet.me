@@ -7,11 +7,33 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Icons\ChatUX\**" />
+      <EmbeddedResource Remove="Icons\ChatUX\**" />
+      <None Remove="Icons\ChatUX\**" />
+      <Page Remove="Icons\ChatUX\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="ChatView.xaml.cs" />
+      <Compile Remove="ScreenShareView.xaml.cs" />
+      <Compile Remove="UsersList.xaml.cs" />
+      <Compile Remove="ViewModels\HomePageViewModel.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
 
       <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Icons\ExpCol.png" />
+      <None Remove="Icons\logo.ico" />
+      <None Remove="Icons\logo.png" />
+      <None Remove="Icons\MainWindow\icons8-chat-96.png" />
+      <None Remove="Icons\MainWindow\icons8-dashboard-60.png" />
+      <None Remove="Icons\MainWindow\icons8-end-call-96.png" />
+      <None Remove="Icons\MainWindow\icons8-present-to-all-50.png" />
+      <None Remove="Icons\MainWindow\icons8-whiteboard-150.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
@@ -20,6 +42,36 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Page Remove="ChatView.xaml" />
+      <Page Remove="ScreenShareView.xaml" />
+      <Page Remove="UsersList.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Icons\ExpCol.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\logo.ico">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\logo.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\MainWindow\icons8-chat-96.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\MainWindow\icons8-dashboard-60.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\MainWindow\icons8-end-call-96.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\MainWindow\icons8-present-to-all-50.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\MainWindow\icons8-whiteboard-150.png">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Resource>
       <Resource Include="Icons\WhiteboardUX\Toolbar\bin.png" />
     </ItemGroup>
 
