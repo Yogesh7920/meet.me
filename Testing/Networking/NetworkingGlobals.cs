@@ -1,10 +1,15 @@
 using System;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Threading;
 using Networking;
 
 namespace Testing.Networking
 {
+    /// <summary>
+    /// This class represents an abstract machine.
+    /// clients and server inherit from this machine.
+    /// </summary>
     public class Machine
     {
         public ICommunicator Communicator { get; set; }
@@ -82,17 +87,37 @@ namespace Testing.Networking
         OnClientLeft
     }
 
+    /// <summary>
+    /// A fake notification handler to receive notifications, mimicking
+    /// other modules.
+    /// </summary>
     public class FakeNotificationHandler : INotificationHandler
     {
         public readonly dynamic ReceivedData = new ExpandoObject();
+        private int _timeOutCount;
+        private readonly AutoResetEvent _autoResetEvent = new(false);
 
-        public void Wait(int sleepTime = 10, int timeOut = 10000)
+        /// <summary>
+        /// Calling this function will block the thread until a message from the network
+        /// is received or it has timed out.
+        /// </summary>
+        /// <param name="timeOut">
+        /// Double value indicating the number of seconds to wait before timing out.
+        /// </param>
+        /// <exception cref="TimeoutException"></exception>
+        public void Wait(double timeOut = 10)
         {
-            int maxIters = timeOut / sleepTime;
-            while (ReceivedData.Event is null)
+            // wait for a maximum of timeOut seconds
+            bool signalReceived = _autoResetEvent.WaitOne(TimeSpan.FromSeconds(timeOut));
+            if (!signalReceived)
             {
-                if (maxIters-- == 0) throw new TimeoutException("Wait failed due to timeout!");
-                Thread.Sleep(sleepTime);
+                /*
+                 * If the wait has timed out, increase the number of timeouts
+                 * this allows us to ignore messages that were previously timed out.
+                 */
+                _timeOutCount++;
+                _autoResetEvent.Reset();
+                throw new TimeoutException("Wait failed due to timeout!");
             }
         }
 
@@ -100,24 +125,35 @@ namespace Testing.Networking
         {
             ReceivedData.Event = NotificationEvents.OnDataReceived;
             ReceivedData.Data = data;
+            /*
+             * Ignore this message since this test already failed due to timout
+             * and the current test needs the next data.
+             */
+            if (_timeOutCount-- > 0) return;
+            _autoResetEvent.Set();
         }
 
         public void OnClientJoined<T>(T socketObject)
         {
             ReceivedData.Event = NotificationEvents.OnClientJoined;
             ReceivedData.Data = socketObject;
+            if (_timeOutCount-- > 0) return;
+            _autoResetEvent.Set();
         }
 
         public void OnClientLeft(string clientId)
         {
             ReceivedData.Event = NotificationEvents.OnClientLeft;
             ReceivedData.Data = clientId;
+            if (_timeOutCount-- > 0) return;
+            _autoResetEvent.Set();
         }
 
         public void Reset()
         {
             ReceivedData.Event = null;
             ReceivedData.Data = null;
+            _autoResetEvent.Reset();
         }
     }
 

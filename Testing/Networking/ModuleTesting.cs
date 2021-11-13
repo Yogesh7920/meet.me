@@ -189,21 +189,21 @@ namespace Testing.Networking
             // client A serializes and sends the message
             Assert.DoesNotThrow(() => _clientA.Communicator.Send(message, moduleId));
             _server.WbHandler.Wait();
-            Assert.AreEqual(_server.WbHandler.ReceivedData.Event, NotificationEvents.OnDataReceived);
+            Assert.AreEqual(NotificationEvents.OnDataReceived, _server.WbHandler.ReceivedData.Event);
             // whiteboard module on server receives the same object
             FakeChat serverMessage = _serializer.Deserialize<FakeChat>(_server.WbHandler.ReceivedData.Data);
-            Assert.AreEqual(serverMessage.ToString(), fakeChat.ToString());
+            Assert.AreEqual(fakeChat.ToString(), serverMessage.ToString());
             // server broadcasts the received object.
             Assert.DoesNotThrow(() => _server.Communicator.Send(
                 _serializer.Serialize(serverMessage), 
                 moduleId));
             _clientA.WbHandler.Wait();
             // whiteboard module on client A and B receives the same message that was sent by client A.
-            Assert.AreEqual(_clientA.WbHandler.ReceivedData.Event, NotificationEvents.OnDataReceived);
-            Assert.AreEqual(_clientA.WbHandler.ReceivedData.Data, message);
+            Assert.AreEqual(NotificationEvents.OnDataReceived, _clientA.WbHandler.ReceivedData.Event);
+            Assert.AreEqual(message, _clientA.WbHandler.ReceivedData.Data);
             _clientB.WbHandler.Wait();
-            Assert.AreEqual(_clientB.WbHandler.ReceivedData.Event, NotificationEvents.OnDataReceived);
-            Assert.AreEqual(_clientB.WbHandler.ReceivedData.Data, message);
+            Assert.AreEqual(NotificationEvents.OnDataReceived, _clientB.WbHandler.ReceivedData.Event);
+            Assert.AreEqual(message, _clientB.WbHandler.ReceivedData.Data);
         }
 
         [Test]
@@ -214,21 +214,21 @@ namespace Testing.Networking
             string message = NetworkingGlobals.GetRandomString(2000);
             // Client A sends the large message.
             Assert.DoesNotThrow(() => _clientA.Communicator.Send(message, moduleId));
-            _server.WbHandler.Wait(); 
+            _server.WbHandler.Wait();
             // The whiteboard module on the server receives the same message.
-            Assert.AreEqual(_server.WbHandler.ReceivedData.Event, NotificationEvents.OnDataReceived);
-            Assert.AreEqual(_server.WbHandler.ReceivedData.Data, message);
+            Assert.AreEqual(NotificationEvents.OnDataReceived, _server.WbHandler.ReceivedData.Event);
+            Assert.AreEqual(message, _server.WbHandler.ReceivedData.Data);
             // Server broadcasts the message
             Assert.DoesNotThrow(() => _server.Communicator.Send(
                 _server.WbHandler.ReceivedData.Data, 
                 moduleId));
             // Both the clients should receive the same message.
-            _clientA.WbHandler.Wait(); 
-            Assert.AreEqual(_clientA.WbHandler.ReceivedData.Event, NotificationEvents.OnDataReceived);
-            Assert.AreEqual(_clientA.WbHandler.ReceivedData.Data, message);
+            _clientA.WbHandler.Wait();
+            Assert.AreEqual(NotificationEvents.OnDataReceived, _clientA.WbHandler.ReceivedData.Event);
+            Assert.AreEqual(message, _clientA.WbHandler.ReceivedData.Data);
             _clientB.WbHandler.Wait();
-            Assert.AreEqual(_clientB.WbHandler.ReceivedData.Event, NotificationEvents.OnDataReceived);
-            Assert.AreEqual(_clientB.WbHandler.ReceivedData.Data, message);
+            Assert.AreEqual(NotificationEvents.OnDataReceived, _clientB.WbHandler.ReceivedData.Event);
+            Assert.AreEqual(message, _clientB.WbHandler.ReceivedData.Data);
         }
     }
 }
