@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Networking;
 
-namespace Testing.Networking
+namespace Testing.Networking.QueueManagement
 {
     [TestFixture]
     public class QueueManagement
@@ -70,11 +70,10 @@ namespace Testing.Networking
         public void Enqueue_SinglePacket_SizeShouldBeOne()
         {
             const string moduleId = Modules.ScreenShare;
-            int size = 0;
             Packet packet = new Packet
                 {ModuleIdentifier = moduleId, SerializedData = Message};
             _queue.Enqueue(packet);
-            size = _queue.Size();
+            var size = _queue.Size();
             Assert.AreEqual(1, size);
         }
 
@@ -94,8 +93,6 @@ namespace Testing.Networking
         [Test]
         public void Enqueue_MultiplePackets_SizeShouldMatch()
         {
-            int size = 0;
-
             // Running enqueue from different threads
             Task thread1 = Task.Run(() =>
             {
@@ -116,7 +113,7 @@ namespace Testing.Networking
             });
 
             Task.WaitAll(thread1, thread2);
-            size = _queue.Size();
+            var size = _queue.Size();
             int expectedSize = _testPackets.Count;
             Assert.AreEqual(expectedSize, size);
         }
@@ -124,8 +121,6 @@ namespace Testing.Networking
         [Test]
         public void Clear_FlushingAllPackets_ShouldBeEmpty()
         {
-            bool empty;
-
             for (int i = 0; i < _testPackets.Capacity; i++)
             {
                 Packet packet = _testPackets[i];
@@ -133,7 +128,7 @@ namespace Testing.Networking
             }
 
             _queue.Clear();
-            empty = _queue.IsEmpty();
+            var empty = _queue.IsEmpty();
             Assert.AreEqual(true, empty);
         }
 
@@ -141,7 +136,6 @@ namespace Testing.Networking
         public void Clear_CalledByMultipleThreadsAtSameTime_ThrowsEmptyQueueException()
         {
             const string moduleId = Modules.ScreenShare;
-            bool empty;
 
             Packet packet = new Packet {ModuleIdentifier = moduleId, SerializedData = Message};
             _queue.Enqueue(packet);
@@ -160,7 +154,7 @@ namespace Testing.Networking
                 ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
                 Exception clearEx = innerEx.ElementAt(0);
                 string expectedMessage = "Empty Queue cannot be dequeued";
-                empty = _queue.IsEmpty();
+                var empty = _queue.IsEmpty();
                 Assert.AreEqual(expectedMessage, clearEx.Message);
                 Assert.AreEqual(true, empty);
             }
@@ -220,25 +214,23 @@ namespace Testing.Networking
         {
             const string moduleId = Modules.ScreenShare;
             string data = Message;
-            int size = 8;
             Packet packet = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
             Task thread1 = Task.Run(() => { _queue.Enqueue(packet); });
             Task.WaitAll(thread1);
             Task thread2 = Task.Run(() =>
             {
-                Packet pckt = _queue.Dequeue();
-                Assert.AreEqual(pckt.ModuleIdentifier, moduleId);
-                Assert.AreEqual(pckt.SerializedData, data);
+                Packet pkt = _queue.Dequeue();
+                Assert.AreEqual(pkt.ModuleIdentifier, moduleId);
+                Assert.AreEqual(pkt.SerializedData, data);
             });
             Task.WaitAll(thread2);
-            size = _queue.Size();
+            var size = _queue.Size();
             Assert.AreEqual(0, size);
         }
 
         [Test]
         public void Dequeue_MultiplePackets_SizeIsZero()
         {
-            int size = 0;
             Task thread1 = Task.Run(() =>
             {
                 for (int i = 0; i < _testPackets.Capacity; i++)
@@ -252,11 +244,11 @@ namespace Testing.Networking
             {
                 for (int i = 0; i < _testPackets.Capacity; i++)
                 {
-                    Packet packet = _queue.Dequeue();
+                    _queue.Dequeue();
                 }
             });
             Task.WaitAll(thread1, thread2);
-            size = _queue.Size();
+            var size = _queue.Size();
             Assert.AreEqual(0, size);
         }
 

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using Networking;
-using NuGet.Frameworks;
 
-namespace Testing.Networking
+namespace Testing.Networking.QueueManagement
 {
     [TestFixture]
     public class ReceiveQueueListenerTest
@@ -23,7 +18,7 @@ namespace Testing.Networking
         public void Setup()
         {
             _queue = new Queue();
-            _notificationHandlers = new();
+            _notificationHandlers = new Dictionary<string, INotificationHandler>();
             _queue.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
             _queue.RegisterModule(Modules.ScreenShare, Priorities.ScreenShare);
             _queue.RegisterModule(Modules.File, Priorities.File);
@@ -52,9 +47,9 @@ namespace Testing.Networking
         [Test]
         public void ListenQueue_DequeuingFromQueueAndCallingHandler_ShouldCallAppropriateHandler()
         {
-            const string whiteBoardData = "whiteboard";
-            const string screenShareData = "screenshare";
-            const string fileShareData = "file";
+            string whiteBoardData = Message;
+            string screenShareData = Message;
+            string fileShareData = Message;
             
             Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             Packet screenSharePacket = new Packet{ModuleIdentifier = Modules.ScreenShare, SerializedData = screenShareData};

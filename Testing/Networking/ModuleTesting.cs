@@ -7,12 +7,12 @@ namespace Testing.Networking
     [TestFixture]
     public class ModuleTesting
     {
-        private ISerializer _serializer = new Serializer();
+        private readonly ISerializer _serializer = new Serializer();
         private string RandomMessage => NetworkingGlobals.GetRandomString();
         private string _serverIp, _serverPort;
-        private FakeServer _server = new FakeServer();
-        private FakeClientA _clientA = new FakeClientA();
-        private FakeClientB _clientB = new FakeClientB();
+        private readonly FakeServer _server = new();
+        private readonly FakeClientA _clientA = new();
+        private readonly FakeClientB _clientB = new();
 
         [OneTimeSetUp]
         public void StartServerAndClientJoin_ServerShouldBeNotified()
