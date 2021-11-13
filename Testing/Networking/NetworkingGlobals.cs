@@ -5,25 +5,53 @@ using Networking;
 
 namespace Testing.Networking
 {
-    public static class FakeMachineB
+    public class Machine
     {
-        public static string ClientID = "B";
-        public static ICommunicator Communicator;
-        public static FakeNotificationHandler WbHandler = new(), SsHandler = new();
+        public ICommunicator Communicator { get; set; }
+
+        public readonly FakeNotificationHandler WbHandler;
+        public readonly FakeNotificationHandler SsHandler;
+
+        protected Machine()
+        {
+            WbHandler = new FakeNotificationHandler();
+            SsHandler = new FakeNotificationHandler();
+        }
+
+        public void Reset()
+        {
+            WbHandler.Reset();
+            SsHandler.Reset();
+        }
     }
 
-    public static class FakeServer
+    public class FakeClientA : Machine
     {
-        public static ICommunicator Communicator;
-        public static FakeNotificationHandler WbHandler = new(), SsHandler = new();
+        public new string Id = "A";
+        public FakeClientA()
+        {
+            Communicator = NetworkingGlobals.NewClientCommunicator;
+        }
     }
 
-    public static class FakeMachineA
+    public class FakeClientB : Machine
     {
-        public static string ClientID = "A";
-        public static ICommunicator Communicator;
-        public static FakeNotificationHandler WbHandler = new(), SsHandler = new();
+        public new string Id = "B";
+
+        public FakeClientB()
+        {
+            Communicator = NetworkingGlobals.NewClientCommunicator;
+        }
     }
+
+    public class FakeServer : Machine
+    {
+        public FakeServer()
+        {
+            Communicator = NetworkingGlobals.NewServerCommunicator;
+        }
+    }
+
 
     public static class Modules
     {
@@ -58,9 +86,14 @@ namespace Testing.Networking
     {
         public readonly dynamic ReceivedData = new ExpandoObject();
 
-        public void Wait(int waitTime=10)
+        public void Wait(int sleepTime = 10, int timeOut = 10000)
         {
-            while (ReceivedData.Event is null) { Thread.Sleep(waitTime); }
+            int maxIters = timeOut / sleepTime;
+            while (ReceivedData.Event is null)
+            {
+                if (maxIters-- == 0) throw new TimeoutException("Wait failed due to timeout!");
+                Thread.Sleep(sleepTime);
+            }
         }
 
         public void OnDataReceived(string data)
