@@ -84,21 +84,27 @@ namespace Networking
                     //Get NetworkStream to read message
                     NetworkStream networkStream = _clientSocket.GetStream();
 
-                    //Loops until it finds the end of file "EOF" in the message
+                    //read when data is availabe into a buffer
                     while (networkStream.DataAvailable)
                     {
                         byte[] inStream = new byte[Threshold];
                         networkStream.Read(inStream, 0, inStream.Length);
-                        message += Encoding.ASCII.GetString(inStream);
-
-                        if (message.Contains("EOF"))
+                        string buffer = System.Text.Encoding.ASCII.GetString(inStream);
+                        for (int i = 0; i < Threshold; i++)
                         {
-                            //Calls GetPacket method to form packet object out of received message
-                            Packet packet = GetPacket(message.Split(":"));
-                            //Calls the PushToQueue method to push packet into queue
-                            PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
-                            message = "";
-                            break;
+                            if (buffer[i]!='\u0000')
+                            {
+                                message = message + buffer[i];
+                                if (message.Contains("EOF"))
+                                {
+                                    //Calls GetPacket method to form packet object out of received message
+                                    Packet packet = GetPacket(message.Split(":"));
+                                    //Calls the PushToQueue method to push packet into queue
+                                    PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
+                                    message = "";
+                                }
+                            }
+                           
                         }
                     }
                 }
