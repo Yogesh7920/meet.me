@@ -8,8 +8,8 @@ namespace Networking
 {
     public class Queue : IQueue
     {
-        private ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
-        private ConcurrentDictionary<string, int> _priorityMap;
+        private readonly ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
+        private readonly ConcurrentDictionary<string, int> _priorityMap;
         private List<string> _moduleIdentifiers;
         private int _currentQueue;
         private int _currentWeight;
@@ -42,13 +42,13 @@ namespace Networking
             }
 
             // Adding <moduleId, Queue> keyValuePair to the _multiLevelQueue dictionary 
-            if (!(_multiLevelQueue.TryAdd(moduleId, new ConcurrentQueue<Packet>())))
+            if (!_multiLevelQueue.TryAdd(moduleId, new ConcurrentQueue<Packet>()))
             {
                 throw new Exception("Adding Queue to MultiLevelQueue Failed!");
             }
 
             // Adding <moduleId, priority> keyValuePair to the _priorityMap dictionary
-            if (!(_priorityMap.TryAdd(moduleId, priority)))
+            if (!_priorityMap.TryAdd(moduleId, priority))
             {
                 _multiLevelQueue.TryRemove(moduleId, out ConcurrentQueue<Packet> queue);
                 throw new Exception("Priority Map cannot overwrite existing key");
@@ -72,7 +72,7 @@ namespace Networking
                 _currentQueue = _moduleIdentifiers.FindIndex(x => x == _currentModuleIdentifier);
             }
 
-            Trace.WriteLine("Module Registered");
+            Trace.WriteLine($"Module Registered with ModuleIdentifier: {moduleId} and Priority: {priority.ToString()}");
         }
 
         /// <summary>
@@ -81,7 +81,6 @@ namespace Networking
         /// <returns>The number of packets the queue holds.</returns>
         public int Size()
         {
-            Trace.WriteLine("Calculating size of the queue");
             int totalPackets = 0;
             foreach (var keyValuePair in _multiLevelQueue)
             {
@@ -99,14 +98,7 @@ namespace Networking
             Trace.WriteLine("Clearing all packets from the queue");
             foreach (var keyValuePair in _multiLevelQueue)
             {
-                while (keyValuePair.Value.Count > 0)
-                {
-                    if (!(keyValuePair.Value.TryDequeue(out Packet packet)))
-                    {
-                        Trace.WriteLine("Cannot dequeue elements from an empty queue");
-                        throw new Exception("Empty Queue cannot be dequeued");
-                    }
-                }
+                keyValuePair.Value.Clear();
             }
         }
 
@@ -136,7 +128,7 @@ namespace Networking
         /// <returns>Returns the dequeued packet from the queue.</returns>
         public Packet Dequeue()
         {
-            if (!(IsEmpty()))
+            if (!IsEmpty())
             {
                 Packet packet;
                 FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
@@ -148,10 +140,8 @@ namespace Networking
                 Trace.WriteLine("Dequeuing Packet");
                 return packet;
             }
-            else
-            {
-                throw new Exception("Cannot Dequeue empty queue");
-            }
+
+            throw new Exception("Cannot Dequeue empty queue");
         }
 
         /// <summary>
@@ -160,7 +150,7 @@ namespace Networking
         /// <returns>Returns the peeked packet from the queue.</returns>
         public Packet Peek()
         {
-            if (!(IsEmpty()))
+            if (!IsEmpty())
             {
                 Packet packet;
                 FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
@@ -171,10 +161,8 @@ namespace Networking
                 Trace.WriteLine("Peeking into the queue");
                 return packet;
             }
-            else
-            {
-                throw new Exception("Cannot Peek into empty queue");
-            }
+
+            throw new Exception("Cannot Peek into empty queue");
         }
 
         /// <summary>
@@ -183,8 +171,7 @@ namespace Networking
         /// <returns>True if queue is empty and false otherwise.</returns>
         public bool IsEmpty()
         {
-            Trace.WriteLine("Checking if queue is empty");
-            if (this.Size() == 0) return true;
+            if (Size() == 0) return true;
             return false;
         }
 
