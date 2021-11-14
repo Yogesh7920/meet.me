@@ -231,6 +231,9 @@ namespace Client
         //Variable to keep track of the Uid of the new shape that is currently under creation
         private string uidShapeCreate = null;
 
+
+        //THIS IS SUPPOSED TO BE A UNIQUE UID THAT IS NOT USED BY THE CLIENT MODULE
+        //for assigning temporary UID to the shape being created
         int counter = 0;
         public ShapeManager()
         {
@@ -418,9 +421,8 @@ namespace Client
         /// <returns> Final Canvas instance with the newly rendered/deleted shapes </returns>
         public Canvas CreateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, WhiteBoardViewModel.WBTools activeTool, Point strt, Point end, float strokeWidth = 1, string fillColor = "#FFFFFF", bool shapeComp = false)
         {
+            //List of server render request, used only when shapeComp is true
             List<UXShape> toRender;
-            Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
-            Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
 
             //Brush for Fill 
             SolidColorBrush strokeColorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(fillColor));
@@ -590,12 +592,37 @@ namespace Client
             {
                 underCreation.StrokeThickness = 2; 
                 uidShapeCreate = null;
-                
-                //increament the counter (uid of next shape)
-                counter = counter + 1;
+
+                Coordinate C_strt = new Coordinate((float)strt.X, (float)strt.Y);
+                Coordinate C_end = new Coordinate((float)end.X, (float)end.Y);
+                BoardColor fill = new BoardColor(strokeColorBrush.Color.R, strokeColorBrush.Color.G, strokeColorBrush.Color.B);
+
+
+               
+                //SERVER REQUEST TO CREATE FINAL SHAPE
+                toRender = new List<UXShape>();
+                switch (activeTool)
+                {
+                    case WhiteBoardViewModel.WBTools.NewLine:
+                        toRender = WBOps.CreateLine(C_strt, C_end, 2, fill, shapeId: null, shapeComp: true);
+                        break;
+                    case WhiteBoardViewModel.WBTools.NewEllipse:
+                        toRender = WBOps.CreateEllipse(C_strt, C_end, 2, fill, shapeId: null, shapeComp: true);
+                        break;
+                    case WhiteBoardViewModel.WBTools.NewRectangle:
+                        toRender = WBOps.CreateRectangle(C_strt, C_end, 2, fill, shapeId: null, shapeComp: true);
+                        break;
+                }
+                //Removing temporary render from Canvas
+                cn.Children.Remove(underCreation);
+                cn = RenderUXElement(toRender, cn);
 
                 //select the shape 
-                SelectShape(cn, underCreation, WBOps, 0); 
+                //SelectShape(cn, underCreation, WBOps, 0); 
+
+
+                //Assuming CreateShape to send only Create operation, the 0th element of toRender list would have the newly created shape 
+                SelectShape(cn, toRender.ElementAt(0).WindowsShape, WBOps, 0);
             }
 
             return cn;
@@ -631,8 +658,6 @@ namespace Client
             Trace.WriteLine("Beginning moving shape with Uid" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() + "to end point " + end.ToString());
             Trace.WriteLine("List of Uids of selected shapes affected by move:" + selectedShapes.ToString());
 
-            Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
-            Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
             List<UXShape> toRender;
 
             lock (this)
@@ -792,8 +817,21 @@ namespace Client
                     cn = SyncBorders(cn, WBOps, sh);
                 }               
             }
-            Trace.WriteLine("Sent move request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
+
+            if (shapeComp == true)
+            {
+                Coordinate C_strt = new Coordinate(((float)strt.X), ((float)strt.Y));
+                Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
+                toRender = new List<UXShape>();
+                toRender = WBOps.TranslateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
+                cn.Children.Remove(mouseDownSh);
+                cn = RenderUXElement(toRender, cn);
+
+                Trace.WriteLine("Sent move request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
                 "to end point " + end.ToString() + ", where list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());
+            }
+
+            
             return cn;
         }
 
@@ -826,9 +864,6 @@ namespace Client
             }
             Trace.WriteLine("Beginning rotating shape with Uid" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() + "to end point " + end.ToString());
             Trace.WriteLine("List of Uids of selected shapes affected by rotate:" + selectedShapes.ToString());
-
-            Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
-            Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
 
             List<UXShape> toRender;
             foreach (string shUID in selectedShapes)
@@ -878,7 +913,6 @@ namespace Client
                 }
                 else
                 {
-                    
 
                     /*Code to find the angle made by start & end point on the center of the shape*/
                     int topleft_x = (int)Canvas.GetLeft(sh);
@@ -914,9 +948,19 @@ namespace Client
                 //cn = SyncBorders(cn, WBOps, sh);
             }
 
+            if (shapeComp == true)
+            {
+                Coordinate C_strt = new Coordinate(((float)strt.X), ((float)strt.Y));
+                Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
+                toRender = new List<UXShape>();
+                toRender = WBOps.RotateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
+                cn.Children.Remove(mouseDownSh);
+                cn = RenderUXElement(toRender,cn);
 
-            Trace.WriteLine("Sent rotate request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() + 
+                Trace.WriteLine("Sent rotate request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
                 "to end point " + end.ToString() + ", where the list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());
+            }
+
             
             return cn;
         }
@@ -1008,8 +1052,29 @@ namespace Client
                 {
                     case (UXOperation.CREATE):
                         //Rendering the new shape with the appropriate geometry in terms of translation and rotation
+                        //TODO: Verify whether TranslationCoordinate refers to topleft corner of the shape (is required), or center of shape
                         Canvas.SetLeft(shp.WindowsShape, shp.TranslationCoordinate.C);
                         Canvas.SetTop(shp.WindowsShape, shp.TranslationCoordinate.R);
+                        //Canvas.SetLeft(shp.WindowsShape, shp.TranslationCoordinate.C + shp.WindowsShape.Width / 2);
+                        //Canvas.SetTop(shp.WindowsShape, shp.TranslationCoordinate.R + shp.WindowsShape.Height / 2);       
+
+
+                        //Setting the rendering such that bottom-right and top-left adorners adjust appropriately
+                        if (shp.AngleOfRotation > 90) shp.AngleOfRotation -= 180;
+                        else if (shp.AngleOfRotation < -90) shp.AngleOfRotation += 180;
+
+                        //For setting the rendering such that bottom-right and top-left adorners adjust appropriately in case of Lines
+                        //(X1,Y1) & (X2,Y2) have to be interchanged too?
+                        if (shp.WindowsShape is System.Windows.Shapes.Line)
+                        {
+                            double tempX1 = ((System.Windows.Shapes.Line)shp.WindowsShape).X1;
+                            double tempY1 = ((System.Windows.Shapes.Line)shp.WindowsShape).Y1;
+                            ((System.Windows.Shapes.Line)shp.WindowsShape).X1 = ((System.Windows.Shapes.Line)shp.WindowsShape).X2;
+                            ((System.Windows.Shapes.Line)shp.WindowsShape).Y1 = ((System.Windows.Shapes.Line)shp.WindowsShape).Y2;
+                            ((System.Windows.Shapes.Line)shp.WindowsShape).X2 = tempX1;
+                            ((System.Windows.Shapes.Line)shp.WindowsShape).Y2 = tempY1;
+                        }
+
                         //Setting the angular orientation of bounding box to be same as updated shape
                         RotateTransform rotateTransform = new RotateTransform
                         {
@@ -1028,6 +1093,26 @@ namespace Client
 
                         cn.Children.Remove(iterat.ToList()[0]);
                         break;
+                }
+                switch (shp.OperationType)
+                {
+                    case (Operation.CREATE_CHECKPOINT):
+                        break;
+                    case (Operation.FETCH_CHECKPOINT):
+                        break;
+                    case (Operation.FETCH_STATE):
+                        break;
+                    case (Operation.MODIFY):
+                        break;
+                    //case (Operation.CLEAR_STATE ):
+                        //In the `Clear Canvas` button on View, remember to display a warning message that the new shapes since last checkpoint would be lost forever
+                        //cn.Children.Clear()
+
+                        //Clearing pending rendering of the listened items from server, as the canvas would be cleared anyway
+                        //renderQueue.Clear()
+
+                        
+
                 }
 
             }
@@ -1336,7 +1421,7 @@ namespace Client
         /// <param name="strokeColor"> Represents the hexcode of the color of polyline to be drawn </param>
         /// <param name="isEraser"> Boolean which is true if the drawn polyline is supposed to be an Eraser instance, used to set the Windows.Shapes.Tag property which is used by 'ChangeWbBackground' method locally</param>
         /// <returns> The updated Canvas </returns>
-        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false)
+        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false, bool shapeComp = false)
         {
             if (creation)
             {               
