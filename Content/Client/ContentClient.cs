@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 using Networking;
 
@@ -60,10 +61,12 @@ namespace Content
             switch(toSend.Type)
             {
                 case MessageType.Chat:
+                    Trace.WriteLine("[ContentClient] Sending chat message");
                     _chatHandler.ChatNewMessage(toSend);
                     break;
                 
                 case MessageType.File:
+                    Trace.WriteLine("[ContentClient] Sending file message");
                     _fileHandler.Send(toSend);
                     break;
 
@@ -86,13 +89,19 @@ namespace Content
                     {
                         found = 1;
                         if (msg.Type != MessageType.File)
+                        { 
                             throw new ArgumentException("Message requested for download is not a file type message");
+                        }
+                        break;
                     }
                 }
+                if(found == 1)
+                    break;
             }
 
             if (found == 0)
             {
+                Trace.WriteLine("[ContentClient] File requested for download not found");
                 throw new ArgumentException("Message with given message ID not found");
             }
 
@@ -114,6 +123,7 @@ namespace Content
         /// <inheritdoc/>
         public void CSubscribe(IContentListener subscriber)
         {
+            Trace.WriteLine("[ContentClient] Added new subscriber");
             _subscribers.Add(subscriber);
         }
 
@@ -123,6 +133,7 @@ namespace Content
             if (_contextMap.ContainsKey(threadId))
             {
                 int index = _contextMap[threadId];
+                Trace.WriteLine($"[ContentClient] Returning thread with id {threadId}");
                 return _allMessages[index];
             }
             else
@@ -137,6 +148,7 @@ namespace Content
         /// <param name="message">The message object to call OnMessage function of subscribers with</param>
         public void Notify(ReceiveMessageData message)
         {
+            Trace.WriteLine("[ContentClient] Notifying subscribers of new received message");
             foreach (IContentListener subscriber in _subscribers)
             {
                 subscriber.OnMessage(message);
@@ -149,6 +161,7 @@ namespace Content
         /// <param name="allMessages">The entire message history to call OnAllMessages function of subscribers with</param>
         public void Notify(List<ChatContext> allMessages)
         {
+            Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared in the meeting until now");
             foreach (IContentListener subscriber in _subscribers)
             {
                 subscriber.OnAllMessages(allMessages);
@@ -167,6 +180,7 @@ namespace Content
         
         public void NewMessageHandler(MessageData message)
         {
+            Trace.WriteLine("[ContentClient] Received new message from server");
             // in case there is any file data associated with the message (there shouldn't be)
             // make file data null
             if (message.FileData != null)
@@ -206,6 +220,7 @@ namespace Content
 
         public void UpdateMessageHandler(MessageData message)
         {
+            Trace.WriteLine("[ContentClient] Received message update from server");
             if (message.FileData != null)
             {
                 message.FileData = null;
@@ -247,6 +262,7 @@ namespace Content
 
         public void StarMessageHandler(MessageData message)
         {
+            Trace.WriteLine("[ContentClient] Received message star event from server");
             int contextId = message.ReplyThreadId;
             int messageId = message.MessageId;
 
@@ -281,9 +297,11 @@ namespace Content
 
         public void DownloadMessageHandler(MessageData message)
         {
+            Trace.WriteLine("[ContentClient] Received requested file from server");
             string savedirpath = message.Message;
             string savepath = savedirpath + message.FileData.fileName;
 
+            Trace.WriteLine("[ContentClient] Saving file to path: {0}", savepath);
             File.WriteAllBytes(savepath, message.FileData.fileContent);
         }
     }
