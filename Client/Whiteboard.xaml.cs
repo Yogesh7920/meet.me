@@ -253,7 +253,7 @@ namespace Client
                             Point fh_pt = e.GetPosition(GlobCanvas);
                             this.viewModel.freeHand.SetColor(curPenColor);
                             this.viewModel.freeHand.SetThickness(penThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:true);
                         }
                         break;
                     case (WhiteBoardViewModel.WBTools.Eraser):
@@ -263,7 +263,7 @@ namespace Client
                             Point fh_pt = e.GetPosition(GlobCanvas);
                             this.viewModel.freeHand.SetColor(curEraseColor);
                             this.viewModel.freeHand.SetThickness(eraserThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:true, isEraser:true);
 
                             if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
                             {
@@ -317,7 +317,7 @@ namespace Client
                             if (mouseDownFlag == 1)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:false, shapeComp:true);
                                 mouseDownFlag = 0;
                             }
                         }
@@ -328,7 +328,7 @@ namespace Client
                             if (mouseDownFlag == 1)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, true, shapeComp: true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, isEraser: true, shapeComp: true);
 
                                 if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
                                 {
@@ -463,7 +463,7 @@ namespace Client
                             if (mouseDownFlag == 1 && mouseLeftBtnMoveFlag > 5)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:false);
                                 mouseLeftBtnMoveFlag = 0;
                             }
                         }
@@ -474,7 +474,7 @@ namespace Client
                             if (mouseDownFlag == 1)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:false, isEraser:true);
 
 
                                 if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
