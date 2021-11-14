@@ -14,7 +14,7 @@
             {
                 if (isTesting)
                 {
-                    _clientCommunicator = new ClientCommunicator(true);
+                    _clientCommunicator = new ClientCommunicator();
                     return _clientCommunicator;  
                 }
 
@@ -28,7 +28,7 @@
             }
             if (isTesting)
             {
-                _serverCommunicator = new ServerCommunicator(true);
+                _serverCommunicator = new ServerCommunicator();
                 return _serverCommunicator;  
             }
 

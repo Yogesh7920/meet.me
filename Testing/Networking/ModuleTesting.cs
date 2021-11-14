@@ -15,6 +15,7 @@ namespace Testing.Networking
         private readonly FakeServer _server = new();
         private readonly FakeClientA _clientA = new();
         private readonly FakeClientB _clientB = new();
+        private ICommunicator _clientACommunicator;
 
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -23,11 +24,7 @@ namespace Testing.Networking
             _server.Reset();
             _clientA.Reset();
             _clientB.Reset();
-        }
-        
-        [Test, Order(0)]
-        public void StartServerAndClientJoin_ServerShouldBeNotified()
-        {
+            
             // subscribe modules to server
             _server.Subscribe();
             // start server and store ip and port
@@ -38,6 +35,7 @@ namespace Testing.Networking
             // start client A
             Assert.AreEqual("1", _clientA.Communicator.Start(_serverIp, _serverPort));
             _clientA.Subscribe();
+            _clientACommunicator = _clientA.Communicator;
             Assert.AreEqual(OnClientJoined, _server.WbHandler.Event);
             Assert.AreEqual(OnClientJoined, _server.SsHandler.Event);
             // add client A to server
@@ -68,7 +66,7 @@ namespace Testing.Networking
             _clientB.Reset();
         }
         
-        [Test, Order(1)]
+        [Test]
         public void ClientLeft_ServerShouldBeNotified_ClientShouldNotReceiveMessage()
         {
             // Module that realises the client has left calls the RemoveClient method on the server.
@@ -81,14 +79,22 @@ namespace Testing.Networking
             Assert.That(() => _server.Communicator.Send(message, moduleId, _clientA.Id),
                 Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));
             
-            // Cleanup all threads on the client.
+            // Reset client A back to original state.
             _clientA.Communicator.Stop();
+            _clientA.Communicator = NewClientCommunicator;
+            Assert.AreEqual("1", _clientA.Communicator.Start(_serverIp, _serverPort));
+            _clientA.Subscribe();
+            _server.Communicator.AddClient(_clientA.Id, _server.WbHandler.Data);
         }
         
-        [Test, Order(2)]
+        [Test]
         public void ClientRejoin_ServerShouldBeNotified_ClientShouldReceiveMessage()
         {
-            // Client A left in the previous test and rejoins now
+            // Simulates a client leaving the room.
+            _server.Communicator.RemoveClient(_clientA.Id);
+            _clientA.Communicator.Stop();
+            
+            // Client joining routing begins.
             _clientA.Communicator = NewClientCommunicator;
             // Start client, must return a success message.
             Assert.AreEqual("1", _clientA.Communicator.Start(_serverIp, _serverPort));
@@ -102,6 +108,11 @@ namespace Testing.Networking
             
             // A module on the server will add the client to the networking module
             _server.Communicator.AddClient(_clientA.Id, _server.WbHandler.Data);
+            
+            string message = RandomMessage;
+            _server.Communicator.Send(message, Modules.WhiteBoard, _clientA.Id);
+            _clientA.WbHandler.Wait();
+            Assert.AreEqual(OnDataReceived, _clientA.WbHandler.Event);
         }
 
         [Test]

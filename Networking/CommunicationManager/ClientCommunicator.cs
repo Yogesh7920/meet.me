@@ -19,15 +19,6 @@ namespace Networking
         // Declare queue variable for sending messages
         private readonly Queue _sendQueue = new();
 
-        // Variable for testing mode
-        private readonly bool _isTesting;
-
-        //Constructor that enables testing mode
-        public ClientCommunicator(bool isTesting = false)
-        {
-            _isTesting = isTesting;
-        }
-
         //Declare ReceiveSocketListener variable for listening messages 
         private ReceiveSocketListener _receiveSocketListener;
 

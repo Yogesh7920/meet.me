@@ -53,7 +53,7 @@ namespace Networking
             // Adding <moduleId, priority> keyValuePair to the _priorityMap dictionary
             if (!_priorityMap.TryAdd(moduleId, priority))
             {
-                _multiLevelQueue.TryRemove(moduleId, out ConcurrentQueue<Packet> queue);
+                _multiLevelQueue.TryRemove(moduleId, out _);
                 throw new Exception("Priority Map cannot overwrite existing key");
             }
 
@@ -135,11 +135,10 @@ namespace Networking
         {
             if (!IsEmpty())
             {
-                Packet packet;
                 FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
 
                 string moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                _multiLevelQueue[moduleIdentifier].TryDequeue(out packet);
+                _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
                 _currentWeight -= 1;
                 _avoidStateChange = 1;
                 Trace.WriteLine("Dequeuing Packet");
@@ -161,11 +160,10 @@ namespace Networking
         {
             if (!IsEmpty())
             {
-                Packet packet;
                 FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
 
                 string moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                _multiLevelQueue[moduleIdentifier].TryPeek(out packet);
+                _multiLevelQueue[moduleIdentifier].TryPeek(out var packet);
 
                 Trace.WriteLine("Peeking into the queue");
                 return packet;
