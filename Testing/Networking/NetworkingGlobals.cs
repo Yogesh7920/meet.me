@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Threading;
 using Networking;
@@ -21,6 +20,12 @@ namespace Testing.Networking
         {
             WbHandler = new FakeNotificationHandler();
             SsHandler = new FakeNotificationHandler();
+        }
+        
+        public void Subscribe()
+        {
+            Communicator.Subscribe(Modules.WhiteBoard, WbHandler, Priorities.WhiteBoard);
+            Communicator.Subscribe(Modules.ScreenShare, SsHandler, Priorities.ScreenShare);
         }
 
         public void Reset()
@@ -93,7 +98,8 @@ namespace Testing.Networking
     /// </summary>
     public class FakeNotificationHandler : INotificationHandler
     {
-        public readonly dynamic ReceivedData = new ExpandoObject();
+        public dynamic Event = new ExpandoObject();
+        public dynamic Data = new ExpandoObject();
         private int _timeOutCount;
         private readonly AutoResetEvent _autoResetEvent = new(false);
 
@@ -105,7 +111,7 @@ namespace Testing.Networking
         /// Double value indicating the number of seconds to wait before timing out.
         /// </param>
         /// <exception cref="TimeoutException"></exception>
-        public void Wait(double timeOut = 10)
+        public void Wait(double timeOut = 15)
         {
             // wait for a maximum of timeOut seconds
             bool signalReceived = _autoResetEvent.WaitOne(TimeSpan.FromSeconds(timeOut));
@@ -123,8 +129,8 @@ namespace Testing.Networking
 
         public void OnDataReceived(string data)
         {
-            ReceivedData.Event = NotificationEvents.OnDataReceived;
-            ReceivedData.Data = data;
+            Event = NotificationEvents.OnDataReceived;
+            Data = data;
             /*
              * Ignore this message since this test already failed due to timout
              * and the current test needs the next data.
@@ -135,24 +141,24 @@ namespace Testing.Networking
 
         public void OnClientJoined<T>(T socketObject)
         {
-            ReceivedData.Event = NotificationEvents.OnClientJoined;
-            ReceivedData.Data = socketObject;
+            Event = NotificationEvents.OnClientJoined;
+            Data = socketObject;
             if (_timeOutCount-- > 0) return;
             _autoResetEvent.Set();
         }
 
         public void OnClientLeft(string clientId)
         {
-            ReceivedData.Event = NotificationEvents.OnClientLeft;
-            ReceivedData.Data = clientId;
+            Event = NotificationEvents.OnClientLeft;
+            Data = clientId;
             if (_timeOutCount-- > 0) return;
             _autoResetEvent.Set();
         }
 
         public void Reset()
         {
-            ReceivedData.Event = null;
-            ReceivedData.Data = null;
+            Event = null;
+            Data = null;
             _autoResetEvent.Reset();
         }
     }

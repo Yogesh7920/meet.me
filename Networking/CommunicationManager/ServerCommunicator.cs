@@ -1,9 +1,6 @@
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Net.Sockets;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Diagnostics;
@@ -23,7 +20,7 @@ namespace Networking
         private ReceiveQueueListener _receiveQueueListener;
 
         /** Declare dictionary variable that stores clientId and receiveSocketListener */
-        private readonly Dictionary<String, ReceiveSocketListener> _clientListener =
+        private readonly Dictionary<string, ReceiveSocketListener> _clientListener =
             new();
 
         /** Declare dictionary variable to store module Id and corresponding handler*/
@@ -31,7 +28,7 @@ namespace Networking
             new();
 
         /** Declare dictionary variable to store client Id and corresponding socket object*/
-        private Dictionary<string, TcpClient> _clientIdSocket = new();
+        private readonly Dictionary<string, TcpClient> _clientIdSocket = new();
 
         /** Declare queue variable for receiving messages*/
         private readonly Queue _receiveQueue = new();
@@ -117,7 +114,7 @@ namespace Networking
             _receiveQueueListener.Start();
 
             //start acceptRequest thread of server for accepting request
-            _acceptRequest = new Thread(() => AcceptRequest(_serverSocket));
+            _acceptRequest = new Thread(() => AcceptRequest());
             _acceptRequestRun = true;
             _acceptRequest.Start();
 
@@ -127,28 +124,24 @@ namespace Networking
                 // TestRegisterModule();
             }
 
-            Trace.WriteLine("Server has started with ip = " + ip.ToString()
-                                                            + " and port number = " + port.ToString());
+            Trace.WriteLine("Server has started with ip = " + ip
+                                                            + " and port number = " + port);
 
-            return (ip.ToString() + ":" + port.ToString());
+            return ip + ":" + port;
         }
 
         /// <summary>
         /// It accepts all incoming client request
         /// </summary>
         /// <returns> void </returns>
-        private void AcceptRequest(TcpListener serverSocket)
+        private void AcceptRequest()
         {
-            // variable used in test mode for assigning client id
-            int testCount = 0;
-
             // Block and wait for incoming client connection
             while (_acceptRequestRun)
             {
                 try
                 {
-                    TcpClient clientSocket = new TcpClient();
-                    clientSocket = _serverSocket.AcceptTcpClient();
+                    var clientSocket = _serverSocket.AcceptTcpClient();
 
                     //notify subscribed Module handler
                     foreach (KeyValuePair<string, INotificationHandler> module in _subscribedModules)
@@ -164,7 +157,7 @@ namespace Networking
                 }
                 catch (SocketException e)
                 {
-                    if ((e.SocketErrorCode == SocketError.Interrupted))
+                    if (e.SocketErrorCode == SocketError.Interrupted)
                     {
                         Trace.WriteLine("socket blocking listener has been closed");
                     }
@@ -191,40 +184,6 @@ namespace Networking
             }
 
             throw new Exception("You don't have access");
-        }
-
-        /// <summary>
-        /// This method is for testing purpose
-        /// </summary>
-        ///  /// <returns> void </returns>
-        void TestRegisterModule()
-        {
-            _sendQueue.RegisterModule("S", 1);
-            _sendQueue.RegisterModule("W", 2);
-            _sendQueue.RegisterModule("C", 3);
-            _sendQueue.RegisterModule("F", 4);
-            _receiveQueue.RegisterModule("S", 1);
-            _receiveQueue.RegisterModule("W", 2);
-            _receiveQueue.RegisterModule("C", 3);
-            _receiveQueue.RegisterModule("F", 4);
-        }
-
-        /// <summary>
-        /// This method is for testing purpose
-        /// </summary>
-        ///  /// <returns> void </returns>
-        void TestAddClient<T>(string clientId, T socketObject)
-        {
-            //add clientID and socketObject into Dictionary 
-            _clientIdSocket[clientId] = (TcpClient) (Object) socketObject;
-
-            //Start receiveSocketListener of the client in the 
-            //server for listening message from the client
-
-            ReceiveSocketListener receiveSocketListener =
-                new ReceiveSocketListener(_receiveQueue, (TcpClient) (object) socketObject);
-            _clientListener[clientId] = receiveSocketListener;
-            receiveSocketListener.Start();
         }
 
         /// <summary>
@@ -257,7 +216,7 @@ namespace Networking
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
             // add clientID and socketObject into Dictionary 
-            _clientIdSocket[clientId] = (TcpClient) (Object) socketObject;
+            _clientIdSocket[clientId] = (TcpClient) (object) socketObject;
 
             //Start receiveSocketListener of the client in the 
             //server for listening message from the client

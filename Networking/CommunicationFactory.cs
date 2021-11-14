@@ -8,7 +8,6 @@
         /// Returns the Communicator instance that is running.
         /// </summary>
         /// <returns>ICommunicator.</returns>
-        /// TODO Make this thread-safe: https://www.c-sharpcorner.com/UploadFile/8911c4/singleton-design-pattern-in-C-Sharp/
         public static ICommunicator GetCommunicator(bool isClient=true , bool isTesting=false)
         {
             if (isClient)

@@ -1,10 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Networking
 {
@@ -51,9 +51,9 @@ namespace Networking
         /// that has been popped out feom the queue is finished 
         /// </summary>
         ///  /// <returns>String </returns>
-        private String GetMessage(Packet packet)
+        private string GetMessage(Packet packet)
         {
-            String msg = packet.ModuleIdentifier;
+            string msg = packet.ModuleIdentifier;
             msg += ":";
             msg += packet.SerializedData;
             msg += "EOF";
@@ -103,86 +103,37 @@ namespace Networking
                     Packet packet = _queue.Dequeue();
 
                     // Call GetMessage function to form string msg from the packet object 
-                    String msg = GetMessage(packet);
+                    string msg = GetMessage(packet);
 
                     // Call GetDestination function to know destination from the packet object
                     HashSet<TcpClient> tcpSockets = GetDestination(packet);
-
-                    // Variable used in the process of fragmentation
-                    String buffer = "";
-
+                    
                     // Send the message in chunks of threshold number of characters, 
-                    //if the data size is greater than threshold value
-                    for (int i = 0; i < msg.Length; i++)
+                    // if the data size is greater than threshold value
+                    for (int i = 0; i < msg.Length; i += Threshold)
                     {
-                        if (buffer.Length >= Threshold)
+                        string chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
+                        foreach (TcpClient tcpSocket in tcpSockets)
                         {
+                            byte[] outStream = System.Text.Encoding.ASCII.GetBytes(chunk);
                             try
                             {
-                                // Write the part of the data which is taken from the queue 
-                                //to the client sockets
-                                foreach (TcpClient tcpSocket in tcpSockets)
-                                {
-                                    byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
-                                    NetworkStream networkStream = tcpSocket.GetStream();
-                                    networkStream.Write(outStream, 0, outStream.Length);
-                                    networkStream.Flush();
-                                }
-
-                                buffer = "";
-                            }
-                            catch (IOException e)
-                            {
-                                // If any exception raises while writing in the socket,
-                                //trace the info and stop the thread 
-
-                                Trace.WriteLine(
-                                    "Networking : An I/O Exception has been raised on server in SendSocketListenerServerThread " +
-                                    e.ToString());
-                                return;
-                            }
-                        }
-
-                        // Append the character of the variable msg at ith position
-                        // to the end of the buffer
-                        buffer = buffer + msg[i];
-                    }
-
-                    // Sending the remaining portion of string after
-                    // dividing into chunks of threshold size strings 
-
-                    if (buffer.Length > 0)
-                    {
-                        try
-                        {
-                            // Write the part of the data which is taken from the queue 
-                            //to the client sockets
-                            foreach (TcpClient tcpSocket in tcpSockets)
-                            {
-                                byte[] outStream = System.Text.Encoding.ASCII.GetBytes(buffer);
                                 NetworkStream networkStream = tcpSocket.GetStream();
                                 networkStream.Write(outStream, 0, outStream.Length);
                                 networkStream.Flush();
                             }
-
-                            buffer = "";
+                            catch (Exception e)
+                            {
+                                Trace.WriteLine(
+                                    "Networking: Error in SendSocketListenerServerThread "
+                                    + e.Message);
+                            }
                         }
-                        catch (IOException e)
-                        {
-                            // If any exception raises while writing in the socket,
-                            // trace the info and stop the thread 
-                            Trace.WriteLine(
-                                "Networking : An I/O Exception has been raised on server in SendSocketListenerServerThread " +
-                                e);
-                            return;
-                        }
-
-                        Trace.WriteLine("Message has been sent to server from client");
                     }
                 }
             }
         }
-
+        
         /// <summary>
         /// This method is for stopping the thread
         /// </summary>

@@ -42,13 +42,13 @@ namespace Networking
             }
 
             // Adding <moduleId, Queue> keyValuePair to the _multiLevelQueue dictionary 
-            if (!(_multiLevelQueue.TryAdd(moduleId, new ConcurrentQueue<Packet>())))
+            if (!_multiLevelQueue.TryAdd(moduleId, new ConcurrentQueue<Packet>()))
             {
                 throw new Exception("Adding Queue to MultiLevelQueue Failed!");
             }
 
             // Adding <moduleId, priority> keyValuePair to the _priorityMap dictionary
-            if (!(_priorityMap.TryAdd(moduleId, priority)))
+            if (!_priorityMap.TryAdd(moduleId, priority))
             {
                 _multiLevelQueue.TryRemove(moduleId, out ConcurrentQueue<Packet> queue);
                 throw new Exception("Priority Map cannot overwrite existing key");
@@ -128,7 +128,7 @@ namespace Networking
         /// <returns>Returns the dequeued packet from the queue.</returns>
         public Packet Dequeue()
         {
-            if (!(IsEmpty()))
+            if (!IsEmpty())
             {
                 Packet packet;
                 FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
@@ -150,7 +150,7 @@ namespace Networking
         /// <returns>Returns the peeked packet from the queue.</returns>
         public Packet Peek()
         {
-            if (!(IsEmpty()))
+            if (!IsEmpty())
             {
                 Packet packet;
                 FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet

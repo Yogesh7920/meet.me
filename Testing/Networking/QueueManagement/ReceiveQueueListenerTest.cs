@@ -65,14 +65,14 @@ namespace Testing.Networking.QueueManagement
             FakeNotificationHandler screenShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.ScreenShare];
             FakeNotificationHandler fileShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.File];
             
-            Assert.AreEqual(NotificationEvents.OnDataReceived, screenShareHandler.ReceivedData.Event);
-            Assert.AreEqual(screenShareData, screenShareHandler.ReceivedData.Data);
+            Assert.AreEqual(NotificationEvents.OnDataReceived, screenShareHandler.Event);
+            Assert.AreEqual(screenShareData, screenShareHandler.Data);
             
-            Assert.AreEqual(NotificationEvents.OnDataReceived, whiteBoardHandler.ReceivedData.Event);
-            Assert.AreEqual(whiteBoardData, whiteBoardHandler.ReceivedData.Data);
+            Assert.AreEqual(NotificationEvents.OnDataReceived, whiteBoardHandler.Event);
+            Assert.AreEqual(whiteBoardData, whiteBoardHandler.Data);
             
-            Assert.AreEqual(NotificationEvents.OnDataReceived, fileShareHandler.ReceivedData.Event);
-            Assert.AreEqual(fileShareData, fileShareHandler.ReceivedData.Data);
+            Assert.AreEqual(NotificationEvents.OnDataReceived, fileShareHandler.Event);
+            Assert.AreEqual(fileShareData, fileShareHandler.Data);
         }
     }
 }

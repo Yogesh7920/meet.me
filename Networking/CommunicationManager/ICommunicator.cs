@@ -55,14 +55,5 @@
         /// <param name="handler">Module implementation of handler; called to notify about an incoming message.</param>
         /// <param name="priority">Priority Number indicating the weight in queue to be given to the module.</param>
         void Subscribe(string identifier, INotificationHandler handler, int priority=1);
-
-        /// <summary>
-        /// for testing purpose
-        /// </summary>
-        /// <returns> Packet</returns>
-        /// TODO
-        /// You cannot use this since before you try to access the front packet the
-        /// ReceiveQueueListener would have dequeued the packet and passed it on to other modules.
-        Packet FrontPacket();
     }
 }

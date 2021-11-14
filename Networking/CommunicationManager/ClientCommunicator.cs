@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 
@@ -49,7 +48,7 @@ namespace Networking
             {
                 //try to connect with server
                 IPAddress ip = IPAddress.Parse(serverIp);
-                int port = Int32.Parse(serverPort);
+                int port = int.Parse(serverPort);
                 _clientSocket = new TcpClient();
                 // _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, false);
                 _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
@@ -68,13 +67,6 @@ namespace Networking
                 _receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModules);
                 _receiveQueueListener.Start();
 
-                //for testing purpose
-                if (_isTesting)
-                {
-                    // TODO You can remove this call communicator.Subscribe instead
-                    // TestRegisterModule();
-                }
-
                 return "1";
             }
             catch (Exception e)
@@ -82,43 +74,6 @@ namespace Networking
                 Trace.WriteLine(e.ToString());
                 return "0";
             }
-        }
-
-        /// <summary>
-        /// This method is for testing purpose
-        /// </summary>
-        /// <returns> void </returns>
-        void TestRegisterModule()
-        {
-            _sendQueue.RegisterModule("S", 1);
-            _sendQueue.RegisterModule("W", 2);
-            _sendQueue.RegisterModule("C", 3);
-            _sendQueue.RegisterModule("F", 4);
-            _receiveQueue.RegisterModule("S", 1);
-            _receiveQueue.RegisterModule("W", 2);
-            _receiveQueue.RegisterModule("C", 3);
-            _receiveQueue.RegisterModule("F", 4);
-        }
-
-        /// <summary>
-        /// This method is for testing purpose
-        /// and can be called in testing mode
-        /// </summary>
-        /// <returns> packet </returns>
-        public Packet FrontPacket()
-        {
-            if (_isTesting)
-            {
-                Packet packet = new Packet();
-                if (_receiveQueue.Size() != 0)
-                {
-                    packet = _receiveQueue.Dequeue();
-                }
-
-                return packet;
-            }
-
-            throw new Exception("You don't have access");
         }
 
         /// <summary>

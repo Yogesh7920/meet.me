@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,7 +8,7 @@ namespace Networking
 {
     public class ReceiveQueueListener
     {
-        private readonly IQueue _receieveQueue;
+        private readonly IQueue _receiveQueue;
         private readonly Dictionary<string, INotificationHandler> _notificationHandlers;
         private bool _listenRun;
 
@@ -16,7 +17,7 @@ namespace Networking
         /// </summary>
         public ReceiveQueueListener(IQueue queue, Dictionary<string, INotificationHandler> notificationHandlers)
         {
-            _receieveQueue = queue;
+            _receiveQueue = queue;
             _notificationHandlers = notificationHandlers;
         }
         
@@ -45,9 +46,9 @@ namespace Networking
         {
             while (_listenRun)
             {
-                while (!_receieveQueue.IsEmpty())
+                while (!_receiveQueue.IsEmpty())
                 {
-                    Packet packet = _receieveQueue.Dequeue();
+                    Packet packet = _receiveQueue.Dequeue();
                     string data = packet.SerializedData;
                     string moduleIdentifier = packet.ModuleIdentifier;
 
@@ -59,7 +60,7 @@ namespace Networking
                     }
                     else
                     {
-                        throw new Exception("Handler does not exist");
+                        Trace.WriteLine("Handler does not exist: " + moduleIdentifier);
                     }
                 }   
             }

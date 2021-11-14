@@ -55,33 +55,18 @@ namespace Networking
         /// it looks for EOF to know the end of message
         /// </summary>
         /// <returns>Packet </returns>
-        private Packet GetPacket(String[] msg)
+        private Packet GetPacket(string[] msg)
         {
-            Packet packet = new Packet();
-            packet.ModuleIdentifier = msg[0].ToString();
+            Packet packet = new Packet
+            {
+                ModuleIdentifier = msg[0]
+            };
 
             //get serialized data of packet
-            string data = msg[1];
-            for (int i = 2; i < msg.Length; i++)
-            {
-                data += ":" + msg[i];
-            }
+            string data = string.Join(":", msg[1..]);
 
-            String serializedData = "";
-
-            //search of EOF to get  end of the message
-            for (int i = 0; i < data.Length - 3; i++)
-            {
-                if (data[i] == 'E' && data[i + 1] == 'O' && data[i + 2] == 'F')
-                {
-                    packet.SerializedData = serializedData;
-                    return packet;
-                }
-
-                serializedData += data[i];
-            }
-
-            packet.SerializedData = data;
+            // search of EOF to get  end of the message
+            packet.SerializedData = data[..data.LastIndexOf("EOF", StringComparison.Ordinal)];
             return packet;
         }
 
@@ -91,7 +76,7 @@ namespace Networking
         private void Listen()
         {
             //Variable to store the entire message
-            String message = "";
+            string message = "";
             while (_listenRun)
             {
                 try
@@ -110,7 +95,6 @@ namespace Networking
                         {
                             //Calls GetPacket method to form packet object out of received message
                             Packet packet = GetPacket(message.Split(":"));
-
                             //Calls the PushToQueue method to push packet into queue
                             PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
                             message = "";
@@ -120,9 +104,9 @@ namespace Networking
                 }
                 catch (Exception ex)
                 {
-                    Trace.WriteLine("Networking : An  Exception has been raised in ReceiveSocketListenerClientThread " +
-                                    ex.ToString());
-                    return;
+                    Trace.WriteLine(
+                        "Networking: An Exception has been raised in ReceiveSocketListenerClientThread " 
+                        + ex.Message);
                 }
             }
         }
