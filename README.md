@@ -3,6 +3,10 @@
 An application as part of CS5617 Software Engineering project at IIT Palakkad
 * [Wiki](https://github.com/Yogesh7920/meet.me/wiki)
 
+## Installation
+Download [certificate](https://drive.google.com/file/d/1SmAdpGlpF4tMt5k_zKJEwixaTMHBPUb4/view?usp=sharing) and [.appxbundle file](https://drive.google.com/file/d/1r9Ww0QDeBbvDsq1ntjd5nGkzty9E54w2/view?usp=sharing) and follow the [Installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installation) steps. 
+
+
 ## The Team
 
 | Project Mentor     |

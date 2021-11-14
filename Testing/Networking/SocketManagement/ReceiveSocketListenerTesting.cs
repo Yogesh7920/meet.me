@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -11,12 +11,10 @@ using NUnit.Framework;
 namespace Testing.Networking.SocketManagement
 {
     [TestFixture]
-    public class SendSocketListenerClientTesting
+    public class ReceiveSocketListenerTesting
     {
-        private IQueue _queueS;
-        private IQueue _queueR;
+        private IQueue _queue;
         private Machine _server;
-        private SendSocketListenerClient _sendSocketListenerClient;
         private ReceiveSocketListener _receiveSocketListener;
         private const int Threshold = 1025;
         private string Message => NetworkingGlobals.GetRandomString();
@@ -33,7 +31,7 @@ namespace Testing.Networking.SocketManagement
         }
 
         [SetUp]
-        public void StartSendSocketListenerClient()
+        public void StartReceiveSocketListener()
         {
             _server = new FakeServer();
             string[] address = _server.Communicator.Start().Split(":");
@@ -53,42 +51,42 @@ namespace Testing.Networking.SocketManagement
                 _serverSocket = serverSocket.AcceptTcpClient();
             });
             Task.WaitAll(t1, t2);
-            _queueS = new Queue();
-            _queueS.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
-            _sendSocketListenerClient = new SendSocketListenerClient(_queueS, _clientSocket);
-            _sendSocketListenerClient.Start();
-            
-            _queueR = new Queue();
-            _queueR.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
-            _receiveSocketListener = new ReceiveSocketListener(_queueR, _serverSocket);
+            _queue = new Queue();
+            _queue.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
+            _receiveSocketListener = new ReceiveSocketListener(_queue, _serverSocket);
             _receiveSocketListener.Start();
         }
 
         [Test]
-        public void SinglePacketClientSendTesting()
+        public void SinglePacketReceiveTesting()
         {
             string whiteBoardData = "hello ";
             Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
-            _queueS.Enqueue(whiteBoardPacket);
-            
-            while (_queueR.IsEmpty()) { }
-            Packet packet = _queueR.Dequeue();
+            string msg1 = GetMessage(whiteBoardPacket);
+            var stream = _clientSocket.GetStream();
+            stream.Write(Encoding.ASCII.GetBytes(msg1), 0, msg1.Length);
+            stream.Flush();
+            while (_queue.IsEmpty()) { }
+            Packet packet = _queue.Dequeue();
             Assert.Multiple(() =>
             {
                 Assert.AreEqual(whiteBoardData, packet.SerializedData);
                 Assert.AreEqual(whiteBoardPacket.ModuleIdentifier, packet.ModuleIdentifier);
             });
         }
-        
         [Test]
-        public void BigPacketClientSendTesting()
+        public void BigPacketReceiveTesting()
         {
             string whiteBoardData = NetworkingGlobals.GetRandomString(4000);
             Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
-            _queueS.Enqueue(whiteBoardPacket);
+            string message = GetMessage(whiteBoardPacket);
+            string msg1 = message;
+            var stream = _clientSocket.GetStream();
+            stream.Write(Encoding.ASCII.GetBytes(msg1), 0, msg1.Length);
+            stream.Flush();
             
-            while (_queueR.IsEmpty()) { }
-            Packet packet = _queueR.Dequeue();
+            while (_queue.IsEmpty()) { }
+            Packet packet = _queue.Dequeue();
             Assert.Multiple(() =>
             {
                 Assert.AreEqual(whiteBoardPacket.ModuleIdentifier, packet.ModuleIdentifier);
@@ -97,13 +95,16 @@ namespace Testing.Networking.SocketManagement
         }
 
         [Test]
-        public void MultiplePacketClientSendTesting()
+        public void MultiplePacketReceiveTesting()
         { 
             for (int i = 1; i <= 10; i++)
             {
                 string whiteBoardData = "packet"+i.ToString();
                 Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
-                _queueS.Enqueue(whiteBoardPacket);
+                string msg = GetMessage(whiteBoardPacket);
+                var stream = _clientSocket.GetStream();
+                stream.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
+                stream.Flush();
             }
             
          
@@ -111,7 +112,7 @@ namespace Testing.Networking.SocketManagement
             for (int i = 1; i <= 10; i++)
             {
                 string whiteBoardData = "packet"+i.ToString();
-                Packet packet = _queueR.Dequeue();
+                Packet packet = _queue.Dequeue();
                 Assert.AreEqual(whiteBoardData, packet.SerializedData);
             }
         }
@@ -119,7 +120,6 @@ namespace Testing.Networking.SocketManagement
         public void TearDown()
         {
             _clientSocket.Close();
-            _sendSocketListenerClient.Stop();
             _receiveSocketListener.Stop();
             _serverSocket.Close();
         }
