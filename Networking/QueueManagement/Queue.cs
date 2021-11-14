@@ -15,6 +15,8 @@ namespace Networking
         private int _currentWeight;
         private int _avoidStateChange;
         private string _currentModuleIdentifier;
+        private int _queueSize;
+        private object lockObj = new object();
 
         /// <summary>
         /// Queue constructor initializes multilevel queue, priority map dictionaries and also the state of the queue.
@@ -26,6 +28,7 @@ namespace Networking
             _currentQueue = 0;
             _currentWeight = 0;
             _avoidStateChange = 0;
+            _queueSize = 0;
             Trace.WriteLine("Initializing Queue Module");
         }
 
@@ -81,13 +84,7 @@ namespace Networking
         /// <returns>The number of packets the queue holds.</returns>
         public int Size()
         {
-            int totalPackets = 0;
-            foreach (var keyValuePair in _multiLevelQueue)
-            {
-                totalPackets += keyValuePair.Value.Count;
-            }
-
-            return totalPackets;
+            return _queueSize;
         }
 
         /// <summary>
@@ -96,6 +93,10 @@ namespace Networking
         public void Clear()
         {
             Trace.WriteLine("Clearing all packets from the queue");
+            lock (lockObj)
+            {
+                _queueSize = 0;
+            }
             foreach (var keyValuePair in _multiLevelQueue)
             {
                 keyValuePair.Value.Clear();
@@ -112,6 +113,10 @@ namespace Networking
             // Check if the _multiLevelQueue dictionary contains the moduleIdentifier
             if (_multiLevelQueue.ContainsKey(moduleIdentifier))
             {
+                lock (lockObj)
+                {
+                    _queueSize += 1;
+                }
                 _multiLevelQueue[moduleIdentifier].Enqueue(item);
             }
             else
@@ -138,6 +143,10 @@ namespace Networking
                 _currentWeight -= 1;
                 _avoidStateChange = 1;
                 Trace.WriteLine("Dequeuing Packet");
+                lock (lockObj)
+                {
+                    _queueSize -= 1;
+                }
                 return packet;
             }
 
@@ -171,8 +180,7 @@ namespace Networking
         /// <returns>True if queue is empty and false otherwise.</returns>
         public bool IsEmpty()
         {
-            if (Size() == 0) return true;
-            return false;
+            return _queueSize == 0;
         }
 
         /// <summary>
