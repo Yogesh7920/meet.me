@@ -45,17 +45,6 @@ namespace Networking
         /**Declare TcpListener variable of server*/
         private TcpListener _serverSocket;
 
-        /** Variable for testing mode*/
-        private readonly bool _isTesting;
-
-        /**
-         * Constructor that enables testing mode
-         */
-        public ServerCommunicator(bool isTesting = false)
-        {
-            _isTesting = isTesting;
-        }
-
         /// <summary>
         /// It finds IP4 address of machine which does not end with .1
         /// </summary>
@@ -76,7 +65,6 @@ namespace Networking
                     }
                 }
             }
-
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
@@ -118,12 +106,6 @@ namespace Networking
             _acceptRequestRun = true;
             _acceptRequest.Start();
 
-            if (_isTesting)
-            {
-                // TODO You can remove this call communicator.Subscribe instead
-                // TestRegisterModule();
-            }
-
             Trace.WriteLine("Server has started with ip = " + ip
                                                             + " and port number = " + port);
 
@@ -148,12 +130,6 @@ namespace Networking
                     {
                         module.Value.OnClientJoined(clientSocket);
                     }
-                    // TODO this shouldn't be here since it affects the testing of other modules
-                    // if (_isTesting)
-                    // {
-                    //     testCount++;
-                    //     TestAddClient(testCount.ToString(), clientSocket);
-                    // }
                 }
                 catch (SocketException e)
                 {
@@ -163,27 +139,6 @@ namespace Networking
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// This method is for testing purpose
-        /// and can be called in testing mode
-        /// </summary>
-        /// <returns> packet </returns>
-        public Packet FrontPacket()
-        {
-            if (_isTesting)
-            {
-                Packet packet = new Packet();
-                if (_receiveQueue.Size() != 0)
-                {
-                    packet = _receiveQueue.Dequeue();
-                }
-
-                return packet;
-            }
-
-            throw new Exception("You don't have access");
         }
 
         /// <summary>

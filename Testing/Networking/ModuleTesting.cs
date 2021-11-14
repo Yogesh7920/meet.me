@@ -15,19 +15,16 @@ namespace Testing.Networking
         private readonly FakeServer _server = new();
         private readonly FakeClientA _clientA = new();
         private readonly FakeClientB _clientB = new();
+        private ICommunicator _clientACommunicator;
 
         [OneTimeSetUp]
-        public void OneTimeSetup()
+        public void Init_StartServerAndClients_ServerIsNotifiedAboutClients()
         {
             // reset all expando objects of handlers
             _server.Reset();
             _clientA.Reset();
             _clientB.Reset();
-        }
-        
-        [Test, Order(0)]
-        public void StartServerAndClientJoin_ServerShouldBeNotified()
-        {
+            
             // subscribe modules to server
             _server.Subscribe();
             // start server and store ip and port
@@ -38,6 +35,7 @@ namespace Testing.Networking
             // start client A
             Assert.AreEqual("1", _clientA.Communicator.Start(_serverIp, _serverPort));
             _clientA.Subscribe();
+            _clientACommunicator = _clientA.Communicator;
             Assert.AreEqual(OnClientJoined, _server.WbHandler.Event);
             Assert.AreEqual(OnClientJoined, _server.SsHandler.Event);
             // add client A to server
@@ -53,7 +51,7 @@ namespace Testing.Networking
         }
 
         [OneTimeTearDown]
-        public void OneTimeTearDown()
+        public void Stop_StopServerAndClients()
         {
             _server.Communicator.Stop();
             _clientA.Communicator.Stop();
@@ -61,18 +59,20 @@ namespace Testing.Networking
         }
 
         [SetUp]
-        public void Setup()
+        public void ResetAllHandlers()
         {
             _server.Reset();
             _clientA.Reset();
             _clientB.Reset();
         }
         
-        [Test, Order(1)]
-        public void ClientLeft_ServerShouldBeNotified_ClientShouldNotReceiveMessage()
+        [Test]
+        public void RemoveClient_ClientLeavesRoom_ServerIsNotifiedAndCannotSendMessage()
         {
-            // Module that realises the client has left calls the RemoveClient method on the server.
+            // A module asks the server communicator to remove the client.
             _server.Communicator.RemoveClient(_clientA.Id);
+            // All threads on client are stopped.
+            _clientA.Communicator.Stop();
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
             string expectedMessage = "Client does not exist in the room!";
@@ -81,14 +81,24 @@ namespace Testing.Networking
             Assert.That(() => _server.Communicator.Send(message, moduleId, _clientA.Id),
                 Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));
             
-            // Cleanup all threads on the client.
-            _clientA.Communicator.Stop();
+            // Reset client A back to original state.
+            _clientA.Communicator = NewClientCommunicator;
+            Assert.AreEqual("1", _clientA.Communicator.Start(_serverIp, _serverPort));
+            _clientA.Subscribe();
+            _server.Communicator.AddClient(_clientA.Id, _server.WbHandler.Data);
         }
         
-        [Test, Order(2)]
-        public void ClientRejoin_ServerShouldBeNotified_ClientShouldReceiveMessage()
+        [Test]
+        [Description("This test is useful to check if the sockets are disposed and the threads" +
+                     "are stopped correctly. If the sockets aren't disposed, the client might not" +
+                     "be able to connect again. If the threads are not stopped, this test will timeout.")]
+        public void Start_ClientRejoinsCall_ClientShouldReceiveMessages()
         {
-            // Client A left in the previous test and rejoins now
+            // Simulates a client leaving the room.
+            _server.Communicator.RemoveClient(_clientA.Id);
+            _clientA.Communicator.Stop();
+            
+            // Client re-joining routine begins.
             _clientA.Communicator = NewClientCommunicator;
             // Start client, must return a success message.
             Assert.AreEqual("1", _clientA.Communicator.Start(_serverIp, _serverPort));
@@ -102,10 +112,15 @@ namespace Testing.Networking
             
             // A module on the server will add the client to the networking module
             _server.Communicator.AddClient(_clientA.Id, _server.WbHandler.Data);
+            
+            string message = RandomMessage;
+            _server.Communicator.Send(message, Modules.WhiteBoard, _clientA.Id);
+            _clientA.WbHandler.Wait();
+            Assert.AreEqual(OnDataReceived, _clientA.WbHandler.Event);
         }
 
         [Test]
-        public void Subscribe_ModuleShouldBeRegisteredInQueue_DoesNotThrow()
+        public void Send_UnregisteredModuleMustThrow_RegisteredModuleMustNotThrow()
         {
             string message = RandomMessage;
             // Networking module does not exist, so must throw an error.
@@ -119,7 +134,7 @@ namespace Testing.Networking
         }
 
         [Test]
-        public void ClientSend_ConcernedModuleOnServerShouldBeNotified()
+        public void Send_ClientSendsToServer_OnlySendingModuleNotifiedOnServer()
         {
             // Send message as whiteboard module.
             string moduleId = Modules.WhiteBoard;
@@ -137,7 +152,7 @@ namespace Testing.Networking
         }
 
         [Test]
-        public void ServerSend_BroadCastMessage_OnlyConcernedModulesOnAllClientsShouldBeNotified()
+        public void Send_ServerBroadCastsMessage_OnlySendingModuleOnAllClientsNotified()
         {
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
@@ -157,7 +172,7 @@ namespace Testing.Networking
         }
 
         [Test]
-        public void ServerSend_PrivateMessage_OnlyConcernedClientShouldBeNotified()
+        public void Send_ServerSendsPrivateMessage_OnlySendingModuleOnSingleClientNotified()
         {
             string moduleId = Modules.WhiteBoard;
             string message = RandomMessage;
@@ -185,7 +200,7 @@ namespace Testing.Networking
         }
 
         [Test]
-        public void SerializerObjectType_ShouldReturnCorrectObjectType()
+        public void ObjectType_ShouldReturnCorrectObjectType()
         {
             FakeChat fakeChat = FakeChat.GetFakeChat();
             // Serializer should return the correct object type.
@@ -227,7 +242,7 @@ namespace Testing.Networking
         }
 
         [Test]
-        public void ClientSend_LargeMessage_ShouldNotAlterFunctionality()
+        public void Send_ClientSendsLargeMessage_ServerReceivesLargeMessage()
         {
             string moduleId = Modules.WhiteBoard;
             // This message length is greater than the threshold.
