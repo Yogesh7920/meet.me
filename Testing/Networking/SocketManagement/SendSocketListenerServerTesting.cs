@@ -11,27 +11,16 @@ using NUnit.Framework;
 namespace Testing.Networking.SocketManagement
 {
     [TestFixture]
-    public class SendSocketListenerserverTesting
+    public class SendSocketListenerServerTesting
     {
         private IQueue _queueS;
         private IQueue _queueR;
         private Machine _server;
         private SendSocketListenerServer _sendSocketListenerServer;
         private ReceiveSocketListener _receiveSocketListener;
-        private const int Threshold = 1025;
-        private string Message => NetworkingGlobals.GetRandomString();
         private TcpClient _serverSocket;
         private TcpClient _clientSocket;
         private  Dictionary<string, TcpClient> _clientIdSocket;
-        
-        private string GetMessage(Packet packet)
-        {
-            string msg = packet.ModuleIdentifier;
-            msg += ":";
-            msg += packet.SerializedData;
-            msg += "EOF";
-            return msg;
-        }
 
         [SetUp]
         public void StartSendSocketListenerClient()
