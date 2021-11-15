@@ -80,7 +80,7 @@ namespace Whiteboard
             {
                 float height = Math.Abs(start.R - end.R);
                 float width = Math.Abs(start.C - end.C);
-                Coordinate center = (end - start) / 2;
+                Coordinate center = (end + start) / 2;
                 return new Rectangle(height, width, start.Clone(), center.Clone());
             }
             // Modification of previous shape.
@@ -88,7 +88,7 @@ namespace Whiteboard
             {
                 prevRectangle.Height = Math.Abs(end.R - prevRectangle.Start.R);
                 prevRectangle.Width = Math.Abs(end.C - prevRectangle.Start.C);
-                prevRectangle.Center = (end - prevRectangle.Start) / 2;
+                prevRectangle.Center = (end + prevRectangle.Start) / 2;
                 return prevRectangle;
             }
         }

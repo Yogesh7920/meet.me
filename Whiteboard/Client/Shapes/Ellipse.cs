@@ -80,7 +80,7 @@ namespace Whiteboard
             {
                 float height = Math.Abs(start.R - end.R);
                 float width = Math.Abs(start.C - end.C);
-                Coordinate center = (end - start) / 2;
+                Coordinate center = (end + start) / 2;
                 return new Ellipse(height, width, start, center);
             }
             // Modification of previous shape.
@@ -88,7 +88,7 @@ namespace Whiteboard
             {
                 prevEllipse.Height = Math.Abs(end.R - prevEllipse.Start.R);
                 prevEllipse.Width = Math.Abs(end.C - prevEllipse.Start.C);
-                prevEllipse.Center = (end - prevEllipse.Start) / 2;
+                prevEllipse.Center = (end + prevEllipse.Start) / 2;
                 return prevEllipse;
             }
         }

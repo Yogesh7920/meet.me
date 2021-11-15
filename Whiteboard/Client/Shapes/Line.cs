@@ -84,7 +84,7 @@ namespace Whiteboard
                 // If previous shape to modify is not provided, a new shape is created.
                 float height = Math.Abs(start.R - end.R);
                 float width = Math.Abs(start.C - end.C);
-                Coordinate center = (end - start) / 2;
+                Coordinate center = (end + start) / 2;
                 return new Line(height, width, start.Clone(), end.Clone(), center.Clone());
             }
             else
@@ -92,7 +92,7 @@ namespace Whiteboard
                 // Modification of previous shape.
                 prevLine.Height = end.R - prevLine.Start.R;
                 prevLine.Width = end.C - prevLine.Start.C;
-                prevLine.Center = (end - prevLine.Start) / 2;
+                prevLine.Center = (end + prevLine.Start) / 2;
                 PopLastElementFromList();
                 AddToList(end.Clone());
                 return prevLine;

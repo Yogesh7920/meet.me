@@ -21,14 +21,20 @@ namespace Whiteboard
         /// <summary>
         /// MainShape object to use the functionalites provided by the class.
         /// </summary>
-        private static MainShape s;
+        private static MainShape _ellipse;
+        private static MainShape _rectangle;
+        private static MainShape _line;
+        private static MainShape _polyline;
 
         /// <summary>
         /// Constructor of ShapeFactory
         /// </summary>
         static ShapeFactory()
         {
-            s = new Ellipse();
+            _ellipse = new Ellipse();
+            _rectangle = new Rectangle();
+            _line = new Line();
+            _polyline = new Polyline();
         }
 
         /// <summary>
@@ -44,19 +50,19 @@ namespace Whiteboard
 
             if (shapeType == ShapeType.ELLIPSE)
             {
-                return s.ShapeMaker(start, end, prevShape);
+                return _ellipse.ShapeMaker(start, end, prevShape);
             }
             else if (shapeType == ShapeType.LINE)
             {
-                return s.ShapeMaker(start, end, prevShape);
+                return _line.ShapeMaker(start, end, prevShape);
             }
             else if (shapeType == ShapeType.POLYLINE)
             {
-                return s.ShapeMaker(start, end, prevShape);
+                return _polyline.ShapeMaker(start, end, prevShape);
             }
             else
             {
-                return s.ShapeMaker(start, end, prevShape);
+                return _rectangle.ShapeMaker(start, end, prevShape);
             }
         }
 
