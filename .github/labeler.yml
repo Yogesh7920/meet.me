@@ -12,9 +12,12 @@ ScreenSharing:
     
 Whiteboard:
   - Whiteboard/**/*
+  
+Client:
+  - Client/**/*
     
-UX:
-  - any: ['Client/**/*', 'Server/**/*']
+Server:
+  - Server/**/*
 
 Testing:
   - Testing/**/*
