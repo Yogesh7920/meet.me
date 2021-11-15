@@ -2,10 +2,11 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 7/11/2021
+ * date modified: 15/11/2021
 **/
 
 using System;
+using System.Timers;
 using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
@@ -54,7 +55,7 @@ namespace ScreenSharing
 		public IScreenShare _Ux;
 
 		// Timer will be used to sense disconnection issues.
-		public System.Windows.Forms.Timer timer;
+		public System.Timers.Timer timer;
 
 		// stores the userId of the client
 		public string userId;
@@ -69,6 +70,10 @@ namespace ScreenSharing
         {
 			userId = uid;
 			userName = uname;
+			timer = new System.Timers.Timer(2000);
+			timer.Elapsed += OnTimeout;
+			timer.AutoReset = true;
+
 			_communicator = CommunicationFactory.GetCommunicator();
 			_communicator.Subscribe(this.GetType().Namespace,this);
 			serializer = new Serializer();
@@ -87,12 +92,11 @@ namespace ScreenSharing
 		/// </summary>
 		public void StartSharing() 
 		{
-			lock (this)
-			{
+			
 				thisSharing = true;
 				// starting the execution of the sharing thread
 				_sharingThread.Start();
-			}
+			
 		}
 
 		/// <summary>
@@ -101,6 +105,10 @@ namespace ScreenSharing
 		public void StopSharing()
         {
 			thisSharing = false;
+			SharedScreen message = new SharedScreen(userId, userName, 0, null);
+			string scrn = serializer.Serialize<SharedScreen>(message);
+			_communicator.Send(scrn, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+			return;
 		}
 
 		/// <summary>
@@ -142,6 +150,7 @@ namespace ScreenSharing
 			if(otherSharing)
             {
 				thisSharing = false;
+				_Ux.OnScreenRecieved(userId,userName,-1,null);
 				return;
             }
 			while (thisSharing)
@@ -169,7 +178,7 @@ namespace ScreenSharing
 				}
                 else
                 {
-					message = new SharedScreen(userId, userName, 0, null);
+					return;
 				}
 				string scrn = serializer.Serialize<SharedScreen>(message);
 				_communicator.Send(scrn, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
@@ -194,6 +203,9 @@ namespace ScreenSharing
             {
 				while (frameQueue.Count == 0) ;
 				// if the queue is not empty do something
+				timer.Interval=2000;
+				if(timer.Enabled == false)
+					timer.Start();
 				otherSharing = true;
 				SharedScreen currScreen = frameQueue.Dequeue();
 				int mtype = currScreen.messageType;
@@ -201,21 +213,39 @@ namespace ScreenSharing
 				string uname = currScreen.username;
 				if (mtype == 0)
 				{
+					timer.Stop();
+					timer.Interval = 2000;
 					otherSharing = false;
 					_Ux.OnScreenRecieved(uid, uname, mtype, null);
 				}
-				Bitmap screen = GetImage(currScreen.screen);
-				_Ux.OnScreenRecieved(uid,uname,mtype, screen);
-
+				else
+				{
+					Bitmap screen = GetImage(currScreen.screen);
+					_Ux.OnScreenRecieved(uid, uname, mtype, screen);
+				}
+				if(thisSharing && uid != userId)
+                {
+					thisSharing=false;
+					_Ux.OnScreenRecieved(userId,userName,-1,null);
+                }
 			}
 		}
 
 		/// <summary>
 		/// This method will be invoked when no updates are recieved for a certain amount of time.
 		/// </summary>
-		public void OnTimeout()
+		public void OnTimeout(Object source, ElapsedEventArgs e)
         {
-			throw new NotImplementedException();
+			thisSharing = false;
+			otherSharing = false;
+			frameQueue.Clear();
+			_Ux.OnScreenRecieved(userId, userName, -2, null);
 		}
+		~ScreenShareClient()
+        {
+			isNotifying = false;
+			thisSharing = false;
+			timer.Dispose();
+        }
 	}
 }

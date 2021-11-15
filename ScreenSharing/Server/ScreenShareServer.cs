@@ -2,10 +2,11 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 7/11/2021
+ * date modified: 15/11/2021
 **/
 
 using System;
+using System.Timers;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -36,7 +37,7 @@ namespace ScreenSharing
 		public string moduleId;
 
 		//Timer will be used to sense disconnection issues.
-		public Timer timer;
+		public System.Timers.Timer timer;
 
 		//Stores the user Id of the user currently sharing the screen.
 		public string userId;
@@ -47,6 +48,10 @@ namespace ScreenSharing
 		public ScreenShareServer()
 		{
 			userId = "-";
+			timer = new System.Timers.Timer(2000);
+			timer.Elapsed += OnTimeout;
+			timer.AutoReset = true;
+
 			_communicator = CommunicationFactory.GetCommunicator();
 			_communicator.Subscribe(this.GetType().Namespace, this);
 			serializer = new Serializer();
@@ -73,6 +78,9 @@ namespace ScreenSharing
 			while(isSharing)
             {
 				while (frameQueue.Count == 0) ;
+				timer.Interval = 2000;
+				if (timer.Enabled == false)
+					timer.Start();
 				SharedScreen currScreen = frameQueue.Dequeue();
 				if(userId == "-")
                 {
@@ -82,9 +90,15 @@ namespace ScreenSharing
 				else if(currScreen.userId != userId)
                 {
 					// this is a case of simultaneous sharing and the user who is sharing has to be rejected
-                }
+					continue;
+				}
                 else
                 {
+					if(currScreen.messageType == 0)
+                    {
+						timer.Stop();
+						timer.Interval = 2000;
+                    }
 					// Broadcasting the screen
 					string data = serializer.Serialize<SharedScreen>(currScreen);
 					_communicator.Send(data, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
@@ -95,9 +109,15 @@ namespace ScreenSharing
 		/// <summary>
 		/// This method will be invoked when no updates are recieved for a certain amount of time.
 		/// </summary>
-		public void OnTimeout()
+		public void OnTimeout(Object source, ElapsedEventArgs e)
         {
-			throw new NotImplementedException();
+			userId ="-";
+			frameQueue.Clear();
+		}
+		~ScreenShareServer()
+		{
+			isSharing = false;
+			timer.Dispose();
 		}
 	}
 }
