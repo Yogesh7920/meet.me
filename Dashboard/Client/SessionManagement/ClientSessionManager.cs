@@ -9,6 +9,7 @@ using Networking;
 namespace Dashboard.Client.SessionManagement 
 {
     using Dashboard.Server.Telemetry;
+    public delegate void NotifyEndMeet();
 
     /// <summary>
     /// ClientSessionManager class is used to maintain the client side 
@@ -33,7 +34,8 @@ namespace Dashboard.Client.SessionManagement
             {
                 _clients = new List<IClientSessionNotifications>();
             }
-            _clientSessionData = new SessionData();
+            _clientSessionData = null;
+            _user = null;
             moduleIdentifier = "clientSessionManager";
             chatSummary = null;
         }
@@ -74,7 +76,9 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void RemoveClient()
         {
-            throw new NotImplementedException();
+            ClientToServerData clientToServerData = new("removeClient", _user.username, _user.userID);
+            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
+            _communicator.Send(serializedData, moduleIdentifier);
         }
 
         /// <summary>
@@ -82,7 +86,9 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void EndMeet()
         {
-            throw new NotImplementedException();
+            ClientToServerData clientToServerData = new("endMeet", _user.username, _user.userID);
+            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
+            _communicator.Send(serializedData, moduleIdentifier);
         }
 
         /// <summary>
@@ -172,6 +178,14 @@ namespace Dashboard.Client.SessionManagement
                     UpdateSummary(deserializedObject);
                     return;
 
+                case "removeClient":
+                    UpdateClientSessionData(deserializedObject);
+                    return;
+
+                case "endMeet":
+                    MeetingEnded?.Invoke();
+                    return;
+
                 default:
                     throw new NotImplementedException();
             }
@@ -207,16 +221,30 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="recievedSessionData"> The sessionData received from the server side. </param>
         private void UpdateClientSessionData(ServerToClientData receivedData)
         {
+            // fetching the session data and user received from the server side
             SessionData recievedSessionData = (SessionData)receivedData.GetObject();
             UserData user = receivedData.GetUser();
 
+            // if there was no change in the data then nothing needs to be done
             if (recievedSessionData == _clientSessionData)
                 return;
 
-            if(_clientSessionData == null)
+            // a null _user denotes that the user is new and has not be set because all 
+            // the old user (already present in the meeting) have their _user set.
+            if(_user == null)
             {
                 _user = user;
             }
+
+            // The user received from the server side is equal to _user only in the case of 
+            // client departure. So, the _user and received session data are set to null to indicate this departure
+            else if(_user == user)
+            {
+                _user = null;
+                recievedSessionData = null;
+            }
+
+            // update the sesseon data on the client side and notify the UX about it.
             lock(this)
             {
                 _clientSessionData = (SessionData)recievedSessionData;
@@ -231,5 +259,6 @@ namespace Dashboard.Client.SessionManagement
         private readonly List<IClientSessionNotifications> _clients;
         private string chatSummary;
         private UserData _user;
+        public event NotifyEndMeet MeetingEnded;
     }
 }
