@@ -11,12 +11,23 @@ namespace Dashboard
     using Server.SessionManagement;
     public static class SessionManagerFactory
     {
-        
+        /// <summary>
+        /// Constructor to create client and server session manager objects.
+        /// </summary>
         static SessionManagerFactory()
         {
-            s_clientSessionManager = new ClientSessionManager();
-            s_serverSessionManager = new ServerSessionManager();
+            // the objects are initialized only once for the program
+            if(s_clientSessionManager == null)
+            {
+                s_clientSessionManager = new ClientSessionManager();
+            }
+
+            if(s_serverSessionManager == null)
+            {
+               s_serverSessionManager = new ServerSessionManager();
+            }
         }
+
         /// <summary>
         /// This method will create a Client sided server 
         /// manager that will live till the end of the program
