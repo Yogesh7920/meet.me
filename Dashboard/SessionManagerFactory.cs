@@ -54,7 +54,7 @@ namespace Dashboard
             return s_serverSessionManager;
         }
 
-        private static IUXClientSessionManager s_clientSessionManager;
-        private static ITelemetrySessionManager s_serverSessionManager;
+        private static readonly IUXClientSessionManager s_clientSessionManager;
+        private static readonly ITelemetrySessionManager s_serverSessionManager;
     }
 }

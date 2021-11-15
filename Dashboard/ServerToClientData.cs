@@ -44,7 +44,7 @@ namespace Dashboard
         }
 
         public string eventType;
-        private IRecievedFromServer _receivedObject;
-        private UserData _user;
+        private readonly IRecievedFromServer _receivedObject;
+        private readonly UserData _user;
     }
 }
