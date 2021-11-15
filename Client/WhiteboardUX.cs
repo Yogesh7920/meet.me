@@ -314,8 +314,6 @@ namespace Client
         /// <returns> void, upon altering the 'selectedShapes' of this class instane accordingly </returns>
         public Canvas SelectShape(Canvas cn, Shape sh, IWhiteBoardOperationHandler WBOp, int mode = 0)
         {
-
-            SolidColorBrush strokeColor = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
             switch (mode)
             {
                 //selectedShapes.ToString()
@@ -1342,25 +1340,38 @@ namespace Client
             {               
                 poly = new System.Windows.Shapes.Polyline();
 
+                poly.Stroke = polyLineColor;
+                poly.StrokeThickness = polyLineThickness;
 
                 if (isEraser == true)
                 {
                     poly.Tag = "ERASER";
+                    poly.Points.Add(pt);
+                    cn.Children.Add(poly);
                 }
                 else
                 {
                     poly.Tag = "FREEHAND";
+                    poly.Points.Add(pt);
+                    cn.Children.Add(poly);
                 }
-
-                poly.Stroke = polyLineColor;
-                poly.StrokeThickness = polyLineThickness;
-
-                poly.Points.Add(pt);
-                cn.Children.Add(poly);
             }
             else
             {
-                poly.Points.Add(pt);
+                if(isEraser == true)
+                {
+                    poly.Points.Add(pt);
+
+                    if (poly.Points.Count > 50)
+                    {
+                        
+                        poly.Points.RemoveAt(0);
+                    }
+                }
+                else
+                {
+                    poly.Points.Add(pt);
+                }
             }
 
             return cn;  
@@ -1369,6 +1380,15 @@ namespace Client
         public Canvas CustomizePolyline(Canvas cn, IWhiteBoardOperationHandler WBOps)
         {
             return cn;
+        }
+
+        public Canvas DeletePolyline(Canvas cn, IWhiteBoardOperationHandler WBops, System.Windows.Shapes.Polyline selectedLine)
+        {
+            //Call : Render UX element to delete the polyline 
+
+            cn.Children.Remove(selectedLine); 
+
+            return cn; 
         }
     }
 

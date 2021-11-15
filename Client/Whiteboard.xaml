@@ -594,7 +594,7 @@
                                 </Grid>
 
                                 <Grid Grid.Row="1">
-                                    <Popup Name="EraserPopUp"
+                                    <!--<Popup Name="EraserPopUp"
                                         IsOpen="{Binding ElementName=EraseTool, Path=IsChecked}"
                                         PlacementTarget="{Binding ElementName=EraseTool}"
                                         AllowsTransparency="True"
@@ -615,11 +615,10 @@
                                                 <Slider x:Name="EraserThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="EraserThicknessSlider_ValueChanged"></Slider>
                                             </StackPanel>
                                         </Grid>
-                                    </Popup>
+                                    </Popup>-->
 
                                     <!--Eraser Button-->
-                                    <ToggleButton x:Name="EraseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool"
-                                                  MouseEnter="OpenPopupEraserButton_MouseEnter" MouseLeave="OpenPopupEraserButton_MouseLeave">
+                                    <ToggleButton x:Name="EraseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
