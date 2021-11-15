@@ -13,6 +13,9 @@
 <!--ResizeMode="NoResize"
         WindowStyle="None" -->
 
+
+    
+
 <UserControl x:Class="Client.WhiteBoardView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -23,6 +26,13 @@
         Height="450" Width="800"
         Background="#cfcfcf"
         >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <TextBlock x:Key="CursorErase" Cursor="/Icons/Eraser.cur"/>
+            <TextBlock x:Key="CursorErase32" Cursor="/Icons/Eraser_2.cur"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
     <!--Parent Grid-->
     <!--<Grid MouseDown="Grid_MouseDown">-->

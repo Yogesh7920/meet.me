@@ -12,6 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Icons\Eraser.cur" />
+      <None Remove="Icons\Eraser_2.cur" />
       <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
@@ -20,6 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Resource Include="Icons\Eraser.cur" />
+      <Resource Include="Icons\Eraser_2.cur" />
       <Resource Include="Icons\WhiteboardUX\Toolbar\bin.png" />
     </ItemGroup>
 

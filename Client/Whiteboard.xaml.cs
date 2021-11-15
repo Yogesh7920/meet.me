@@ -123,6 +123,7 @@ namespace Client
             activeMainToolbarButton = this.SelectTool;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
+            GlobCanvas.Cursor = Cursors.Arrow;
             return; 
         }
 
@@ -663,6 +664,7 @@ namespace Client
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
+            GlobCanvas.Cursor = Cursors.Arrow;
             return;
         }
 
@@ -683,6 +685,7 @@ namespace Client
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
+            GlobCanvas.Cursor = Cursors.Arrow;
             return;
         }
 
@@ -703,6 +706,7 @@ namespace Client
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
+            GlobCanvas.Cursor = Cursors.Arrow;
             return;
         }
 
@@ -724,6 +728,7 @@ namespace Client
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
+            GlobCanvas.Cursor = Cursors.Pen;
             return;
         }
 
@@ -744,6 +749,7 @@ namespace Client
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
+            GlobCanvas.Cursor = ((TextBlock)this.Resources["CursorErase32"]).Cursor;
             return;
         }
 
@@ -764,6 +770,7 @@ namespace Client
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
+            GlobCanvas.Cursor = Cursors.Arrow;
             return;
         }
 
