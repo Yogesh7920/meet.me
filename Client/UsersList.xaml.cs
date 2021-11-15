@@ -23,11 +23,14 @@ namespace Client
     /// </summary>
     public partial class UsersList : UserControl
     {
-        bool UserListHidden;
+        public bool UserListHidden;
         ObservableCollection<UserViewData> users;
-        public UsersList()
+        MainWindow obj;
+        public UsersList(MainWindow instance)
         {
             InitializeComponent();
+
+            obj = instance;
 
             UserListHidden = true;
             UserListHead.Visibility = System.Windows.Visibility.Hidden;
@@ -41,11 +44,12 @@ namespace Client
             HomePageViewModel viewModel = this.DataContext as HomePageViewModel;
             users = new ObservableCollection<UserViewData>(viewModel.users as List<UserViewData>);
         }
-        private void Users_List_Click(object sender, RoutedEventArgs e)
+        private void UsersListClick(object sender, RoutedEventArgs e)
         {
+            obj.OnUsersListClick();
             if (UserListHidden)
             {
-                UsersListPane.SetValue(Grid.ColumnSpanProperty, 2);
+                UsersListPane.SetValue(Grid.ColumnSpanProperty, 3);
                 UserListHead.Visibility = System.Windows.Visibility.Visible;
                 UserListHidden = false;
             }
@@ -56,7 +60,11 @@ namespace Client
                 UserListHidden = true;
             }
         }
-        private void OnLeaveButtonClick(object sender, RoutedEventArgs e)
+        /*public void Helper()
+        {
+
+        }*/
+        public void OnLeaveButtonClick()
         {
             HomePageViewModel homeviewmodel = this.DataContext as HomePageViewModel;
             homeviewmodel.LeftClient();
