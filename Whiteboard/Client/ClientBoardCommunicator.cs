@@ -39,7 +39,7 @@ namespace Whiteboard
                 {
                     instance = new ClientBoardCommunicator();
                     serializer = new Serializer();
-                    communicator = new ClientCommunicator();
+                    // communicator = new ClientCommunicator(); TODO: Correct this error
                     communicator.Subscribe(moduleIdentifier, instance);
                     subscribers = new HashSet<IServerUpdateListener>();
                 }
@@ -54,8 +54,9 @@ namespace Whiteboard
         /// <param name="clientUpdate"> the object to be passed to server</param>
         public void Send(BoardServerShape clientUpdate)
         {
-            var xml_obj = serializer.Serialize(clientUpdate);
-            communicator.Send(xml_obj, moduleIdentifier);
+            // TODO: Correct this error
+            // var xml_obj = serializer.Serialize(clientUpdate);
+            // communicator.Send(xml_obj, moduleIdentifier);
         }
 
         /// <summary>

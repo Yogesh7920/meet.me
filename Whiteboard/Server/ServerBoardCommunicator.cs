@@ -39,7 +39,7 @@ namespace Whiteboard
                 {
                     instance = new ServerBoardCommunicator();
                     serializer = new Serializer();
-                    communicator = new ServerCommunicator();
+                    // communicator = new ServerCommunicator();  TODO: Correct this error
                     communicator.Subscribe(moduleIdentifier, instance);
                     stateManager = new ServerBoardStateManager();
                 }
@@ -85,11 +85,12 @@ namespace Whiteboard
         /// <param name="clientUpdate"> the object to be passed to client</param>
         public void Send(BoardServerShape clientUpdate, string clientId = "all")
         {
-            var xml_obj = serializer.Serialize(clientUpdate);
-            if (clientId == "all")
-                communicator.Send(xml_obj, moduleIdentifier);
-            else
-                communicator.Send(xml_obj, moduleIdentifier, clientId);
+            // TODO: Correct this error
+            // var xml_obj = serializer.Serialize(clientUpdate);
+            // if (clientId == "all")
+            //     communicator.Send(xml_obj, moduleIdentifier);
+            // else
+            //     communicator.Send(xml_obj, moduleIdentifier, clientId);
         }
     }
 }
