@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Networking;
 
 
 namespace Dashboard
@@ -42,6 +43,16 @@ namespace Dashboard
         }
 
         /// <summary>
+        /// Constructor for testing the module
+        /// </summary>
+        /// <param name="communicator"> Test communicator to test functionality</param>
+        /// <returns></returns>
+        public static IUXClientSessionManager GetClientSessionManager(ICommunicator communicator)
+        {
+            return new ClientSessionManager(communicator);
+        }
+
+        /// <summary>
         /// This method will server a Client sided server
         /// manager that will live till the end of the program
         /// </summary>
@@ -52,6 +63,16 @@ namespace Dashboard
         public static ITelemetrySessionManager  GetServerSessionManager()
         {
             return s_serverSessionManager;
+        }
+
+        /// <summary>
+        /// Constructor for testing the module
+        /// </summary>
+        /// <param name="communicator"> Test communicator to test functionality</param>
+        /// <returns></returns>
+        public static ServerSessionManager GetServerSessionManager(ICommunicator communicator)
+        {
+            return new ServerSessionManager(communicator);
         }
 
         private static IUXClientSessionManager s_clientSessionManager;

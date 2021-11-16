@@ -39,6 +39,29 @@ namespace Dashboard.Client.SessionManagement
         }
 
         /// <summary>
+        /// Added for testing the Module
+        /// </summary>
+        /// <param name="communicator">
+        /// Test communicator to test the functionality
+        /// </param>
+        public ClientSessionManager(ICommunicator communicator)
+        {
+            _serializer = new Serializer();
+            _communicator = communicator;
+            Session session = new();
+            session.TraceListener();
+
+
+            if (_clients == null)
+            {
+                _clients = new List<IClientSessionNotifications>();
+            }
+            _clientSessionData = new SessionData();
+            moduleIdentifier = "clientSessionManager";
+            chatSummary = null;
+        }
+
+        /// <summary>
         /// Adds a user to the meeting.
         /// </summary>
         /// <param name="ipAddress"> IP Address of the meeting. </param>

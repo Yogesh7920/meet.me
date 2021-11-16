@@ -42,6 +42,7 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public ServerSessionManager(ICommunicator communicator)
         {
+            _contentServer = ContentServerFactory.GetInstance();
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
