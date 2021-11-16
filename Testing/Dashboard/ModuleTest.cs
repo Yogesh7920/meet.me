@@ -86,7 +86,7 @@ namespace Testing
 
 
         [Test]
-        public void sessionObjectTest()
+        public void SessionObjectTest()
         {
             List<UserData> users = Utils.GenerateUserData();
 
@@ -106,8 +106,50 @@ namespace Testing
             CollectionAssert.AreEqual(users, sessionData.users);
         }
 
+        [Test]
+        public void ClientArrivalNotificationTest()
+        {
+            Console.WriteLine("check Point");
+            int dataSize = 10;
+            // New Arrived user
+            ClientSessionManager cSessionManagerNew = new(_testCommunicator);
+            TestUX testUXNew = new();
+            cSessionManagerNew.SubscribeSession(testUXNew);
+
+            // Old users
+            ClientSessionManager cSessionManagerOld = new(_testCommunicator);
+            TestUX testUXOld = new();
+            cSessionManagerOld.SubscribeSession(testUXOld);
+            
+            // SessionData After adding new user
+            SessionData sData = Utils.GenerateSampleSessionData(dataSize, "addClient");
+            
+            // The new user is removed as it wont be present before joining
+            UserData newUser = sData.users[dataSize - 1];
+            sData.users.RemoveAt(dataSize - 1);
+
+            // When the old user joins the first time, it would recieve complete session object
+            ServerToClientData serverToClientData = new("addClient", sData, sData.users[dataSize-2]);
+            cSessionManagerOld.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientData));
+            testUXOld.gotNotified = false;
+
+            // Following are recieved when new user joins for old and new users
+            sData.AddUser(newUser);
+            ServerToClientData serverToClientDataNew = new("addClient", sData, sData.users[dataSize-1]);
+            string serialisedDataNew =  _serializer.Serialize<ServerToClientData>(serverToClientDataNew);
+            //Console.WriteLine("MT: " + serialisedDataNew);
+            cSessionManagerNew.OnDataReceived(serialisedDataNew);
+            cSessionManagerOld.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientDataNew));
+            while (testUXNew.gotNotified == false) ;
+            while (testUXOld.gotNotified == false) ;
+
+            CollectionAssert.AreEqual(sData.users, testUXOld.sessionData.users);
+            CollectionAssert.AreEqual(sData.users, testUXNew.sessionData.users);
+
+        }
+
         private ISerializer _serializer = new Serializer();
         private readonly int validTests = 10;
-        private readonly TestCommunicator _testCommunicator = new TestCommunicator();
+        private readonly TestCommunicator _testCommunicator = new();
     }
 }

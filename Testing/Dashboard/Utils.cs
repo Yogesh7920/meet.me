@@ -67,6 +67,16 @@ namespace Testing.Dashboard
             return users;
         }
 
+        public static SessionData GenerateSampleSessionData(int size, string eventType)
+        {
+            SessionData sData = new();
+            for (int i = 0; i < size; i++)
+            {
+                sData.AddUser(new(GetRandomString(random.Next(10)), i));
+            }
+            return sData;
+        }
+
         /// <summary>
         /// Generates invalid IP and ports
         /// </summary>
