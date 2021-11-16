@@ -87,26 +87,6 @@ namespace Whiteboard
         List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
 
         /// <summary>
-        /// Changes the height of shape with given shape ID.
-        /// </summary>
-        /// <param name="start"> Coordinate of mouse down event. </param>
-        /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
-        /// <param name="shapeId"> Id of the shape. </param>
-        /// <param name="shapeComp"> Indicative of a mouse up event. </param>
-        /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
-
-        /// <summary>
-        /// Changes the width of the shape with given shape ID.
-        /// </summary>
-        /// <param name="start"> Coordinate of mouse down event. </param>
-        /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
-        /// <param name="shapeId"> Id of the shape. </param>
-        /// <param name="shapeComp"> Indicative of a mouse up event. </param>
-        /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
-
-        /// <summary>
         /// Resizes the shape with given shape ID.
         /// </summary>
         /// <param name="start"> Coordinate of mouse down event. </param>
@@ -114,7 +94,7 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. </param>
         /// <param name="shapeComp"> Indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragpos, bool shapeComp = false);
 
         /// <summary>
         /// Changes the thickness of the shape outline stroke.
@@ -171,6 +151,8 @@ namespace Whiteboard
         /// <param name="shapeId">Id of the shape.</param>
         /// <returns></returns>
         List<UXShape> DeleteShape(string shapeId);
+
+        void SetUserLevel(int userLevel);
 
     }
 }
