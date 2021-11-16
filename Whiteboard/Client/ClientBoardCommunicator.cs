@@ -20,7 +20,7 @@ namespace Whiteboard
         private static ClientBoardCommunicator instance = null;
         private static ISerializer serializer;
         private static ICommunicator communicator;
-        private static string moduleIdentifier = "Whiteboard";
+        private readonly static string moduleIdentifier = "Whiteboard";
         private static HashSet<IServerUpdateListener> subscribers;
         /// <summary>
         /// private constructor for a singleton

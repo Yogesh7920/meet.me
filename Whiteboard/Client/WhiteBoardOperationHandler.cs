@@ -22,7 +22,7 @@ namespace Whiteboard
         /// <summary>
         /// Size of the Canvas.
         /// </summary>
-        private Coordinate _canvasSize;
+        private readonly Coordinate _canvasSize;
 
         /// <summary>
         /// State the board is in.
