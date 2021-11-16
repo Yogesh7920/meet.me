@@ -21,10 +21,10 @@ namespace Whiteboard
         /// <summary>
         /// MainShape object to use the functionalites provided by the class.
         /// </summary>
-        private static MainShape _ellipse;
-        private static MainShape _rectangle;
-        private static MainShape _line;
-        private static MainShape _polyline;
+        private readonly static MainShape _ellipse;
+        private readonly static MainShape _rectangle;
+        private readonly static MainShape _line;
+        private readonly static MainShape _polyline;
 
         /// <summary>
         /// Constructor of ShapeFactory
