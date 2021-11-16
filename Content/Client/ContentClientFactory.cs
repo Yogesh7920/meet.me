@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 namespace Content
 {
     public class ContentClientFactory
@@ -9,6 +10,7 @@ namespace Content
         
         private static void createInstance()
         {
+            Trace.WriteLine("[ContentClientFactory] IContentClient instance created");
             // acquire lock before creating object to ensure thread saftey
             lock (_lock)
             {

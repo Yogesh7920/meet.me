@@ -1,38 +1,50 @@
 using System;
 using System.Threading;
 using System.Net.Sockets;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Diagnostics;
 
-/// <summary>
-/// This file contains the class Server which will be running on the server.
-/// and accepts client request.
-/// </summary>
-/// <author>Tausif Iqbal </author>
 namespace Networking
 {
-    public class ServerCommunicator : ICommunicator
+    internal class ServerCommunicator : ICommunicator
     {
-        private Dictionary<string, INotificationHandler> _subscribedModules =
-            new Dictionary<string, INotificationHandler>();
-
-        private Hashtable _clientIdSocket = new Hashtable();
-        private Queue _recieveQueue = new Queue();
-
-        private Thread _acceptRequest;
-        private bool _acceptRequestRun = false;
+        /** Declare sendSocketListenerServer variable for sending messages across the network*/
         private SendSocketListenerServer _sendSocketListenerServer;
 
-        private HashSet<RecieveSocketListener> clientListener = new HashSet<RecieveSocketListener>();
+        private ReceiveQueueListener _receiveQueueListener;
+
+        /** Declare dictionary variable that stores clientId and receiveSocketListener */
+        private readonly Dictionary<string, ReceiveSocketListener> _clientListener =
+            new();
+
+        /** Declare dictionary variable to store module Id and corresponding handler*/
+        private readonly Dictionary<string, INotificationHandler> _subscribedModules =
+            new();
+
+        /** Declare dictionary variable to store client Id and corresponding socket object*/
+        private readonly Dictionary<string, TcpClient> _clientIdSocket = new();
+
+        /** Declare queue variable for receiving messages*/
+        private readonly Queue _receiveQueue = new();
+
+        /** Declare queue variable for sending messages*/
+        private readonly Queue _sendQueue = new();
+
+        /** Declare thread variable for accepting request*/
+        private Thread _acceptRequest;
+
+        /** Declare variable to control acceptRequest thread*/
+        private volatile bool _acceptRequestRun;
+
+        /**Declare TcpListener variable of server*/
+        private TcpListener _serverSocket;
 
         /// <summary>
         /// It finds IP4 address of machine which does not end with .1
         /// </summary>
         /// <returns>IP4 address </returns>
-        private static string GetLocalIPAddress()
+        private static string GetLocalIpAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
@@ -40,14 +52,14 @@ namespace Networking
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
                     string address = ip.ToString();
-                    int n = address.Length;
+
+                    // check  IP does not end with .1 
                     if (address.Split(".")[3] != "1")
                     {
                         return ip.ToString();
                     }
                 }
             }
-
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
@@ -55,9 +67,8 @@ namespace Networking
         /// scan for free Tcp port.
         /// </summary>
         /// <returns>integer </returns>
-        private static int FreeTcpPort()
+        private static int FreeTcpPort(IPAddress ip)
         {
-            IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
             TcpListener tcp = new TcpListener(ip, 0);
             tcp.Start();
             int port = ((IPEndPoint) tcp.LocalEndpoint).Port;
@@ -71,38 +82,56 @@ namespace Networking
         /// <returns> String</returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
-            int port = FreeTcpPort();
-            IPAddress ip = IPAddress.Parse(GetLocalIPAddress());
-            TcpListener serverSocket = new TcpListener(ip, port);
-            serverSocket.Start();
+            IPAddress ip = IPAddress.Parse(GetLocalIpAddress());
+            int port = FreeTcpPort(ip);
+            _serverSocket = new TcpListener(ip, port);
 
-            Trace.WriteLine("Server has started with ip = " +
-                            IPAddress.Parse(((IPEndPoint) serverSocket.LocalEndpoint).Address.ToString()) +
-                            " and port number = " + ((IPEndPoint) serverSocket.LocalEndpoint).Port.ToString());
+            //start server at the scanned port of the ip 
+            _serverSocket.Start();
 
-            _sendSocketListenerServer = new SendSocketListenerServer(_recieveQueue, _clientIdSocket);
+            //start sendSocketListener of server for sending message 
+            _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket);
             _sendSocketListenerServer.Start();
-            _acceptRequest = new Thread(() => AcceptRequest(serverSocket));
+
+            _receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModules);
+            _receiveQueueListener.Start();
+
+            //start acceptRequest thread of server for accepting request
+            _acceptRequest = new Thread(() => AcceptRequest());
             _acceptRequestRun = true;
             _acceptRequest.Start();
 
-            return IPAddress.Parse(((IPEndPoint) serverSocket.LocalEndpoint).Address.ToString()) +
-                   ":" + ((IPEndPoint) serverSocket.LocalEndpoint).Port.ToString();
+            Trace.WriteLine("Server has started with ip = " + ip
+                                                            + " and port number = " + port);
+
+            return ip + ":" + port;
         }
 
         /// <summary>
         /// It accepts all incoming client request
         /// </summary>
         /// <returns> void </returns>
-        private void AcceptRequest(TcpListener serverSocket)
+        private void AcceptRequest()
         {
-            TcpClient clientSocket = default(TcpClient);
+            // Block and wait for incoming client connection
             while (_acceptRequestRun)
             {
-                clientSocket = serverSocket.AcceptTcpClient();
-                foreach (KeyValuePair<string, INotificationHandler> module in _subscribedModules)
+                try
                 {
-                    module.Value.OnClientJoined(clientSocket);
+                    var clientSocket = _serverSocket.AcceptTcpClient();
+
+                    //notify subscribed Module handler
+                    foreach (KeyValuePair<string, INotificationHandler> module in _subscribedModules)
+                    {
+                        module.Value.OnClientJoined(clientSocket);
+                    }
+                }
+                catch (SocketException e)
+                {
+                    if (e.SocketErrorCode == SocketError.Interrupted)
+                    {
+                        Trace.WriteLine("socket blocking listener has been closed");
+                    }
                 }
             }
         }
@@ -113,13 +142,19 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Stop()
         {
+            //stop acceptRequest thread
             _acceptRequestRun = false;
-            // run a loop and stop  recieveSocketListener of all the clients
-            foreach (RecieveSocketListener r in clientListener)
+            _serverSocket.Stop();
+
+            //stop receiveSocketListener of all the clients 
+            foreach (KeyValuePair<string, ReceiveSocketListener> listener in _clientListener)
             {
-                r.Stop();
+                ReceiveSocketListener receiveSocketListener = listener.Value;
+                receiveSocketListener.Stop();
             }
 
+            _receiveQueueListener.Stop();
+            // stop sendSocketListener of server
             _sendSocketListenerServer.Stop();
         }
 
@@ -128,37 +163,91 @@ namespace Networking
         /// also adds corresponding listener to a set
         /// </summary>
         /// <returns> void </returns>
-        void ICommunicator.AddClient<T>(string clientID, T socketObject)
+        void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
-            _clientIdSocket[clientID] = socketObject;
-            RecieveSocketListener recieveSocketListener =
-                new RecieveSocketListener(_recieveQueue, (TcpClient) (object) socketObject);
-            clientListener.Add(recieveSocketListener);
-            recieveSocketListener.Start();
+            // add clientID and socketObject into Dictionary 
+            _clientIdSocket[clientId] = (TcpClient) (object) socketObject;
+
+            //Start receiveSocketListener of the client in the 
+            //server for listening message from the client
+
+            ReceiveSocketListener receiveSocketListener =
+                new ReceiveSocketListener(_receiveQueue, (TcpClient) (object) socketObject);
+            _clientListener[clientId] = receiveSocketListener;
+            receiveSocketListener.Start();
         }
 
-        /// <inheritdoc />
-        void ICommunicator.RemoveClient(string clientID)
+        /// <summary>
+        /// It removes client from server 
+        /// </summary>
+        /// <returns> void </returns>
+        void ICommunicator.RemoveClient(string clientId)
         {
-            throw new NotImplementedException();
+            // stop the listener of the client 
+            ReceiveSocketListener receiveSocketListener = _clientListener[clientId];
+            receiveSocketListener.Stop();
+
+            //close stream  and connection of the client
+            TcpClient tcpClient = _clientIdSocket[clientId];
+            tcpClient.GetStream().Close();
+            tcpClient.Close();
+
+            // remove the socket object and listener  of the client 
+            _clientListener.Remove(clientId);
+            _clientIdSocket.Remove(clientId);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// It takes data and identifier 
+        /// forms packet object  and push to the 
+        /// sending queue for broadcast
+        /// </summary>
+        /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
-            throw new NotImplementedException();
+            Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
+            try
+            {
+                _sendQueue.Enqueue(packet);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+            }
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// It takes data, identifier and destination 
+        /// forms packet object and push to the 
+        /// sending queue for private messaging
+        /// </summary>
+        /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier, string destination)
         {
-            throw new NotImplementedException();
+            if (!_clientIdSocket.ContainsKey(destination))
+            {
+                throw new Exception("Client does not exist in the room!");
+            }
+            Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
+            try
+            {
+                _sendQueue.Enqueue(packet);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+            }
         }
 
-        /// <inheritdoc />
-        void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
+        /// <summary>
+        /// It adds notification handler of module
+        /// </summary>
+        /// <returns> void </returns>
+        void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);
+            _sendQueue.RegisterModule(identifier, priority);
+            _receiveQueue.RegisterModule(identifier, priority);
         }
     }
 }

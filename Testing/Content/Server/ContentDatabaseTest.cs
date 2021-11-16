@@ -1,12 +1,16 @@
 using NUnit.Framework;
+using Content;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
-namespace Testing.Dashboard
+namespace Testing
 {
-    public class Tests
+    public class ContentDatabaseTests
     {
         [SetUp]
         public void Setup()
         {
+
         }
 
         [Test]

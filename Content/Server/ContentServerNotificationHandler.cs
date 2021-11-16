@@ -5,10 +5,17 @@ namespace Content
 {
     public class ContentServerNotificationHandler : INotificationHandler
     {
+        private ContentServer _contentServer;
+
+        public ContentServerNotificationHandler()
+        {
+            _contentServer = ContentServerFactory.GetInstance() as ContentServer;
+        }
+
         /// <inheritdoc />
         public void OnDataReceived(string data)
         {
-            throw new NotImplementedException();
+            _contentServer.Receive(data);
         }
 
         /// <inheritdoc />
