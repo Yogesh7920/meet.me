@@ -81,7 +81,7 @@ namespace Whiteboard
                 float height = Math.Abs(start.R - end.R);
                 float width = Math.Abs(start.C - end.C);
                 Coordinate center = (end + start) / 2;
-                return new Rectangle(height, width, start.Clone(), center.Clone());
+                return new Rectangle(height, width, start.Clone(), center);
             }
             // Modification of previous shape.
             else
@@ -99,7 +99,7 @@ namespace Whiteboard
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            return new Rectangle(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), new List<Coordinate>(), AngleOfRotation);
+            return new Rectangle(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), null, AngleOfRotation);
         }
     }
 }

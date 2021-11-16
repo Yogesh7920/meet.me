@@ -72,7 +72,7 @@ namespace Whiteboard
 
             SolidColorBrush shapeFillBrush = new()
             {
-                Color = Color.FromArgb(Convert.ToByte(s.ShapeFill.R), Convert.ToByte(s.ShapeFill.G), Convert.ToByte(s.ShapeFill.B), 0)
+                Color = Color.FromArgb(255, Convert.ToByte(s.ShapeFill.R), Convert.ToByte(s.ShapeFill.G), Convert.ToByte(s.ShapeFill.B))
             };
 
             // setting paramaters based on shape
@@ -124,7 +124,7 @@ namespace Whiteboard
 
             SolidColorBrush StrokeBrush = new()
             {
-                Color = Color.FromArgb(Convert.ToByte(s.StrokeColor.R), Convert.ToByte(s.StrokeColor.G), Convert.ToByte(s.StrokeColor.B), 0)
+                Color = Color.FromArgb(255, Convert.ToByte(s.StrokeColor.R), Convert.ToByte(s.StrokeColor.G), Convert.ToByte(s.StrokeColor.B))
             };
 
             WindowsShape.Stroke = StrokeBrush;

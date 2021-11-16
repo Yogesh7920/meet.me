@@ -68,6 +68,7 @@ namespace Whiteboard
         /// </summary>
         public Line() : base(ShapeType.LINE)
         {
+            this.Points = new();
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace Whiteboard
                 float height = Math.Abs(start.R - end.R);
                 float width = Math.Abs(start.C - end.C);
                 Coordinate center = (end + start) / 2;
-                return new Line(height, width, start.Clone(), end.Clone(), center.Clone());
+                return new Line(height, width, start.Clone(), end.Clone(), center);
             }
             else
             {
@@ -105,7 +106,8 @@ namespace Whiteboard
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            return new Line(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), new List<Coordinate>(), AngleOfRotation);
+            List<Coordinate> pointClone = Points.Select(cord => new Coordinate(cord.R, cord.C)).ToList();
+            return new Line(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), pointClone, AngleOfRotation);
         }
     }
 }
