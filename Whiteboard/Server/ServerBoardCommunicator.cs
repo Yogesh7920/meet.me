@@ -37,7 +37,7 @@ namespace Whiteboard
                 {
                     instance = new ServerBoardCommunicator();
                     serializer = new Serializer();
-                    communicator = new ServerCommunicator();
+                    communicator = CommunicationFactory.GetCommunicator(false);
                     communicator.Subscribe(moduleIdentifier, instance);
                     stateManager = new ServerBoardStateManager();
                 }
