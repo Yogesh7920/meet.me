@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 10/13/2021
+ * Date Modified: 11/02/2021
 **/
 
 using System;
@@ -11,10 +11,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Whiteboard.Client
+namespace Whiteboard
 {
-    class WhiteBoardOperationHandler : IWhiteBoardOperationHandler
+    public class WhiteBoardOperationHandler : IWhiteBoardOperationHandler
     {
+
+        private Coordinate _canvasSize;
+        private BoardOperationsState _boardState;
+
+        public WhiteBoardOperationHandler(Coordinate canvasSize)
+        {
+            _canvasSize = canvasSize;
+            _boardState = new ActiveBoardOperationsHandler(_canvasSize);
+        }
+
         /// <summary>
         /// Changes the height of shape with given shape ID.
         /// </summary>
@@ -34,7 +44,7 @@ namespace Whiteboard.Client
         /// <param name="shapeFill"> Shape Fill Color. </param>
         /// <param name="shapeId">Id of the shape. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ChangeShapeFill(Color shapeFill, string shapeId)
+        public List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId)
         {
             throw new NotImplementedException();
         }
@@ -45,7 +55,7 @@ namespace Whiteboard.Client
         /// <param name="strokeColor"> Stroke Color. </param>
         /// <param name="shapeId">Id of the shape. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ChangeStrokeColor(Color strokeColor, string shapeId)
+        public List<UXShape> ChangeStrokeColor(BoardColor strokeColor, string shapeId)
         {
             throw new NotImplementedException();
         }
@@ -84,7 +94,7 @@ namespace Whiteboard.Client
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, Color strokeColor, string shapeId = null, bool shapeComp = false)
+        public List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
             throw new NotImplementedException();
         }
@@ -99,7 +109,7 @@ namespace Whiteboard.Client
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, Color strokeColor, string shapeId = null, bool shapeComp = false)
+        public List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
             throw new NotImplementedException();
         }
@@ -114,7 +124,7 @@ namespace Whiteboard.Client
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, Color strokeColor, string shapeId = null, bool shapeComp = false)
+        public List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
             throw new NotImplementedException();
         }
@@ -129,7 +139,17 @@ namespace Whiteboard.Client
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth, Color strokeColor, string shapeId = null, bool shapeComp = false)
+        public List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Delete the shape with given shape ID.
+        /// </summary>
+        /// <param name="shapeId">Id of the shape.</param>
+        /// <returns></returns>
+        public List<UXShape> DeleteShape(string shapeId)
         {
             throw new NotImplementedException();
         }
@@ -139,7 +159,7 @@ namespace Whiteboard.Client
         /// </summary>
         /// <param name="shapeId"> Id of the shape. </param>
         /// <returns> User Name. </returns>
-        public string getUserName(string shapeId)
+        public string GetUserName(string shapeId)
         {
             throw new NotImplementedException();
         }
@@ -183,7 +203,7 @@ namespace Whiteboard.Client
         /// Switches WhiteBoard state from active to inactive and vice-versa.
         /// </summary>
         /// <returns> Denotes succesfull state switch. </returns>
-        public bool switchState()
+        public bool SwitchState()
         {
             throw new NotImplementedException();
         }
