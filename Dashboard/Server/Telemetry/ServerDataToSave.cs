@@ -9,16 +9,15 @@ namespace Dashboard
 {
     public class ServerDataToSave
     {
-      
-        /// Dictionary with SessionData as key and its score(ChatCount * No. of users) as value
-        
-        Dictionary<int, int> ScoreOfEachSession;
+        ///<summary>
+        ///     the total number of sessions
+        ///</summary>
+        int SessionCount;
 
-        /// Dictionary with SessionData as key and  total user count as value
-        Dictionary<int, int> UserCountForEachSession;
-
-        /// Dictionary with SessionData as key and total chat count as value
-        Dictionary<int, int> ChatCountForEachSession;
+        /// <summary>
+        ///     List of SessionSummary that is summary of each session
+        /// </summary>
+        List<SessionSummary> AllSessionsSummary;
     }
 }
 

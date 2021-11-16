@@ -5,120 +5,91 @@ using Content;
 
 namespace Dashboard.Server.Telemetry{
     
-    public class Telemetry: ITelemetryAnalysisModel
+    public class Telemetry: ITelemetry
     {
         /// <summary>
         ///     returns a dictionary with DateTime as key and int as value
         ///     which indicates UserCount at corresponding DateTime 
         /// </summary>
-
-        /// <params> 
+        /// <params name= "new_session"> 
         ///     takes the session data which contains the users list 
-        ///     and whenever the session data changes, I get notified, 
-        ///     based on it I can store the timestamp
+        ///     and whenever the session data changes, Telemetry get notified, 
+        ///     based on it timestamp can be stored.
         /// </params>
-
         /// <returns>
         ///     A dictionary of DateTime as key and userCount as value
         /// </returns>
-        Dictionary< DateTime, int > UserCountVsTimeStamp(SessionData newSession){
+        public Dictionary< DateTime, int > GetUserCountVsTimeStamp(SessionData new_session){
             
             throw new NotImplementedException();
 
         }
 
-
         /// <summary>
-        ///     returns a dictionary of UserData as key and chatCount as value
+        ///     returns a dictionary of UserID as key and chatCount as value
         ///     indicating chat count of each user.
         /// </summary>
-        /// <params> Takes array of ChatContext object which contains information about Threads </params>
+        /// <params name="all_messages"> Takes array of ChatContext object which contains information about Threads </params>
         /// <returns> 
-        ///     Dictionary of userData as key and int as value
+        ///     Dictionary of userID as key and int as value
         /// </returns>
-        Dictionary<int, int> UserVsChatCount(ChatContext[] AllMess){
+        public Dictionary<int, int> GetUserVsChatCount(ChatContext[] all_messages){
             Dictionary<int, int> UserChatCountDic= new Dictionary<int, int>();
-            foreach(ChatContext currThread in AllMess){
-                foreach(ReceiveMessageData currMessage in currThread.MsgList){
-                    UserChatCountDic[currMessage.SenderId]++;
+            foreach(ChatContext CurrThread in all_messages){
+                foreach(ReceiveMessageData CurrMessage in CurrThread.MsgList){
+                    UserChatCountDic[CurrMessage.SenderId]++;
                 }
             }
             return UserChatCountDic;
         }
 
         /// <summary> 
-        ///     returns the list of UserData which indicates insincere members
-        ///     in the session who were present in the session but for less 
+        ///     returns the list of UserID which indicates insincere members
+        ///     in the session, i.e. those who were present in the session but for less 
         ///     than a certain minimum time
         /// </summary>
-        /// <params> Takes the session data which contains the list of users </params>
-        /// <returns> A list of type UserDat  </returns>
-        List<int> irrelevantMembers(SessionData newSession){
+        /// <params name="new_session"> Takes the session data which contains the list of users </params>
+        /// <returns> A list of type int(userID)  </returns>
+        public List<int> GetInsincereMembers(SessionData new_session){
             throw new NotImplementedException();
         }
 
         /// <summary>
-        ///     returns a dictionary which indicates score for each session
+        ///     appends the current session data in the previous ServerDataToSave object
         /// </summary>
-        /// <params> Takes the list of ServerDataToSave, which contains information about each session </params>
+        /// <params name="previous_sessions_data"> Takes ServerDataToSave, which contains information about previous sessions </params>
         /// <returns>
-        ///     Dictionary with SessionData as key and its score(chatcount * no. of users) as value
+        ///     returns the updated ServerDataToSave object
         /// </returns>
-        Dictionary<SessionData, int> sessionVsScore(List<ServerDataToSave> AllSessionData ){
-            throw new NotImplementedException();
-        }
-
-
-        /// <summary>
-        ///     returns a dictionary which indicates user count in each session
-        /// </summary>
-        /// <params> Takes the list of ServerDataToSave, which contains information about each session </params>
-        /// <returns>
-        ///     Dictionary with SessionData as key and User as value
-        /// </returns>
-        Dictionary<SessionData, int > sessionVsUserCount(List<ServerDataToSave> AllSessionData){
-            throw new NotImplementedException();
-        }
-
-
-        /// <summary>
-        ///     returns a dictionary which indicates chat count in each session
-        /// </summary>
-        /// <params> Takes the list of ServerDataToSave, which contains information about each session </params>
-        /// <returns>
-        ///     Dictionary with SessionData as key and Chat count(int) as value
-        /// </returns>
-        Dictionary<SessionData, int > sessionVsChatCount(List<ServerDataToSave> AllSessionData){
+        public ServerDataToSave UpdateServerData(ServerDataToSave previous_sessions_data ){
             throw new NotImplementedException();
         }
 
         /// <summary>
-        ///     Updates the SessionData when it changes
+        ///     To get any change in the SessionData
         /// </summary>
-        /// <params> Takes the list of ServerData </params>
+        /// <params name="new_session"> Received new SessionData </params>
         void OnAnalyticsChanged(SessionData newSession){
             throw new NotImplementedException();
         }
 
-
         /// <summary>
-        ///     used by SM to simplify the ChatContext and save it by persistance module.
+        ///     simplifies the ChatContext and saved by persistance module.
         /// </summary>
-        /// <params> Array of ChatContext objects which contains information about messages of each thread </params>    
-        public void SaveAllAnalytics(ChatContext[] AllMessages){
+        /// <params name="all_messages"> Array of ChatContext objects which contains information about messages of each thread </params>    
+        public void SaveAnalytics(ChatContext[] all_messages){
             throw new NotImplementedException();
         }
 
-
         /// <summary>
-        ///     Used by SM to get the TelemetryAnalyticsModel to transfer
+        ///     Used by SM to get the SessionAnalytics to transfer
         ///     back to UX module to display the analytics
         /// </summary>
         /// <params> Array of ChatContext objects which contains information about messages of each thread </params>
         /// <returns>
-        ///     Returns TelemetryAnalyticsModel object which contains analytics of session
+        ///     Returns SessionAnalytics object which contains analytics of session
         /// </returns>
-        public TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages){
+        public SessionAnalytics getTelemetryAnalytics(ChatContext[] all_messages){
             throw new NotImplementedException();
         }
     }

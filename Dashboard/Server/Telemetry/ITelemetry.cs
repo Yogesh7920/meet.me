@@ -8,25 +8,21 @@ using Content;
 
 namespace Dashboard.Server.Telemetry
 {
-    public interface ITelemetryAnalysisModel
+    public interface ITelemetry
     {
         /// <summary>
         ///    SM uses it to notify the session is over, 
         ///    and the analytics need to be store
         /// </summary>
-
-        /// <params name="AllMessages"> Array of ChatContext object, which contains info about threads </params>
-        void SaveAllAnalytics(ChatContext[] AllMessages);
-
+        /// <params name="all_messages"> Array of ChatContext object, which contains info about threads </params>
+        void SaveAnalytics(ChatContext[] all_messages);
 
         /// <summary>
         ///    SM uses it to get the analysed data to pass on to the UI
         /// </summary>
-
-        /// <params name="AllMessages"> The chat data of all the threads </params>
-        
+        /// <params name="all_messages"> The chat data of all the threads </params>
         /// <returns> TelemetryAnalyticsModel object </returns>
-        TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages);
+        SessionAnalytics getTelemetryAnalytics(ChatContext[] all_messages);
         
     }
 }
