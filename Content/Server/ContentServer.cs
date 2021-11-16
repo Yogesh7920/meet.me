@@ -19,10 +19,10 @@ namespace Content
             _subscribers = new List<IContentListener>();
             _communicator = CommunicationFactory.GetCommunicator(false);
             _contentDatabase = new ContentDatabase();
-            _notificationHandler = new ContentServerNotificationHandler();
             _fileServer = new FileServer(_contentDatabase);
             _chatContextServer = new ChatContextServer(_contentDatabase);
             _serializer = new Serializer();
+            _notificationHandler = new ContentServerNotificationHandler(this);
             _communicator.Subscribe("Content", _notificationHandler);
         }
 

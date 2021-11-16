@@ -7,9 +7,9 @@ namespace Content
     {
         private ContentServer _contentServer;
 
-        public ContentServerNotificationHandler()
+        internal ContentServerNotificationHandler(ContentServer contentServer)
         {
-            _contentServer = ContentServerFactory.GetInstance() as ContentServer;
+            _contentServer = contentServer;
         }
 
         /// <inheritdoc />
