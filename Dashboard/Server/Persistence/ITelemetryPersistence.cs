@@ -18,21 +18,20 @@ namespace Dashboard.Server.Persistence
                 /// save the UserCountVsTimeStamp, UserIdVsChatCount, InsincereMember data as png after each session.
         /// </summary>
         /// <param name="intraSessionData"> takes IntraSessionData from Telemetry. </param>
-	    bool save(IntraSessionData intraSessionData);
+	    public bool save(SessionAnalytics intraSessionData);
 
         /// <summary>
                  /// append the ServerData into a file after each session end
         /// </summary>
-        /// <param name="serverData"> takes ServerData from Telemetry to be saved into text file </param> 
+        /// <param name="AllserverData"> takes ServerData from Telemetry to be saved into text file </param> 
         /// <returns>Returns true if saved successfully else returns false</returns>
-        bool saveServerData(ServerData serverData);
+        public bool saveServerData(ServerDataToSave AllserverData);
 
         /// <summary>
                  /// retrives the ServerData after end of all of the sessions.
         /// </summary>
         /// <returns>returns List of SeverData</returns>
-        List<ServerData> retriveAllSeverData();
-
+        public ServerDataToSave retriveAllSeverData();
     }
 
 
