@@ -25,6 +25,14 @@ namespace Dashboard
             _user = user;
         }
 
+       /// <summary>
+       /// Default constructor for serialization
+       /// </summary>
+        public ServerToClientData()
+        {
+
+        }
+
         /// <summary>
         /// Returns the object sent from the server to the client
         /// </summary>

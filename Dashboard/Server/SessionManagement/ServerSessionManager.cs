@@ -144,7 +144,7 @@ namespace Dashboard.Server.SessionManagement
             //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
             string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
             //int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
-            int port = Convert.ToInt16(meetAddress[(meetAddress.IndexOf(':') + 2)..]);
+            int port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
 
 
             return _meetingCredentials = new MeetingCredentials(ipAddress, port);
