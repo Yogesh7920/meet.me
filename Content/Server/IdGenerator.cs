@@ -2,12 +2,12 @@
 {
     internal class IdGenerator
     {
-        private static int _messageId = 0;
-        private static int _chatContextId = 0;
+        private static int _messageId;
+        private static int _chatContextId;
 
         public static int getMessageId()
         {
-            int prevId = _messageId;
+            var prevId = _messageId;
             _messageId++;
             return prevId;
         }
@@ -19,7 +19,7 @@
 
         public static int getChatContextId()
         {
-            int prevId = _chatContextId;
+            var prevId = _chatContextId;
             _chatContextId++;
             return prevId;
         }

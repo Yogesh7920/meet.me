@@ -1,44 +1,43 @@
 using System;
-using System.Collections.Generic;
 using Networking;
 
 namespace Content
 {
     internal class ChatClient
     {
-        private int _userId;
-        
-        public int UserId { get => _userId ; set => _userId = value; }
-        private string _moduleIdentifier = "Content";
-        private ICommunicator _communicator;
-        private ISerializer _serializer;
+        private readonly ICommunicator _communicator;
+        private readonly string _moduleIdentifier = "Content";
+        private readonly ISerializer _serializer;
 
         public ChatClient()
         {
-             _communicator = CommunicationFactory.GetCommunicator();
-             _serializer = new Serializer();
+            _communicator = CommunicationFactory.GetCommunicator();
+            _serializer = new Serializer();
         }
+
+        public int UserId { get; set; }
+
         private MessageData SendToMessage(SendMessageData toconvert, MessageEvent ChatEvent)
         {
-            MessageData Converted = new MessageData();
+            var Converted = new MessageData();
             Converted.Event = ChatEvent;
             Converted.Type = toconvert.Type;
             Converted.Message = toconvert.Message;
             Converted.FileData = null;
-            Converted.SenderId = _userId;
+            Converted.SenderId = UserId;
             Converted.ReceiverIds = toconvert.ReceiverIds;
             Converted.ReplyThreadId = toconvert.ReplyThreadId;
             Converted.Starred = false;
             Converted.SentTime = DateTime.Now;
             return Converted;
         }
+
         public void ChatNewMessage(SendMessageData toserver)
         {
-            MessageData tosend = SendToMessage(toserver, MessageEvent.NewMessage);
+            var tosend = SendToMessage(toserver, MessageEvent.NewMessage);
             tosend.MessageId = -1;
-            string xml = _serializer.Serialize<MessageData>(tosend);
+            var xml = _serializer.Serialize(tosend);
             _communicator.Send(xml, _moduleIdentifier);
-
         }
 
         public void ChatUpdate()
@@ -48,18 +47,13 @@ namespace Content
 
         public void ChatStar(int messageId)
         {
-            MessageData toSend = new MessageData();
+            var toSend = new MessageData();
             toSend.MessageId = messageId;
             toSend.Event = MessageEvent.Star;
-            toSend.SenderId = _userId;
+            toSend.SenderId = UserId;
 
-            string xml = _serializer.Serialize<MessageData>(toSend);
+            var xml = _serializer.Serialize(toSend);
             _communicator.Send(xml, _moduleIdentifier);
-            
         }
-
-       
-
     }
-
 }

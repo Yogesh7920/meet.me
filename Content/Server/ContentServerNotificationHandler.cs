@@ -1,11 +1,11 @@
-﻿using Networking;
-using System;
+﻿using System;
+using Networking;
 
 namespace Content
 {
     public class ContentServerNotificationHandler : INotificationHandler
     {
-        private ContentServer _contentServer;
+        private readonly ContentServer _contentServer;
 
         public ContentServerNotificationHandler()
         {

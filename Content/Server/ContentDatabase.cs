@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Testing")]
@@ -8,8 +7,8 @@ namespace Content
 {
     internal class ContentDatabase
     {
-        private Dictionary<int, MessageData> _messages;
         private Dictionary<int, ChatContext> _chatContexts;
+        private readonly Dictionary<int, MessageData> _messages;
 
         public ContentDatabase()
         {

@@ -6,13 +6,13 @@ namespace Content
 {
     internal class ChatContextServer
     {
-        private List<ChatContext> _allMessages;
-        private ContentDatabase _contentDatabase;
+        private readonly List<ChatContext> _allMessages;
+        private readonly ContentDatabase _contentDatabase;
 
         public ChatContextServer(ContentDatabase contentDatabase)
         {
-            this._contentDatabase = contentDatabase;
-            this._allMessages = new List<ChatContext>();
+            _contentDatabase = contentDatabase;
+            _allMessages = new List<ChatContext>();
         }
 
         public void Receive(MessageData messageData)
@@ -30,7 +30,8 @@ namespace Content
         {
             if (receiveMessageData.ReplyThreadId != -1)
             {
-                ChatContext chatContext = _allMessages.FirstOrDefault(chatContext => chatContext.ThreadId == receiveMessageData.ReplyThreadId);
+                var chatContext = _allMessages.FirstOrDefault(chatContext =>
+                    chatContext.ThreadId == receiveMessageData.ReplyThreadId);
                 switch (receiveMessageData.Event)
                 {
                     case MessageEvent.NewMessage:
@@ -59,7 +60,7 @@ namespace Content
             else
             {
                 Trace.WriteLine("[ChatContextServer] Creating a new ChatContext and adding message to it");
-                ChatContext chatContext = new ChatContext();
+                var chatContext = new ChatContext();
                 chatContext.CreationTime = receiveMessageData.SentTime;
                 chatContext.NumOfMessages = 1;
                 chatContext.MsgList = new List<ReceiveMessageData>();
@@ -71,13 +72,15 @@ namespace Content
 
         private void StarMessage(ReceiveMessageData receiveMessageData, ChatContext chatContext)
         {
-            ReceiveMessageData message = chatContext.MsgList.FirstOrDefault(message => message.MessageId == receiveMessageData.MessageId);
+            var message =
+                chatContext.MsgList.FirstOrDefault(message => message.MessageId == receiveMessageData.MessageId);
             message.Starred = !message.Starred;
         }
 
         private void UpdateMessage(ReceiveMessageData receiveMessageData, ChatContext chatContext)
         {
-            ReceiveMessageData message = chatContext.MsgList.FirstOrDefault(message => message.MessageId == receiveMessageData.MessageId);
+            var message =
+                chatContext.MsgList.FirstOrDefault(message => message.MessageId == receiveMessageData.MessageId);
             message.Message = receiveMessageData.Message;
         }
     }

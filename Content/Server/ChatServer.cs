@@ -1,15 +1,14 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Content
 {
     internal class ChatServer
     {
-        private ContentDatabase _contentDatabase;
+        private readonly ContentDatabase _contentDatabase;
 
         public ChatServer(ContentDatabase contentDatabase)
         {
-            this._contentDatabase = contentDatabase;
+            _contentDatabase = contentDatabase;
         }
 
         public MessageData Receive(MessageData messageData)
@@ -43,7 +42,7 @@ namespace Content
 
         private MessageData Star(int id)
         {
-            MessageData messageData = Fetch(id);
+            var messageData = Fetch(id);
             messageData.Starred = !messageData.Starred;
             _contentDatabase.UpdateMessageData(id, messageData);
             return messageData;

@@ -1,7 +1,7 @@
 namespace Content
 {
     /// <summary>
-    /// Message Type - File or Chat
+    ///     Message Type - File or Chat
     /// </summary>
     public enum MessageType
     {
@@ -10,7 +10,7 @@ namespace Content
     }
 
     /// <summary>
-    /// Message Event - Update, NewMessage, Star, Download
+    ///     Message Event - Update, NewMessage, Star, Download
     /// </summary>
     public enum MessageEvent
     {

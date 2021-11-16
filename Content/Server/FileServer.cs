@@ -1,15 +1,14 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Content
 {
     internal class FileServer
     {
-        private ContentDatabase _contentDatabase;
+        private readonly ContentDatabase _contentDatabase;
 
         public FileServer(ContentDatabase contentDatabase)
         {
-            this._contentDatabase = contentDatabase;
+            _contentDatabase = contentDatabase;
         }
 
         public MessageData Receive(MessageData messageData)
