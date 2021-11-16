@@ -38,7 +38,7 @@ namespace Whiteboard
                 {
                     instance = new ClientBoardCommunicator();
                     serializer = new Serializer();
-                    communicator = new ClientCommunicator();
+                    communicator = CommunicationFactory.GetCommunicator();
                     communicator.Subscribe(moduleIdentifier, instance);
                     subscribers = new HashSet<IServerUpdateListener>();
                 }
