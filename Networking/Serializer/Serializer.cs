@@ -2,6 +2,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
+using System.Diagnostics;
 
 namespace Networking
 {
@@ -10,11 +11,19 @@ namespace Networking
         /// <inheritdoc />
         string ISerializer.Serialize<T>(T objectToSerialize)
         {
-            XmlSerializer serializer = new XmlSerializer(objectToSerialize.GetType());
-            using (var stringStream = new StringWriter())
+            try
             {
-                serializer.Serialize(stringStream, objectToSerialize);
-                return stringStream.ToString();
+                XmlSerializer serializer = new XmlSerializer(objectToSerialize.GetType());
+                using (var stringStream = new StringWriter())
+                {
+                    serializer.Serialize(stringStream, objectToSerialize);
+                    return stringStream.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                throw;
             }
         }
 
@@ -35,10 +44,16 @@ namespace Networking
         /// <inheritdoc />
         T ISerializer.Deserialize<T>(string serializedString)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
-            using (StringReader stringReader = new StringReader(serializedString))
+            try
             {
-                return (T) serializer.Deserialize(stringReader);
+                XmlSerializer serializer = new XmlSerializer(typeof(T));
+                using (StringReader stringReader = new StringReader(serializedString))
+                    return (T)serializer.Deserialize(stringReader);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                throw;
             }
         }
     }
