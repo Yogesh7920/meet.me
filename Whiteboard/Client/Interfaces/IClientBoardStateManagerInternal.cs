@@ -54,5 +54,11 @@ namespace Whiteboard
         /// </summary>
         /// <returns>The user id of current user.</returns>
         string GetUser();
+
+        /// <summary>
+        /// Sets the user level of current user.
+        /// </summary>
+        /// <param name="userLevel">The user level.</param>
+        void SetUserLevel(int userLevel);
     }
 }

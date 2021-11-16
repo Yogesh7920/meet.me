@@ -53,5 +53,9 @@ namespace Whiteboard
         /// <param name="userId">user Id of the current user.</param>
         void SetUser(string userId);
 
+        /// <summary>
+        /// Clears the whiteboard to fresh.
+        /// </summary>
+        void ClearWhiteBoard();
     }
 }

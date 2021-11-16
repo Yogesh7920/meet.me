@@ -43,6 +43,7 @@ namespace Whiteboard
         /// Count of checkpoints.
         /// </summary>
         public int CheckpointNumber { get; set; }
+        public int CurrentCheckpointState { get; set; }
 
         /// <summary>
         /// Default constructor.
@@ -58,12 +59,13 @@ namespace Whiteboard
         /// <param name="operation">Operation performed on state.</param>
         /// <param name="requesterId">User id.</param>
         /// <param name="checkpointNumber">Count of checkpoints.</param>
-        public BoardServerShape(List<BoardShape> shapeUpdates, Operation operation, string requesterId, int checkpointNumber = 0)
+        public BoardServerShape(List<BoardShape> shapeUpdates, Operation operation, string requesterId, int checkpointNumber = 0, int currentCheckpointState = 0)
         {
             ShapeUpdates = shapeUpdates;
             OperationFlag = operation;
             RequesterId = requesterId;
             CheckpointNumber = checkpointNumber;
+            CurrentCheckpointState = currentCheckpointState;
             RequestTime = DateTime.Now;
         }
 
