@@ -13,6 +13,9 @@
 <!--ResizeMode="NoResize"
         WindowStyle="None" -->
 
+
+    
+
 <UserControl x:Class="Client.WhiteBoardView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -23,6 +26,13 @@
         Height="450" Width="800"
         Background="#cfcfcf"
         >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <TextBlock x:Key="CursorErase" Cursor="/Icons/Eraser.cur"/>
+            <TextBlock x:Key="CursorErase32" Cursor="/Icons/Eraser_2.cur"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
     <!--Parent Grid-->
     <!--<Grid MouseDown="Grid_MouseDown">-->
@@ -584,7 +594,7 @@
                                 </Grid>
 
                                 <Grid Grid.Row="1">
-                                    <Popup Name="EraserPopUp"
+                                    <!--<Popup Name="EraserPopUp"
                                         IsOpen="{Binding ElementName=EraseTool, Path=IsChecked}"
                                         PlacementTarget="{Binding ElementName=EraseTool}"
                                         AllowsTransparency="True"
@@ -605,11 +615,10 @@
                                                 <Slider x:Name="EraserThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="EraserThicknessSlider_ValueChanged"></Slider>
                                             </StackPanel>
                                         </Grid>
-                                    </Popup>
+                                    </Popup>-->
 
                                     <!--Eraser Button-->
-                                    <ToggleButton x:Name="EraseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool"
-                                                  MouseEnter="OpenPopupEraserButton_MouseEnter" MouseLeave="OpenPopupEraserButton_MouseLeave">
+                                    <ToggleButton x:Name="EraseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool">
                                         <StackPanel Orientation="Vertical">
                                             <Image Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
@@ -802,7 +811,7 @@
 
         <!--Middle Column Containing Canvas-->
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <Canvas Name="MyCanvas" Focusable ="True" MouseDown="OnCanvasMouseButtonDown" MouseMove="OnCanvasMouseMove"  MouseUp ="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="White" Height="379" Width="580" HorizontalAlignment="Center" ClipToBounds="True">
+            <Canvas Name="MyCanvas" Focusable ="True" MouseDown="OnCanvasMouseButtonDown" MouseMove="OnCanvasMouseMove"  MouseUp ="OnCanvasMouseButtonUp"  MouseLeave="OnCanvasMouseLeave" MouseEnter="OnCanvasMouseEnter" Margin="0,10,0,10" Background="White" Height="379" Width="580" HorizontalAlignment="Center" ClipToBounds="True">
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>

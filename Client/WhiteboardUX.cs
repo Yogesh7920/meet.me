@@ -53,7 +53,7 @@ namespace Client
         private UIElement adornedShape;
 
         Point dragStart, dragEnd;
-        IWhiteBoardOperationHandler WbOp; 
+        IWhiteBoardOperationHandler WbOp;
 
         public BorderAdorner(UIElement element, ShapeManager shapeManager, Canvas cn, IWhiteBoardOperationHandler WbOp) : base(element)
         {
@@ -63,7 +63,7 @@ namespace Client
             this.cn = cn;
             this.WbOp = WbOp;
 
-            this.dragStart = new Point {X = 0, Y = 0};
+            this.dragStart = new Point { X = 0, Y = 0 };
             this.dragEnd = new Point { X = 0, Y = 0 };
 
             if (element is not System.Windows.Shapes.Line)
@@ -142,7 +142,7 @@ namespace Client
             if (adornedElement != null && bottomRightCorner != null)
             {
                 EnforceSize(adornedElement);
-                this.shapeManager.ResizeAdorner(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, bottomRightCorner, AdornerDragPos.BotRight);                 
+                this.shapeManager.ResizeAdorner(cn, WbOp, (Shape)adornedElement, e.HorizontalChange, e.VerticalChange, bottomRightCorner, AdornerDragPos.BotRight);
             }
         }
 
@@ -226,7 +226,7 @@ namespace Client
         public List<string> selectedShapes = new List<string>();
         private Dictionary<string, string> BBmap = new Dictionary<string, string>();
         private AdornerLayer adornerLayer;
-        private Shape underCreation;                     
+        private Shape underCreation;
 
         //Variable to keep track of the Uid of the new shape that is currently under creation
         private string uidShapeCreate = null;
@@ -249,7 +249,7 @@ namespace Client
         public Canvas CreateSelectionBB(Canvas cn, Shape sh, IWhiteBoardOperationHandler WBOp)
         {
             adornerLayer = AdornerLayer.GetAdornerLayer(sh);
-            BorderAdorner adr = new BorderAdorner(sh,this,cn,WBOp);
+            BorderAdorner adr = new BorderAdorner(sh, this, cn, WBOp);
             adr.IsClipEnabled = true;
             adornerLayer.Add(adr);
             return cn;
@@ -314,8 +314,6 @@ namespace Client
         /// <returns> void, upon altering the 'selectedShapes' of this class instane accordingly </returns>
         public Canvas SelectShape(Canvas cn, Shape sh, IWhiteBoardOperationHandler WBOp, int mode = 0)
         {
-
-            SolidColorBrush strokeColor = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
             switch (mode)
             {
                 //selectedShapes.ToString()
@@ -394,7 +392,7 @@ namespace Client
 
             BorderAdorner adr = new BorderAdorner(sh, this, cn, WBOp);
             adr.IsClipEnabled = true;
-            
+
             adornerLayer.Add(adr);
 
             return cn;
@@ -424,14 +422,14 @@ namespace Client
 
             //Brush for Fill 
             SolidColorBrush strokeColorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(fillColor));
-            
+
             //Brush With Opacity 
             SolidColorBrush strokeOpacityBrush = new SolidColorBrush(Colors.Aqua);
             strokeOpacityBrush.Opacity = .25d;
 
             //Brush for Border 
             SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
-            
+
             BoardColor strk_clr = new BoardColor(strokeColorBrush.Color.R, strokeColorBrush.Color.G, strokeColorBrush.Color.B);
 
             if (end.X < 0 || end.Y < 0 || end.X > cn.Width || end.Y > cn.Height) MessageBox.Show("Cursor went out of screen");
@@ -443,8 +441,8 @@ namespace Client
             {
                 case WhiteBoardViewModel.WBTools.NewLine:
                     lock (this)
-                    { 
-                        Trace.WriteLine("User requested creation of a line with start = "+ strt.ToString() + "end = " + end.ToString());
+                    {
+                        Trace.WriteLine("User requested creation of a line with start = " + strt.ToString() + "end = " + end.ToString());
                         //toRender = WBOps.CreateLine(C_strt, C_end, strokeWidth, strk_clr, shapeId, shapeComp); //return is of form List of UXShape
                         //cn = this.RenderUXElement(toRender, cn);
 
@@ -512,7 +510,7 @@ namespace Client
                             //set the uid of shape 
                             underCreation.Uid = counter.ToString();
                             uidShapeCreate = counter.ToString();
-                            
+
                             //Add to canvas
                             cn.Children.Add(underCreation);
                         }
@@ -588,14 +586,14 @@ namespace Client
 
             if (shapeComp == true)
             {
-                underCreation.StrokeThickness = 2; 
+                underCreation.StrokeThickness = 2;
                 uidShapeCreate = null;
-                
+
                 //increament the counter (uid of next shape)
                 counter = counter + 1;
 
                 //select the shape 
-                SelectShape(cn, underCreation, WBOps, 0); 
+                SelectShape(cn, underCreation, WBOps, 0);
             }
 
             return cn;
@@ -622,7 +620,7 @@ namespace Client
             }
             else if (mouseDownSh != null && !selectedShapes.Contains(mouseDownSh.Uid))
             {
-                if ( !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
                 {
                     cn = UnselectAllBB(cn, WBOps);
                 }
@@ -646,7 +644,7 @@ namespace Client
                         cn = this.RenderUXElement(toRender, cn);
                     }*/
 
-                    /* Temporary WB Module code to test functionality */             
+                    /* Temporary WB Module code to test functionality */
                     IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
 
                     //Check Condition 
@@ -654,7 +652,7 @@ namespace Client
 
 
                     Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
-                    
+
                     int topleft_x = (int)Canvas.GetLeft(iterat.ToList()[0]);
                     int topleft_y = (int)Canvas.GetTop(iterat.ToList()[0]);
 
@@ -675,8 +673,8 @@ namespace Client
                         newEl.Stroke = sh.Stroke;
                         newEl.StrokeThickness = sh.StrokeThickness;
                         newEl.Uid = sh.Uid;
-                        newEl.RenderTransform = sh.RenderTransform; 
-                        
+                        newEl.RenderTransform = sh.RenderTransform;
+
                         if (center_x > 0 && center_x < cn.Width)
                         {
                             Canvas.SetLeft(newEl, topleft_x - diff_topleft_x);
@@ -714,7 +712,7 @@ namespace Client
                         newRec.StrokeThickness = sh.StrokeThickness;
                         newRec.Uid = sh.Uid;
                         newRec.RenderTransform = sh.RenderTransform;
-                        
+
                         if (center_x > 0 && center_x < cn.Width)
                         {
                             Canvas.SetLeft(newRec, topleft_x - diff_topleft_x);
@@ -735,10 +733,10 @@ namespace Client
                         {
                             Canvas.SetTop(newRec, Canvas.GetTop(sh));
                         }
-                        
+
                         //else if (center_y > cn.Height) Canvas.SetTop(newRec, Canvas.GetTop(sh) - 2);
                         //else Canvas.SetTop(newRec, Canvas.GetTop(sh) + 2);
-                        
+
                         cn.Children.Remove(sh);
                         cn.Children.Add(newRec);
                         sh = newRec;
@@ -749,9 +747,9 @@ namespace Client
                         System.Windows.Shapes.Line shLine = (System.Windows.Shapes.Line)sh;
 
                         newLine.X1 = shLine.X1;
-                        newLine.X2 = shLine.X2 ;
+                        newLine.X2 = shLine.X2;
                         newLine.Y1 = shLine.Y1;
-                        newLine.Y2 = shLine.Y2 ;
+                        newLine.Y2 = shLine.Y2;
 
                         Canvas.SetLeft(newLine, Canvas.GetLeft(shLine) - diff_topleft_x);
                         Canvas.SetTop(newLine, Canvas.GetTop(shLine) - diff_topleft_y);
@@ -790,7 +788,7 @@ namespace Client
 
                     //Necessary step to synchronize borders on rotation of selected shapes
                     cn = SyncBorders(cn, WBOps, sh);
-                }               
+                }
             }
             Trace.WriteLine("Sent move request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
                 "to end point " + end.ToString() + ", where list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());
@@ -878,7 +876,7 @@ namespace Client
                 }
                 else
                 {
-                    
+
 
                     /*Code to find the angle made by start & end point on the center of the shape*/
                     int topleft_x = (int)Canvas.GetLeft(sh);
@@ -915,9 +913,9 @@ namespace Client
             }
 
 
-            Trace.WriteLine("Sent rotate request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() + 
+            Trace.WriteLine("Sent rotate request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
                 "to end point " + end.ToString() + ", where the list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());
-            
+
             return cn;
         }
 
@@ -1098,12 +1096,12 @@ namespace Client
                         sh.StrokeThickness = thickness;
                         break;
                     case "Fill":
-                        sh.Fill = color; 
+                        sh.Fill = color;
                         break;
                 }
             }
 
-            return cn; 
+            return cn;
         }
 
         /// <summary>
@@ -1135,9 +1133,9 @@ namespace Client
 
             Point drag = new Point { X = horizontalDrag, Y = verticalDrag };
             Point strt = new Point { X = (Canvas.GetLeft(adornedElement) + adornedElement.Width), Y = (Canvas.GetTop(adornedElement) + adornedElement.Height) };
-            Point end = Point.Add(strt,(Vector)drag);
+            Point end = Point.Add(strt, (Vector)drag);
 
-            Point transStrt= mat.Transform(strt);
+            Point transStrt = mat.Transform(strt);
             Point transEnd = mat.Transform(end);
 
             transStrt = rt.Inverse.Transform(transStrt);
@@ -1208,14 +1206,20 @@ namespace Client
                         oldWidth = adornedElement.Width;
                         oldHeight = adornedElement.Height;
 
-                        newWidth = Math.Max(adornedElement.Width + deltaWidth * 2, corner.DesiredSize.Width);
-                        newHeight = Math.Max(adornedElement.Height + deltaHeight * 2, corner.DesiredSize.Height);
+                        newWidth = Math.Max(Math.Max(adornedElement.Width + deltaWidth * 2, corner.DesiredSize.Width), 0);
+                        newHeight = Math.Max(Math.Max(adornedElement.Height + deltaHeight * 2, corner.DesiredSize.Height), 0);
+
+                        //newWidth = Math.Max(adornedElement.Width + deltaWidth * 2, corner.DesiredSize.Width);
+                        //newHeight = Math.Max(adornedElement.Height + deltaHeight * 2, corner.DesiredSize.Height);
 
                         adornedElement.Width = newWidth;
                         adornedElement.Height = newHeight;
 
-                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) - verticalDrag);
-                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) - horizontalDrag );
+                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) - Math.Min(verticalDrag, adornedElement.Height / 2));
+                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) - Math.Min(horizontalDrag, adornedElement.Width / 2));
+
+                        //Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) - verticalDrag);
+                        //Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) - horizontalDrag);
 
                         break;
 
@@ -1224,14 +1228,20 @@ namespace Client
                         oldWidth = adornedElement.Width;
                         oldHeight = adornedElement.Height;
 
-                        newWidth = Math.Max(adornedElement.Width - deltaWidth * 2, corner.DesiredSize.Width);
-                        newHeight = Math.Max(adornedElement.Height - deltaHeight * 2, corner.DesiredSize.Height);
+                        //newWidth = Math.Max(adornedElement.Width - deltaWidth * 2, corner.DesiredSize.Width);
+                        //newHeight = Math.Max(adornedElement.Height - deltaHeight * 2, corner.DesiredSize.Height);
+
+                        newWidth = Math.Max(Math.Max(adornedElement.Width - deltaWidth * 2, corner.DesiredSize.Width), 0);
+                        newHeight = Math.Max(Math.Max(adornedElement.Height - deltaHeight * 2, corner.DesiredSize.Height), 0);
 
                         adornedElement.Width = newWidth;
                         adornedElement.Height = newHeight;
 
-                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) + verticalDrag);
-                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) + horizontalDrag);
+                        Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) + Math.Min(verticalDrag, adornedElement.Height / 2));
+                        Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) + Math.Min(horizontalDrag, adornedElement.Width / 2));
+
+                        //Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) + verticalDrag);
+                        //Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) + horizontalDrag);
                         break;
                 }
             }
@@ -1314,7 +1324,7 @@ namespace Client
         public void FetchServerUpdates()
         {
 
-           
+
         }
 
         /// <summary>
@@ -1336,38 +1346,78 @@ namespace Client
         /// <param name="strokeColor"> Represents the hexcode of the color of polyline to be drawn </param>
         /// <param name="isEraser"> Boolean which is true if the drawn polyline is supposed to be an Eraser instance, used to set the Windows.Shapes.Tag property which is used by 'ChangeWbBackground' method locally</param>
         /// <returns> The updated Canvas </returns>
-        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false)
+        public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false, bool shapeComp = false)
         {
             if (creation)
-            {               
+            {
                 poly = new System.Windows.Shapes.Polyline();
+                //assigning special UID of -1 to temporary shapes
+                poly.Uid = "-1";
 
+                poly.Stroke = polyLineColor;
+                poly.StrokeThickness = polyLineThickness;
 
                 if (isEraser == true)
                 {
                     poly.Tag = "ERASER";
+
                 }
                 else
                 {
                     poly.Tag = "FREEHAND";
                 }
 
-                poly.Stroke = polyLineColor;
-                poly.StrokeThickness = polyLineThickness;
-
                 poly.Points.Add(pt);
                 cn.Children.Add(poly);
             }
             else
             {
-                poly.Points.Add(pt);
+                if (pt.X <= 0 || pt.Y <= 0 || pt.X >= cn.Width || pt.Y >= cn.Height)
+                {
+                    //MessageBox.Show("Cursor went out of screen");
+                    shapeComp = true;
+                }
+                else
+                {
+                    if (isEraser == true)
+                    {
+                        poly.Points.Add(pt);
+
+                        if (poly.Points.Count > 40)
+                        {
+
+                            poly.Points.RemoveAt(0);
+                        }
+                    }
+                    else
+                    {
+                        poly.Points.Add(pt);
+                    }
+                }
             }
 
-            return cn;  
+            if (shapeComp)
+            {
+                if (isEraser) cn.Children.Remove(poly);
+                else
+                {
+                    //Call WBOps.CreatePolyLine method for integrating server
+                }
+            }
+            return cn;
         }
 
         public Canvas CustomizePolyline(Canvas cn, IWhiteBoardOperationHandler WBOps)
         {
+            return cn;
+        }
+
+        public Canvas DeletePolyline(Canvas cn, IWhiteBoardOperationHandler WBops, System.Windows.Shapes.Polyline selectedLine)
+        {
+            //Call : Render UX element to delete the polyline 
+
+            cn.Children.Remove(selectedLine);
+
             return cn;
         }
     }
@@ -1397,14 +1447,14 @@ namespace Client
         private WBTools activeTool;
         public ShapeManager shapeManager;
         public FreeHand freeHand;
-        private Canvas GlobCanvas; 
+        private Canvas GlobCanvas;
 
         public IWhiteBoardOperationHandler WBOps;
 
         private Dispatcher ApplicationMainThreadDispatcher =>
             (Application.Current?.Dispatcher != null) ?
                 Application.Current.Dispatcher :
-                Dispatcher.CurrentDispatcher; 
+                Dispatcher.CurrentDispatcher;
 
         /// <summary>
         /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
@@ -1414,7 +1464,7 @@ namespace Client
             this.shapeManager = new ShapeManager();
             this.freeHand = new FreeHand();
             this.activeTool = WBTools.Initial;
-            this.GlobCanvas = GlobCanvas; 
+            this.GlobCanvas = GlobCanvas;
             this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
         }
 
