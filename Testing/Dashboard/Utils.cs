@@ -57,10 +57,10 @@ namespace Testing.Dashboard
         /// Generates random user data
         /// </summary>
         /// <returns>returns list of users for testing</returns>
-        public static List<UserData> GenerateUserData()
+        public static List<UserData> GenerateUserData(int size =10)
         {
             List<UserData> users = new List<UserData>();
-            for(int i=0;i<10; i++)
+            for(int i=0;i<size; i++)
             {
                 users.Add(new(GetRandomString(random.Next(10)),i));
             }
