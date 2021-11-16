@@ -18,14 +18,14 @@ namespace Dashboard
         static SessionManagerFactory()
         {
             // the objects are initialized only once for the program
-            if(s_clientSessionManager == null)
+            if (s_clientSessionManager == null)
             {
                 s_clientSessionManager = new ClientSessionManager();
             }
 
-            if(s_serverSessionManager == null)
+            if (s_serverSessionManager == null)
             {
-               s_serverSessionManager = new ServerSessionManager();
+                s_serverSessionManager = new ServerSessionManager();
             }
         }
 
@@ -60,7 +60,7 @@ namespace Dashboard
         /// Returns a ServerSessionManager object which 
         /// implements the interface ITelemetrySessionManager
         /// </returns>
-        public static ITelemetrySessionManager  GetServerSessionManager()
+        public static ITelemetrySessionManager GetServerSessionManager()
         {
             return s_serverSessionManager;
         }

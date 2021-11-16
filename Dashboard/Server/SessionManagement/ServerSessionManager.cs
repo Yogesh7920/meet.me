@@ -112,7 +112,7 @@ namespace Dashboard.Server.SessionManagement
         {
             // this double is reprent the ratio of summary size to the original content size.
             // the plans are to take this input from the UX, it will be changed accordingly
-            double amountOfSummary = 0.6;
+            double amountOfSummary = 0.5;
 
             // fetching all the chats from the content module.
             ChatContext[] allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
@@ -122,6 +122,20 @@ namespace Dashboard.Server.SessionManagement
 
             // returning the summary
             return new SummaryData(summary);
+        }
+
+        private void EndMeetProcedure(ClientToServerData receivedObject)
+        {
+            ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
+
+            bool summarySaved = _summarizer.SaveSummary(allChats,0.5);
+
+            if(summarySaved == true)
+            {
+                UserData user = new(receivedObject.username, receivedObject.userID);
+                SendDataToClient("endMeet",_sessionData, user);
+            }
+            // Cannot find telemetry factory yet.
         }
 
         /// <summary>
@@ -160,7 +174,7 @@ namespace Dashboard.Server.SessionManagement
         private void GetSummaryProcedure(ClientToServerData receivedObject)
         {
             SummaryData summaryData = CreateSummary();
-            UserData user = new UserData(receivedObject.username, receivedObject.userID);
+            UserData user = new(receivedObject.username, receivedObject.userID);
 
             SendDataToClient("getSummary", summaryData, user);
         }
@@ -250,8 +264,41 @@ namespace Dashboard.Server.SessionManagement
                     GetSummaryProcedure(deserializedObj);
                     return;
 
+                case "removeClient":
+                    RemoveClientProcedure(deserializedObj);
+                    return;
+
+                case "endMeet":
+                    EndMeetProcedure(deserializedObj);
+                    return;
+
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+        private void RemoveClientProcedure(ClientToServerData receivedObject)
+        {
+            UserData userToRemove = new(receivedObject.username, receivedObject.userID);
+            RemoveUserFromSession(userToRemove);
+            NotifyTelemetryModule();
+            SendDataToClient("removeClient", _sessionData, userToRemove);
+        }
+
+        private void RemoveUserFromSession(UserData userToRemove)
+        {
+            // raise exception if the user is not in the session or the _sessionData is null
+            List<UserData> users = _sessionData.users;
+            for(int i = 0; i < users.Count; ++i)
+            {
+                if(users[i] == userToRemove)
+                {
+                    lock(this)
+                    {
+                        _sessionData.users.RemoveAt(i);
+                        break;
+                    }
+                }
             }
         }
 
