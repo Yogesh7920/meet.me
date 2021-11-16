@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +41,7 @@ namespace Networking
         /// <summary>
         /// Listens on the receiving queue and calls Notification Handler of the corresponding module.
         /// </summary>
-        public void ListenQueue()
+        private void ListenQueue()
         {
             while (_listenRun)
             {

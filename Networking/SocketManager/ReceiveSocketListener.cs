@@ -89,7 +89,7 @@ namespace Networking
                     {
                         byte[] inStream = new byte[Threshold];
                         networkStream.Read(inStream, 0, inStream.Length);
-                        string buffer = System.Text.Encoding.ASCII.GetString(inStream);
+                        string buffer = Encoding.ASCII.GetString(inStream);
                         for (int i = 0; i < Threshold; i++)
                         {
                             if (buffer[i]!='\u0000')

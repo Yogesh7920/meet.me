@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Networking;
@@ -18,19 +16,8 @@ namespace Testing.Networking.SocketManagement
         private Machine _server;
         private SendSocketListenerClient _sendSocketListenerClient;
         private ReceiveSocketListener _receiveSocketListener;
-        private const int Threshold = 1025;
-        private string Message => NetworkingGlobals.GetRandomString();
         private TcpClient _serverSocket;
         private TcpClient _clientSocket;
-        
-        private string GetMessage(Packet packet)
-        {
-            string msg = packet.ModuleIdentifier;
-            msg += ":";
-            msg += packet.SerializedData;
-            msg += "EOF";
-            return msg;
-        }
 
         [SetUp]
         public void StartSendSocketListenerClient()

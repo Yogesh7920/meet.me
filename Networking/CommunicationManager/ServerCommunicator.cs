@@ -5,14 +5,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Diagnostics;
 
-/// <summary>
-/// This file contains the class Server which will be running on the server.
-/// and accepts client request.
-/// </summary>
-/// <author>Tausif Iqbal </author>
 namespace Networking
 {
-    public class ServerCommunicator : ICommunicator
+    internal class ServerCommunicator : ICommunicator
     {
         /** Declare sendSocketListenerServer variable for sending messages across the network*/
         private SendSocketListenerServer _sendSocketListenerServer;
