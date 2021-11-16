@@ -15,7 +15,6 @@ namespace Testing.Networking
         public void SetUp()
         {
             _ser = new Serializer();
-            var random = TestContext.CurrentContext.Random;
         }
         [Test]
         public void SerializeDeserializeSimpleObject()
@@ -71,8 +70,8 @@ namespace Testing.Networking
             // Serialize
             SimpleObject serObj = new Fixture().Create<SimpleObject>();
             string xml = _ser.Serialize(serObj);
-            // Corupt xml string
-            xml = xml.Substring(50);
+            // Corrupt xml string
+            xml = xml[50..];
             Assert.Throws<InvalidOperationException>(() => _ser.Deserialize<SimpleObject>(xml));
         }
     }

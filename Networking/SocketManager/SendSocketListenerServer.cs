@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Networking
 {
@@ -14,7 +12,7 @@ namespace Networking
         private readonly IQueue _queue;
 
         // Declare the dictionary variable which stores client_ID and corresponding socket object 
-        private readonly Dictionary<string, TcpClient> _clientIdSocket = new();
+        private readonly Dictionary<string, TcpClient> _clientIdSocket;
 
         // Declare the thread variable of SendSocketListenerServer 
         private Thread _listen;

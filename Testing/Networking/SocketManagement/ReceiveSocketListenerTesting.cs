@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -16,8 +15,6 @@ namespace Testing.Networking.SocketManagement
         private IQueue _queue;
         private Machine _server;
         private ReceiveSocketListener _receiveSocketListener;
-        private const int Threshold = 1025;
-        private string Message => NetworkingGlobals.GetRandomString();
         private TcpClient _serverSocket;
         private TcpClient _clientSocket;
         

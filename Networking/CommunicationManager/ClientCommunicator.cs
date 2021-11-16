@@ -6,7 +6,7 @@ using System.Net;
 
 namespace Networking
 {
-    public class ClientCommunicator : ICommunicator
+    internal class ClientCommunicator : ICommunicator
     {
         private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
 

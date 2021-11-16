@@ -14,11 +14,9 @@ namespace Networking
             try
             {
                 XmlSerializer serializer = new XmlSerializer(objectToSerialize.GetType());
-                using (var stringStream = new StringWriter())
-                {
-                    serializer.Serialize(stringStream, objectToSerialize);
-                    return stringStream.ToString();
-                }
+                using var stringStream = new StringWriter();
+                serializer.Serialize(stringStream, objectToSerialize);
+                return stringStream.ToString();
             }
             catch (Exception ex)
             {
@@ -47,8 +45,8 @@ namespace Networking
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(T));
-                using (StringReader stringReader = new StringReader(serializedString))
-                    return (T)serializer.Deserialize(stringReader);
+                using StringReader stringReader = new StringReader(serializedString);
+                return (T)serializer.Deserialize(stringReader);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,3 @@
-using System.Threading;
 using Networking;
 using NUnit.Framework;
 
@@ -8,7 +7,7 @@ namespace Testing.Networking.SocketManagement
     public class CommunicatorTesting
     {
         [Test, Category("pass")]
-        public void Server_and_Client_StartTest()
+        public void Start_ClientServerStartup_StartupMustPass()
         {
             // start the server
             ICommunicator server = CommunicationFactory.GetCommunicator(false, true);
