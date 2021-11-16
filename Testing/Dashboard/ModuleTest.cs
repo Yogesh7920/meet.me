@@ -45,10 +45,20 @@ namespace Testing
             _testCommunicator.ipAddressAndPort = "abcd.192.1.2:8080";
             returnedMeetCreds = _sessionManager.GetPortsAndIPAddress();
             Assert.AreEqual(null, returnedMeetCreds);
-            
+
+            _testCommunicator.ipAddressAndPort = "192.1.2:8080";
+            returnedMeetCreds = _sessionManager.GetPortsAndIPAddress();
+            Assert.AreEqual(null, returnedMeetCreds);
+
             _testCommunicator.ipAddressAndPort = "abcdefg";
             returnedMeetCreds = _sessionManager.GetPortsAndIPAddress();
             Assert.AreEqual(null, returnedMeetCreds);
+        }
+
+        [Test]
+        public void ClientArrivalClientSideTest()
+        {
+            Assert.Pass();
         }
 
         private readonly int validTests = 10;
