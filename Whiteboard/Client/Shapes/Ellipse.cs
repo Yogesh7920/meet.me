@@ -32,7 +32,7 @@ namespace Whiteboard
             this.Height = height;
             this.Width = width;
             this.Center = center;
-            this.Start = start.Clone();
+            this.Start = start;
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Whiteboard
                 float height = Math.Abs(start.R - end.R);
                 float width = Math.Abs(start.C - end.C);
                 Coordinate center = (end + start) / 2;
-                return new Ellipse(height, width, start, center);
+                return new Ellipse(height, width, start.Clone(), center);
             }
             // Modification of previous shape.
             else
@@ -99,7 +99,7 @@ namespace Whiteboard
         /// <returns>Clone of Ellipse.</returns>
         public override MainShape Clone()
         {
-            return new Ellipse(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), new List<Coordinate> (), AngleOfRotation);
+            return new Ellipse(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), null, AngleOfRotation);
         }
 
     }

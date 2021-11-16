@@ -30,12 +30,12 @@ namespace Whiteboard
             this.ShapeIdentifier = s;
             this.Height = 0;
             this.Width = 0;
-            this.StrokeWidth = 0;
+            this.StrokeWidth = 1;
             this.ShapeFill = new BoardColor(255, 255, 255);
             this.StrokeColor = new BoardColor(0, 0, 0);
             this.Start = new Coordinate(0, 0);
             this.Center = new Coordinate(0, 0);
-            this.Points = new List<Coordinate>();
+            this.Points = null;
             this.AngleOfRotation = 0;
         }
 
@@ -92,7 +92,35 @@ namespace Whiteboard
         public Coordinate Center { get; set; }
 
         // Angle at which the shape is rotated.
-        public float AngleOfRotation { get; set; }
+
+        private float _angleOfRotation;
+        public float AngleOfRotation
+        {
+            get
+            {
+                return _angleOfRotation;
+            }
+            set
+            {
+                _angleOfRotation = value;
+                while (_angleOfRotation >= (2 * Math.PI))
+                {
+                    _angleOfRotation -= (float)(2 * Math.PI);
+                }
+                while (_angleOfRotation <= (-2 * Math.PI))
+                {
+                    _angleOfRotation += (float)(2 * Math.PI);
+                }
+                if (_angleOfRotation > Math.PI)
+                {
+                    _angleOfRotation = - (float)(2 * Math.PI) + _angleOfRotation;
+                }
+                if (_angleOfRotation <= -Math.PI)
+                {
+                    _angleOfRotation = (float)(2 * Math.PI) + _angleOfRotation;
+                }
+            }
+        }
         protected List<Coordinate> Points;
 
         /// <summary>
@@ -101,6 +129,10 @@ namespace Whiteboard
         /// <param name="c">Coordinate to add.</param>
         public void AddToList(Coordinate c)
         {
+            if (Points == null)
+            {
+                Points = new();
+            }
             Points.Add(c);
         } 
 
@@ -133,7 +165,7 @@ namespace Whiteboard
         /// <returns></returns>
         public List<Coordinate> GetPoints()
         {
-            return Points.ConvertAll(point => new Coordinate(point.R, point.C));
+            return Points?.ConvertAll(point => new Coordinate(point.R, point.C));
         }
 
         /// <summary>
@@ -163,18 +195,10 @@ namespace Whiteboard
             Coordinate v2 = end - Center;
 
             // finding angle of rotation from start and end coordinates.
-            float rotAngle = (float)(0.01745 * Vector.AngleBetween(new Vector(v1.R, v1.C), new Vector(v2.R, v2.C)));
+            float rotAngle = (float)(0.01745 * Vector.AngleBetween(new Vector(v1.C, v1.R), new Vector(v2.C, v2.R)));
+            Console.WriteLine("Angle to be rotated is"+rotAngle.ToString());
             AngleOfRotation += rotAngle;
 
-            // Keeping the angle of rotation in range -pi to pi
-            if (AngleOfRotation > Math.PI) 
-            {
-                AngleOfRotation -= (float)Math.PI;
-            }
-            if (AngleOfRotation < 0) 
-            {
-                AngleOfRotation = (float)(2*Math.PI -AngleOfRotation);
-            }
             return true;
         }
 

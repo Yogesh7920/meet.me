@@ -25,7 +25,7 @@ namespace Whiteboard
         /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
         public Polyline(Coordinate start) : base(ShapeType.POLYLINE)
         {
-            this.Start = start.Clone();
+            this.Start = start;
             Points.Add(Start.Clone());
         }
 
@@ -58,6 +58,7 @@ namespace Whiteboard
         /// </summary>
         public Polyline() : base(ShapeType.POLYLINE)
         {
+            this.Points = new();
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Whiteboard
             // Create new shape if prevPolyLine is null.
             if (prevPolyline == null)
             {
-                prevPolyline = new Polyline(start);
+                prevPolyline = new Polyline(start.Clone());
                 AddToList(end.Clone());
             }
             AddToList(end.Clone());

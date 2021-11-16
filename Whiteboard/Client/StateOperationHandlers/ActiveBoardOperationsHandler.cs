@@ -245,6 +245,10 @@ namespace Whiteboard
                     operations.Add(newUxShape);
 
                     string userId = _stateManager.GetUser();
+                    if (userId == null)
+                    {
+                        throw new Exception("Invalid User");
+                    }
 
                     _lastDrawn = new LastDrawnDetails
                     {
