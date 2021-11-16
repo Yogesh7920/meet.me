@@ -268,6 +268,7 @@ namespace Dashboard.Server.SessionManagement
                     return;
 
                 case "endMeet":
+                    EndMeetProcedure(deserializedObj);
                     return;
 
                 default:
