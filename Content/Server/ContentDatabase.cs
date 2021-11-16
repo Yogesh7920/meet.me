@@ -1,31 +1,47 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Testing")]
 
 namespace Content
 {
     internal class ContentDatabase
     {
-        private IMongoClient mongoClient;
-        private IMongoDatabase databaseBase;
-        private IMongoCollection<ReceiveMessageData> messages;
+        private Dictionary<int, MessageData> _messages;
+        private Dictionary<int, ChatContext> _chatContexts;
 
         public ContentDatabase()
         {
-            mongoClient = new MongoClient("mongodb://127.0.0.1:27017");
-            databaseBase = mongoClient.GetDatabase("test");
-            messages = databaseBase.GetCollection<ReceiveMessageData>("messages");
+            _messages = new Dictionary<int, MessageData>();
         }
 
-        public ObjectId Store(ReceiveMessageData messageData)
+        public MessageData Store(MessageData messageData)
         {
-            messages.InsertOne(messageData);
-            return messageData.MessageId;
+            messageData.MessageId = IdGenerator.getMessageId();
+            _messages[messageData.MessageId] = messageData;
+            return messageData;
         }
 
-        public ReceiveMessageData Retrieve(ObjectId messageId)
+        public void Store(ChatContext chatContext)
         {
-            ReceiveMessageData receiveMessageData = messages.Find(message => message.MessageId == messageId).FirstOrDefault();
-            return receiveMessageData;
+            chatContext.ThreadId = IdGenerator.getChatContextId();
+            _chatContexts[chatContext.ThreadId] = chatContext;
+        }
+
+        public void UpdateMessageData(int id, MessageData messageData)
+        {
+            _messages[id] = messageData;
+        }
+
+        public void UpdateChatContext(int id, ChatContext chatContext)
+        {
+            _chatContexts[id] = chatContext;
+        }
+
+        public MessageData RetrieveMessage(int messageId)
+        {
+            return _messages[messageId];
         }
     }
 }
