@@ -5,36 +5,38 @@
  * Date Modified: 11/01/2021
 **/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    abstract public class BoardOperationsState
+    public abstract class BoardOperationsState
     {
-        abstract public List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        public abstract List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false);
 
-        abstract public List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId);
+        public abstract List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId);
 
-        abstract public List<UXShape> ChangeStrokeColor(BoardColor strokeColor, string shapeId);
+        public abstract List<UXShape> ChangeStrokeColor(BoardColor strokeColor, string shapeId);
 
-        abstract public List<UXShape> ChangeStrokeWidth(float strokeWidth, string shapeId);
+        public abstract List<UXShape> ChangeStrokeWidth(float strokeWidth, string shapeId);
 
-        abstract public List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        public abstract List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false);
 
-        abstract public List<UXShape> CreateShape(ShapeType shapeType, Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false);
+        public abstract List<UXShape> CreateShape(ShapeType shapeType, Coordinate start, Coordinate end,
+            float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false);
 
-        abstract public List<UXShape> Redo();
+        public abstract List<UXShape> Redo();
 
-        abstract public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        public abstract List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false);
 
-        abstract public List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        public abstract List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false);
 
-        abstract public List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        public abstract List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false);
 
-        abstract public List<UXShape> Undo();
+        public abstract List<UXShape> Undo();
     }
 }

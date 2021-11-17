@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dashboard
+﻿namespace Dashboard
 {
     public class ClientToServerData
     {
+        public string eventType;
+        public int userID;
+        public string username;
+
         /// <summary>
-        /// Parametric constructor to initialise the fields
+        ///     Parametric constructor to initialise the fields
         /// </summary>
         /// <param name="eventName"> The name of the event </param>
         /// <param name="clientName"> Name of the user </param>
@@ -22,15 +20,10 @@ namespace Dashboard
         }
 
         /// <summary>
-        /// Default constructor for serialization
+        ///     Default constructor for serialization
         /// </summary>
         public ClientToServerData()
         {
-
         }
-
-        public string eventType;
-        public string username;
-        public int userID;
     }
 }

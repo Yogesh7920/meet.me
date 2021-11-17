@@ -5,31 +5,27 @@
  * Date Modified: 11/02/2021
 **/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
     public class Polyline : MainShape
     {
         /// <summary>
-        /// Constructor setting just the basic attributes of Polyline.
+        ///     Constructor setting just the basic attributes of Polyline.
         /// </summary>
         /// <param name="height">Hright of Polyline.</param>
         /// <param name="width">Width of Polyline.</param>
         /// <param name="start">The left botton coordinate of the smallest rectangle enclosing the shape.</param>
         public Polyline(int height, int width, Coordinate start) : base(ShapeType.POLYLINE)
         {
-            this.Height = height;
-            this.Width = width;
-            this.Start = start.Clone();
+            Height = height;
+            Width = width;
+            Start = start.Clone();
         }
 
         /// <summary>
-        /// Constructor to create Polyline.
+        ///     Constructor to create Polyline.
         /// </summary>
         /// <param name="height">Height of Polyline.</param>
         /// <param name="width">Width of Polyline.</param>
@@ -40,28 +36,28 @@ namespace Whiteboard
         /// <param name="points">List of points, if any.</param>
         /// <param name="angle">Angle of Rotation.</param>
         public Polyline(int height,
-                         int width,
-                         float strokeWidth,
-                         BoardColor strokeColor,
-                         BoardColor shapeFill,
-                         Coordinate start,
-                         List<Coordinate> points,
-                         float angle) :
-                         base(ShapeType.POLYLINE, height, width, strokeWidth, strokeColor, shapeFill, start, points, angle)
+            int width,
+            float strokeWidth,
+            BoardColor strokeColor,
+            BoardColor shapeFill,
+            Coordinate start,
+            List<Coordinate> points,
+            float angle) :
+            base(ShapeType.POLYLINE, height, width, strokeWidth, strokeColor, shapeFill, start, points, angle)
         {
-            this.AddToList(start.Clone());
-            this.AddToList(new Coordinate(start.R+ height, start.C + width));
+            AddToList(start.Clone());
+            AddToList(new Coordinate(start.R + height, start.C + width));
         }
 
         /// <summary>
-        /// Default constructor.
+        ///     Default constructor.
         /// </summary>
         public Polyline() : base(ShapeType.POLYLINE)
         {
         }
 
         /// <summary>
-        /// Creates/ modifies the previous shape.
+        ///     Creates/ modifies the previous shape.
         /// </summary>
         /// <param name="start">Start of mouse drag.</param>
         /// <param name="end">End of mouse drag.</param>
@@ -73,22 +69,21 @@ namespace Whiteboard
             {
                 return new Polyline(start.R - end.R, start.C - end.C, start);
             }
-            else
-            {
-                prevPolyline.Height = end.R - prevPolyline.Start.R;
-                prevPolyline.Width = end.C - prevPolyline.Start.C;
-                AddToList(end.Clone());
-                return prevPolyline;
-            }
+
+            prevPolyline.Height = end.R - prevPolyline.Start.R;
+            prevPolyline.Width = end.C - prevPolyline.Start.C;
+            AddToList(end.Clone());
+            return prevPolyline;
         }
 
         /// <summary>
-        /// Creating clone object of this class.
+        ///     Creating clone object of this class.
         /// </summary>
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            return new Polyline(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, new List<Coordinate>(), AngleOfRotation);
+            return new Polyline(Height, Width, StrokeWidth, StrokeColor, ShapeFill, Start, new List<Coordinate>(),
+                AngleOfRotation);
         }
     }
 }
