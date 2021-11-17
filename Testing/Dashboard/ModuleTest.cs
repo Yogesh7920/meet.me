@@ -15,13 +15,20 @@ namespace Testing
         [SetUp]
         public void Setup()
         {
-
+            _testCommunicator = new();
+            oldCSessionManager = new(_testCommunicator);
+            newCSessionManager = new(_testCommunicator);
+            newUX = new();
+            oldUX = new();
+            newCSessionManager.SubscribeSession(newUX);
+            oldCSessionManager.SubscribeSession(oldUX);
+            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator);
         }
 
         [Test]
         public void RoomCreationTest()
         {
-            IUXServerSessionManager _sessionManager = new ServerSessionManager(_testCommunicator);
+            IUXServerSessionManager _sessionManager = serverSessionManager;
             MeetingCredentials returnedMeetCreds;
             MeetingCredentials testMeetCreds;
             for (int i = 0; i < validTests; i++)
@@ -49,17 +56,17 @@ namespace Testing
         {
             string validIPAddress = "192.168.1.1";
             string port = "8080";
-            IUXClientSessionManager sessionManager = SessionManagerFactory.GetClientSessionManager(_testCommunicator);
+            IUXClientSessionManager _sessionManager = newCSessionManager;
             
            // Setting the IP address and Port for fake server
             _testCommunicator.ipAddressAndPort = validIPAddress + ":" + port;
 
             // Testing valid connection
-            Assert.AreEqual(true, sessionManager.AddClient(validIPAddress, int.Parse(port), "John"));
-            Assert.AreEqual(true, sessionManager.AddClient(validIPAddress, int.Parse(port), "Sam"));
+            Assert.AreEqual(true, _sessionManager.AddClient(validIPAddress, int.Parse(port), "John"));
+            Assert.AreEqual(true, _sessionManager.AddClient(validIPAddress, int.Parse(port), "Sam"));
 
             // Testing for invalid IPs and usernames
-            Assert.AreEqual(false, sessionManager.AddClient("192.169.1.2", 2000, "John"));
+            Assert.AreEqual(false, _sessionManager.AddClient("192.169.1.2", 2000, "John"));
             // Assert.AreEqual(false, sessionManager.AddClient(validIPAddress, int.Parse(port), null));
             // Assert.AreEqual(false, sessionManager.AddClient(validIPAddress, int.Parse(port), ""));
 
@@ -68,11 +75,10 @@ namespace Testing
         [Test]
         public void UserCreationTest()
         {
-            ServerSessionManager sessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator);
             _testCommunicator.sentData = null;
             ClientToServerData clientToServerData = new("addClient", "John");
             string serializedData = _serializer.Serialize(clientToServerData);
-            sessionManager.OnDataReceived(serializedData);
+            serverSessionManager.OnDataReceived(serializedData);
             
             while (_testCommunicator.sentData == null) ;
             Console.WriteLine(_testCommunicator.sentData);
@@ -84,13 +90,12 @@ namespace Testing
             Assert.Pass();
         }
 
-
         [Test]
         public void SessionObjectTest()
         {
             List<UserData> users = Utils.GenerateUserData();
 
-            for(int i=0; i<3; i++)
+            for(int i=0; i<users.Count; i++)
             {
                 ServerSessionManager sessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator);
                 _testCommunicator.sentData = null;
@@ -100,6 +105,8 @@ namespace Testing
             }
 
             while (_testCommunicator.sentData == null) ;
+
+            // The last inserted user should get a object that has all the previously added clients
             Console.WriteLine(_testCommunicator.sentData);
             ServerToClientData recievedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
             SessionData sessionData = (SessionData)recievedData.GetObject();
@@ -109,17 +116,7 @@ namespace Testing
         [Test]
         public void ClientArrivalNotificationTest()
         {
-            Console.WriteLine("check Point");
             int dataSize = 10;
-            // New Arrived user
-            ClientSessionManager cSessionManagerNew = new(_testCommunicator);
-            TestUX testUXNew = new();
-            cSessionManagerNew.SubscribeSession(testUXNew);
-
-            // Old users
-            ClientSessionManager cSessionManagerOld = new(_testCommunicator);
-            TestUX testUXOld = new();
-            cSessionManagerOld.SubscribeSession(testUXOld);
             
             // SessionData After adding new user
             SessionData sData = Utils.GenerateSampleSessionData(dataSize, "addClient");
@@ -130,26 +127,63 @@ namespace Testing
 
             // When the old user joins the first time, it would recieve complete session object
             ServerToClientData serverToClientData = new("addClient", sData, sData.users[dataSize-2]);
-            cSessionManagerOld.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientData));
-            testUXOld.gotNotified = false;
+            oldCSessionManager.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientData));
+            oldUX.gotNotified = false;
 
             // Following are recieved when new user joins for old and new users
             sData.AddUser(newUser);
             ServerToClientData serverToClientDataNew = new("addClient", sData, sData.users[dataSize-1]);
             string serialisedDataNew =  _serializer.Serialize<ServerToClientData>(serverToClientDataNew);
             //Console.WriteLine("MT: " + serialisedDataNew);
-            cSessionManagerNew.OnDataReceived(serialisedDataNew);
-            cSessionManagerOld.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientDataNew));
-            while (testUXNew.gotNotified == false) ;
-            while (testUXOld.gotNotified == false) ;
+            newCSessionManager.OnDataReceived(serialisedDataNew);
+            oldCSessionManager.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientDataNew));
+            while (newUX.gotNotified == false) ;
+            while (oldUX.gotNotified == false) ;
 
-            CollectionAssert.AreEqual(sData.users, testUXOld.sessionData.users);
-            CollectionAssert.AreEqual(sData.users, testUXNew.sessionData.users);
+            CollectionAssert.AreEqual(sData.users, oldUX.sessionData.users);
+            CollectionAssert.AreEqual(sData.users, newUX.sessionData.users);
 
         }
 
-        private ISerializer _serializer = new Serializer();
+        [Test]
+        public void ClientDepartureClientSide()
+        {
+            IUXClientSessionManager _uxSessionManager = newCSessionManager;
+            INotificationHandler _networkSessionManager = newCSessionManager;
+            string username = "John";
+            int userId = 1;
+            AddUserClientSide(username, userId);
+
+            _testCommunicator.sentData = null;
+            // When client leaves
+            _uxSessionManager.RemoveClient();
+
+            while (_testCommunicator.sentData == null) ;
+            ClientToServerData deserialisedObject = _serializer.Deserialize<ClientToServerData>(_testCommunicator.sentData); 
+            Assert.AreEqual(username, deserialisedObject.username);
+            Assert.AreEqual(userId, deserialisedObject.userID);
+        }
+
+        private void AddUserClientSide(string username, int userId, string ip="192.168.1.1", string port = "8080")
+        {
+            UserData userData = new(username, userId);
+            IUXClientSessionManager _uxSessionManager = newCSessionManager;
+            INotificationHandler _networkSessionManager = newCSessionManager;
+            // Creating the user who joined
+            ServerToClientData serverToClientData = new("removeClient", null, userData);
+            string serialisedServerData = _serializer.Serialize(serverToClientData);
+
+            // Adding the client to client first
+            _testCommunicator.ipAddressAndPort = ip + ":" + port;
+            _uxSessionManager.AddClient(ip, int.Parse(port), "John");
+            _networkSessionManager.OnDataReceived(serialisedServerData);
+        }
+
+        private ClientSessionManager oldCSessionManager, newCSessionManager;
+        private ServerSessionManager serverSessionManager;
+        private TestUX newUX, oldUX;
+        private readonly ISerializer _serializer = new Serializer();
         private readonly int validTests = 10;
-        private readonly TestCommunicator _testCommunicator = new();
+        private TestCommunicator _testCommunicator;
     }
 }

@@ -83,7 +83,7 @@ namespace Testing.Dashboard
         /// <returns> List of invalid IP and ports</returns>
         public static List<string> GenerateInvalidIPAndPort()
         {
-            List<string> ipAndPorts = new List<string>();
+            List<string> ipAndPorts = new();
             ipAndPorts.Add("");
             ipAndPorts.Add(null);
             ipAndPorts.Add("abcd.192.1.2:8080");
@@ -92,7 +92,7 @@ namespace Testing.Dashboard
             return ipAndPorts; 
         }
 #pragma warning disable SecurityIntelliSenseCS // MS Security rules violation
-        private static Random random = new Random();
+        private static readonly Random random = new Random();
 #pragma warning restore SecurityIntelliSenseCS // MS Security rules violation
     }
 }
