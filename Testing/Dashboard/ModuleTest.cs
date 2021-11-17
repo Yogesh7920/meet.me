@@ -7,6 +7,7 @@ using Testing.Dashboard;
 using Dashboard.Server.SessionManagement;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
+using System.Threading;
 
 namespace Testing
 {
@@ -32,7 +33,6 @@ namespace Testing
             IUXServerSessionManager _sessionManager = serverSessionManager;
             MeetingCredentials returnedMeetCreds;
             MeetingCredentials testMeetCreds;
-            List<MeetingCredentials> expectedResult = new(), actualResult = new();
             _testCommunicator.ipAddressAndPort = Utils.GenerateValidIPAndPort();
             testMeetCreds = Utils.GenerateMeetingCreds(_testCommunicator.ipAddressAndPort);
             returnedMeetCreds = _sessionManager.GetPortsAndIPAddress();
@@ -108,17 +108,7 @@ namespace Testing
         public void AddClientProcedure_NewClientArrival_BroadcastsSessionObjectToAllClients ()
         {
             List<UserData> users = Utils.GenerateUserData();
-
-            for (int i = 0; i < users.Count; i++)
-            {
-                ServerSessionManager sessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator);
-                _testCommunicator.sentData = null;
-                ClientToServerData clientToServerData = new("addClient", users[i].username);
-                string serializedData = _serializer.Serialize(clientToServerData);
-                sessionManager.OnDataReceived(serializedData);
-            }
-
-            while (_testCommunicator.sentData == null) ;
+            AddUsersAtServer(users);
 
             // The last inserted user should get a object that has all the previously added clients
             ServerToClientData recievedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
@@ -179,6 +169,36 @@ namespace Testing
             Assert.AreEqual(userId, deserialisedObject.userID);
         }
 
+
+        [Test]
+        public void EndMeet_EndMeeting_SendsEndMeetingEventToServer()
+        {
+            AddUserClientSide("John", 1);
+            clientSessionManagerB.EndMeet();
+            string expectedEvent = "endMeet";
+            ClientToServerData deserializedObj = _serializer.Deserialize<ClientToServerData>(_testCommunicator.sentData);
+            Assert.AreEqual(expectedEvent, deserializedObj.eventType);
+        }
+
+        [TestCase("This is sample summary")]
+        [TestCase(null)]
+        [TestCase("")]
+        [Test]
+        public void GetSummary_GetSummary_ReturnsSummary(string testSummary)
+        {
+            UserData user = new("John", 1);
+            // Adding a user at client
+            AddUserClientSide(user.username, user.userID);
+            string recievedSummary = null; 
+            SummaryData summaryData = new(testSummary);
+            ServerToClientData testData = new("getSummary", summaryData, user);
+            Thread getSummaryThread = new Thread(new ThreadStart(()=> { recievedSummary = clientSessionManagerB.GetSummary(); }));
+            getSummaryThread.Start();
+            clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
+            while(getSummaryThread.IsAlive);
+            Assert.AreEqual(testSummary, recievedSummary);
+        }
+
         private void AddUserClientSide(string username, int userId, string ip = "192.168.1.1", string port = "8080")
         {
             UserData userData = new(username, userId);
@@ -192,6 +212,19 @@ namespace Testing
             _testCommunicator.ipAddressAndPort = ip + ":" + port;
             _uxSessionManager.AddClient(ip, int.Parse(port), "John");
             _networkSessionManager.OnDataReceived(serialisedServerData);
+        }
+
+        private void AddUsersAtServer(List<UserData> users)
+        {
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                ServerSessionManager sessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator);
+                _testCommunicator.sentData = null;
+                ClientToServerData clientToServerData = new("addClient", users[i].username);
+                string serializedData = _serializer.Serialize(clientToServerData);
+                sessionManager.OnDataReceived(serializedData);
+            }
         }
 
 
