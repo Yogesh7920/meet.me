@@ -1,22 +1,27 @@
-﻿using System;
-
-namespace Networking
+﻿namespace Networking
 {
     public static class CommunicationFactory
     {
-        // Communicator Instance
-        private static readonly Lazy<ICommunicator> _clientCommunicator = new(() => new ClientCommunicator());
-        private static readonly Lazy<ICommunicator> _serverCommunicator = new(() => new ServerCommunicator());
+        private static ICommunicator _clientCommunicator;
+        private static ICommunicator _serverCommunicator;
+
         /// <summary>
         /// Returns the Communicator instance that is running.
-        /// In test mode, It always returns a new instance.
         /// </summary>
         /// <returns>ICommunicator.</returns>
-        public static ICommunicator GetCommunicator(bool isClient = true, bool isTesting = false)
+        /// TODO Make this thread-safe: https://www.c-sharpcorner.com/UploadFile/8911c4/singleton-design-pattern-in-C-Sharp/
+        public static ICommunicator GetCommunicator(bool isClient = true)
         {
             if (isClient)
-                return isTesting ? new ClientCommunicator() : _clientCommunicator.Value;
-            return isTesting ? new ServerCommunicator() : _serverCommunicator.Value;
+            {
+                if (_clientCommunicator == null)
+                    _clientCommunicator = new ClientCommunicator();
+                return _clientCommunicator;
+            }
+
+            if (_serverCommunicator == null)
+                _serverCommunicator = new ServerCommunicator();
+            return _serverCommunicator;
         }
     }
 }

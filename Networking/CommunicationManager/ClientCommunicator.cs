@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 
@@ -8,112 +9,71 @@ namespace Networking
 {
     public class ClientCommunicator : ICommunicator
     {
-        private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
+        private Dictionary<string, INotificationHandler> subscribedModules =
+            new Dictionary<string, INotificationHandler>();
 
-        // Declare socket object for client
-        private TcpClient _clientSocket;
-
-        // Declare queue variable for receiving messages
-        private readonly Queue _receiveQueue = new();
-
-        // Declare queue variable for sending messages
-        private readonly Queue _sendQueue = new();
-
-        //Declare ReceiveSocketListener variable for listening messages 
-        private ReceiveSocketListener _receiveSocketListener;
-
-        // Declare sendSocketListenerClient variable for sending messages 
-        private SendSocketListenerClient _sendSocketListenerClient;
-
-        private ReceiveQueueListener _receiveQueueListener;
+        private TcpClient _clientSocket = new TcpClient();
+        private Queue _queue = new Queue();
+        private RecieveSocketListener recieveSocketListener;
+        private SendSocketListenerClient sendSocketListenerClient;
 
         /// <summary>
         /// This method connects client to server
-        /// <param name="serverIp">serverIP</param>
+        /// <param name="serverIP">serverIP</param>
         /// <param name="serverPort">serverPort.</param>
         /// </summary>
         ///  /// <returns> String </returns>
-        string ICommunicator.Start(string serverIp, string serverPort)
+        string ICommunicator.Start(string serverIP, string serverPort)
         {
             try
             {
-                //try to connect with server
-                IPAddress ip = IPAddress.Parse(serverIp);
-                int port = int.Parse(serverPort);
-                _clientSocket = new TcpClient();
-                // _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, false);
-                _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-
+                IPAddress ip = IPAddress.Parse(serverIP);
+                int port = Int32.Parse(serverPort);
                 _clientSocket.Connect(ip, port);
 
-                //Start receiveSocketListener of the client  
-                //for listening message from the server
-                _receiveSocketListener = new ReceiveSocketListener(_receiveQueue, _clientSocket);
-                _receiveSocketListener.Start();
-
-                //start sendSocketListener of client for sending message 
-                _sendSocketListenerClient = new SendSocketListenerClient(_sendQueue, _clientSocket);
-                _sendSocketListenerClient.Start();
-
-                _receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModules);
-                _receiveQueueListener.Start();
-
+                recieveSocketListener = new RecieveSocketListener(_queue, _clientSocket);
+                recieveSocketListener.Start();
+                sendSocketListenerClient = new SendSocketListenerClient(_queue, _clientSocket);
+                sendSocketListenerClient.Start();
                 return "1";
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e.ToString());
+                Console.WriteLine(e.ToString());
                 return "0";
             }
         }
 
-        /// <summary>
-        /// This method stops all the running thread
-        ///  of client and closes the connection
-        /// </summary>
-        /// <returns> void </returns>
+        /// <inheritdoc />
         void ICommunicator.Stop()
         {
-            if (_clientSocket.Connected)
-            {
-                // stop the listener of the client 
-                _sendSocketListenerClient.Stop();
-                _receiveSocketListener.Stop();
-                _receiveQueueListener.Stop();
-
-                //close stream  and connection of the client
-                _clientSocket.GetStream().Close();
-                _clientSocket.Close();
-            }
+            sendSocketListenerClient.Stop();
+            recieveSocketListener.Stop();
         }
 
         /// <inheritdoc />
-        void ICommunicator.AddClient<T>(string clientId, T socketObject)
+        void ICommunicator.AddClient<T>(string clientID, T socketObject)
         {
-            throw new NotSupportedException();
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        void ICommunicator.RemoveClient(string clientId)
+        void ICommunicator.RemoveClient(string clientID)
         {
-            throw new NotSupportedException();
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// This method is for sending message
-        /// </summary>
-        /// <returns> void </returns>
+        /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier)
         {
             Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {
-                _sendQueue.Enqueue(packet);
+                _queue.Enqueue(packet);
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.Message);
-                throw;
             }
         }
 
@@ -124,11 +84,9 @@ namespace Networking
         }
 
         /// <inheritdoc />
-        void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
+        void ICommunicator.Subscribe(string identifier, INotificationHandler handler)
         {
-            _subscribedModules.Add(identifier, handler);
-            _sendQueue.RegisterModule(identifier, priority);
-            _receiveQueue.RegisterModule(identifier, priority);
+            subscribedModules.Add(identifier, handler);
         }
     }
 }
