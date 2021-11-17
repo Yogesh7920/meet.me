@@ -29,6 +29,7 @@ namespace Content
             Converted.ReplyThreadId = toconvert.ReplyThreadId;
             Converted.Starred = false;
             Converted.SentTime = DateTime.Now;
+			Trace.WriteLine("[ChatClient Converting SendMessageData object to a MessageData object");
             return Converted;
         }
 
@@ -37,11 +38,13 @@ namespace Content
             var tosend = SendToMessage(toserver, MessageEvent.NewMessage);
             tosend.MessageId = -1;
             var xml = _serializer.Serialize(tosend);
+			Trace.WriteLine("[ChatClient] Marking Event of chat as NewMessage and sending to server");
             _communicator.Send(xml, _moduleIdentifier);
         }
 
         public void ChatUpdate()
         {
+			Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
             throw new NotImplementedException();
         }
 
@@ -53,6 +56,7 @@ namespace Content
             toSend.SenderId = UserId;
 
             var xml = _serializer.Serialize(toSend);
+			 Trace.WriteLine("[ChatClient] Marking Event of chat as star and sending to server");
             _communicator.Send(xml, _moduleIdentifier);
         }
     }
