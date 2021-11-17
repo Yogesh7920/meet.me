@@ -8,6 +8,6 @@
 
 
     <ItemGroup>
-      <ProjectReference Include="..\Networking\Networking.csproj" />
+        <ProjectReference Include="..\Networking\Networking.csproj"/>
     </ItemGroup>
 </Project>

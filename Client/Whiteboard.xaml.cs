@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -10,7 +6,6 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace Client
@@ -675,10 +670,7 @@ namespace Client
                 activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
@@ -695,10 +687,7 @@ namespace Client
                 activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
@@ -716,10 +705,7 @@ namespace Client
                 activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
@@ -736,10 +722,7 @@ namespace Client
                 activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
@@ -756,10 +739,7 @@ namespace Client
                 activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
             activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
@@ -826,34 +806,27 @@ namespace Client
         private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("ClickedSaveFrame");
-            return;
         }
 
         //Undo Button Control
         private void ClickedUndoButton(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("ClickedUndo");
-            return;
         }
 
         //Redo Button Control
         private void ClickedRedoButton(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("ClickedRedo");
-            return;
         }
 
         //Toggle Button Control (Canvas State Lock)
         private void Bu_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Bu.Toggled1 == true)
-            {
+            if (Bu.Toggled1)
                 MessageBox.Show("Toggled On");
-            }
             else
-            {
                 MessageBox.Show("Toggled Off");
-            }
         }
 
         

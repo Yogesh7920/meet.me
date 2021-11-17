@@ -3,17 +3,17 @@
     <PropertyGroup>
         <TargetFramework>net5.0-windows</TargetFramework>
 
-	    <UseWPF>true</UseWPF>
-	    <ApplicationIcon />
-	    <OutputType>Library</OutputType>
-	    <StartupObject />
+        <UseWPF>true</UseWPF>
+        <ApplicationIcon/>
+        <OutputType>Library</OutputType>
+        <StartupObject/>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+        <PackageReference Include="System.Drawing.Common" Version="5.0.2"/>
     </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Networking\Networking.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Networking\Networking.csproj"/>
+    </ItemGroup>
 </Project>
