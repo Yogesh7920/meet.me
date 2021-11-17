@@ -175,19 +175,20 @@ namespace Networking
         /// </summary>
         private void FindNext()
         {
-            var moduleIdentifier = _moduleIdentifiers[_currentQueue];
+            while (true)
+            {
+                var moduleIdentifier = _moduleIdentifiers[_currentQueue];
 
-            if (_currentWeight == 0)
-            {
-                // Go to the next queue and set the _currentWeight
-                _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
-                moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                _currentWeight = _priorityMap[moduleIdentifier];
-                _currentModuleIdentifier = moduleIdentifier;
-                FindNext(); // To circumvent the case of the next queue having no packets
-            }
-            else
-            {
+                if (_currentWeight == 0)
+                {
+                    // Go to the next queue and set the _currentWeight
+                    _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
+                    moduleIdentifier = _moduleIdentifiers[_currentQueue];
+                    _currentWeight = _priorityMap[moduleIdentifier];
+                    _currentModuleIdentifier = moduleIdentifier;
+                    continue;
+                }
+
                 // If the current queue has no packets, otherwise do nothing
                 if (!_multiLevelQueue[moduleIdentifier].IsEmpty) return;
                 while (_multiLevelQueue[moduleIdentifier].IsEmpty)
@@ -197,6 +198,8 @@ namespace Networking
                     _currentWeight = _priorityMap[moduleIdentifier];
                     _currentModuleIdentifier = moduleIdentifier;
                 }
+
+                break;
             }
         }
     }
