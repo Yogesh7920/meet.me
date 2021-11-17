@@ -67,7 +67,7 @@ namespace Testing.Dashboard
             return users;
         }
 
-        public static SessionData GenerateSampleSessionData(int size, string eventType)
+        public static SessionData GenerateSampleSessionData(int size)
         {
             SessionData sData = new();
             for (int i = 0; i < size; i++)
@@ -77,20 +77,6 @@ namespace Testing.Dashboard
             return sData;
         }
 
-        /// <summary>
-        /// Generates invalid IP and ports
-        /// </summary>
-        /// <returns> List of invalid IP and ports</returns>
-        public static List<string> GenerateInvalidIPAndPort()
-        {
-            List<string> ipAndPorts = new();
-            ipAndPorts.Add("");
-            ipAndPorts.Add(null);
-            ipAndPorts.Add("abcd.192.1.2:8080");
-            ipAndPorts.Add("192.1.2:8080");
-            ipAndPorts.Add("abcdefg");
-            return ipAndPorts; 
-        }
 #pragma warning disable SecurityIntelliSenseCS // MS Security rules violation
         private static readonly Random random = new Random();
 #pragma warning restore SecurityIntelliSenseCS // MS Security rules violation
