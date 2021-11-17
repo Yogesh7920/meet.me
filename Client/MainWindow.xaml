@@ -109,7 +109,7 @@
         <Button Grid.Row="4" Grid.Column="6" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Width="38" Height="32" FontSize="16" VerticalAlignment="Top" Background="White" Click="Chat_Button_Clicked" Margin="0,50,0,0">Chat</Button>
 
 
-        <ContentControl Name="SSwb" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="6" Grid.RowSpan="2" Content="{Binding}" Margin="1,5,0,0"/>
+        <ContentControl Name="SSwb" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="6" Grid.RowSpan="2" Content="vinay" Margin="1,5,0,0"/>
         <!-- <ContentControl Name="ChatPane" Grid.Row="2" Grid.Column="4" Grid.RowSpan="4" Content="{Binding }"/> -->
 
     </Grid>
