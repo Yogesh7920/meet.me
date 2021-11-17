@@ -62,6 +62,11 @@ namespace Dashboard
             return base.GetHashCode();
         }
 
+        public override string ToString()
+        {
+            return "UserName: " + this.username + "\n UserID: " + this.userID + "\n";
+        }
+
         public string username;
         public int userID;
     }

@@ -62,7 +62,7 @@ namespace Testing.Dashboard
             List<UserData> users = new List<UserData>();
             for(int i=0;i<size; i++)
             {
-                users.Add(new(GetRandomString(random.Next(10)),i));
+                users.Add(new(GetRandomString(random.Next(10)),i+1));
             }
             return users;
         }

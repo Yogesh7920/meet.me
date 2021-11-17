@@ -8,6 +8,7 @@ using Dashboard.Server.SessionManagement;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 using System.Threading;
+using System.Net.Sockets;
 
 namespace Testing
 {
@@ -105,14 +106,16 @@ namespace Testing
         [Test]
         public void AddClientProcedure_NewClientArrival_BroadcastsSessionObjectToAllClients ()
         {
-            List<UserData> users = Utils.GenerateUserData();
+            int sampleSize = 10;
+            List<UserData> users = Utils.GenerateUserData(sampleSize);
             AddUsersAtServer(users);
 
             // The last inserted user should get a object that has all the previously added clients
             ServerToClientData recievedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
-            SessionData sessionData = (SessionData)recievedData.GetObject();
+            SessionData sessionData = recievedData.sessionData;
             Assert.NotNull(sessionData);
             CollectionAssert.AreEqual(users, sessionData.users);
+            Assert.AreEqual(sampleSize, _testCommunicator.clientCount);
         }
 
         [Test]
@@ -128,13 +131,13 @@ namespace Testing
             sData.users.RemoveAt(dataSize - 1);
 
             // When the old user joins the first time, it would recieve complete session object
-            ServerToClientData serverToClientData = new("addClient", sData, sData.users[dataSize - 2]);
+            ServerToClientData serverToClientData = new("addClient", sData, null, sData.users[dataSize - 2]); ; ;
             clientSessionManagerA.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientData));
             oldUX.gotNotified = false;
 
             // Following are recieved when new user joins for old and new users
             sData.AddUser(newUser);
-            ServerToClientData serverToClientDataNew = new("addClient", sData, sData.users[dataSize - 1]);
+            ServerToClientData serverToClientDataNew = new("addClient", sData, null, sData.users[dataSize - 1]);
             string serialisedDataNew = _serializer.Serialize(serverToClientDataNew);
             //Console.WriteLine("MT: " + serialisedDataNew);
             clientSessionManagerB.OnDataReceived(serialisedDataNew);
@@ -189,7 +192,7 @@ namespace Testing
             AddUserClientSide(user.username, user.userID);
             string recievedSummary = null; 
             SummaryData summaryData = new(testSummary);
-            ServerToClientData testData = new("getSummary", summaryData, user);
+            ServerToClientData testData = new("getSummary",null,summaryData, user);
             Thread getSummaryThread = new Thread(new ThreadStart(()=> { recievedSummary = clientSessionManagerB.GetSummary(); }));
             getSummaryThread.Start();
             clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
@@ -203,7 +206,7 @@ namespace Testing
             IUXClientSessionManager _uxSessionManager = clientSessionManagerB;
             INotificationHandler _networkSessionManager = clientSessionManagerB;
             // Creating the user who joined
-            ServerToClientData serverToClientData = new("removeClient", null, userData);
+            ServerToClientData serverToClientData = new("removeClient",null, null, userData);
             string serialisedServerData = _serializer.Serialize(serverToClientData);
 
             // Adding the client to client first
@@ -217,11 +220,11 @@ namespace Testing
 
             for (int i = 0; i < users.Count; i++)
             {
-                ServerSessionManager sessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator);
+                serverSessionManager.OnClientJoined<TcpClient>(null);
                 _testCommunicator.sentData = null;
                 ClientToServerData clientToServerData = new("addClient", users[i].username);
                 string serializedData = _serializer.Serialize(clientToServerData);
-                sessionManager.OnDataReceived(serializedData);
+                serverSessionManager.OnDataReceived(serializedData);
             }
 
         }
