@@ -1,11 +1,11 @@
-using Content;
 using System;
 using System.Collections.Generic;
+using Dashboard.Server.SessionManagement;
+using Content;
 
-namespace Dashboard.Server.Telemetry
-{
-
-    public class Telemetry : ITelemetryAnalysisModel
+namespace Dashboard.Server.Telemetry{
+    
+    public class Telemetry: ITelemetryAnalysisModel
     {
         /// <summary>
         ///     returns a dictionary with DateTime as key and int as value
@@ -21,9 +21,8 @@ namespace Dashboard.Server.Telemetry
         /// <returns>
         ///     A dictionary of DateTime as key and userCount as value
         /// </returns>
-        Dictionary<DateTime, int> UserCountVsTimeStamp(SessionData newSession)
-        {
-
+        Dictionary< DateTime, int > UserCountVsTimeStamp(SessionData newSession){
+            
             throw new NotImplementedException();
 
         }
@@ -37,13 +36,10 @@ namespace Dashboard.Server.Telemetry
         /// <returns> 
         ///     Dictionary of userData as key and int as value
         /// </returns>
-        Dictionary<int, int> UserVsChatCount(ChatContext[] AllMess)
-        {
-            Dictionary<int, int> UserChatCountDic = new Dictionary<int, int>();
-            foreach (ChatContext currThread in AllMess)
-            {
-                foreach (ReceiveMessageData currMessage in currThread.MsgList)
-                {
+        Dictionary<int, int> UserVsChatCount(ChatContext[] AllMess){
+            Dictionary<int, int> UserChatCountDic= new Dictionary<int, int>();
+            foreach(ChatContext currThread in AllMess){
+                foreach(ReceiveMessageData currMessage in currThread.MsgList){
                     UserChatCountDic[currMessage.SenderId]++;
                 }
             }
@@ -57,8 +53,7 @@ namespace Dashboard.Server.Telemetry
         /// </summary>
         /// <params> Takes the session data which contains the list of users </params>
         /// <returns> A list of type UserDat  </returns>
-        List<int> irrelevantMembers(SessionData newSession)
-        {
+        List<int> irrelevantMembers(SessionData newSession){
             throw new NotImplementedException();
         }
 
@@ -69,8 +64,7 @@ namespace Dashboard.Server.Telemetry
         /// <returns>
         ///     Dictionary with SessionData as key and its score(chatcount * no. of users) as value
         /// </returns>
-        Dictionary<SessionData, int> sessionVsScore(List<ServerDataToSave> AllSessionData)
-        {
+        Dictionary<SessionData, int> sessionVsScore(List<ServerDataToSave> AllSessionData ){
             throw new NotImplementedException();
         }
 
@@ -82,8 +76,7 @@ namespace Dashboard.Server.Telemetry
         /// <returns>
         ///     Dictionary with SessionData as key and User as value
         /// </returns>
-        Dictionary<SessionData, int> sessionVsUserCount(List<ServerDataToSave> AllSessionData)
-        {
+        Dictionary<SessionData, int > sessionVsUserCount(List<ServerDataToSave> AllSessionData){
             throw new NotImplementedException();
         }
 
@@ -95,8 +88,7 @@ namespace Dashboard.Server.Telemetry
         /// <returns>
         ///     Dictionary with SessionData as key and Chat count(int) as value
         /// </returns>
-        Dictionary<SessionData, int> sessionVsChatCount(List<ServerDataToSave> AllSessionData)
-        {
+        Dictionary<SessionData, int > sessionVsChatCount(List<ServerDataToSave> AllSessionData){
             throw new NotImplementedException();
         }
 
@@ -104,8 +96,7 @@ namespace Dashboard.Server.Telemetry
         ///     Updates the SessionData when it changes
         /// </summary>
         /// <params> Takes the list of ServerData </params>
-        void OnAnalyticsChanged(SessionData newSession)
-        {
+        void OnAnalyticsChanged(SessionData newSession){
             throw new NotImplementedException();
         }
 
@@ -114,8 +105,7 @@ namespace Dashboard.Server.Telemetry
         ///     used by SM to simplify the ChatContext and save it by persistance module.
         /// </summary>
         /// <params> Array of ChatContext objects which contains information about messages of each thread </params>    
-        public void SaveAllAnalytics(ChatContext[] AllMessages)
-        {
+        public void SaveAllAnalytics(ChatContext[] AllMessages){
             throw new NotImplementedException();
         }
 
@@ -128,8 +118,7 @@ namespace Dashboard.Server.Telemetry
         /// <returns>
         ///     Returns TelemetryAnalyticsModel object which contains analytics of session
         /// </returns>
-        public TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages)
-        {
+        public TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages){
             throw new NotImplementedException();
         }
     }

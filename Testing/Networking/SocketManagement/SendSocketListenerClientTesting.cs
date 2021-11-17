@@ -1,10 +1,12 @@
-using Networking;
-using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Networking;
+using NUnit.Framework;
 
 namespace Testing.Networking.SocketManagement
 {
@@ -20,7 +22,7 @@ namespace Testing.Networking.SocketManagement
         private string Message => NetworkingGlobals.GetRandomString();
         private TcpClient _serverSocket;
         private TcpClient _clientSocket;
-
+        
         private string GetMessage(Packet packet)
         {
             string msg = packet.ModuleIdentifier;
@@ -55,7 +57,7 @@ namespace Testing.Networking.SocketManagement
             _queueS.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
             _sendSocketListenerClient = new SendSocketListenerClient(_queueS, _clientSocket);
             _sendSocketListenerClient.Start();
-
+            
             _queueR = new Queue();
             _queueR.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
             _receiveSocketListener = new ReceiveSocketListener(_queueR, _serverSocket);
@@ -66,9 +68,9 @@ namespace Testing.Networking.SocketManagement
         public void SinglePacketClientSendTesting()
         {
             string whiteBoardData = "hello ";
-            Packet whiteBoardPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
+            Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             _queueS.Enqueue(whiteBoardPacket);
-
+            
             while (_queueR.IsEmpty()) { }
             Packet packet = _queueR.Dequeue();
             Assert.Multiple(() =>
@@ -77,14 +79,14 @@ namespace Testing.Networking.SocketManagement
                 Assert.AreEqual(whiteBoardPacket.ModuleIdentifier, packet.ModuleIdentifier);
             });
         }
-
+        
         [Test]
         public void BigPacketClientSendTesting()
         {
             string whiteBoardData = NetworkingGlobals.GetRandomString(4000);
-            Packet whiteBoardPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
+            Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             _queueS.Enqueue(whiteBoardPacket);
-
+            
             while (_queueR.IsEmpty()) { }
             Packet packet = _queueR.Dequeue();
             Assert.Multiple(() =>
@@ -96,19 +98,19 @@ namespace Testing.Networking.SocketManagement
 
         [Test]
         public void MultiplePacketClientSendTesting()
-        {
+        { 
             for (int i = 1; i <= 10; i++)
             {
-                string whiteBoardData = "packet" + i.ToString();
-                Packet whiteBoardPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
+                string whiteBoardData = "packet"+i.ToString();
+                Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
                 _queueS.Enqueue(whiteBoardPacket);
             }
-
-
+            
+         
             Thread.Sleep(100);
             for (int i = 1; i <= 10; i++)
             {
-                string whiteBoardData = "packet" + i.ToString();
+                string whiteBoardData = "packet"+i.ToString();
                 Packet packet = _queueR.Dequeue();
                 Assert.AreEqual(whiteBoardData, packet.SerializedData);
             }

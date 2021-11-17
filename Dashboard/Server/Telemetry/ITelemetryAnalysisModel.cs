@@ -1,4 +1,10 @@
-﻿using Content;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Dashboard.Server.SessionManagement;
+using Content;
 
 namespace Dashboard.Server.Telemetry
 {
@@ -18,9 +24,9 @@ namespace Dashboard.Server.Telemetry
         /// </summary>
 
         /// <params name="AllMessages"> The chat data of all the threads </params>
-
+        
         /// <returns> TelemetryAnalyticsModel object </returns>
         TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages);
-
+        
     }
 }

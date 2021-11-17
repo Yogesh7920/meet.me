@@ -1,12 +1,14 @@
+using NUnit.Framework;
+using Networking;
+using Testing.Dashboard.TestModels;
+using System.Collections.Generic;
+using System;
+using Testing.Dashboard;
+using Dashboard.Server.SessionManagement;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
-using Dashboard.Server.SessionManagement;
-using Networking;
-using NUnit.Framework;
-using System.Collections.Generic;
+using System.Threading;
 using System.Net.Sockets;
-using Testing.Dashboard;
-using Testing.Dashboard.TestModels;
 
 namespace Testing
 {
@@ -38,9 +40,9 @@ namespace Testing
             Assert.AreEqual(testMeetCreds.ipAddress, returnedMeetCreds.ipAddress);
             Assert.AreEqual(testMeetCreds.port, returnedMeetCreds.port);
 
-
+            
         }
-
+        
         [Test]
         [TestCase(null)]
         [TestCase("")]
@@ -62,8 +64,8 @@ namespace Testing
         public void AddClient_ValidClientArrivalClientSide_ReturnsTrue()
         {
             IUXClientSessionManager _sessionManager = clientSessionManagerB;
-
-            // Setting the IP address and Port for fake server
+            
+           // Setting the IP address and Port for fake server
             bool isValid = _sessionManager.AddClient(validIP, int.Parse(validPort), "John");
             bool expectedValue = true;
             Assert.AreEqual(expectedValue, isValid);
@@ -72,11 +74,11 @@ namespace Testing
         }
 
         [Test]
-        [TestCase("192.168.1.2", 8080, "John")]
-        [TestCase("192.168.1.1", 8080, "")]
-        [TestCase("192.168.1.1", 8081, "John")]
-        [TestCase("192.168.1.1", 8080, null)]
-        [TestCase("abced", 8080, "John")]
+        [TestCase("192.168.1.2",8080,"John")]
+        [TestCase("192.168.1.1",8080,"")]
+        [TestCase("192.168.1.1",8081,"John")]
+        [TestCase("192.168.1.1",8080,null)]
+        [TestCase("abced",8080,"John")]
         public void AddClient_InValidClientArrivalClientSide_ReturnsFalse(string ip, int port, string username)
         {
             IUXClientSessionManager _sessionManager = clientSessionManagerB;
@@ -103,7 +105,7 @@ namespace Testing
         }
 
         [Test]
-        public void AddClientProcedure_NewClientArrival_BroadcastsSessionObjectToAllClients()
+        public void AddClientProcedure_NewClientArrival_BroadcastsSessionObjectToAllClients ()
         {
             int sampleSize = 10;
             List<UserData> users = Utils.GenerateUserData(sampleSize);
@@ -206,7 +208,7 @@ namespace Testing
             IUXClientSessionManager _uxSessionManager = clientSessionManagerB;
             INotificationHandler _networkSessionManager = clientSessionManagerB;
             // Creating the user who joined
-            ServerToClientData serverToClientData = new("removeClient", null, null, userData);
+            ServerToClientData serverToClientData = new("removeClient",null, null, userData);
             string serialisedServerData = _serializer.Serialize(serverToClientData);
 
             // Adding the client to client first
@@ -235,6 +237,6 @@ namespace Testing
         private TestUX newUX, oldUX;
         private readonly ISerializer _serializer = new Serializer();
         private TestCommunicator _testCommunicator;
-        private readonly string validIP = "192.168.1.1", validPort = "8080";
+        private readonly string validIP = "192.168.1.1", validPort ="8080";
     }
 }

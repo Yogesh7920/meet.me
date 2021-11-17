@@ -1,7 +1,7 @@
-using Networking;
 using System;
 using System.Dynamic;
 using System.Threading;
+using Networking;
 
 namespace Testing.Networking
 {
@@ -21,7 +21,7 @@ namespace Testing.Networking
             WbHandler = new FakeNotificationHandler();
             SsHandler = new FakeNotificationHandler();
         }
-
+        
         public void Subscribe()
         {
             Communicator.Subscribe(Modules.WhiteBoard, WbHandler, Priorities.WhiteBoard);
