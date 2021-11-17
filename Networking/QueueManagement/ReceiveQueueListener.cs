@@ -1,4 +1,11 @@
-﻿using System.Collections.Generic;
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>27/10/2021</created>
+/// <summary>
+///     This file contains the class definition
+///     of ReceiveQueueListener.
+/// </summary>
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
