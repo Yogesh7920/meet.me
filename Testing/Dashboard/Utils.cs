@@ -67,22 +67,18 @@ namespace Testing.Dashboard
             return users;
         }
 
-        /// <summary>
-        /// Generates invalid IP and ports
-        /// </summary>
-        /// <returns> List of invalid IP and ports</returns>
-        public static List<string> GenerateInvalidIPAndPort()
+        public static SessionData GenerateSampleSessionData(int size)
         {
-            List<string> ipAndPorts = new List<string>();
-            ipAndPorts.Add("");
-            ipAndPorts.Add(null);
-            ipAndPorts.Add("abcd.192.1.2:8080");
-            ipAndPorts.Add("192.1.2:8080");
-            ipAndPorts.Add("abcdefg");
-            return ipAndPorts; 
+            SessionData sData = new();
+            for (int i = 0; i < size; i++)
+            {
+                sData.AddUser(new(GetRandomString(random.Next(10)), i));
+            }
+            return sData;
         }
+
 #pragma warning disable SecurityIntelliSenseCS // MS Security rules violation
-        private static Random random = new Random();
+        private static readonly Random random = new Random();
 #pragma warning restore SecurityIntelliSenseCS // MS Security rules violation
     }
 }
