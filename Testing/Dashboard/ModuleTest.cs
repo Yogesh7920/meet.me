@@ -60,8 +60,8 @@ namespace Testing
 
             // Testing for invalid IPs and usernames
             Assert.AreEqual(false, sessionManager.AddClient("192.169.1.2", 2000, "John"));
-            // Assert.AreEqual(false, sessionManager.AddClient(validIPAddress, int.Parse(port), null));
-            // Assert.AreEqual(false, sessionManager.AddClient(validIPAddress, int.Parse(port), ""));
+            Assert.AreEqual(false, sessionManager.AddClient(validIPAddress, int.Parse(port), null));
+            Assert.AreEqual(false, sessionManager.AddClient(validIPAddress, int.Parse(port), ""));
 
         }
 
@@ -102,7 +102,7 @@ namespace Testing
             while (_testCommunicator.sentData == null) ;
             Console.WriteLine(_testCommunicator.sentData);
             ServerToClientData recievedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
-            SessionData sessionData = (SessionData)recievedData.GetObject();
+            SessionData sessionData = recievedData.sessionData;
             CollectionAssert.AreEqual(users, sessionData.users);
         }
 

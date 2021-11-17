@@ -12,6 +12,11 @@ namespace Dashboard
     /// </summary>
     public class UserData : IEquatable<UserData>
     {
+        public UserData()
+        {
+
+        }
+
         /// <summary>
         /// Parametric constructor to initialize the fields 
         /// </summary>
