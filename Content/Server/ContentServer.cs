@@ -19,7 +19,7 @@ namespace Content
             _subscribers = new List<IContentListener>();
             _communicator = CommunicationFactory.GetCommunicator(false);
             _contentDatabase = new ContentDatabase();
-            _notificationHandler = new ContentServerNotificationHandler();
+            _notificationHandler = new ContentServerNotificationHandler(this);
             _fileServer = new FileServer(_contentDatabase);
             _chatContextServer = new ChatContextServer(_contentDatabase);
             _serializer = new Serializer();
@@ -93,11 +93,15 @@ namespace Content
 
         private void Send(MessageData messageData)
         {
-            var message = _serializer.Serialize(messageData);
+            string message = _serializer.Serialize(messageData);
             if (messageData.ReceiverIds.Length == 0)
+            {
                 _communicator.Send(message, "Content");
+            }
             else
+            {
                 foreach (var userId in messageData.ReceiverIds)
+                {
                     _communicator.Send(message, "Content", userId.ToString());
                 }
                 _communicator.Send(message, "Content", messageData.SenderId.ToString());
