@@ -116,7 +116,7 @@ namespace Testing
     [TestFixture]
     public class ContentModuleTesting
     {
-        [Setup]
+        [SetUp]
         public void SetUp()
         {
             // User ID for various test users
