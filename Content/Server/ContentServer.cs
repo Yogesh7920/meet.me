@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Networking;
+using System.Collections.Generic;
 using System.Diagnostics;
-using Networking;
 
 namespace Content
 {

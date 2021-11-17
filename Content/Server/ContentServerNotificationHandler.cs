@@ -1,5 +1,5 @@
-﻿using System;
-using Networking;
+﻿using Networking;
+using System;
 
 namespace Content
 {
