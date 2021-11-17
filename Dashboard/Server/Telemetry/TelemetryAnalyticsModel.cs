@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dashboard
 {
-    public class TelemetryAnalyticsModel{
+    public class TelemetryAnalyticsModel
+    {
         /// Stores the userCount(int) at every time stamp(DateTime)
         Dictionary<int, int> UserCountAtAnyTime;
         /// Stores the chat count(int) for each user(UserData) 

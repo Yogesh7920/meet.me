@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Dashboard;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dashboard;
 
 namespace Testing.Dashboard
 {
@@ -29,11 +27,11 @@ namespace Testing.Dashboard
         public static MeetingCredentials GenerateMeetingCreds(string ipAddressAndPort)
         {
             int colonIndex = ipAddressAndPort.IndexOf(':');
-            if(colonIndex == -1)
+            if (colonIndex == -1)
                 return null;
             string ipAddress = ipAddressAndPort.Substring(0, colonIndex);
             int port = int.Parse(ipAddressAndPort.Substring(colonIndex + 1));
-            MeetingCredentials _meetCreds = new MeetingCredentials(ipAddress,port);
+            MeetingCredentials _meetCreds = new MeetingCredentials(ipAddress, port);
             return _meetCreds;
         }
 
@@ -57,12 +55,12 @@ namespace Testing.Dashboard
         /// Generates random user data
         /// </summary>
         /// <returns>returns list of users for testing</returns>
-        public static List<UserData> GenerateUserData(int size =10)
+        public static List<UserData> GenerateUserData(int size = 10)
         {
             List<UserData> users = new List<UserData>();
-            for(int i=0;i<size; i++)
+            for (int i = 0; i < size; i++)
             {
-                users.Add(new(GetRandomString(random.Next(10)),i+1));
+                users.Add(new(GetRandomString(random.Next(10)), i + 1));
             }
             return users;
         }

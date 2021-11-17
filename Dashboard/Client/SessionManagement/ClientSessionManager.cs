@@ -1,12 +1,9 @@
-﻿using System;
+﻿using Networking;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Networking;
 
 
-namespace Dashboard.Client.SessionManagement 
+namespace Dashboard.Client.SessionManagement
 {
     using Dashboard.Server.Telemetry;
     public delegate void NotifyEndMeet();
@@ -28,9 +25,9 @@ namespace Dashboard.Client.SessionManagement
             _communicator = CommunicationFactory.GetCommunicator();
             Session session = new();
             session.TraceListener();
-           
 
-            if(_clients == null)
+
+            if (_clients == null)
             {
                 _clients = new List<IClientSessionNotifications>();
             }
@@ -78,7 +75,7 @@ namespace Dashboard.Client.SessionManagement
             }
 
             string serializedClientName;
-            
+
             lock (this)
             {
                 string connectionStatus = _communicator.Start(ipAddress, port.ToString());
@@ -92,8 +89,8 @@ namespace Dashboard.Client.SessionManagement
                 ClientToServerData clientName = new("addClient", username);
                 serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
             }
-            
-            _communicator.Send(serializedClientName,moduleIdentifier);
+
+            _communicator.Send(serializedClientName, moduleIdentifier);
             return true;
         }
 
@@ -129,14 +126,14 @@ namespace Dashboard.Client.SessionManagement
             ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
             string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
             _communicator.Send(serializedData, moduleIdentifier);
-            
+
             // This loop will run till the summary is received from the server side.
-            while(chatSummary == null)
+            while (chatSummary == null)
             {
 
             }
 
-            lock(this)
+            lock (this)
             {
                 summary = chatSummary;
                 chatSummary = null;
@@ -152,7 +149,7 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="identifier"> The identifier of the subscriber. </param>
         public void SubscribeSession(IClientSessionNotifications listener)
         {
-            lock(this)
+            lock (this)
             {
                 _clients.Add(listener);
             }
@@ -172,9 +169,9 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void NotifyUXSession()
         {
-            for(int i=0;i<_clients.Count;++i)
+            for (int i = 0; i < _clients.Count; ++i)
             {
-                lock(this)
+                lock (this)
                 {
                     _clients[i].OnClientSessionChanged(_clientSessionData);
                 }
@@ -195,7 +192,7 @@ namespace Dashboard.Client.SessionManagement
             string eventType = deserializedObject.eventType;
 
             // based on the type of event, calling the appropriate functions 
-            switch(eventType)
+            switch (eventType)
             {
                 case "addClient":
                     UpdateClientSessionData(deserializedObject);
@@ -232,9 +229,9 @@ namespace Dashboard.Client.SessionManagement
 
             // check if the current user is the one who requested to get the 
             // summary
-            if(receivedUser.userID == _user.userID)
+            if (receivedUser.userID == _user.userID)
             {
-                lock(this)
+                lock (this)
                 {
                     chatSummary = receivedSummary.summary;
                 }
@@ -258,21 +255,21 @@ namespace Dashboard.Client.SessionManagement
 
             // a null _user denotes that the user is new and has not be set because all 
             // the old user (already present in the meeting) have their _user set.
-            if(_user == null)
+            if (_user == null)
             {
                 _user = user;
             }
 
             // The user received from the server side is equal to _user only in the case of 
             // client departure. So, the _user and received session data are set to null to indicate this departure
-            else if(_user == user)
+            else if (_user == user)
             {
                 _user = null;
                 recievedSessionData = null;
             }
 
             // update the sesseon data on the client side and notify the UX about it.
-            lock(this)
+            lock (this)
             {
                 _clientSessionData = (SessionData)recievedSessionData;
             }

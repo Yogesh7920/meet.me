@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dashboard.Client.SessionManagement
+﻿namespace Dashboard.Client.SessionManagement
 {
     using Dashboard.Server.Telemetry;
     public interface IUXClientSessionManager
@@ -49,6 +43,6 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        ITelemetryAnalysisModel GetAnalytics(); 
+        ITelemetryAnalysisModel GetAnalytics();
     }
 }

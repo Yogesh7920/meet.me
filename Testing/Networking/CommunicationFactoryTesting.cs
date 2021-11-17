@@ -1,9 +1,5 @@
-﻿using System;
+﻿using Networking;
 using NUnit.Framework;
-using Networking;
-using AutoFixture;
-using FluentAssertions;
-using Testing.Networking.Objects;
 
 namespace Testing.Networking
 {
