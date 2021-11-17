@@ -54,7 +54,7 @@ namespace Client
         private int mouseLeftBtnMoveFlag = 0;
         private int mouseDownFlag = 0;
         private int freehandDraw = 0;
-        private System.Windows.Shape mouseDownSh;
+        private System.Windows.Shapes.Shape mouseDownSh;
 
         //Button Dynamic Colors 
         private string buttonDefaultColor = "#D500F9";
