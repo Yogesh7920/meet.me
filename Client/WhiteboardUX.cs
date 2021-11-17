@@ -27,17 +27,17 @@ namespace Client
     };
 
     /// <summary>
-    /// Interface which listens to fetched server updates by IWhiteBoardState and local updates by IShapeOperation
+    ///     Interface which listens to fetched server updates by IWhiteBoardState and local updates by IShapeOperation
     /// </summary>
-    interface IWhiteBoardUpdater
+    internal interface IWhiteBoardUpdater
     {
         /// <summary>
-        /// Fetch updates from IWhiteBoardState for rendering in the view  
+        ///     Fetch updates from IWhiteBoardState for rendering in the view
         /// </summary>
-        abstract void FetchServerUpdates();
+        void FetchServerUpdates();
 
         /// <summary>
-        /// Render fetched updates on canvas  
+        ///     Render fetched updates on canvas
         /// </summary>
         abstract Canvas RenderUXElement(List<UXShape> shps, Canvas cn);
     }
@@ -218,7 +218,7 @@ namespace Client
     }
 
     /// <summary>
-    /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
+    ///     Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module
     /// </summary>
     public class ShapeManager : IWhiteBoardUpdater
     {
@@ -238,7 +238,7 @@ namespace Client
         }
 
         /// <summary>
-        /// Fetch shape updates from IWhiteBoardState for rendering in the view   
+        ///     Fetch shape updates from IWhiteBoardState for rendering in the view
         /// </summary>
         public void FetchServerUpdates()
         {
@@ -603,7 +603,7 @@ namespace Client
 
 
         /// <summary>
-        /// Translate the shape according to input events  
+        ///     Translate the shape according to input events
         /// </summary>
         /// <param name="cn"> Main Canvas instance to which the shape is to be added </param>
         /// <param name="WBOps"> Shape operation handler class instance provided by the Whiteboard library </param>
@@ -798,7 +798,7 @@ namespace Client
         }
 
         /// <summary>
-        /// Rotate the selected shape by input degrees  
+        ///     Rotate the selected shape by input degrees
         /// </summary>
         /// <param name="cn"> Main Canvas instance to which the shape is to be added </param>
         /// <param name="WBOps"> Shape operation handler class instance provided by the Whiteboard library </param>
@@ -1269,11 +1269,10 @@ namespace Client
         {
             return WBOps.GetUserName(sh.Uid);
         }
-
     }
 
     /// <summary>
-    /// Class to manage existing and new FreeHand instances by providing various methods by aggregating WhiteBoard Module    
+    ///     Class to manage existing and new FreeHand instances by providing various methods by aggregating WhiteBoard Module
     /// </summary>
     public class FreeHand : IWhiteBoardUpdater
     {
@@ -1309,7 +1308,7 @@ namespace Client
         }
 
         /// <summary>
-        /// Fetch FreeHand instances updates from IWhiteBoardState for rendering in the view   
+        ///     Fetch FreeHand instances updates from IWhiteBoardState for rendering in the view
         /// </summary>
         public void FetchServerUpdates()
         {
@@ -1318,7 +1317,7 @@ namespace Client
         }
 
         /// <summary>
-        /// Render FreeHand instances shape updates on canvas  
+        ///     Render FreeHand instances shape updates on canvas
         /// </summary>
         public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
         {
@@ -1373,7 +1372,7 @@ namespace Client
     }
 
     /// <summary>
-    /// View Model of Whiteboard in MVVM design pattern 
+    ///     View Model of Whiteboard in MVVM design pattern
     /// </summary>
     public class WhiteBoardViewModel
     {
@@ -1407,7 +1406,7 @@ namespace Client
                 Dispatcher.CurrentDispatcher; 
 
         /// <summary>
-        /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
+        ///     Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module
         /// </summary>
         public WhiteBoardViewModel(Canvas GlobCanvas)
         {
@@ -1419,7 +1418,7 @@ namespace Client
         }
 
         /// <summary>
-        /// Changes the Background color of Canvas in View 
+        ///     Changes the Background color of Canvas in View
         /// </summary>
         /// <param name="cn"> Canvas instance to be altered </param>
         /// <param name="hexCode"> Shape operation handler class instance provided by the Whiteboard library </param>
@@ -1440,7 +1439,7 @@ namespace Client
             return cn;
         }
         /// <summary>
-        /// Update the activeTool based on selected function on Toolbar 
+        ///     Update the activeTool based on selected function on Toolbar
         /// </summary>
         /// <param name="clickedTool"> Defines the tool on which the user clicked to be used to set the 'activeTool' enum accordingly </param>
         /// <returns> void, upon altering the 'activeTool' of this class instance accordingly </returns>
@@ -1478,7 +1477,7 @@ namespace Client
         }
 
         /// <summary>
-        /// Changes the Privilege level of the current user  
+        ///     Changes the Privilege level of the current user
         /// </summary>
         public void ChangePrivilegeSwitch()
         {

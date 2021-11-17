@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 
 namespace Networking
 {
     internal class ClientCommunicator : ICommunicator
     {
-        private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
-
-        // Declare socket object for client
-        private TcpClient _clientSocket;
-
         // Declare queue variable for receiving messages
         private readonly Queue _receiveQueue = new();
 
         // Declare queue variable for sending messages
         private readonly Queue _sendQueue = new();
+        private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
+
+        // Declare socket object for client
+        private TcpClient _clientSocket;
+
+        private ReceiveQueueListener _receiveQueueListener;
 
         //Declare ReceiveSocketListener variable for listening messages 
         private ReceiveSocketListener _receiveSocketListener;
@@ -25,21 +26,20 @@ namespace Networking
         // Declare sendSocketListenerClient variable for sending messages 
         private SendSocketListenerClient _sendSocketListenerClient;
 
-        private ReceiveQueueListener _receiveQueueListener;
-
         /// <summary>
-        /// This method connects client to server
-        /// <param name="serverIp">serverIP</param>
-        /// <param name="serverPort">serverPort.</param>
+        ///     This method connects client to server
+        ///     <param name="serverIp">serverIP</param>
+        ///     <param name="serverPort">serverPort.</param>
         /// </summary>
-        ///  /// <returns> String </returns>
+        /// ///
+        /// <returns> String </returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
             try
             {
                 //try to connect with server
-                IPAddress ip = IPAddress.Parse(serverIp);
-                int port = int.Parse(serverPort);
+                var ip = IPAddress.Parse(serverIp);
+                var port = int.Parse(serverPort);
                 _clientSocket = new TcpClient();
                 // _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, false);
                 _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
@@ -68,8 +68,8 @@ namespace Networking
         }
 
         /// <summary>
-        /// This method stops all the running thread
-        ///  of client and closes the connection
+        ///     This method stops all the running thread
+        ///     of client and closes the connection
         /// </summary>
         /// <returns> void </returns>
         void ICommunicator.Stop()
@@ -100,12 +100,12 @@ namespace Networking
         }
 
         /// <summary>
-        /// This method is for sending message
+        ///     This method is for sending message
         /// </summary>
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
-            Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
+            var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {
                 _sendQueue.Enqueue(packet);
