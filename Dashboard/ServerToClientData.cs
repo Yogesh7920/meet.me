@@ -45,6 +45,6 @@ namespace Dashboard
         public string eventType;
         public SummaryData summaryData;
         public SessionData sessionData;
-        private readonly UserData _user;
+        public UserData _user;
     }
 }
