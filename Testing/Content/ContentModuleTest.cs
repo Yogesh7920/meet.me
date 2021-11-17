@@ -117,7 +117,7 @@ namespace Testing
     public class ContentModuleTesting
     {
         [Setup]
-        public void Setup()
+        public void SetUp()
         {
             // User ID for various test users
             int _userID1 = 1001;
