@@ -1,51 +1,53 @@
-using Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Networking;
 
 namespace Content
 {
     public class ContentClientNotificationHandler : INotificationHandler
     {
+        private readonly ContentClient _contentHandler;
 
-        private ISerializer _serializer;
-        private ContentClient _contentHandler;
-        
+        private readonly ISerializer _serializer;
+
         public ContentClientNotificationHandler()
         {
             _serializer = new Serializer();
             _contentHandler = ContentClientFactory.getInstance() as ContentClient;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void OnDataReceived(string data)
         {
             Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
-            Object deserialized = _serializer.Deserialize<Object>(data);
+            var deserialized = _serializer.Deserialize<object>(data);
 
             if (deserialized is MessageData)
             {
-                MessageData receivedMessage = deserialized as MessageData;
+                var receivedMessage = deserialized as MessageData;
                 _contentHandler.OnReceive(receivedMessage);
             }
 
             else if (deserialized is List<ChatContext>)
             {
-                List<ChatContext> allMessages = deserialized as List<ChatContext>;
+                var allMessages = deserialized as List<ChatContext>;
                 _contentHandler.Notify(allMessages);
             }
-            
+
             else
+            {
                 throw new ArgumentException("Deserialized object of unknown type");
+            }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void OnClientJoined<T>(T socketObject)
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void OnClientLeft(string clientId)
         {
             throw new NotImplementedException();

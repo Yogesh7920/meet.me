@@ -3,25 +3,22 @@ using System.IO;
 
 namespace Content
 {
-    [Serializable()]
+    [Serializable]
     public class SendFileData
     {
+        public byte[] fileContent;
+
+        public string fileName;
+
+        public long fileSize;
+
         public SendFileData(string filepath)
         {
-            if (!File.Exists(filepath))
-            {
-                throw new FileNotFoundException("File {0} not found", filepath);
-            }
+            if (!File.Exists(filepath)) throw new FileNotFoundException("File {0} not found", filepath);
 
             fileName = Path.GetFileName(filepath);
             fileContent = File.ReadAllBytes(filepath);
             fileSize = fileContent.Length;
         }
-
-        public string fileName;
-
-        public byte[] fileContent;
-
-        public long fileSize;
     }
 }

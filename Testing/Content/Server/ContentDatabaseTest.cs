@@ -1,7 +1,4 @@
 using NUnit.Framework;
-using Content;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Testing
 {
@@ -10,7 +7,6 @@ namespace Testing
         [SetUp]
         public void Setup()
         {
-
         }
 
         [Test]

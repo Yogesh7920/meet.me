@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using NUnit.Framework;
 using Networking;
+using NUnit.Framework;
 
 namespace Testing.Networking.QueueManagement
 {
     [TestFixture]
     public class QueueManagement
     {
-        private IQueue _queue;
-        private List<Packet> _testPackets;
-        private List<string> _moduleIdentifiers;
-
-        private string Message => NetworkingGlobals.GetRandomString();
-
         [SetUp]
         public void Setup()
         {
@@ -44,14 +37,14 @@ namespace Testing.Networking.QueueManagement
             _queue.RegisterModule(chatModuleId, chatPriority);
             _queue.RegisterModule(fileModuleId, filePriority);
 
-            Random random = new Random();
+            var random = new Random();
 
             // Creating packets with random moduleIdentifiers
-            for (int i = 0; i < _testPackets.Capacity; i++)
+            for (var i = 0; i < _testPackets.Capacity; i++)
             {
                 var moduleIndex = random.Next(0, 4);
                 var tempModuleId = _moduleIdentifiers[moduleIndex];
-                Packet item = new Packet
+                var item = new Packet
                     {ModuleIdentifier = tempModuleId, SerializedData = Message};
                 _testPackets.Add(item);
             }
@@ -66,11 +59,17 @@ namespace Testing.Networking.QueueManagement
             _testPackets = null;
         }
 
+        private IQueue _queue;
+        private List<Packet> _testPackets;
+        private List<string> _moduleIdentifiers;
+
+        private string Message => NetworkingGlobals.GetRandomString();
+
         [Test]
         public void Enqueue_SinglePacket_SizeShouldBeOne()
         {
             const string moduleId = Modules.ScreenShare;
-            Packet packet = new Packet
+            var packet = new Packet
                 {ModuleIdentifier = moduleId, SerializedData = Message};
             _queue.Enqueue(packet);
             var size = _queue.Size();
@@ -81,12 +80,12 @@ namespace Testing.Networking.QueueManagement
         public void Enqueue_InvalidModuleIdentifier_ThrowsException()
         {
             const string moduleId = Modules.Invalid;
-            Packet packet = new Packet {ModuleIdentifier = moduleId, SerializedData = Message};
+            var packet = new Packet {ModuleIdentifier = moduleId, SerializedData = Message};
 
-            Exception ex = Assert.Throws<Exception>(() => { _queue.Enqueue(packet); });
+            var ex = Assert.Throws<Exception>(() => { _queue.Enqueue(packet); });
 
             Assert.IsNotNull(ex);
-            string expectedMessage = "Key Error: Packet holds invalid module identifier";
+            var expectedMessage = "Key Error: Packet holds invalid module identifier";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
@@ -94,36 +93,36 @@ namespace Testing.Networking.QueueManagement
         public void Enqueue_MultiplePackets_SizeShouldMatch()
         {
             // Running enqueue from different threads
-            Task thread1 = Task.Run(() =>
+            var thread1 = Task.Run(() =>
             {
-                for (int i = 0; i < _testPackets.Capacity / 2; i++)
+                for (var i = 0; i < _testPackets.Capacity / 2; i++)
                 {
-                    Packet packet = _testPackets[i];
+                    var packet = _testPackets[i];
                     _queue.Enqueue(packet);
                 }
             });
 
-            Task thread2 = Task.Run(() =>
+            var thread2 = Task.Run(() =>
             {
-                for (int i = _testPackets.Capacity / 2; i < _testPackets.Capacity; i++)
+                for (var i = _testPackets.Capacity / 2; i < _testPackets.Capacity; i++)
                 {
-                    Packet packet = _testPackets[i];
+                    var packet = _testPackets[i];
                     _queue.Enqueue(packet);
                 }
             });
 
             Task.WaitAll(thread1, thread2);
             var size = _queue.Size();
-            int expectedSize = _testPackets.Count;
+            var expectedSize = _testPackets.Count;
             Assert.AreEqual(expectedSize, size);
         }
 
         [Test]
         public void Clear_FlushingAllPackets_ShouldBeEmpty()
         {
-            for (int i = 0; i < _testPackets.Capacity; i++)
+            for (var i = 0; i < _testPackets.Capacity; i++)
             {
-                Packet packet = _testPackets[i];
+                var packet = _testPackets[i];
                 _queue.Enqueue(packet);
             }
 
@@ -137,7 +136,7 @@ namespace Testing.Networking.QueueManagement
         {
             const string moduleId = Modules.ScreenShare;
 
-            Packet packet = new Packet {ModuleIdentifier = moduleId, SerializedData = Message};
+            var packet = new Packet {ModuleIdentifier = moduleId, SerializedData = Message};
             _queue.Enqueue(packet);
 
             try
@@ -151,9 +150,9 @@ namespace Testing.Networking.QueueManagement
             catch (AggregateException ex)
             {
                 Assert.IsNotNull(ex);
-                ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
-                Exception clearEx = innerEx.ElementAt(0);
-                string expectedMessage = "Empty Queue cannot be dequeued";
+                var innerEx = ex.InnerExceptions;
+                var clearEx = innerEx.ElementAt(0);
+                var expectedMessage = "Empty Queue cannot be dequeued";
                 var empty = _queue.IsEmpty();
                 Assert.AreEqual(expectedMessage, clearEx.Message);
                 Assert.AreEqual(true, empty);
@@ -163,49 +162,49 @@ namespace Testing.Networking.QueueManagement
         [Test]
         public void RegisterModule_DifferentModulesPassingSameIdentifier_ThrowsException()
         {
-            string moduleId = Modules.ScreenShare;
-            int priority = Priorities.ScreenShare;
-            AggregateException ex = Assert.Throws<AggregateException>(() =>
+            var moduleId = Modules.ScreenShare;
+            var priority = Priorities.ScreenShare;
+            var ex = Assert.Throws<AggregateException>(() =>
             {
-                Task thread1 = Task.Run(() => { _queue.RegisterModule(moduleId, priority); });
+                var thread1 = Task.Run(() => { _queue.RegisterModule(moduleId, priority); });
 
-                Task thread2 = Task.Run(() => { _queue.RegisterModule(moduleId, priority); });
+                var thread2 = Task.Run(() => { _queue.RegisterModule(moduleId, priority); });
 
                 Task.WaitAll(thread1, thread2);
             });
             Assert.IsNotNull(ex);
-            ReadOnlyCollection<Exception> innerEx = ex.InnerExceptions;
-            Exception registerEx = innerEx.ElementAt(0);
-            string expectedMessage = "Adding Queue to MultiLevelQueue Failed!";
+            var innerEx = ex.InnerExceptions;
+            var registerEx = innerEx.ElementAt(0);
+            var expectedMessage = "Adding Queue to MultiLevelQueue Failed!";
             Assert.AreEqual(expectedMessage, registerEx.Message);
         }
 
         [Test]
         public void RegisterModule_IncorrectPriority_ThrowsException()
         {
-            string moduleId = Modules.ScreenShare;
-            int priority = Priorities.Invalid;
-            Exception ex = Assert.Throws<Exception>(() => { _queue.RegisterModule(moduleId, priority); });
+            var moduleId = Modules.ScreenShare;
+            var priority = Priorities.Invalid;
+            var ex = Assert.Throws<Exception>(() => { _queue.RegisterModule(moduleId, priority); });
             Assert.IsNotNull(ex);
-            string expectedMessage = "Priority should be positive integer";
+            var expectedMessage = "Priority should be positive integer";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
         [Test]
         public void Dequeue_QueueIsEmpty_ThrowsException()
         {
-            Exception ex = Assert.Throws<Exception>(() => { _queue.Dequeue(); });
+            var ex = Assert.Throws<Exception>(() => { _queue.Dequeue(); });
             Assert.IsNotNull(ex);
-            string expectedMessage = "Cannot Dequeue empty queue";
+            var expectedMessage = "Cannot Dequeue empty queue";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
         [Test]
         public void Peek_QueueIsEmpty_ThrowsException()
         {
-            Exception ex = Assert.Throws<Exception>(() => { _queue.Peek(); });
+            var ex = Assert.Throws<Exception>(() => { _queue.Peek(); });
             Assert.IsNotNull(ex);
-            string expectedMessage = "Cannot Peek into empty queue";
+            var expectedMessage = "Cannot Peek into empty queue";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
@@ -213,13 +212,13 @@ namespace Testing.Networking.QueueManagement
         public void Dequeue_SinglePacket_QueueIsEmpty()
         {
             const string moduleId = Modules.ScreenShare;
-            string data = Message;
-            Packet packet = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
-            Task thread1 = Task.Run(() => { _queue.Enqueue(packet); });
+            var data = Message;
+            var packet = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
+            var thread1 = Task.Run(() => { _queue.Enqueue(packet); });
             Task.WaitAll(thread1);
-            Task thread2 = Task.Run(() =>
+            var thread2 = Task.Run(() =>
             {
-                Packet pkt = _queue.Dequeue();
+                var pkt = _queue.Dequeue();
                 Assert.AreEqual(pkt.ModuleIdentifier, moduleId);
                 Assert.AreEqual(pkt.SerializedData, data);
             });
@@ -231,21 +230,18 @@ namespace Testing.Networking.QueueManagement
         [Test]
         public void Dequeue_MultiplePackets_SizeIsZero()
         {
-            Task thread1 = Task.Run(() =>
+            var thread1 = Task.Run(() =>
             {
-                for (int i = 0; i < _testPackets.Capacity; i++)
+                for (var i = 0; i < _testPackets.Capacity; i++)
                 {
-                    Packet packet = _testPackets[i];
+                    var packet = _testPackets[i];
                     _queue.Enqueue(packet);
                 }
             });
             Task.WaitAll(thread1);
-            Task thread2 = Task.Run(() =>
+            var thread2 = Task.Run(() =>
             {
-                for (int i = 0; i < _testPackets.Capacity; i++)
-                {
-                    _queue.Dequeue();
-                }
+                for (var i = 0; i < _testPackets.Capacity; i++) _queue.Dequeue();
             });
             Task.WaitAll(thread1, thread2);
             var size = _queue.Size();
@@ -256,10 +252,10 @@ namespace Testing.Networking.QueueManagement
         public void Peek_SinglePacket_ShouldPeekSamePacket()
         {
             const string moduleId = Modules.ScreenShare;
-            string data = Message;
-            Packet packet = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
+            var data = Message;
+            var packet = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
             _queue.Enqueue(packet);
-            Packet p = _queue.Peek();
+            var p = _queue.Peek();
             Assert.AreEqual(p.ModuleIdentifier, moduleId);
             Assert.AreEqual(p.SerializedData, data);
         }
@@ -268,43 +264,43 @@ namespace Testing.Networking.QueueManagement
         public void Dequeue_CheckingOrder_ReturnsProperOrder()
         {
             const string moduleId1 = Modules.Chat;
-            string xData1 = Message;
-            string xData2 = Message;
-            string xData3 = Message;
+            var xData1 = Message;
+            var xData2 = Message;
+            var xData3 = Message;
             const string moduleId2 = Modules.File;
-            string yData1 = Message;
-            string yData2 = Message;
+            var yData1 = Message;
+            var yData2 = Message;
 
-            Packet xPacket1 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData1};
-            Packet xPacket2 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData2};
-            Packet xPacket3 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData3};
+            var xPacket1 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData1};
+            var xPacket2 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData2};
+            var xPacket3 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData3};
 
-            Packet yPacket1 = new Packet {ModuleIdentifier = moduleId2, SerializedData = yData1};
-            Packet yPacket2 = new Packet {ModuleIdentifier = moduleId2, SerializedData = yData2};
+            var yPacket1 = new Packet {ModuleIdentifier = moduleId2, SerializedData = yData1};
+            var yPacket2 = new Packet {ModuleIdentifier = moduleId2, SerializedData = yData2};
 
 
-            Task thread1 = Task.Run(() =>
+            var thread1 = Task.Run(() =>
             {
                 _queue.Enqueue(xPacket1);
                 _queue.Enqueue(xPacket2);
                 _queue.Enqueue(xPacket3);
             });
 
-            Task thread2 = Task.Run(() =>
+            var thread2 = Task.Run(() =>
             {
                 _queue.Enqueue(yPacket1);
                 _queue.Enqueue(yPacket2);
             });
 
             Task.WaitAll(thread1, thread2);
-            Task thread3 = Task.Run(() =>
+            var thread3 = Task.Run(() =>
             {
-                Packet p1 = _queue.Dequeue();
-                Packet p2 = _queue.Dequeue();
-                Packet p3 = _queue.Dequeue();
-                Packet p4 = _queue.Dequeue();
-                Packet p5 = _queue.Dequeue();
-                
+                var p1 = _queue.Dequeue();
+                var p2 = _queue.Dequeue();
+                var p3 = _queue.Dequeue();
+                var p4 = _queue.Dequeue();
+                var p5 = _queue.Dequeue();
+
                 Assert.Multiple(() =>
                 {
                     Assert.AreEqual(moduleId1, p1.ModuleIdentifier);
@@ -318,9 +314,9 @@ namespace Testing.Networking.QueueManagement
 
                     Assert.AreEqual(moduleId1, p4.ModuleIdentifier);
                     Assert.AreEqual(xData3, p4.SerializedData);
-                    
+
                     Assert.AreEqual(moduleId2, p5.ModuleIdentifier);
-                    Assert.AreEqual(yData2, p5.SerializedData); 
+                    Assert.AreEqual(yData2, p5.SerializedData);
                 });
             });
 
@@ -331,36 +327,36 @@ namespace Testing.Networking.QueueManagement
         public void Dequeue_RegisteringModuleAmidst_ShouldNotAlterDequeueFunctionality()
         {
             const string moduleId = Modules.ScreenShare;
-            string data = Message;
+            var data = Message;
 
             const string moduleId2 = Modules.Chat;
-            string data2 = Message;
+            var data2 = Message;
 
             const string newModuleId = Modules.Networking;
-            string newData = Message;
-            int newPriority = Priorities.Networking;
+            var newData = Message;
+            var newPriority = Priorities.Networking;
 
-            Packet packet1 = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
-            Packet packet2 = new Packet {ModuleIdentifier = moduleId2, SerializedData = data2};
-            Packet packet3 = new Packet {ModuleIdentifier = newModuleId, SerializedData = newData};
+            var packet1 = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
+            var packet2 = new Packet {ModuleIdentifier = moduleId2, SerializedData = data2};
+            var packet3 = new Packet {ModuleIdentifier = newModuleId, SerializedData = newData};
 
-            Task thread1 = Task.Run(() => { _queue.Enqueue(packet1); });
-            Task thread2 = Task.Run(() => { _queue.Enqueue(packet2); });
+            var thread1 = Task.Run(() => { _queue.Enqueue(packet1); });
+            var thread2 = Task.Run(() => { _queue.Enqueue(packet2); });
             Task.WaitAll(thread1, thread2);
 
 
-            Packet p1 = _queue.Dequeue();
+            var p1 = _queue.Dequeue();
             Assert.AreEqual(moduleId, p1.ModuleIdentifier);
             Assert.AreEqual(data, p1.SerializedData);
 
             _queue.RegisterModule(newModuleId, newPriority);
             _queue.Enqueue(packet3);
 
-            Packet p2 = _queue.Dequeue();
+            var p2 = _queue.Dequeue();
             Assert.AreEqual(moduleId2, p2.ModuleIdentifier);
             Assert.AreEqual(data2, p2.SerializedData);
 
-            Packet p3 = _queue.Dequeue();
+            var p3 = _queue.Dequeue();
             Assert.AreEqual(newModuleId, p3.ModuleIdentifier);
             Assert.AreEqual(newData, p3.SerializedData);
         }

@@ -1,19 +1,19 @@
-﻿using Networking;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
+using Networking;
 
 namespace Content
 {
     internal class ContentServer : IContentServer
     {
-        private List<IContentListener> _subscribers;
-        private ICommunicator _communicator;
-        private INotificationHandler _notificationHandler;
-        private ContentDatabase _contentDatabase;
-        private ISerializer _serializer;
-        private FileServer _fileServer;
-        private ChatServer _chatServer;
-        private ChatContextServer _chatContextServer;
+        private readonly ChatContextServer _chatContextServer;
+        private readonly ChatServer _chatServer;
+        private readonly ICommunicator _communicator;
+        private readonly ContentDatabase _contentDatabase;
+        private readonly FileServer _fileServer;
+        private readonly INotificationHandler _notificationHandler;
+        private readonly ISerializer _serializer;
+        private readonly List<IContentListener> _subscribers;
 
         public ContentServer()
         {
@@ -28,9 +28,28 @@ namespace Content
             _communicator.Subscribe("Content", _notificationHandler);
         }
 
+        /// <inheritdoc />
+        public void SSubscribe(IContentListener subscriber)
+        {
+            _subscribers.Add(subscriber);
+        }
+
+        /// <inheritdoc />
+        public List<ChatContext> SGetAllMessages()
+        {
+            return _chatContextServer.GetAllMessages();
+        }
+
+        /// <inheritdoc />
+        public void SSendAllMessagesToClient(int userId)
+        {
+            var allMessagesSerialized = _serializer.Serialize(_chatContextServer.GetAllMessages());
+            _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
+        }
+
         public void Receive(string data)
         {
-            MessageData messageData = _serializer.Deserialize<MessageData>(data);
+            var messageData = _serializer.Deserialize<MessageData>(data);
             MessageData receiveMessageData;
 
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
@@ -73,56 +92,29 @@ namespace Content
                 Trace.WriteLine("[ContentServer] Sending File to client");
                 SendFile(receiveMessageData);
             }
+
             Trace.WriteLine("[ContentServer] Message sent");
         }
 
         private void Send(MessageData messageData)
         {
-            string message = _serializer.Serialize<MessageData>(messageData);
+            var message = _serializer.Serialize(messageData);
             if (messageData.ReceiverIds.Length == 0)
-            {
                 _communicator.Send(message, "Content");
-            }
             else
-            {
-                foreach (int userId in messageData.ReceiverIds)
-                {
+                foreach (var userId in messageData.ReceiverIds)
                     _communicator.Send(message, "Content", userId.ToString());
-                }
-            }
         }
 
         private void SendFile(MessageData messageData)
         {
-            string message = _serializer.Serialize<MessageData>(messageData);
+            var message = _serializer.Serialize(messageData);
             _communicator.Send(message, "Content", messageData.SenderId.ToString());
         }
 
         private void Notify(ReceiveMessageData receiveMessageData)
         {
-            foreach (IContentListener subscriber in _subscribers)
-            {
-                subscriber.OnMessage(receiveMessageData);
-            }
-        }
-
-        /// <inheritdoc />
-        public void SSubscribe(IContentListener subscriber)
-        {
-            _subscribers.Add(subscriber);
-        }
-
-        /// <inheritdoc />
-        public List<ChatContext> SGetAllMessages()
-        {
-            return _chatContextServer.GetAllMessages();
-        }
-
-        /// <inheritdoc />
-        public void SSendAllMessagesToClient(int userId)
-        {
-            string allMessagesSerialized = _serializer.Serialize<List<ChatContext>>(_chatContextServer.GetAllMessages());
-            _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
+            foreach (var subscriber in _subscribers) subscriber.OnMessage(receiveMessageData);
         }
     }
 }

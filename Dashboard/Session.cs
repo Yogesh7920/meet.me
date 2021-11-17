@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 
 namespace Dashboard
@@ -10,10 +9,10 @@ namespace Dashboard
         {
             TraceListener();
         }
-        
+
         /// <summary>
-        /// The TraceListener function initiates the trace listener for the whole solution.
-        /// It creates a trace.txt where all the traces will be logged.
+        ///     The TraceListener function initiates the trace listener for the whole solution.
+        ///     It creates a trace.txt where all the traces will be logged.
         /// </summary>
         public void TraceListener()
         {

@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Networking;
 
 namespace Testing.Dashboard.TestModels
 {
-    public class TestCommunicator : ICommunicator 
+    public class TestCommunicator : ICommunicator
     {
-        public TestCommunicator()
-        {
-
-        }
+        public string ipAddressAndPort;
 
         public void AddClient<T>(string clientID, T socketObject)
         {
@@ -35,7 +28,7 @@ namespace Testing.Dashboard.TestModels
         }
 
         /// <summary>
-        /// start function for testing room creation
+        ///     start function for testing room creation
         /// </summary>
         /// <returns> string port and IP needed for testing </returns>
         public string Start(string serverIP = null, string serverPort = null)
@@ -48,12 +41,8 @@ namespace Testing.Dashboard.TestModels
             throw new NotImplementedException();
         }
 
-        public void Subscribe(string identifier, INotificationHandler handler, int priority=1)
+        public void Subscribe(string identifier, INotificationHandler handler, int priority = 1)
         {
-            
         }
-
-        public string ipAddressAndPort;
-
     }
 }

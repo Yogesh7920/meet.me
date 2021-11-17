@@ -7,9 +7,10 @@ namespace Networking
         // Communicator Instance
         private static readonly Lazy<ICommunicator> SClientCommunicator = new(() => new ClientCommunicator());
         private static readonly Lazy<ICommunicator> SServerCommunicator = new(() => new ServerCommunicator());
+
         /// <summary>
-        /// Returns the Communicator instance that is running.
-        /// In test mode, It always returns a new instance.
+        ///     Returns the Communicator instance that is running.
+        ///     In test mode, It always returns a new instance.
         /// </summary>
         /// <returns>ICommunicator.</returns>
         public static ICommunicator GetCommunicator(bool isClient = true, bool isTesting = false)

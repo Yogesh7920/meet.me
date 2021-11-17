@@ -1,84 +1,62 @@
 ﻿///Adapted from https://github.com/TacticDevGit/C-WPf-Toggle-Switch-UI-Control/tree/master/ToggleSwitch/ToggleSwitch
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Client
 {
     /// <summary>
-    /// Interaction logic for ToggleBuhtton.xaml
+    ///     Interaction logic for ToggleBuhtton.xaml
     /// </summary>
     public partial class ToggleButton : UserControl
     {
-        Thickness LeftSide = new Thickness(-39, 0, 0, 0);
-        Thickness RightSide = new Thickness(0, 0, -39, 0);
-        SolidColorBrush Off = new SolidColorBrush(Color.FromRgb(160, 160, 160));
-        SolidColorBrush On = new SolidColorBrush(Color.FromRgb(213, 0, 249));
-        private bool Toggled = false;
+        private readonly Thickness LeftSide = new(-39, 0, 0, 0);
+        private readonly SolidColorBrush Off = new(Color.FromRgb(160, 160, 160));
+        private readonly SolidColorBrush On = new(Color.FromRgb(213, 0, 249));
+        private readonly Thickness RightSide = new(0, 0, -39, 0);
 
         public ToggleButton()
         {
             InitializeComponent();
             Back.Fill = Off;
-            Toggled = false;
+            Toggled1 = false;
             Dot.Margin = LeftSide;
         }
 
-        public bool Toggled1 { get => Toggled; set => Toggled = value; }
+        public bool Toggled1 { get; set; }
 
         private void Dot_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (!Toggled)
+            if (!Toggled1)
             {
                 Back.Fill = On;
-                Toggled = true;
+                Toggled1 = true;
                 Dot.Margin = RightSide;
-
             }
             else
             {
-
                 Back.Fill = Off;
-                Toggled = false;
+                Toggled1 = false;
                 Dot.Margin = LeftSide;
-
             }
-
-
-
-
         }
 
         private void Back_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (!Toggled)
+            if (!Toggled1)
             {
                 Back.Fill = On;
-                Toggled = true;
+                Toggled1 = true;
                 Dot.Margin = RightSide;
-
             }
             else
             {
-
                 Back.Fill = Off;
-                Toggled = false;
+                Toggled1 = false;
                 Dot.Margin = LeftSide;
-
             }
-
         }
     }
 }
