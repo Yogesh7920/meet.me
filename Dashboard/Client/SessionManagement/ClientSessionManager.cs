@@ -72,6 +72,10 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Boolean denoting the success or failure whether the user was added. </returns>
         public bool AddClient(string ipAddress, int port, string username)
         {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
 
             string serializedClientName;
             
@@ -223,7 +227,7 @@ namespace Dashboard.Client.SessionManagement
         private void UpdateSummary(ServerToClientData receivedData)
         {
             // Extract the summary string and the user.
-            SummaryData receivedSummary = (SummaryData) receivedData.GetObject();
+            SummaryData receivedSummary = receivedData.summaryData;
             UserData receivedUser = receivedData.GetUser();
 
             // check if the current user is the one who requested to get the 
@@ -245,7 +249,7 @@ namespace Dashboard.Client.SessionManagement
         private void UpdateClientSessionData(ServerToClientData receivedData)
         {
             // fetching the session data and user received from the server side
-            SessionData recievedSessionData = (SessionData)receivedData.GetObject();
+            SessionData recievedSessionData = receivedData.sessionData;
             UserData user = receivedData.GetUser();
 
             // if there was no change in the data then nothing needs to be done

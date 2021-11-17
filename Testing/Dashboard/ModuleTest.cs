@@ -70,15 +70,13 @@ namespace Testing
             Assert.AreEqual(expectedValue, isValid);
 
             // Testing for invalid IPs and usernames
-            Assert.AreEqual(false, _sessionManager.AddClient("192.169.1.2", 2000, "John"));
-
         }
 
         [Test]
         [TestCase("192.168.1.2",8080,"John")]
-        //[TestCase("192.168.1.1",8080,"")]
+        [TestCase("192.168.1.1",8080,"")]
         [TestCase("192.168.1.1",8081,"John")]
-        //[TestCase("192.168.1.1",8080,null)]
+        [TestCase("192.168.1.1",8080,null)]
         [TestCase("abced",8080,"John")]
         public void AddClient_InValidClientArrivalClientSide_ReturnsFalse(string ip, int port, string username)
         {
@@ -225,6 +223,7 @@ namespace Testing
                 string serializedData = _serializer.Serialize(clientToServerData);
                 sessionManager.OnDataReceived(serializedData);
             }
+
         }
 
 

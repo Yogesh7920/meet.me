@@ -18,11 +18,12 @@ namespace Dashboard
         /// </summary>
         /// <param name="eventName"> The name of the event </param>
         /// <param name="objectToSend"> The object that is to be sent on the client side </param>
-        public ServerToClientData(string eventName, IRecievedFromServer objectToSend, UserData user)
+        public ServerToClientData(string eventName, SessionData sessionDataToSend, SummaryData summaryDataToSend, UserData user)
         {
             eventType = eventName;
-            _receivedObject = objectToSend;
             _user = user;
+            sessionData = sessionDataToSend;
+            summaryData = summaryDataToSend;
         }
 
        /// <summary>
@@ -30,16 +31,6 @@ namespace Dashboard
        /// </summary>
         public ServerToClientData()
         {
-
-        }
-
-        /// <summary>
-        /// Returns the object sent from the server to the client
-        /// </summary>
-        /// <returns>An object of type IReceivedFromServer</returns>
-        public IRecievedFromServer GetObject()
-        {
-            return _receivedObject;
         }
 
         /// <summary>
@@ -52,7 +43,8 @@ namespace Dashboard
         }
 
         public string eventType;
-        private readonly IRecievedFromServer _receivedObject;
+        public SummaryData summaryData;
+        public SessionData sessionData;
         private readonly UserData _user;
     }
 }
