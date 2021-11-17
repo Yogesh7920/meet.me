@@ -8,6 +8,7 @@ namespace Networking
 {
     public class Queue : IQueue
     {
+        private readonly object _lockObj = new();
         private readonly ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
         private readonly ConcurrentDictionary<string, int> _priorityMap;
         private int _avoidStateChange;
@@ -16,7 +17,6 @@ namespace Networking
         private int _currentWeight;
         private List<string> _moduleIdentifiers;
         private int _queueSize;
-        private readonly object lockObj = new();
 
         /// <summary>
         ///     Queue constructor initializes multilevel queue, priority map dictionaries and also the state of the queue.
@@ -88,7 +88,7 @@ namespace Networking
         public void Clear()
         {
             Trace.WriteLine("Clearing all packets from the queue");
-            lock (lockObj)
+            lock (_lockObj)
             {
                 _queueSize = 0;
             }
@@ -106,7 +106,7 @@ namespace Networking
             // Check if the _multiLevelQueue dictionary contains the moduleIdentifier
             if (_multiLevelQueue.ContainsKey(moduleIdentifier))
             {
-                lock (lockObj)
+                lock (_lockObj)
                 {
                     _queueSize += 1;
                 }
@@ -127,24 +127,21 @@ namespace Networking
         /// <returns>Returns the dequeued packet from the queue.</returns>
         public Packet Dequeue()
         {
-            if (!IsEmpty())
+            if (IsEmpty()) throw new Exception("Cannot Dequeue empty queue");
+            FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
+
+            var moduleIdentifier = _moduleIdentifiers[_currentQueue];
+            _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
+            _currentWeight -= 1;
+            _avoidStateChange = 1;
+            Trace.WriteLine("Dequeuing Packet");
+            lock (_lockObj)
             {
-                FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
-
-                var moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
-                _currentWeight -= 1;
-                _avoidStateChange = 1;
-                Trace.WriteLine("Dequeuing Packet");
-                lock (lockObj)
-                {
-                    _queueSize -= 1;
-                }
-
-                return packet;
+                _queueSize -= 1;
             }
 
-            throw new Exception("Cannot Dequeue empty queue");
+            return packet;
+
         }
 
         /// <summary>
@@ -153,18 +150,15 @@ namespace Networking
         /// <returns>Returns the peeked packet from the queue.</returns>
         public Packet Peek()
         {
-            if (!IsEmpty())
-            {
-                FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
+            if (IsEmpty()) throw new Exception("Cannot Peek into empty queue");
+            FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
 
-                var moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                _multiLevelQueue[moduleIdentifier].TryPeek(out var packet);
+            var moduleIdentifier = _moduleIdentifiers[_currentQueue];
+            _multiLevelQueue[moduleIdentifier].TryPeek(out var packet);
 
-                Trace.WriteLine("Peeking into the queue");
-                return packet;
-            }
+            Trace.WriteLine("Peeking into the queue");
+            return packet;
 
-            throw new Exception("Cannot Peek into empty queue");
         }
 
         /// <summary>
@@ -195,15 +189,14 @@ namespace Networking
             else
             {
                 // If the current queue has no packets, otherwise do nothing
-                if (_multiLevelQueue[moduleIdentifier].Count == 0)
-                    // Finding the next queue with packets
-                    while (_multiLevelQueue[moduleIdentifier].Count == 0)
-                    {
-                        _currentQueue = (_currentQueue + 1) % _moduleIdentifiers.Count;
-                        moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                        _currentWeight = _priorityMap[moduleIdentifier];
-                        _currentModuleIdentifier = moduleIdentifier;
-                    }
+                if (!_multiLevelQueue[moduleIdentifier].IsEmpty) return;
+                while (_multiLevelQueue[moduleIdentifier].IsEmpty)
+                {
+                    _currentQueue = (_currentQueue + 1) % _moduleIdentifiers.Count;
+                    moduleIdentifier = _moduleIdentifiers[_currentQueue];
+                    _currentWeight = _priorityMap[moduleIdentifier];
+                    _currentModuleIdentifier = moduleIdentifier;
+                }
             }
         }
     }
