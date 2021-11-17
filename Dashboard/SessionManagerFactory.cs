@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Networking;
 
 
 namespace Dashboard
@@ -17,14 +18,14 @@ namespace Dashboard
         static SessionManagerFactory()
         {
             // the objects are initialized only once for the program
-            if(s_clientSessionManager == null)
+            if (s_clientSessionManager == null)
             {
                 s_clientSessionManager = new ClientSessionManager();
             }
 
-            if(s_serverSessionManager == null)
+            if (s_serverSessionManager == null)
             {
-               s_serverSessionManager = new ServerSessionManager();
+                s_serverSessionManager = new ServerSessionManager();
             }
         }
 
@@ -42,6 +43,16 @@ namespace Dashboard
         }
 
         /// <summary>
+        /// Constructor for testing the module
+        /// </summary>
+        /// <param name="communicator"> Test communicator to test functionality</param>
+        /// <returns></returns>
+        public static IUXClientSessionManager GetClientSessionManager(ICommunicator communicator)
+        {
+            return new ClientSessionManager(communicator);
+        }
+
+        /// <summary>
         /// This method will server a Client sided server
         /// manager that will live till the end of the program
         /// </summary>
@@ -49,9 +60,19 @@ namespace Dashboard
         /// Returns a ServerSessionManager object which 
         /// implements the interface ITelemetrySessionManager
         /// </returns>
-        public static ITelemetrySessionManager  GetServerSessionManager()
+        public static ITelemetrySessionManager GetServerSessionManager()
         {
             return s_serverSessionManager;
+        }
+
+        /// <summary>
+        /// Constructor for testing the module
+        /// </summary>
+        /// <param name="communicator"> Test communicator to test functionality</param>
+        /// <returns></returns>
+        public static ServerSessionManager GetServerSessionManager(ICommunicator communicator)
+        {
+            return new ServerSessionManager(communicator);
         }
 
         private static IUXClientSessionManager s_clientSessionManager;

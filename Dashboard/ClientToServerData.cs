@@ -21,6 +21,14 @@ namespace Dashboard
             userID = clientID;
         }
 
+        /// <summary>
+        /// Default constructor for serialization
+        /// </summary>
+        public ClientToServerData()
+        {
+
+        }
+
         public string eventType;
         public string username;
         public int userID;

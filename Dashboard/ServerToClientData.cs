@@ -25,6 +25,14 @@ namespace Dashboard
             _user = user;
         }
 
+       /// <summary>
+       /// Default constructor for serialization
+       /// </summary>
+        public ServerToClientData()
+        {
+
+        }
+
         /// <summary>
         /// Returns the object sent from the server to the client
         /// </summary>
@@ -44,7 +52,7 @@ namespace Dashboard
         }
 
         public string eventType;
-        private IRecievedFromServer _receivedObject;
-        private UserData _user;
+        private readonly IRecievedFromServer _receivedObject;
+        private readonly UserData _user;
     }
 }
