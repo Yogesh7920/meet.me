@@ -6,27 +6,24 @@
 **/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Shapes;
-using System.Windows.Controls;
+using System.Windows;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Whiteboard
 {
     public class UXShape
     {
-        public UXOperation UxOperation;
-        public Shape WindowsShape;
-        public ShapeType ShapeIdentifier;
-        public Coordinate TranslationCoordinate;
         public float AngleOfRotation;
         public int CheckPointNumber;
         public Operation OperationType;
+        public ShapeType ShapeIdentifier;
+        public Coordinate TranslationCoordinate;
+        public UXOperation UxOperation;
+        public Shape WindowsShape;
 
-        public UXShape(UXOperation uxOperation, MainShape s, string shapeId, int checkPointNumber = 0, Operation operationType = Operation.NONE)
+        public UXShape(UXOperation uxOperation, MainShape s, string shapeId, int checkPointNumber = 0,
+            Operation operationType = Operation.NONE)
         {
             UxOperation = uxOperation;
             ShapeIdentifier = s.ShapeIdentifier;
@@ -35,23 +32,23 @@ namespace Whiteboard
             CheckPointNumber = checkPointNumber;
             OperationType = operationType;
 
-            SolidColorBrush shapeFillBrush = new SolidColorBrush()
+            var shapeFillBrush = new SolidColorBrush
             {
-                Color = Color.FromArgb(Convert.ToByte(s.ShapeFill.R), Convert.ToByte(s.ShapeFill.G), Convert.ToByte(s.ShapeFill.B), 0)
+                Color = Color.FromArgb(Convert.ToByte(s.ShapeFill.R), Convert.ToByte(s.ShapeFill.G),
+                    Convert.ToByte(s.ShapeFill.B), 0)
             };
 
             if (s.ShapeIdentifier == ShapeType.ELLIPSE)
             {
-                System.Windows.Shapes.Ellipse EllipseUXElement = new System.Windows.Shapes.Ellipse();
+                var EllipseUXElement = new System.Windows.Shapes.Ellipse();
                 EllipseUXElement.Width = s.Width;
                 EllipseUXElement.Height = s.Height;
                 EllipseUXElement.Fill = shapeFillBrush;
                 WindowsShape = EllipseUXElement;
-
             }
             else if (s.ShapeIdentifier == ShapeType.RECTANGLE)
             {
-                System.Windows.Shapes.Rectangle RectangleUXElement = new System.Windows.Shapes.Rectangle();
+                var RectangleUXElement = new System.Windows.Shapes.Rectangle();
                 RectangleUXElement.Width = s.Width;
                 RectangleUXElement.Height = s.Height;
                 RectangleUXElement.Fill = shapeFillBrush;
@@ -68,33 +65,27 @@ namespace Whiteboard
             }
             else
             {
-                System.Windows.Shapes.Polyline PolylineUXElement = new System.Windows.Shapes.Polyline();
-                PointCollection PolyLinePointCollection = new PointCollection();
-                foreach (Coordinate cord in s.GetPoints())
-                {
-                    PolyLinePointCollection.Add(new System.Windows.Point(cord.R, cord.C));
-                }
+                var PolylineUXElement = new System.Windows.Shapes.Polyline();
+                var PolyLinePointCollection = new PointCollection();
+                foreach (var cord in s.GetPoints()) PolyLinePointCollection.Add(new Point(cord.R, cord.C));
                 PolylineUXElement.Points = PolyLinePointCollection;
                 WindowsShape = PolylineUXElement;
             }
+
             WindowsShape.StrokeThickness = s.StrokeWidth;
 
-            SolidColorBrush StrokeBrush = new SolidColorBrush()
+            var StrokeBrush = new SolidColorBrush
             {
-                Color = Color.FromArgb(Convert.ToByte(s.StrokeColor.R), Convert.ToByte(s.StrokeColor.G), Convert.ToByte(s.StrokeColor.B), 0)
+                Color = Color.FromArgb(Convert.ToByte(s.StrokeColor.R), Convert.ToByte(s.StrokeColor.G),
+                    Convert.ToByte(s.StrokeColor.B), 0)
             };
 
             WindowsShape.Stroke = StrokeBrush;
-            if (shapeId != null)
-            {
-                WindowsShape.Uid = shapeId;
-            }
-            
+            if (shapeId != null) WindowsShape.Uid = shapeId;
         }
 
         public UXShape()
         {
         }
-
     }
 }

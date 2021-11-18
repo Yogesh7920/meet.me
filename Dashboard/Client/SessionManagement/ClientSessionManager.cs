@@ -1,37 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Dashboard.Server.Telemetry;
+using Networking;
 
-
-
-namespace Dashboard.Client.SessionManagement 
+namespace Dashboard.Client.SessionManagement
 {
-    using Dashboard.Server.Telemetry;
-    public class ClientSessionManager : IUXClientSessionManager
+    /// <summary>
+    ///     ClientSessionManager class is used to maintain the client side
+    ///     session data and requests from the user. It communicates to the server session manager
+    ///     to update the current session or to fetch summary and analytics.
+    /// </summary>
+    public class ClientSessionManager : IUXClientSessionManager, INotificationHandler
     {
+        private readonly List<IClientSessionNotifications> _clients;
+        private readonly ICommunicator _communicator;
+        private readonly ISerializer _serializer;
+        private readonly string moduleIdentifier;
 
+        public SessionData _clientSessionData;
+        private UserData _user;
+        private string chatSummary;
+
+        /// <summary>
+        ///     Default constructor that will create a new SessionData object,
+        ///     trace listener and the list for maintaining the subscribers for SessionData
+        /// </summary>
         public ClientSessionManager()
         {
-            Session session = new Session();
+            _serializer = new Serializer();
+            _communicator = CommunicationFactory.GetCommunicator();
+            Session session = new();
             session.TraceListener();
+
+
+            if (_clients == null) _clients = new List<IClientSessionNotifications>();
+            _clientSessionData = new SessionData();
+            moduleIdentifier = "clientSessionManager";
+            chatSummary = null;
         }
+
         /// <summary>
-        /// Adds a user to the meeting.
+        ///     This function will handle the serialized data received from the networking module.
+        ///     It will first deserialize and then handle the appropriate cases.
+        /// </summary>
+        /// <param name="serializedData"> The serialized string sent by the networking module </param>
+        public void OnDataReceived(string serializedData)
+        {
+            // Deserialize the data when it arrives
+            var deserializedObject = _serializer.Deserialize<ServerToClientData>(serializedData);
+
+            // check the event type and get the object sent from the server side
+            var eventType = deserializedObject.eventType;
+
+            // based on the type of event, calling the appropriate functions 
+            switch (eventType)
+            {
+                case "addClient":
+                    UpdateClientSessionData(deserializedObject);
+                    return;
+
+                case "getSummary":
+                    UpdateSummary(deserializedObject);
+                    return;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        ///     Adds a user to the meeting.
         /// </summary>
         /// <param name="ipAddress"> IP Address of the meeting. </param>
         /// <param name="ports"> port number. </param>
         /// <param name="username"> Name of the user. </param>
         /// <returns> Boolean denoting the success or failure whether the user was added. </returns>
-        public bool AddClient(string ipAddress, int ports, string username)
+        public bool AddClient(string ipAddress, int port, string username)
         {
-            throw new NotImplementedException();
+            string serializedClientName;
+
+            lock (this)
+            {
+                var connectionStatus = _communicator.Start(ipAddress, port.ToString());
+
+                // if the IP address and/or the port number are incorrect
+                if (connectionStatus == "0") return false;
+
+                ClientToServerData clientName = new("addClient", username);
+                serializedClientName = _serializer.Serialize(clientName);
+            }
+
+            _communicator.Send(serializedClientName, moduleIdentifier);
+            return true;
         }
 
         /// <summary>
-        /// Removes the user from the meeting by deleting their 
-        /// data from the session.
+        ///     Removes the user from the meeting by deleting their
+        ///     data from the session.
         /// </summary>
         public void RemoveClient()
         {
@@ -39,7 +104,7 @@ namespace Dashboard.Client.SessionManagement
         }
 
         /// <summary>
-        /// End the meeting for all, creating and storing the summary and analytics.
+        ///     End the meeting for all, creating and storing the summary and analytics.
         /// </summary>
         public void EndMeet()
         {
@@ -47,28 +112,47 @@ namespace Dashboard.Client.SessionManagement
         }
 
         /// <summary>
-        /// Get the summary of the chats that were sent from the start of the
-        /// meet till the function was called.
+        ///     Get the summary of the chats that were sent from the start of the
+        ///     meet till the function was called.
         /// </summary>
         /// <returns> Summary of the chats as a string. </returns>
         public string GetSummary()
         {
-            throw new NotImplementedException();
+            var summary = "";
+            ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
+            var serializedData = _serializer.Serialize(clientToServerData);
+            _communicator.Send(serializedData, moduleIdentifier);
+
+            // This loop will run till the summary is received from the server side.
+            while (chatSummary == null)
+            {
+            }
+
+            lock (this)
+            {
+                summary = chatSummary;
+                chatSummary = null;
+            }
+
+            return summary;
         }
 
         /// <summary>
-        /// Used to subcribe for any changes in the 
-        /// Session object.
+        ///     Used to subcribe for any changes in the
+        ///     Session object.
         /// </summary>
         /// <param name="listener"> The subscriber. </param>
         /// <param name="identifier"> The identifier of the subscriber. </param>
-        public void SubscribeSession(ISessionNotifications listener, string identifier)
+        public void SubscribeSession(IClientSessionNotifications listener)
         {
-            throw new NotImplementedException();
+            lock (this)
+            {
+                _clients.Add(listener);
+            }
         }
 
         /// <summary>
-        /// Gather analytics of the users and messages.
+        ///     Gather analytics of the users and messages.
         /// </summary>
         public ITelemetryAnalysisModel GetAnalytics()
         {
@@ -77,13 +161,60 @@ namespace Dashboard.Client.SessionManagement
         }
 
         /// <summary>
-        /// Will Notifiy UX about the changes in the Session
+        ///     Will Notifiy UX about the changes in the Session
         /// </summary>
         public void NotifyUXSession()
         {
-
+            for (var i = 0; i < _clients.Count; ++i)
+                lock (this)
+                {
+                    _clients[i].OnClientSessionChanged(_clientSessionData);
+                }
         }
 
-        public SessionData _sessionObject;
+        /// <summary>
+        ///     Updates the locally stored summary at the client side to the summary received from the
+        ///     server side. The summary will only be updated fro the user who requsted it.
+        /// </summary>
+        /// <param name="receivedData">
+        ///     A ServerToClientData object that contains the summary
+        ///     created at the server side of the session manager.
+        /// </param>
+        private void UpdateSummary(ServerToClientData receivedData)
+        {
+            // Extract the summary string and the user.
+            var receivedSummary = (SummaryData) receivedData.GetObject();
+            var receivedUser = receivedData.GetUser();
+
+            // check if the current user is the one who requested to get the 
+            // summary
+            if (receivedUser.userID == _user.userID)
+                lock (this)
+                {
+                    chatSummary = receivedSummary.summary;
+                }
+        }
+
+        /// <summary>
+        ///     Compares the server side session data to the client side and update the
+        ///     client side data if they are different.
+        /// </summary>
+        /// <param name="recievedSessionData"> The sessionData received from the server side. </param>
+        private void UpdateClientSessionData(ServerToClientData receivedData)
+        {
+            var recievedSessionData = (SessionData) receivedData.GetObject();
+            var user = receivedData.GetUser();
+
+            if (recievedSessionData == _clientSessionData)
+                return;
+
+            if (_clientSessionData == null) _user = user;
+            lock (this)
+            {
+                _clientSessionData = recievedSessionData;
+            }
+
+            NotifyUXSession();
+        }
     }
 }
