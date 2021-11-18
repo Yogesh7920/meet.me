@@ -83,7 +83,7 @@ namespace Client.ViewModel
                         messageData);
         }
 
-        public void OnAllMessages(List<Thread> allMessages)
+        public void OnAllMessages(List<ChatContext> allMessages)
         {
             throw new NotImplementedException();
         }
