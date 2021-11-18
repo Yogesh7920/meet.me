@@ -1,9 +1,5 @@
-using System.Net.Sockets;
-using System.Threading;
-using System.Text;
 using System;
 using System.Diagnostics;
-
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -11,23 +7,23 @@ using System.Threading;
 /// <summary>
 /// This file contains the implementation of socketListener
 /// socketListener will continously listen for message and
-/// after getting the message it will push into queue
+/// after getting the message it will push into queue 
 /// </summary>
 /// <author>Tausif Iqbal </author>
 namespace Networking
 {
     public class ReceiveSocketListener
     {
-        // Fix the maximum size of the message that can be sent  one at a time
+        // Fix the maximum size of the message that can be sent  one at a time 
         private const int Threshold = 1025;
 
-        // Declare the TcpClient  variable
+        // Declare the TcpClient  variable 
         private readonly TcpClient _clientSocket;
 
-        // Declare the queue variable which is used to dequeue the required the packet
+        // Declare the queue variable which is used to dequeue the required the packet 
         private readonly IQueue _queue;
 
-        // Declare the thread variable of ReceiveSocketListener
+        // Declare the thread variable of ReceiveSocketListener 
         private Thread _listen;
 
         // Declare variable that dictates the start and stop of the thread _listen
@@ -82,7 +78,6 @@ namespace Networking
             //Variable to store the entire message
             var message = "";
             while (_listenRun)
-            {
                 try
                 {
                     //Get NetworkStream to read message
@@ -95,7 +90,6 @@ namespace Networking
                         networkStream.Read(inStream, 0, inStream.Length);
                         var buffer = Encoding.ASCII.GetString(inStream);
                         for (var i = 0; i < Threshold; i++)
-                        {
                             if (buffer[i] != '\u0000')
                             {
                                 message = message + buffer[i];
@@ -108,7 +102,6 @@ namespace Networking
                                     message = "";
                                 }
                             }
-                        }
                     }
                 }
                 catch (Exception ex)
@@ -117,7 +110,6 @@ namespace Networking
                         "Networking: An Exception has been raised in ReceiveSocketListenerClientThread "
                         + ex.Message);
                 }
-            }
         }
 
         /// <summary>
@@ -133,7 +125,7 @@ namespace Networking
         /// </summary>
         private void PushToQueue(string data, string moduleIdentifier)
         {
-            var packet = new Packet { ModuleIdentifier = moduleIdentifier, SerializedData = data };
+            var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = data};
             Trace.WriteLine("SERVER/CLIENT : " + data);
             _queue.Enqueue(packet);
         }

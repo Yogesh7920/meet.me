@@ -278,6 +278,7 @@ namespace Testing.Networking.QueueManagement
             var yPacket1 = new Packet {ModuleIdentifier = moduleId2, SerializedData = yData1};
             var yPacket2 = new Packet {ModuleIdentifier = moduleId2, SerializedData = yData2};
 
+
             var thread1 = Task.Run(() =>
             {
                 _queue.Enqueue(xPacket1);
@@ -342,6 +343,7 @@ namespace Testing.Networking.QueueManagement
             var thread1 = Task.Run(() => { _queue.Enqueue(packet1); });
             var thread2 = Task.Run(() => { _queue.Enqueue(packet2); });
             Task.WaitAll(thread1, thread2);
+
 
             var p1 = _queue.Dequeue();
             Assert.AreEqual(moduleId, p1.ModuleIdentifier);

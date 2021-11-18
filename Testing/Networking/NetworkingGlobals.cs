@@ -14,7 +14,6 @@ namespace Testing.Networking
         public readonly FakeNotificationHandler SsHandler;
 
         public readonly FakeNotificationHandler WbHandler;
-        public readonly FakeNotificationHandler SsHandler;
 
         protected Machine()
         {
@@ -65,6 +64,7 @@ namespace Testing.Networking
         }
     }
 
+
     public static class Modules
     {
         public const string
@@ -104,33 +104,6 @@ namespace Testing.Networking
         private int _timeOutCount;
         public dynamic Data = new ExpandoObject();
         public dynamic Event = new ExpandoObject();
-        public dynamic Data = new ExpandoObject();
-        private int _timeOutCount;
-        private readonly AutoResetEvent _autoResetEvent = new(false);
-
-        /// <summary>
-        /// Calling this function will block the thread until a message from the network
-        /// is received or it has timed out.
-        /// </summary>
-        /// <param name="timeOut">
-        /// Double value indicating the number of seconds to wait before timing out.
-        /// </param>
-        /// <exception cref="TimeoutException"></exception>
-        public void Wait(double timeOut = 15)
-        {
-            // wait for a maximum of timeOut seconds
-            bool signalReceived = _autoResetEvent.WaitOne(TimeSpan.FromSeconds(timeOut));
-            if (!signalReceived)
-            {
-                /*
-                 * If the wait has timed out, increase the number of timeouts
-                 * this allows us to ignore messages that were previously timed out.
-                 */
-                _timeOutCount++;
-                _autoResetEvent.Reset();
-                throw new TimeoutException("Wait failed due to timeout!");
-            }
-        }
 
         public void OnDataReceived(string data)
         {
