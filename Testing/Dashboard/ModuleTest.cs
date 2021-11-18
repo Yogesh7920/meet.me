@@ -170,35 +170,35 @@ namespace Testing.Dashboard
             Assert.AreEqual(userId, deserialisedObject.userID);
         }
 
-        //[Test]
-        //[TestCase(10,5)]
-        //[TestCase(1,1)]
-        //[TestCase(2,1)]
-        //public void RemoveClientProcedure_ClientDepartsServerSide_ReturnsModifiedSessionObject(int sampleSize, int userIndex)
-        //{
-        //    INotificationHandler networkServerSessionManager = serverSessionManager;
+        [Test]
+        [TestCase(10, 5)]
+        [TestCase(1, 1)]
+        [TestCase(2, 1)]
+        public void RemoveClientProcedure_ClientDepartsServerSide_ReturnsModifiedSessionObject(int sampleSize, int userIndex)
+        {
+            INotificationHandler networkServerSessionManager = serverSessionManager;
 
-        //    // Adding sampleSize users at server
-        //    List<UserData> expectedUsers = Utils.GenerateUserData(sampleSize);
-        //    AddUsersAtServer(expectedUsers);
-        //    UserData departedUser = expectedUsers[userIndex - 1];
-        //    Console.WriteLine(departedUser);
-        //    expectedUsers.RemoveAt(userIndex - 1);
-        //    string expectedEventType = "removeClient";
+            // Adding sampleSize users at server
+            List<UserData> expectedUsers = Utils.GenerateUserData(sampleSize);
+            AddUsersAtServer(expectedUsers);
+            UserData departedUser = expectedUsers[userIndex - 1];
+            Console.WriteLine(departedUser);
+            expectedUsers.RemoveAt(userIndex - 1);
+            string expectedEventType = "removeClient";
 
-        //    // Data Sample what will be sent from Client to Server
-        //    ClientToServerData leavingUser = new("removeClient", departedUser.username, departedUser.userID);
-        //    string serializedData = _serializer.Serialize(leavingUser);
+            // Data Sample what will be sent from Client to Server
+            ClientToServerData leavingUser = new("removeClient", departedUser.username, departedUser.userID);
+            string serializedData = _serializer.Serialize(leavingUser);
 
-        //    // Triggering Remove Client Procedure on Server Dashboard
-        //    networkServerSessionManager.OnDataReceived(serializedData);
-        //    ServerToClientData recievedServerData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
-        //    SessionData recievedSessionData = recievedServerData.sessionData;
+            // Triggering Remove Client Procedure on Server Dashboard
+            networkServerSessionManager.OnDataReceived(serializedData);
+            ServerToClientData recievedServerData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            SessionData recievedSessionData = recievedServerData.sessionData;
 
-        //    CollectionAssert.AreEqual(expectedUsers, recievedSessionData.users);
-        //    CollectionAssert.AreEqual(expectedEventType, recievedServerData.eventType);
-        //    Assert.Pass();
-        //}
+            CollectionAssert.AreEqual(expectedUsers, recievedSessionData.users);
+            CollectionAssert.AreEqual(expectedEventType, recievedServerData.eventType);
+            Assert.Pass();
+        }
 
         [Test]
         public void EndMeet_EndMeetingClientSide_SendsEndMeetingEventToServer()
