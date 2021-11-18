@@ -69,7 +69,7 @@ namespace Testing.Dashboard
             bool isValid = _sessionManager.AddClient(validIP, int.Parse(validPort), "John");
             bool expectedValue = true;
             Assert.AreEqual(expectedValue, isValid);
-
+          
             // Testing for invalid IPs and usernames
         }
 
@@ -249,7 +249,6 @@ namespace Testing.Dashboard
         //    while (getSummaryThread.IsAlive) ;
         //    Assert.AreEqual(testSummary, recievedSummary);
         //}
-
 
 
         private void AddUserClientSide(string username, int userId, string ip = "192.168.1.1", string port = "8080")
