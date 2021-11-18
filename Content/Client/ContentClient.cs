@@ -54,7 +54,7 @@ namespace Content
                 _chatHandler.UserId = value;
             }
         }
-
+ 
         /// <inheritdoc />
         public void CSend(SendMessageData toSend)
         {

@@ -111,7 +111,7 @@ namespace Content
     }
 }
 */
-namespace Testing
+namespace Testing.Content
 {
     [TestFixture]
     public class ContentModuleTesting
@@ -119,27 +119,22 @@ namespace Testing
         [SetUp]
         public void SetUp()
         {
-            // User ID for various test users
-            int _userID1 = 1001;
-            int _userID2 = 1002;
-            int _userID3 = 1003;
+
         }
-        // Server for Content module
-        private readonly ContentClient _contentServer = ContentServerFactory.GetInstance();
-        // Test users at client side, three users to test private and broadcast send and receive for files and chats
-        private readonly ContentClient _contentClientUser1 = new ContentClient();
-        private readonly ContentClient _contentClientUser2 = new ContentClient();
-        private readonly ContentClient _contentClientUser3 = new ContentClient();
+
+
+        
+        
+        [Test]
+        public void CSend_PrivateMsgFromUserAToUserBInChatFormat_sentMsgMustBeEqualToRcvMsg()
+        {
+            Assert.Pass();
+        }
 
         [Test]
-        [TestCase(1001)]
-        [TestCase(1002)]
-        public void SetUser_ContentClientCreation_userIDOfContentClientEqualsToAssignedValue(int userId)
+        public void CSend_PrivateMsgFromUserAToUserBInFileFormat_sentMsgMustBeEqualToRcvMsg()
         {
-            IContentClient _contentClient = new ContentClientFactory.getInstance();
-            _contentClient.setUser(userId);
-            int userIdOfClass = _contentClient.UserId;
-            Assert.AreEqual(userIdOfClass, userId);
+            Assert.Pass();
         }
     }
 }
