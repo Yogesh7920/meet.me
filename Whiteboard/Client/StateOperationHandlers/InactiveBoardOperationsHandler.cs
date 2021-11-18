@@ -5,17 +5,14 @@
  * Date Modified: 11/01/2021
 **/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    class InactiveBoardOperationsHandler : BoardOperationsState
+    internal class InactiveBoardOperationsHandler : BoardOperationsState
     {
-        public override List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
+        public override List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false)
         {
             return new List<UXShape>();
         }
@@ -35,12 +32,14 @@ namespace Whiteboard
             return new List<UXShape>();
         }
 
-        public override List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
+        public override List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false)
         {
             return new List<UXShape>();
         }
 
-        public override List<UXShape> CreateShape(ShapeType shapetype, Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
+        public override List<UXShape> CreateShape(ShapeType shapetype, Coordinate start, Coordinate end,
+            float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
             return new List<UXShape>();
         }
@@ -50,17 +49,20 @@ namespace Whiteboard
             return new List<UXShape>();
         }
 
-        public override List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
+        public override List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false)
         {
             return new List<UXShape>();
         }
 
-        public override List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
+        public override List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false)
         {
             return new List<UXShape>();
         }
 
-        public override List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
+        public override List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId,
+            bool shapeComp = false)
         {
             return new List<UXShape>();
         }
