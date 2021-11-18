@@ -7,17 +7,20 @@ using System.Threading.Tasks;
 
 namespace Dashboard
 {
+    /// <summary>
+    /// The server data that would be stored in Persistance
+    /// </summary>
     public class ServerDataToSave
     {
         ///<summary>
         ///     the total number of sessions
         ///</summary>
-        int SessionCount;
+        public int sessionCount;
 
         /// <summary>
         ///     List of SessionSummary that is summary of each session
         /// </summary>
-        List<SessionSummary> AllSessionsSummary;
+        public List<SessionSummary> allSessionsSummary;
     }
 }
 

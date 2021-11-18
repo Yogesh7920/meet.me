@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace Dashboard
 {
+    ///<summary>
+    /// Summary of each session after it is finished, like total user count, chat count and score.
+    ///</summary>
     public class SessionSummary
     {
-        /// The starting time of the session
-        DateTime SessionStartTime;
-
         /// The  score of the session
-        int Score;
+        public int score;
 
         /// Total User count in the session
-        int UserCount;
+        public int userCount;
 
         /// Total chats in the session
-        int ChatCount;
+        public int chatCount;
     }
 }
 
