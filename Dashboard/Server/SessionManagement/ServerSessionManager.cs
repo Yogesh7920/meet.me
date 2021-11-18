@@ -146,24 +146,33 @@ namespace Dashboard.Server.SessionManagement
         /// <returns> A MeetingCredentials Object containing the port and IP address</returns>
         public MeetingCredentials GetPortsAndIPAddress()
         {
-
-            Trace.WriteLine("Fetching IP Address and port from the networking module");
-            string meetAddress = _communicator.Start();
-
-            if (IsValidIPAddress(meetAddress) != true)
+            try
             {
-                Trace.WriteLine("IP Address is not valid, returning null");
-                return null;
+                Trace.WriteLine("Fetching IP Address and port from the networking module");
+                string meetAddress = _communicator.Start();
+
+                // Debug.Assert(IsValidIPAddress(meetAddress), "IP Address is NOT valid!");
+                if (IsValidIPAddress(meetAddress) != true)
+                {
+                    Trace.WriteLine("IP Address is not valid, returning null");
+                    return null;
+                }
+
+                Trace.WriteLine("Returning the IP Address to the UX");
+                //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
+                string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
+                //int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
+                int port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
+
+
+                return _meetingCredentials = new MeetingCredentials(ipAddress, port);
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine(e.Message);
+                throw;
             }
             
-            Trace.WriteLine("Returning the IP Address to the UX");
-            //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
-            string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
-            //int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
-            int port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
-
-
-            return _meetingCredentials = new MeetingCredentials(ipAddress, port);
         }
 
         /// <summary>
@@ -186,7 +195,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="IPAddress">The input ipaddress</param>
         /// <returns> true: For valid IP Addresses
         /// false: otherwise</returns>
-        static bool IsValidIPAddress(string IPAddress)
+        private static bool IsValidIPAddress(string IPAddress)
         {
             // Check for null string, whitespaces or absence of colon
             if (String.IsNullOrWhiteSpace(IPAddress) || IPAddress.Contains(':') == false)
@@ -194,9 +203,19 @@ namespace Dashboard.Server.SessionManagement
                 return false;
             }
 
+            // Take the part after the colon as the port number and check the range
+            string port = IPAddress.Substring(IPAddress.LastIndexOf(':') + 1);
+            if (Int32.TryParse(port, out int portNumber))
+            {
+                if (portNumber < 0 || portNumber > 65535)
+                    return false;
+            }
+
             // Take the part before colon as the ip address
             IPAddress = IPAddress.Substring(0, IPAddress.IndexOf(':'));
             string[] byteValues = IPAddress.Split('.');
+
+            
 
             // IPV4 contains 4 bytes separated by .
             if (byteValues.Length != 4)
@@ -292,7 +311,7 @@ namespace Dashboard.Server.SessionManagement
             List<UserData> users = _sessionData.users;
             for(int i = 0; i < users.Count; ++i)
             {
-                if(users[i] == userToRemove)
+                if(users[i].Equals(userToRemove))
                 {
                     lock(this)
                     {
