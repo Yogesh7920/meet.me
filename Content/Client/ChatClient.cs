@@ -1,3 +1,5 @@
+/// <author>Vishesh Munjal</author>
+/// <created>1/11/2021</created>
 using System;
 using Networking;
 using System.Collections.Generic;
@@ -44,10 +46,17 @@ namespace Content
             _communicator.Send(xml, _moduleIdentifier);
         }
 
-        public void ChatUpdate()
+        public void ChatUpdate(int messageId, string newMessage)
         {
+			
+			var toSend = new MessageData();
+			toSend.MessageId = messageId;
+            toSend.Event = MessageEvent.Update;
+            toSend.SenderId = UserId;
+			tosend.Message = newMessage;
+			var xml = _serializer.Serialize(tosend);
 			Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
-            throw new NotImplementedException();
+            _communicator.Send(xml, _moduleIdentifier);
         }
 
         public void ChatStar(int messageId)
