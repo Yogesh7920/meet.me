@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="ScreenShareUX" Height="450" Width="800">
+        Title="ScreenShareUX" Height="720" Width="480">
     <Grid>
-        
+        <TextBlock Name="ReceivedMessage" Text="{Binding ReceivedMessage, Mode=OneWay}" Padding="10,10,10,10"/>
+        <TextBox Name="SendTextBox" Width="100" Text="{Binding SendTextBox}" Padding="10,0,0,0"/>
+
     </Grid>
 </Window>

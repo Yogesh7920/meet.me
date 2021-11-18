@@ -28,6 +28,8 @@ namespace Client
             this.DataContext = Screenviewmodel;
 
             Console.WriteLine(Screenviewmodel.userid);
+            this.ReceivedMessage.Text = "hi vinay!!!";
+            this.SendTextBox.Text = "Hi Hello vinay!!!";
 
             // Problem in the network connection
             if (Screenviewmodel._mtype == -2)
