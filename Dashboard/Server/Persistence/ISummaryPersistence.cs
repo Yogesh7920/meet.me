@@ -15,7 +15,7 @@ namespace Dashboard.Server.Persistence
         /// <param name="sessionId"> takes sessionId to denote the name of the file to which we need to save. </param>
         /// <param name="message"> takes message string that need to be saved </param>
         /// <returns> return true if succesfully saved else return false </returns>
-        public bool saveSummary(string sessionId, string message);
+        public bool saveSummary(string message);
     }
 
 }
