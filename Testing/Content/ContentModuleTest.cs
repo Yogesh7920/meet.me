@@ -111,7 +111,7 @@ namespace Content
     }
 }
 */
-namespace Testing
+namespace Testing.Content
 {
     [TestFixture]
     public class ContentModuleTesting
