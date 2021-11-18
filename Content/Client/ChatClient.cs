@@ -53,8 +53,8 @@ namespace Content
 			toSend.MessageId = messageId;
             toSend.Event = MessageEvent.Update;
             toSend.SenderId = UserId;
-			tosend.Message = newMessage;
-			var xml = _serializer.Serialize(tosend);
+			toSend.Message = newMessage;
+			var xml = _serializer.Serialize(toSend);
 			Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
             _communicator.Send(xml, _moduleIdentifier);
         }
