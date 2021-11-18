@@ -119,20 +119,9 @@ namespace Testing
         [SetUp]
         public void SetUp()
         {
-            // User ID for various test users
-            int _userID1 = 1001;
-            int _userID2 = 1002;
-            int _userID3 = 1003;
-            _contentClientUser1.UserId = _userID1;
-            _contentClientUser2.UserId = _userID2;
-            _contentClientUser3.UserId = _userID3;
+
         }
-        // Server for Content module
-        private readonly ContentServer _contentServer = ContentServerFactory.GetInstance();
-        // Test users at client side, three users to test private and broadcast send and receive for files and chats
-        private readonly ContentClient _contentClientUser1 = new ContentClient();
-        private readonly ContentClient _contentClientUser2 = new ContentClient();
-        private readonly ContentClient _contentClientUser3 = new ContentClient();
+
 
         
         
