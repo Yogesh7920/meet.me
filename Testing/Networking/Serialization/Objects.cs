@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Testing.Networking.Objects
+﻿namespace Testing.Networking.Objects
 {
     public class SimpleObject
     {
-        public int prop1 { get; set; }
-        public string prop2 { get; set; }
-        public double prop3 { get; set; }
-        public char prop4 { get; set; }
-        public bool prop5 { get; set; }
         // Default Parameterless Constructor
         public SimpleObject()
         {
@@ -58,7 +47,6 @@ namespace Testing.Networking.Objects
 
     public class NonSerializableObject
     {
-        public int prop1 { get; set; }
         public NonSerializableObject(int arg1)
         {
             prop1 = arg1;

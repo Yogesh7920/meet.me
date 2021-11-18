@@ -1,6 +1,4 @@
 ﻿using System;
-using NUnit.Framework;
-using Networking;
 using AutoFixture;
 using FluentAssertions;
 using Networking;
@@ -12,12 +10,10 @@ namespace Testing.Networking
     [TestFixture]
     public class SerializerTesting
     {
-        private ISerializer _ser;
         [SetUp]
         public void SetUp()
         {
             _ser = new Serializer();
-            var random = TestContext.CurrentContext.Random;
         }
 
         private ISerializer _ser;

@@ -1,4 +1,3 @@
-using System.Threading;
 using Networking;
 using NUnit.Framework;
 
@@ -16,15 +15,15 @@ namespace Testing.Networking.SocketManagement
             var address = server.Start();
             var s = address.Split(":");
 
-            // client1 connection
+            // client1 connection 
             var client1 = CommunicationFactory.GetCommunicator(true, true);
             var c1 = client1.Start(s[0], s[1]);
 
-            // client2 connection
+            // client2 connection 
             var client2 = CommunicationFactory.GetCommunicator(true, true);
             var c2 = client2.Start(s[0], s[1]);
 
-            // stop all clients
+            // stop all clients 
             client2.Stop();
             client1.Stop();
 

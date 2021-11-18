@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Networking;
 using NUnit.Framework;
@@ -13,15 +10,6 @@ namespace Testing.Networking.SocketManagement
     [TestFixture]
     public class SendSocketListenerServerTesting
     {
-        private IQueue _queueS;
-        private IQueue _queueR;
-        private Machine _server;
-        private SendSocketListenerServer _sendSocketListenerServer;
-        private ReceiveSocketListener _receiveSocketListener;
-        private TcpClient _serverSocket;
-        private TcpClient _clientSocket;
-        private  Dictionary<string, TcpClient> _clientIdSocket;
-
         [SetUp]
         public void StartSendSocketListenerClient()
         {
@@ -110,16 +98,6 @@ namespace Testing.Networking.SocketManagement
                 Assert.AreEqual(whiteBoardPacket.ModuleIdentifier, packet.ModuleIdentifier);
                 Assert.AreEqual(whiteBoardData, packet.SerializedData);
             });
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _serverSocket.Close();
-            _receiveSocketListener.Stop();
-            _sendSocketListenerServer.Stop();
-
-            _clientSocket.Close();
         }
     }
 }

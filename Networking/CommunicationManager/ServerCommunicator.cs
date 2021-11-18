@@ -42,9 +42,6 @@ namespace Networking
         /**Declare TcpListener variable of server*/
         private TcpListener _serverSocket;
 
-        /**Declare TcpListener variable of server*/
-        private TcpListener _serverSocket;
-
         /// <summary>
         ///     start the server and return ip and port
         /// </summary>
@@ -55,10 +52,10 @@ namespace Networking
             var port = FreeTcpPort(ip);
             _serverSocket = new TcpListener(ip, port);
 
-            //start server at the scanned port of the ip
+            //start server at the scanned port of the ip 
             _serverSocket.Start();
 
-            //start sendSocketListener of server for sending message
+            //start sendSocketListener of server for sending message 
             _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket);
             _sendSocketListenerServer.Start();
 
@@ -86,7 +83,7 @@ namespace Networking
             _acceptRequestRun = false;
             _serverSocket.Stop();
 
-            //stop receiveSocketListener of all the clients
+            //stop receiveSocketListener of all the clients 
             foreach (var listener in _clientListener)
             {
                 var receiveSocketListener = listener.Value;
@@ -105,10 +102,10 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
-            // add clientID and socketObject into Dictionary
+            // add clientID and socketObject into Dictionary 
             _clientIdSocket[clientId] = (TcpClient) (object) socketObject;
 
-            //Start receiveSocketListener of the client in the
+            //Start receiveSocketListener of the client in the 
             //server for listening message from the client
 
             var receiveSocketListener =
@@ -123,7 +120,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.RemoveClient(string clientId)
         {
-            // stop the listener of the client
+            // stop the listener of the client 
             var receiveSocketListener = _clientListener[clientId];
             receiveSocketListener.Stop();
 
@@ -132,7 +129,7 @@ namespace Networking
             tcpClient.GetStream().Close();
             tcpClient.Close();
 
-            // remove the socket object and listener  of the client
+            // remove the socket object and listener  of the client 
             _clientListener.Remove(clientId);
             _clientIdSocket.Remove(clientId);
         }
@@ -199,7 +196,7 @@ namespace Networking
                 {
                     var address = ip.ToString();
 
-                    // check  IP does not end with .1
+                    // check  IP does not end with .1 
                     if (address.Split(".")[3] != "1") return ip.ToString();
                 }
 

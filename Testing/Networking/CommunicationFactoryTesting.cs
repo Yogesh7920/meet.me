@@ -1,6 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using Networking;
+﻿using Networking;
 using NUnit.Framework;
 
 namespace Testing.Networking
