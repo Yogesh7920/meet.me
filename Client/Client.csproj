@@ -22,10 +22,11 @@
 
     <ItemGroup>
 
-      <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+        <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
     </ItemGroup>
 
     <ItemGroup>
+
       <None Remove="Icons\ExpCol.png" />
       <None Remove="Icons\logo.ico" />
       <None Remove="Icons\logo.png" />
@@ -34,6 +35,13 @@
       <None Remove="Icons\MainWindow\icons8-end-call-96.png" />
       <None Remove="Icons\MainWindow\icons8-present-to-all-50.png" />
       <None Remove="Icons\MainWindow\icons8-whiteboard-150.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\flag.png" />
+      <None Remove="Icons\WhiteboardUX\Toolbar\pencil.png" />
+      <None Remove="Icons\Eraser.cur" />
+      <None Remove="Icons\Eraser_2.cur" />
       <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
@@ -76,24 +84,30 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Resource Include="Icons\WhiteboardUX\Toolbar\drawEllipse.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\drawLine.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\drawRectangle.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\duplication.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\Eraser.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\fill.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\flag.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\Pen.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\pencil.png" />
-      <Resource Include="Icons\WhiteboardUX\Toolbar\selectTool.png" />
+        <Resource Include="Icons\Eraser.cur" />
+        <Resource Include="Icons\Eraser_2.cur" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\bin.png" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Content\Content.csproj" />
-      <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
-      <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
-      <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\drawEllipse.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\drawLine.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\drawRectangle.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\duplication.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\Eraser.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\fill.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\flag.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\Pen.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\pencil.png" />
+        <Resource Include="Icons\WhiteboardUX\Toolbar\selectTool.png" />
     </ItemGroup>
-  
+
+    <ItemGroup>
+        <ProjectReference Include="..\Content\Content.csproj" />
+        <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
+        <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
+        <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
+    </ItemGroup>
+
 
 </Project>

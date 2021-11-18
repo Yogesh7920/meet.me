@@ -11,23 +11,20 @@ namespace Whiteboard
 {
     public class BoardColor : IEquatable<BoardColor>
     {
-        public int R;
-        public int G;
         public int B;
+        public int G;
+        public int R;
 
         public BoardColor(int r, int g, int b)
         {
-            this.R = r;
-            this.G = g;
-            this.B = b;
+            R = r;
+            G = g;
+            B = b;
         }
 
         public bool Equals(BoardColor otherColor)
         {
-            if (this.R == otherColor.R && this.B == otherColor.B && this.G == otherColor.G)
-            {
-                return true;
-            }
+            if (R == otherColor.R && B == otherColor.B && G == otherColor.G) return true;
             return false;
         }
 
