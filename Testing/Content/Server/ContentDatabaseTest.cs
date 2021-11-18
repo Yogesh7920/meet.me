@@ -203,6 +203,7 @@ namespace Testing.Content
         public void ChatContextTest()
         {
             contentDatabase = new ContentDatabase();
+
             FileTest();
             MessageTest();
 

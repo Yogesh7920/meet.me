@@ -49,6 +49,7 @@ namespace Content
         {
             ReceiveMessageData message = _contentDatabase.GetMessage(receiveMessageData.ReplyThreadId, receiveMessageData.MessageId);
             message.Starred = !message.Starred;
+            message.Event = receiveMessageData.Event;
             return message;
         }
 
@@ -56,6 +57,7 @@ namespace Content
         {
             ReceiveMessageData message = _contentDatabase.GetMessage(receiveMessageData.ReplyThreadId, receiveMessageData.MessageId);
             message.Message = receiveMessageData.Message;
+            message.Event = receiveMessageData.Event;
             return message;
         }
     }

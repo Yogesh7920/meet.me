@@ -18,6 +18,8 @@ namespace Content
             _chatContexts = new List<ChatContext>();
             _chatContextsMap = new Dictionary<int, int>();
             _messageMap = new Dictionary<int, int>();
+            IdGenerator.resetChatContextId();
+            IdGenerator.resetMessageId();
         }
 
         public MessageData StoreFile(MessageData messageData)
