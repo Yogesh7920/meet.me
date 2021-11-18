@@ -16,7 +16,7 @@ namespace Testing.Dashboard.TestModels
 
         public void AddClient<T>(string clientID, T socketObject)
         {
-            throw new NotImplementedException();
+            clientCount++;
         }
 
         public void RemoveClient(string clientID)
@@ -57,6 +57,7 @@ namespace Testing.Dashboard.TestModels
             
         }
 
+        public int clientCount;
         public string ipAddressAndPort;
         public string sentData;
 

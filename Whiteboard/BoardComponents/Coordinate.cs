@@ -6,38 +6,30 @@
 **/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
     public class Coordinate : IEquatable<Coordinate>
     {
+        public int C;
 
         public int R;
-        public int C;
 
         public Coordinate(int r, int c)
         {
-            this.R = r;
-            this.C = c;
+            R = r;
+            C = c;
         }
 
-        public bool Equals( Coordinate otherCord)
-        { 
-            if (this.R== otherCord.R && this.C == otherCord.C)
-            {
-                return true;
-            }
+        public bool Equals(Coordinate otherCord)
+        {
+            if (R == otherCord.R && C == otherCord.C) return true;
             return false;
         }
 
         public Coordinate Clone()
         {
-            return new Coordinate(R,C);
+            return new Coordinate(R, C);
         }
-
     }
 }

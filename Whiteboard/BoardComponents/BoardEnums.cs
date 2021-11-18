@@ -5,16 +5,10 @@
  * Date Modified: 11/01/2021
 **/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Whiteboard
 {
     /// <summary>
-    /// Denotes the current state of the WhiteBoard.
+    ///     Denotes the current state of the WhiteBoard.
     /// </summary>
     public enum BoardState
     {
@@ -23,7 +17,7 @@ namespace Whiteboard
     }
 
     /// <summary>
-    /// The Possible Shapes that can be drawn on whiteboard.
+    ///     The Possible Shapes that can be drawn on whiteboard.
     /// </summary>
     public enum ShapeType
     {
@@ -34,7 +28,7 @@ namespace Whiteboard
     }
 
     /// <summary>
-    /// Defines the types of Operations that UX will have to perform with the provided UXShapes.
+    ///     Defines the types of Operations that UX will have to perform with the provided UXShapes.
     /// </summary>
     public enum UXOperation
     {
@@ -43,7 +37,7 @@ namespace Whiteboard
     }
 
     /// <summary>
-    /// Denotes the present Operation. Helps the server to identify the operation performed.
+    ///     Denotes the present Operation. Helps the server to identify the operation performed.
     /// </summary>
     public enum Operation
     {
@@ -55,5 +49,4 @@ namespace Whiteboard
         CREATE_CHECKPOINT,
         NONE
     }
-
 }

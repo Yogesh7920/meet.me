@@ -1,19 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using NUnit.Framework;
 using Networking;
+using NUnit.Framework;
 
 namespace Testing.Networking.QueueManagement
 {
     [TestFixture]
     public class ReceiveQueueListenerTest
     {
-        private IQueue _queue;
-        private Dictionary<string, INotificationHandler> _notificationHandlers;
-        private ReceiveQueueListener _receiveQueueListener;
-
-        private string Message => NetworkingGlobals.GetRandomString();
-
         [SetUp]
         public void Setup()
         {
@@ -22,10 +16,10 @@ namespace Testing.Networking.QueueManagement
             _queue.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
             _queue.RegisterModule(Modules.ScreenShare, Priorities.ScreenShare);
             _queue.RegisterModule(Modules.File, Priorities.File);
-            
-            FakeNotificationHandler fakeWhiteBoard = new FakeNotificationHandler();
-            FakeNotificationHandler fakeScreenShare = new FakeNotificationHandler();
-            FakeNotificationHandler fakeFileShare = new FakeNotificationHandler();
+
+            var fakeWhiteBoard = new FakeNotificationHandler();
+            var fakeScreenShare = new FakeNotificationHandler();
+            var fakeFileShare = new FakeNotificationHandler();
 
             _notificationHandlers[Modules.WhiteBoard] = fakeWhiteBoard;
             _notificationHandlers[Modules.ScreenShare] = fakeScreenShare;
@@ -44,33 +38,40 @@ namespace Testing.Networking.QueueManagement
             _notificationHandlers = null;
         }
 
+        private IQueue _queue;
+        private Dictionary<string, INotificationHandler> _notificationHandlers;
+        private ReceiveQueueListener _receiveQueueListener;
+
+        private string Message => NetworkingGlobals.GetRandomString();
+
         [Test]
         public void ListenQueue_DequeuingFromQueueAndCallingHandler_ShouldCallAppropriateHandler()
         {
-            string whiteBoardData = Message;
-            string screenShareData = Message;
-            string fileShareData = Message;
-            
-            Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
-            Packet screenSharePacket = new Packet{ModuleIdentifier = Modules.ScreenShare, SerializedData = screenShareData};
-            Packet fileSharePacket = new Packet{ModuleIdentifier = Modules.File, SerializedData = fileShareData};
-            
+            var whiteBoardData = Message;
+            var screenShareData = Message;
+            var fileShareData = Message;
+
+            var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
+            var screenSharePacket = new Packet
+                {ModuleIdentifier = Modules.ScreenShare, SerializedData = screenShareData};
+            var fileSharePacket = new Packet {ModuleIdentifier = Modules.File, SerializedData = fileShareData};
+
             _queue.Enqueue(whiteBoardPacket);
             _queue.Enqueue(screenSharePacket);
             _queue.Enqueue(fileSharePacket);
-            
+
             Thread.Sleep(100);
-            
-            FakeNotificationHandler whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[Modules.WhiteBoard];
-            FakeNotificationHandler screenShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.ScreenShare];
-            FakeNotificationHandler fileShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.File];
-            
+
+            var whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[Modules.WhiteBoard];
+            var screenShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.ScreenShare];
+            var fileShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.File];
+
             Assert.AreEqual(NotificationEvents.OnDataReceived, screenShareHandler.Event);
             Assert.AreEqual(screenShareData, screenShareHandler.Data);
-            
+
             Assert.AreEqual(NotificationEvents.OnDataReceived, whiteBoardHandler.Event);
             Assert.AreEqual(whiteBoardData, whiteBoardHandler.Data);
-            
+
             Assert.AreEqual(NotificationEvents.OnDataReceived, fileShareHandler.Event);
             Assert.AreEqual(fileShareData, fileShareHandler.Data);
         }
