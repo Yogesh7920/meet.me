@@ -40,6 +40,14 @@ namespace Content
             _communicator.Send(xml, _moduleIdentifier);
         }
 
+        public string ChatNewMessage(SendMessageData toserver, bool testFlag)
+        {
+            var tosend = SendToMessage(toserver, MessageEvent.NewMessage);
+            tosend.MessageId = -1;
+            var xml = _serializer.Serialize(tosend);
+            return xml;
+        }
+
         public void ChatUpdate()
         {
             throw new NotImplementedException();
@@ -54,6 +62,17 @@ namespace Content
 
             var xml = _serializer.Serialize(toSend);
             _communicator.Send(xml, _moduleIdentifier);
+        }
+
+        public string ChatStar(int messageId, bool testFlag)
+        {
+            var toSend = new MessageData();
+            toSend.MessageId = messageId;
+            toSend.Event = MessageEvent.Star;
+            toSend.SenderId = UserId;
+
+            var xml = _serializer.Serialize(toSend);
+            return xml;
         }
     }
 }
