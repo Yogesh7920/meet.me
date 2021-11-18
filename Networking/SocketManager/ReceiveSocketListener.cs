@@ -3,6 +3,7 @@ using System.Threading;
 using System.Text;
 using System;
 using System.Diagnostics;
+
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -31,12 +32,6 @@ namespace Networking
 
         // Declare variable that dictates the start and stop of the thread _listen
         private volatile bool _listenRun;
-
-        // Fix the maximum size of the message that can be sent  one at a time
-        private const int Threshold = 1025;
-
-        // Declare the TcpClient  variable
-        private readonly TcpClient _clientSocket;
 
         /// <summary>
         ///     This is the constructor of the class which initializes the params
@@ -100,6 +95,7 @@ namespace Networking
                         networkStream.Read(inStream, 0, inStream.Length);
                         var buffer = Encoding.ASCII.GetString(inStream);
                         for (var i = 0; i < Threshold; i++)
+                        {
                             if (buffer[i] != '\u0000')
                             {
                                 message = message + buffer[i];
@@ -137,7 +133,7 @@ namespace Networking
         /// </summary>
         private void PushToQueue(string data, string moduleIdentifier)
         {
-            var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = data};
+            var packet = new Packet { ModuleIdentifier = moduleIdentifier, SerializedData = data };
             Trace.WriteLine("SERVER/CLIENT : " + data);
             _queue.Enqueue(packet);
         }
