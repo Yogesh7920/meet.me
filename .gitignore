@@ -1,4 +1,6 @@
-﻿# documenting
+.DS_Store
+
+# documenting
 *.doc
 *.docx
 *.tex

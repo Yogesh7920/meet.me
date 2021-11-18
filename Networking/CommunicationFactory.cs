@@ -1,19 +1,23 @@
-﻿namespace Networking
+﻿using System;
+
+namespace Networking
 {
     public static class CommunicationFactory
     {
-        private static ICommunicator _communicator;
-        static CommunicationFactory()
-        {
-            _communicator = new Communicator();
-        }
+        // Communicator Instance
+        private static readonly Lazy<ICommunicator> SClientCommunicator = new(() => new ClientCommunicator());
+        private static readonly Lazy<ICommunicator> SServerCommunicator = new(() => new ServerCommunicator());
+
         /// <summary>
-        /// Returns the Communicator instance that is running.
+        ///     Returns the Communicator instance that is running.
+        ///     In test mode, It always returns a new instance.
         /// </summary>
         /// <returns>ICommunicator.</returns>
-        public static ICommunicator GetCommunicator()
+        public static ICommunicator GetCommunicator(bool isClient = true, bool isTesting = false)
         {
-            return _communicator;
+            if (isClient)
+                return isTesting ? new ClientCommunicator() : SClientCommunicator.Value;
+            return isTesting ? new ServerCommunicator() : SServerCommunicator.Value;
         }
     }
 }

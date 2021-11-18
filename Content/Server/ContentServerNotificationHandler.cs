@@ -1,24 +1,30 @@
-﻿using Networking;
-using System;
+﻿using System;
+using Networking;
 
 namespace Content
 {
     public class ContentServerNotificationHandler : INotificationHandler
     {
-        /// <summary>
-        /// Handles messages received over the network.
-        /// </summary>
-        /// <param name="data">received message.</param>
-        public void OnDataReceived(string data)
+        private readonly ContentServer _contentServer;
+
+        public ContentServerNotificationHandler()
         {
-            throw new NotImplementedException();
+            _contentServer = ContentServerFactory.GetInstance() as ContentServer;
         }
 
+        /// <inheritdoc />
+        public void OnDataReceived(string data)
+        {
+            _contentServer.Receive(data);
+        }
+
+        /// <inheritdoc />
         public void OnClientJoined<T>(T socketObject)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void OnClientLeft(string clientId)
         {
             throw new NotImplementedException();
