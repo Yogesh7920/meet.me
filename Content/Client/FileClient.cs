@@ -24,7 +24,7 @@ namespace Content
         /// </summary>
         /// <param name="message">SendMessageData object specifying the file message to send</param>
 
-        public string Send(SendMessageData message, bool testFlag)
+        public void Send(SendMessageData message)
         {
             Trace.WriteLine("[FileClient] Received file send request");
             if (message.Type != MessageType.File)
@@ -58,16 +58,10 @@ namespace Content
 
             // send the message
             Trace.WriteLine("[FileClient] Sending the file to server");
-            return toSendSerialized;
-        }
-
-        public void Send(SendMessageData message)
-        {
-            var toSendSerialized = Send(message, true);
             _communicator.Send(toSendSerialized, "Content");
         }
 
-        public string Download(int messageId, string savepath, bool testFlag)
+        public void Download(int messageId, string savepath)
         {
             var toSend = new MessageData();
 
@@ -80,12 +74,6 @@ namespace Content
             // serialize the message and send via network
             var toSendSerialized = _serializer.Serialize(toSend);
             Trace.WriteLine("[FileClient] Sending file download request to server");
-            return toSendSerialized;
-        }
-
-        public void Download(int messageId, string savepath)
-        {
-            var toSendSerialized = Download(messageId, savepath, true);
             _communicator.Send(toSendSerialized, "Content");
         }
     }
