@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>13/10/2021</created>
+/// <summary>
+///     This file contains the implementation of
+///     the IQueue interface.
+/// </summary>
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,6 +44,7 @@ namespace Networking
         /// </summary>
         /// <param name="moduleId">Unique Id for module.</param>
         /// <param name="priority">Priority Number indicating the weight to be given to the module.</param>
+        /// <exception cref="Exception">Does not allow duplicate module identifier</exception>
         public void RegisterModule(string moduleId, int priority)
         {
             if (priority <= 0) throw new Exception("Priority should be positive integer");
@@ -99,9 +107,10 @@ namespace Networking
         /// <summary>
         ///     Enqueues an object of IPacket.
         /// </summary>
-        public void Enqueue(Packet item)
+        /// <param name="packet">Reference to the packet that has to be enqueued</param>
+        public void Enqueue(Packet packet)
         {
-            var moduleIdentifier = item.ModuleIdentifier;
+            var moduleIdentifier = packet.ModuleIdentifier;
 
             // Check if the _multiLevelQueue dictionary contains the moduleIdentifier
             if (_multiLevelQueue.ContainsKey(moduleIdentifier))
@@ -111,7 +120,7 @@ namespace Networking
                     _queueSize += 1;
                 }
 
-                _multiLevelQueue[moduleIdentifier].Enqueue(item);
+                _multiLevelQueue[moduleIdentifier].Enqueue(packet);
             }
             else
             {
@@ -125,6 +134,7 @@ namespace Networking
         ///     Dequeues an item from the queue and returns the item.
         /// </summary>
         /// <returns>Returns the dequeued packet from the queue.</returns>
+        /// <exception cref="Exception">Cannot dequeue an empty queue</exception>
         public Packet Dequeue()
         {
             if (IsEmpty()) throw new Exception("Cannot Dequeue empty queue");
@@ -141,13 +151,13 @@ namespace Networking
             }
 
             return packet;
-
         }
 
         /// <summary>
         ///     Peeks into the first element of the queue.
         /// </summary>
         /// <returns>Returns the peeked packet from the queue.</returns>
+        /// <exception cref="Exception">Cannot peek an empty queue</exception>
         public Packet Peek()
         {
             if (IsEmpty()) throw new Exception("Cannot Peek into empty queue");
@@ -158,7 +168,6 @@ namespace Networking
 
             Trace.WriteLine("Peeking into the queue");
             return packet;
-
         }
 
         /// <summary>

@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>1/11/2021</created>
+/// <summary>
+///     This file contains the unit tests
+///     for the Queue Module.
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,9 +44,8 @@ namespace Testing.Networking.QueueManagement
             _queue.RegisterModule(chatModuleId, chatPriority);
             _queue.RegisterModule(fileModuleId, filePriority);
 
-            var random = new Random();
-
             // Creating packets with random moduleIdentifiers
+            var random = new Random();
             for (var i = 0; i < _testPackets.Capacity; i++)
             {
                 var moduleIndex = random.Next(0, 4);
