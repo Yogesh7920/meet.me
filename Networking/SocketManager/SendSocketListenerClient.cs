@@ -8,16 +8,16 @@ namespace Networking
 {
     public class SendSocketListenerClient
     {
-        // Fix the maximum size of the message that can be sent  one at a time 
+        // Fix the maximum size of the message that can be sent  one at a time
         private const int Threshold = 1025;
 
-        // Declare the queue variable which is used to dequeue the required the packet 
+        // Declare the queue variable which is used to dequeue the required the packet
         private readonly IQueue _queue;
 
-        // Declare the TcpClient  variable 
+        // Declare the TcpClient  variable
         private readonly TcpClient _tcpSocket;
 
-        // Declare the thread variable of SendSocketListenerServer 
+        // Declare the thread variable of SendSocketListenerServer
         private Thread _listen;
 
         // Declare variable that dictates the start and stop of the thread _listen
@@ -72,9 +72,9 @@ namespace Networking
                 // Dequeue the front packet of the queue
                 var packet = _queue.Dequeue();
 
-                //Call GetMessage function to form string msg from the packet object 
+                //Call GetMessage function to form string msg from the packet object
                 var msg = GetMessage(packet);
-                // Send the message in chunks of threshold number of characters, 
+                // Send the message in chunks of threshold number of characters,
                 // if the data size is greater than threshold value
                 for (var i = 0; i < msg.Length; i += Threshold)
                 {

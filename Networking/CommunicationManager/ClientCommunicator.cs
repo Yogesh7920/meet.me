@@ -20,10 +20,10 @@ namespace Networking
 
         private ReceiveQueueListener _receiveQueueListener;
 
-        //Declare ReceiveSocketListener variable for listening messages 
+        //Declare ReceiveSocketListener variable for listening messages
         private ReceiveSocketListener _receiveSocketListener;
 
-        // Declare sendSocketListenerClient variable for sending messages 
+        // Declare sendSocketListenerClient variable for sending messages
         private SendSocketListenerClient _sendSocketListenerClient;
 
         /// <summary>
@@ -46,12 +46,12 @@ namespace Networking
 
                 _clientSocket.Connect(ip, port);
 
-                //Start receiveSocketListener of the client  
+                //Start receiveSocketListener of the client
                 //for listening message from the server
                 _receiveSocketListener = new ReceiveSocketListener(_receiveQueue, _clientSocket);
                 _receiveSocketListener.Start();
 
-                //start sendSocketListener of client for sending message 
+                //start sendSocketListener of client for sending message
                 _sendSocketListenerClient = new SendSocketListenerClient(_sendQueue, _clientSocket);
                 _sendSocketListenerClient.Start();
 
@@ -76,7 +76,7 @@ namespace Networking
         {
             if (_clientSocket.Connected)
             {
-                // stop the listener of the client 
+                // stop the listener of the client
                 _sendSocketListenerClient.Stop();
                 _receiveSocketListener.Stop();
                 _receiveQueueListener.Stop();
