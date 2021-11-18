@@ -7,13 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
-    class ServerCheckPointHandler : IServerCheckPointHandler
+    internal class ServerCheckPointHandler : IServerCheckPointHandler
     {
         public List<BoardShape> FetchCheckpoint(int checkpointNumber)
         {

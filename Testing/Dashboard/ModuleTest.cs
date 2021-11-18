@@ -10,7 +10,7 @@ using Dashboard.Client.SessionManagement;
 using System.Threading;
 using System.Net.Sockets;
 
-namespace Testing
+namespace Testing.Dashboard
 {
     public class DashboardModuleTests
     {
@@ -69,7 +69,7 @@ namespace Testing
             bool isValid = _sessionManager.AddClient(validIP, int.Parse(validPort), "John");
             bool expectedValue = true;
             Assert.AreEqual(expectedValue, isValid);
-
+          
             // Testing for invalid IPs and usernames
         }
 
@@ -88,7 +88,7 @@ namespace Testing
         }
 
         [Test]
-        public void AddClientProcedure_NewClientArrival_BroadcastsUserObjectToAllClients()
+        public void AddClientProcedure_NewClientArrivalServerSide_BroadcastsUserObjectToAllClients()
         {
             _testCommunicator.sentData = null;
             ClientToServerData clientToServerData = new("addClient", "John");
@@ -105,7 +105,7 @@ namespace Testing
         }
 
         [Test]
-        public void AddClientProcedure_NewClientArrival_BroadcastsSessionObjectToAllClients ()
+        public void AddClientProcedure_NewClientArrivalServerSide_BroadcastsSessionObjectToAllClientsAndUpdatesNetworkModule ()
         {
             int sampleSize = 10;
             List<UserData> users = Utils.GenerateUserData(sampleSize);
@@ -120,7 +120,7 @@ namespace Testing
         }
 
         [Test]
-        public void UpdateClientProcedure_ClientArrivalNotification_UpdatesUXAboutChanges()
+        public void UpdateClientProcedure_ClientArrivalNotificationClientSide_UpdatesUXAboutChanges()
         {
             int dataSize = 10;
 
@@ -164,16 +164,44 @@ namespace Testing
             // When client leaves
             _uxSessionManager.RemoveClient();
 
-            while (_testCommunicator.sentData == null) ;
             ClientToServerData deserialisedObject = _serializer.Deserialize<ClientToServerData>(_testCommunicator.sentData);
             Assert.NotNull(deserialisedObject);
             Assert.AreEqual(username, deserialisedObject.username);
             Assert.AreEqual(userId, deserialisedObject.userID);
         }
 
+        //[Test]
+        //[TestCase(10,5)]
+        //[TestCase(1,1)]
+        //[TestCase(2,1)]
+        //public void RemoveClientProcedure_ClientDepartsServerSide_ReturnsModifiedSessionObject(int sampleSize, int userIndex)
+        //{
+        //    INotificationHandler networkServerSessionManager = serverSessionManager;
+
+        //    // Adding sampleSize users at server
+        //    List<UserData> expectedUsers = Utils.GenerateUserData(sampleSize);
+        //    AddUsersAtServer(expectedUsers);
+        //    UserData departedUser = expectedUsers[userIndex - 1];
+        //    Console.WriteLine(departedUser);
+        //    expectedUsers.RemoveAt(userIndex - 1);
+        //    string expectedEventType = "removeClient";
+
+        //    // Data Sample what will be sent from Client to Server
+        //    ClientToServerData leavingUser = new("removeClient", departedUser.username, departedUser.userID);
+        //    string serializedData = _serializer.Serialize(leavingUser);
+
+        //    // Triggering Remove Client Procedure on Server Dashboard
+        //    networkServerSessionManager.OnDataReceived(serializedData);
+        //    ServerToClientData recievedServerData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+        //    SessionData recievedSessionData = recievedServerData.sessionData;
+
+        //    CollectionAssert.AreEqual(expectedUsers, recievedSessionData.users);
+        //    CollectionAssert.AreEqual(expectedEventType, recievedServerData.eventType);
+        //    Assert.Pass();
+        //}
 
         [Test]
-        public void EndMeet_EndMeeting_SendsEndMeetingEventToServer()
+        public void EndMeet_EndMeetingClientSide_SendsEndMeetingEventToServer()
         {
             AddUserClientSide("John", 1);
             clientSessionManagerB.EndMeet();
@@ -201,6 +229,27 @@ namespace Testing
         //    while (getSummaryThread.IsAlive) ;
         //    Assert.AreEqual(testSummary, recievedSummary);
         //}
+
+        //[TestCase("This is sample summary")]
+        //[TestCase(null)]
+        //[TestCase("")]
+        //[Test]
+        //public void GetAnalytics_TelemetryAnalyticsRetrieval_ReturnsTelemetryAnalytics(string testSummary)
+        //{
+        //    UserData user = new("John", 1);
+        //    // Adding a user at client
+        //    AddUserClientSide(user.username, user.userID);
+        //     recievedSummary = null;
+        //    SummaryData summaryData = new(testSummary);
+        //    ServerToClientData testData = new("getSummary", null, summaryData, user);
+        //    Thread getSummaryThread = new Thread(new ThreadStart(() => { recievedSummary = clientSessionManagerB.GetSummary(); }));
+        //    getSummaryThread.Start();
+        //    Thread.Sleep(1000);
+        //    clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
+        //    while (getSummaryThread.IsAlive) ;
+        //    Assert.AreEqual(testSummary, recievedSummary);
+        //}
+
 
         private void AddUserClientSide(string username, int userId, string ip = "192.168.1.1", string port = "8080")
         {

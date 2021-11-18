@@ -6,22 +6,23 @@ using Networking;
 namespace Testing.Networking
 {
     /// <summary>
-    /// This class represents an abstract machine.
-    /// clients and server inherit from this machine.
+    ///     This class represents an abstract machine.
+    ///     clients and server inherit from this machine.
     /// </summary>
     public class Machine
     {
-        public ICommunicator Communicator { get; set; }
+        public readonly FakeNotificationHandler SsHandler;
 
         public readonly FakeNotificationHandler WbHandler;
-        public readonly FakeNotificationHandler SsHandler;
 
         protected Machine()
         {
             WbHandler = new FakeNotificationHandler();
             SsHandler = new FakeNotificationHandler();
         }
-        
+
+        public ICommunicator Communicator { get; set; }
+
         public void Subscribe()
         {
             Communicator.Subscribe(Modules.WhiteBoard, WbHandler, Priorities.WhiteBoard);
@@ -37,7 +38,8 @@ namespace Testing.Networking
 
     public class FakeClientA : Machine
     {
-        public new string Id = "A";
+        public string Id = "A";
+
         public FakeClientA()
         {
             Communicator = NetworkingGlobals.NewClientCommunicator;
@@ -46,7 +48,7 @@ namespace Testing.Networking
 
     public class FakeClientB : Machine
     {
-        public new string Id = "B";
+        public string Id = "B";
 
         public FakeClientB()
         {
@@ -93,39 +95,15 @@ namespace Testing.Networking
     }
 
     /// <summary>
-    /// A fake notification handler to receive notifications, mimicking
-    /// other modules.
+    ///     A fake notification handler to receive notifications, mimicking
+    ///     other modules.
     /// </summary>
     public class FakeNotificationHandler : INotificationHandler
     {
-        public dynamic Event = new ExpandoObject();
-        public dynamic Data = new ExpandoObject();
-        private int _timeOutCount;
         private readonly AutoResetEvent _autoResetEvent = new(false);
-
-        /// <summary>
-        /// Calling this function will block the thread until a message from the network
-        /// is received or it has timed out.
-        /// </summary>
-        /// <param name="timeOut">
-        /// Double value indicating the number of seconds to wait before timing out.
-        /// </param>
-        /// <exception cref="TimeoutException"></exception>
-        public void Wait(double timeOut = 15)
-        {
-            // wait for a maximum of timeOut seconds
-            bool signalReceived = _autoResetEvent.WaitOne(TimeSpan.FromSeconds(timeOut));
-            if (!signalReceived)
-            {
-                /*
-                 * If the wait has timed out, increase the number of timeouts
-                 * this allows us to ignore messages that were previously timed out.
-                 */
-                _timeOutCount++;
-                _autoResetEvent.Reset();
-                throw new TimeoutException("Wait failed due to timeout!");
-            }
-        }
+        private int _timeOutCount;
+        public dynamic Data = new ExpandoObject();
+        public dynamic Event = new ExpandoObject();
 
         public void OnDataReceived(string data)
         {
@@ -155,6 +133,30 @@ namespace Testing.Networking
             _autoResetEvent.Set();
         }
 
+        /// <summary>
+        ///     Calling this function will block the thread until a message from the network
+        ///     is received or it has timed out.
+        /// </summary>
+        /// <param name="timeOut">
+        ///     Double value indicating the number of seconds to wait before timing out.
+        /// </param>
+        /// <exception cref="TimeoutException"></exception>
+        public void Wait(double timeOut = 15)
+        {
+            // wait for a maximum of timeOut seconds
+            var signalReceived = _autoResetEvent.WaitOne(TimeSpan.FromSeconds(timeOut));
+            if (!signalReceived)
+            {
+                /*
+                 * If the wait has timed out, increase the number of timeouts
+                 * this allows us to ignore messages that were previously timed out.
+                 */
+                _timeOutCount++;
+                _autoResetEvent.Reset();
+                throw new TimeoutException("Wait failed due to timeout!");
+            }
+        }
+
         public void Reset()
         {
             Event = null;
@@ -170,7 +172,7 @@ namespace Testing.Networking
 
         public static FakeChat GetFakeChat()
         {
-            FakeChat fakeChat = new FakeChat();
+            var fakeChat = new FakeChat();
             fakeChat.Message = NetworkingGlobals.GetRandomString();
             fakeChat.Timestamp = DateTime.Now.ToString();
             return fakeChat;
@@ -189,10 +191,7 @@ namespace Testing.Networking
             var stringChars = new char[length];
             var random = new Random();
 
-            for (int i = 0; i < stringChars.Length; i++)
-            {
-                stringChars[i] = chars[random.Next(chars.Length)];
-            }
+            for (var i = 0; i < stringChars.Length; i++) stringChars[i] = chars[random.Next(chars.Length)];
 
             return new string(stringChars);
         }
