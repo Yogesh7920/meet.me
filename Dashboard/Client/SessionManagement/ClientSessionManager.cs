@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Networking;
-using Content;
+
 
 namespace Dashboard.Client.SessionManagement 
 {
@@ -26,7 +26,6 @@ namespace Dashboard.Client.SessionManagement
         {
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
-            _contentClient = ContentClientFactory.getInstance();
             Session session = new();
             session.TraceListener();
            
@@ -262,7 +261,6 @@ namespace Dashboard.Client.SessionManagement
             if(_user == null)
             {
                 _user = user;
-                ContentClientFactory.setUser(user.userID);
             }
 
             // The user received from the server side is equal to _user only in the case of 
@@ -288,7 +286,6 @@ namespace Dashboard.Client.SessionManagement
         private readonly List<IClientSessionNotifications> _clients;
         private string chatSummary;
         private UserData _user;
-        private IContentClient _contentClient;
         public event NotifyEndMeet MeetingEnded;
     }
 }
