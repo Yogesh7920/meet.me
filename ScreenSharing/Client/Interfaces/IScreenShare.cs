@@ -5,12 +5,9 @@
  * Date Modified: 16 Nov 2021
 **/
 
-<<<<<<< HEAD
 using System;
 using System.Drawing;
 
-=======
->>>>>>> f1e8300bf03f574434695ee951fbc63d2a40a3ff
 namespace ScreenSharing
 {
     /// <summary>

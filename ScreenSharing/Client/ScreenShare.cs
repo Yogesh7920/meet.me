@@ -27,26 +27,6 @@ namespace ScreenSharing
             username = "vinay";
             _mtype = mtype;
             _screen = screen;
-
-
-            // Problem in the network connection
-            //if (mtype == -2)
-            //{
-            //    Console.WriteLine("You have lost ur network connection");
-            //}
-            //else if (mtype == -1) // some one else is sharing so u can't share ur screen
-            //{
-            //    Console.WriteLine("some one else is sharing so u can't share ur screen");
-            //}
-            //else if (mtype == 0)  // Stop the screen share
-            //{
-
-            //}
-            //else if (mtype == 1)  // screen share is going now
-            //{
-
-            //}
-
         }
     }
 }

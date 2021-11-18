@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿/**
  * Owned By: Pulavarti Vinay Kumar
  * Created By: Pulavarti Vinay Kumar
@@ -7,11 +6,7 @@
 **/
 
 using System;
-using System.Diagnostics;
-=======
-﻿using System;
 using Dashboard.Server.SessionManagement;
->>>>>>> f1e8300bf03f574434695ee951fbc63d2a40a3ff
 
 namespace Server
 {
