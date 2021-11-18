@@ -22,8 +22,22 @@ namespace Client
         public AuthView()
         {
             InitializeComponent();
+            CenterWindowOnScreen();
             AuthViewModel viewmodel = new AuthViewModel();
             this.DataContext = viewmodel;
+        }
+        //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
+        /// <summary>
+        /// Function to launch the window on the center of the screen
+        /// </summary>
+        private void CenterWindowOnScreen()
+        {
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+            double screenHeight = SystemParameters.PrimaryScreenHeight;
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+            this.Left = (screenWidth / 2) - (windowWidth / 2);
+            this.Top = (screenHeight / 2) - (windowHeight / 2);
         }
         /// <summary>
         /// Handler method for Join Room button click
