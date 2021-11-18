@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using NUnit.Framework;
 using Networking;
 using NUnit.Framework;
 
@@ -8,6 +9,12 @@ namespace Testing.Networking.QueueManagement
     [TestFixture]
     public class ReceiveQueueListenerTest
     {
+        private IQueue _queue;
+        private Dictionary<string, INotificationHandler> _notificationHandlers;
+        private ReceiveQueueListener _receiveQueueListener;
+
+        private string Message => NetworkingGlobals.GetRandomString();
+
         [SetUp]
         public void Setup()
         {

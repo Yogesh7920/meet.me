@@ -9,6 +9,14 @@ namespace Testing.Networking
     [TestFixture]
     public class ModuleTesting
     {
+        private readonly ISerializer _serializer = new Serializer();
+        private string RandomMessage => GetRandomString();
+        private string _serverIp, _serverPort;
+        private readonly FakeServer _server = new();
+        private readonly FakeClientA _clientA = new();
+        private readonly FakeClientB _clientB = new();
+        private ICommunicator _clientACommunicator;
+
         [OneTimeSetUp]
         public void Init_StartServerAndClients_ServerIsNotifiedAboutClients()
         {

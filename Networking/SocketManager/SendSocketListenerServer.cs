@@ -1,24 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Networking
 {
     public class SendSocketListenerServer
     {
-        // Fix the maximum size of the message that can be sent  one at a time 
+        // Fix the maximum size of the message that can be sent  one at a time
         private const int Threshold = 1025;
 
-        // Declare the dictionary variable which stores client_ID and corresponding socket object 
+        // Declare the dictionary variable which stores client_ID and corresponding socket object
         private readonly Dictionary<string, TcpClient> _clientIdSocket;
 
-        // Declare the queue variable which is used to dequeue the required the packet 
+        // Declare the queue variable which is used to dequeue the required the packet
         private readonly IQueue _queue;
 
-        // Declare the thread variable of SendSocketListenerServer 
+        // Declare the thread variable of SendSocketListenerServer
         private Thread _listen;
 
         // Declare variable that dictates the start and stop of the thread _listen
@@ -98,13 +100,13 @@ namespace Networking
                 // Dequeue the front packet of the queue
                 var packet = _queue.Dequeue();
 
-                // Call GetMessage function to form string msg from the packet object 
+                // Call GetMessage function to form string msg from the packet object
                 var msg = GetMessage(packet);
 
                 // Call GetDestination function to know destination from the packet object
                 var tcpSockets = GetDestination(packet);
 
-                // Send the message in chunks of threshold number of characters, 
+                // Send the message in chunks of threshold number of characters,
                 // if the data size is greater than threshold value
                 for (var i = 0; i < msg.Length; i += Threshold)
                 {

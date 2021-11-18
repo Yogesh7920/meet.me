@@ -102,7 +102,6 @@ namespace Testing.Networking.SocketManagement
                 _queueS.Enqueue(whiteBoardPacket);
             }
 
-
             Thread.Sleep(100);
             for (var i = 1; i <= 10; i++)
             {

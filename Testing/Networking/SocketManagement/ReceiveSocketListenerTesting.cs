@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -11,6 +13,23 @@ namespace Testing.Networking.SocketManagement
     [TestFixture]
     public class ReceiveSocketListenerTesting
     {
+        private IQueue _queue;
+        private Machine _server;
+        private ReceiveSocketListener _receiveSocketListener;
+        private const int Threshold = 1025;
+        private string Message => NetworkingGlobals.GetRandomString();
+        private TcpClient _serverSocket;
+        private TcpClient _clientSocket;
+
+        private string GetMessage(Packet packet)
+        {
+            string msg = packet.ModuleIdentifier;
+            msg += ":";
+            msg += packet.SerializedData;
+            msg += "EOF";
+            return msg;
+        }
+
         [SetUp]
         public void StartReceiveSocketListener()
         {
@@ -113,7 +132,6 @@ namespace Testing.Networking.SocketManagement
                 stream.Flush();
             }
 
-
             Thread.Sleep(100);
             for (var i = 1; i <= 10; i++)
             {
@@ -121,6 +139,13 @@ namespace Testing.Networking.SocketManagement
                 var packet = _queue.Dequeue();
                 Assert.AreEqual(whiteBoardData, packet.SerializedData);
             }
+        }
+        [TearDown]
+        public void TearDown()
+        {
+            _clientSocket.Close();
+            _receiveSocketListener.Stop();
+            _serverSocket.Close();
         }
     }
 }
