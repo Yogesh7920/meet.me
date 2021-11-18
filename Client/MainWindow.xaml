@@ -11,28 +11,30 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
-            <ColumnDefinition Width="150"/>
-            <ColumnDefinition Width="0.05*"/>
+            <ColumnDefinition Width="0.15*"/>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="0.15*"/>
             <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="0.05*"/>
+            <ColumnDefinition Width="0.15*"/>
             <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="0.05*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="65*"/>
+            <RowDefinition Height="0*"/>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="687*"/>
             <RowDefinition Height="0.75"/>
             <RowDefinition Height="82*"/>
-            <RowDefinition Height="7*"/>
+            <RowDefinition Height="15*"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Background="{StaticResource LightGrayBg}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7">
+        <!--<DockPanel Background="{StaticResource LightGrayBg}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7">
             <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="meet.me" Foreground="{StaticResource DarkPurpleBg}" FontSize="40" FontWeight="Bold" FontFamily="ComicSans"/>
-        </DockPanel>
+        </DockPanel>-->
 
         <!-- Buttons -->
-        <DockPanel Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
+        <DockPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
             <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50">-->
             <Button x:Name="Whiteboard" Click="OnWhiteboardClick" ToolTip="WhiteBoard" BorderThickness="0" Background="White" Width="40" Height="40">
                 <Image  Source="/Icons/MainWindow/icons8-whiteboard-150.png"/>
@@ -60,11 +62,26 @@
             </Border>
         </DockPanel>
 
-        <ContentControl Name="UsersListControl" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4"/>
+        <DockPanel Name="ThemeButton" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="4" Grid.Column="4">
+            <Button HorizontalAlignment="Left" Foreground="{DynamicResource Color3Bg}" Content="Switch Theme" Click="OnThemeClick">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="75"
+                                Height="30"
+                                CornerRadius="15"
+                                Background="{DynamicResource Color1Bg}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DockPanel>
 
-        <ContentControl Name="SSwb" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <ContentControl Name="UsersListControl" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="4"/>
 
-        <ContentControl Name="Chat" Grid.Row="2" Grid.Column="5" Grid.RowSpan="4" Visibility="Collapsed"/>
+        <ContentControl Name="SSwb" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 5"/>
+
+        <ContentControl Name="Chat" Grid.Row="2" Grid.Column="6" Grid.RowSpan="4" Visibility="Collapsed"/>
 
     </Grid>
 </Window>

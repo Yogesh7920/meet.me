@@ -35,11 +35,6 @@
       <None Remove="Icons\MainWindow\icons8-end-call-96.png" />
       <None Remove="Icons\MainWindow\icons8-present-to-all-50.png" />
       <None Remove="Icons\MainWindow\icons8-whiteboard-150.png" />
-      <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
-      <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
-      <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
-      <None Remove="Icons\WhiteboardUX\Toolbar\flag.png" />
-      <None Remove="Icons\WhiteboardUX\Toolbar\pencil.png" />
       <None Remove="Icons\Eraser.cur" />
       <None Remove="Icons\Eraser_2.cur" />
       <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
@@ -80,7 +75,6 @@
       <Resource Include="Icons\MainWindow\icons8-whiteboard-150.png">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
-      <Resource Include="Icons\WhiteboardUX\Toolbar\bin.png" />
     </ItemGroup>
 
     <ItemGroup>

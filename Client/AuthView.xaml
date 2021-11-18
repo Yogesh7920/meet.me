@@ -9,8 +9,8 @@
     <Window.Resources>
         
         <LinearGradientBrush x:Key="BackGroundPattern" StartPoint="0,0" EndPoint="0,1">       
-           <GradientStop Color="{StaticResource DarkPurple}" Offset="0.5" />
-           <GradientStop Color="{StaticResource LightGray}" Offset="0.5" />
+           <GradientStop Color="{StaticResource Color1}" Offset="0.5" />
+           <GradientStop Color="{StaticResource Color3}" Offset="0.5" />
         </LinearGradientBrush>
         
         <Color x:Key="InnerBackground">White</Color>
@@ -40,7 +40,7 @@
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0" Grid.Column="2">
             <Image Height="35" Width="40" Margin="0 100 0 5" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/Icons/logo.png"/>
-            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Name="Login" Text="meet.me" Foreground="{StaticResource LightGrayBg}" FontSize="45" FontWeight="Bold" FontFamily="ComicSans"/>
+            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Name="Login" Text="meet.me" Foreground="{StaticResource Color3Bg}" FontSize="45" FontWeight="Bold" FontFamily="ComicSans"/>
         </DockPanel>
         
         <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="6" Grid.ColumnSpan="3" Background="{StaticResource InnerBackgroundBrush}" CornerRadius="10"/>
@@ -62,13 +62,13 @@
         </DockPanel>
 
         <DockPanel Grid.Row="5" Grid.Column="2">
-            <Button IsDefault="True" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Join Room" FontSize="12" FontFamily="Calibre" Foreground="{StaticResource LightGrayBg}" Click="OnJoinClick">
+            <Button IsDefault="True" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Join Room" FontSize="12" FontFamily="Calibre" Foreground="{StaticResource Color3Bg}" Click="OnJoinClick">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border Width="75"
                                 Height="30"
                                 CornerRadius="15"
-                                Background="{StaticResource DarkPurpleBg}">
+                                Background="{StaticResource Color1Bg}">
                             <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>

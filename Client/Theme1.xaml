@@ -4,13 +4,13 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:local="clr-namespace:Client">
 
-    <Color x:Key="DarkPurple">#FF340051</Color>
-    <Color x:Key="LightPurple">#FF8522BD</Color>
-    <Color x:Key="LightGray">#FFCFCFCF</Color>
+    <Color x:Key="Color1">#FF340051</Color>
+    <Color x:Key="Color2">#FF8522BD</Color>
+    <Color x:Key="Color3">#FFCFCFCF</Color>
 
-    <SolidColorBrush x:Key="DarkPurpleBg" Color="#FF340051"></SolidColorBrush>
-    <SolidColorBrush x:Key="LightPurpleBg" Color="#FF8522BD"></SolidColorBrush>
-    <SolidColorBrush x:Key="LightGrayBg" Color="#FFCFCFCF"></SolidColorBrush>
+    <SolidColorBrush x:Key="Color1Bg" Color="#FF340051"></SolidColorBrush>
+    <SolidColorBrush x:Key="Color2Bg" Color="#FF8522BD"></SolidColorBrush>
+    <SolidColorBrush x:Key="Color3Bg" Color="#FFCFCFCF"></SolidColorBrush>
 
 
 </ResourceDictionary>
