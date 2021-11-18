@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ScreenSharing
+﻿namespace ScreenSharing
 {
     public class Class1
     {

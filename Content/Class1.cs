@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Content
+﻿namespace Content
 {
     public class Class1
     {
