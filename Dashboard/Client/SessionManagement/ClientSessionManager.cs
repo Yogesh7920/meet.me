@@ -10,6 +10,7 @@ namespace Dashboard.Client.SessionManagement
 {
     using Dashboard.Server.Telemetry;
     public delegate void NotifyEndMeet();
+    public delegate void NotifySummaryCreated(string summary);
 
     /// <summary>
     /// ClientSessionManager class is used to maintain the client side 
@@ -89,10 +90,9 @@ namespace Dashboard.Client.SessionManagement
                     return false;
                 }
 
-                ClientToServerData clientName = new("addClient", username);
-                serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
             }
-            
+            ClientToServerData clientName = new("addClient", username);
+            serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
             _communicator.Send(serializedClientName,moduleIdentifier);
             return true;
         }
@@ -125,23 +125,23 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Summary of the chats as a string. </returns>
         public string GetSummary()
         {
-            string summary = "";
+            //string summary = "";
             ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
             string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
             _communicator.Send(serializedData, moduleIdentifier);
             
             // This loop will run till the summary is received from the server side.
-            while(chatSummary == null)
-            {
+            //while(chatSummary == null)
+            //{
 
-            }
+            //}
 
-            lock(this)
-            {
-                summary = chatSummary;
-                chatSummary = null;
-            }
-            return summary;
+            //lock(this)
+            //{
+            //    summary = chatSummary;
+            //    chatSummary = null;
+            //}
+            return "";
         }
 
         /// <summary>
@@ -237,6 +237,7 @@ namespace Dashboard.Client.SessionManagement
                 lock(this)
                 {
                     chatSummary = receivedSummary.summary;
+                    SummaryCreated?.Invoke(chatSummary);
                 }
             }
         }
@@ -287,5 +288,6 @@ namespace Dashboard.Client.SessionManagement
         private string chatSummary;
         private UserData _user;
         public event NotifyEndMeet MeetingEnded;
+        public event NotifySummaryCreated SummaryCreated; 
     }
 }

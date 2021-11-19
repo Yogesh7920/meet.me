@@ -328,11 +328,10 @@ namespace Dashboard.Server.SessionManagement
             lock (this)
             {
                 serverToClientData = new ServerToClientData(eventName, sessionData, summaryData, user);
+                string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
+                Console.WriteLine(serializedSessionData);
+                _communicator.Send(serializedSessionData, moduleIdentifier);
             }
-
-            string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
-            Console.WriteLine(serializedSessionData);
-            _communicator.Send(serializedSessionData, moduleIdentifier);
         }
 
         /// <summary>
