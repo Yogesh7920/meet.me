@@ -8,7 +8,7 @@ using Content;
 
 namespace Dashboard.Server.Telemetry
 {
-    public interface ITelemetryAnalysisModel
+    public interface ITelemetry
     {
         /// <summary>
         ///    SM uses it to notify the session is over, 
@@ -26,7 +26,7 @@ namespace Dashboard.Server.Telemetry
         /// <params name="AllMessages"> The chat data of all the threads </params>
         
         /// <returns> TelemetryAnalyticsModel object </returns>
-        TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages);
+        SessionAnalytics getTelemetryAnalytics(ChatContext[] AllMessages);
         
     }
 }

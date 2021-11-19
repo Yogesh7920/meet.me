@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dashboard
 {
-    public class TelemetryAnalyticsModel{
+    public class SessionAnalytics{
         /// Stores the userCount(int) at every time stamp(DateTime)
         Dictionary<int, int> UserCountAtAnyTime;
         /// Stores the chat count(int) for each user(UserData) 
