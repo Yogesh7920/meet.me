@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Content;
 using FluentAssertions;
+using Networking;
 namespace Testing.Content
 {
     public class ChatClientTests
@@ -9,28 +10,23 @@ namespace Testing.Content
         [SetUp]
         public void Setup()
         {
-        }
+			
+		}
 
         [Test]
-        public void TestConvert()
+		public void TestConvert()
         {
-			var toconvert = new SendMessageData();
-			toconvert.Message = "Apple";
-			toconvert.Type = MessageType.Chat;
-			toconvert.ReplyThreadId = -1;
-			toconvert.ReceiverIds = new int[0];
+			SendMessageData SampleData = Utils.GetSendMessageData2();
 			ChatClient conch = new ChatClient();
-            MessageData x = conch.SendToMessage(toconvert,MessageEvent.NewMessage);
+			MessageData x = conch.SendToMessage(SampleData, MessageEvent.NewMessage);
 
-			Assert.AreEqual(x.Message, "Apple");
+			Assert.AreEqual(x.Message, SampleData.Message);
 			Assert.AreEqual(x.Event, MessageEvent.NewMessage);
-			Assert.AreEqual(x.Type, MessageType.Chat);
+			Assert.AreEqual(x.Type, SampleData.Type);
 			Assert.AreEqual(x.FileData, null);
 			Assert.AreEqual(x.Starred, false);
-			Assert.AreEqual(x.ReplyThreadId, -1);
-			Assert.AreEqual(x.ReceiverIds.Length, 0);
-
-
+			Assert.AreEqual(x.ReplyThreadId, SampleData.ReplyThreadId);
+			Assert.AreEqual(x.ReceiverIds.Length, SampleData.ReceiverIds.Length);
         }
-    }
+	}
 }
