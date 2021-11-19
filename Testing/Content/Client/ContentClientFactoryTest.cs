@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace Testing
+namespace Testing.Content
 {
     public class ContentClientFactoryTests
     {
