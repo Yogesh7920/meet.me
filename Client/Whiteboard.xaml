@@ -24,56 +24,63 @@
         Background="#cfcfcf"
         >
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <TextBlock x:Key="CursorErase" Cursor="\Icons\Eraser.cur"/>
+            <TextBlock x:Key="CursorErase32" Cursor="\Icons\Eraser_2.cur"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <!--Parent Grid-->
     <!--<Grid MouseDown="Grid_MouseDown">-->
     <Grid x:Name="ParentGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
-            <RowDefinition />
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
         <!--Grid consists of 1 x 6 x 1 sized three columns-->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="6*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!--Grid for the upper menu-->
         <Grid Name="MainBar" Background="#3B185F" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition Width="114.286" />
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="114.286"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
             <!--Undo and Redo-->
             <Grid Grid.Column="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
                 <!--Undo Button-->
-                <Button Content="Undo"
-                        Grid.Column="0"
-                        Foreground="LightGray"
-                        FontSize="10"
-                        FontWeight="light"
-                        Margin="0 2.5 0 2.5"
-                        Click="ClickedUndoButton">
+                <Button Content="Undo" 
+                    Grid.Column="0" 
+                    Foreground="LightGray"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5"
+                    Click="ClickedUndoButton">
 
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="#D500F9" />
-                            <Setter Property="Cursor" Value="Hand" />
+                            <Setter Property="Background" Value="#D500F9"/>
+                            <Setter Property="Cursor" Value="Hand"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#6A1B9A" />
+                                    <Setter Property="Background" Value= "#6A1B9A"></Setter>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -82,11 +89,11 @@
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border Width="45"
-                                    Height="20"
-                                    CornerRadius="10"
-                                    Background="{TemplateBinding Background}">
-                                <ContentPresenter VerticalAlignment="Center"
-                                                  HorizontalAlignment="Center" />
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
@@ -94,21 +101,21 @@
                 </Button>
 
                 <!--Redo Button-->
-                <Button Content="Redo"
-                        Grid.Column="1"
-                        Foreground="LightGray"
-                        FontSize="10"
-                        FontWeight="light"
-                        Margin="0 2.5 0 2.5"
-                        Click="ClickedRedoButton">
+                <Button Content="Redo" 
+                    Grid.Column="1" 
+                    Foreground="LightGray"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5"
+                    Click="ClickedRedoButton">
 
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="#D500F9" />
-                            <Setter Property="Cursor" Value="Hand" />
+                            <Setter Property="Background" Value="#D500F9"/>
+                            <Setter Property="Cursor" Value="Hand"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#6A1B9A" />
+                                    <Setter Property="Background" Value="#6A1B9A"></Setter>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -117,11 +124,11 @@
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border Width="45"
-                                    Height="20"
-                                    CornerRadius="10"
-                                    Background="{TemplateBinding Background}">
-                                <ContentPresenter VerticalAlignment="Center"
-                                                  HorizontalAlignment="Center" />
+                                Height="20"
+                                CornerRadius="10"
+                                Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
@@ -137,20 +144,20 @@
             <!--Pop up for setting background color of canvas-->
             <!-- https://stopbyte.com/t/how-can-i-show-popup-on-button-click-and-hide-it-on-second-click-or-user-clicks-outside-staysopen-false/80-->
             <Popup Name="SetBGButtonPopUp"
-                   IsOpen="{Binding ElementName=SetBGButton, Path=IsChecked}"
-                   PlacementTarget="{Binding ElementName=SetBGButton}"
-                   Grid.Column="1"
-                   AllowsTransparency="True"
-                   PopupAnimation="Slide"
-                   StaysOpen="False"
-                   Height="65"
-                   Width="110">
+                    IsOpen="{Binding ElementName=SetBGButton, Path=IsChecked}"
+                    PlacementTarget="{Binding ElementName=SetBGButton}"
+                    Grid.Column="1"
+                    AllowsTransparency="True"
+                    PopupAnimation="Slide"
+                    StaysOpen="False"
+                    Height="65"
+                    Width="110">
 
                 <Grid Name="SetBGDropdown" Background="#cfcfcf">
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="2*" />
-                        <RowDefinition Height="2*" />
+                        <RowDefinition Height="2*"></RowDefinition>
+                        <RowDefinition Height="2*"></RowDefinition>
                     </Grid.RowDefinitions>
 
 
@@ -160,42 +167,43 @@
                                    FontSize="14"
                                    FontWeight="light"
                                    VerticalAlignment="Center"
-                                   Margin="10 10 0 5" />
+                                   Margin="10 10 0 5"
+                        ></TextBlock>
                     </StackPanel>
 
                     <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
 
                             <RadioButton Grid.Column="0" x:Name="c1" Margin="5 0 0 10"  VerticalAlignment="Center" Background="White" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn1Checked">
                                 <RadioButton.RenderTransform>
-                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
                             <RadioButton Grid.Column="1" x:Name="c2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn2Checked">
                                 <RadioButton.RenderTransform>
-                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
                             <RadioButton Grid.Column="2" x:Name="c3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn3Checked">
                                 <RadioButton.RenderTransform>
-                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
                             <RadioButton Grid.Column="3" x:Name="c4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn4Checked">
                                 <RadioButton.RenderTransform>
-                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
                             <RadioButton Grid.Column="4" x:Name="c5" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="#cfcfcf" BorderThickness="1" Checked="ColorBtn5Checked">
                                 <RadioButton.RenderTransform>
-                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
                         </Grid>
@@ -205,24 +213,24 @@
 
             <!--<RadioButton Grid.Column="1" Margin="0 100 0 0" Height="40" Width="38" Background="#FFDC2C2C" BorderBrush="#FFE42020"> </RadioButton>-->
 
-            <ToggleButton Content="Set Background"
-                          Name="SetBGButton"
-                          Grid.Column="1"
-                          Foreground="LightGray"
-                          FontSize="10"
-                          FontWeight="light"
-                          Margin="0 2.5 0 2.5"
-
-                          MouseEnter="OpenPopupButton_MouseEnter"
-                          MouseLeave="OpenPopupButton_MouseLeave">
+            <ToggleButton Content="Set Background" 
+                    Name ="SetBGButton"
+                    Grid.Column="1" 
+                    Foreground="LightGray"
+                    FontSize="10"
+                    FontWeight="light"
+                    Margin="0 2.5 0 2.5"
+                    
+                    MouseEnter="OpenPopupButton_MouseEnter"
+                    MouseLeave="OpenPopupButton_MouseLeave">
 
                 <ToggleButton.Style>
                     <Style TargetType="ToggleButton">
-                        <Setter Property="Background" Value="{Binding MainBar.Background}" />
-                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Background" Value="{Binding MainBar.Background}"/>
+                        <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#6A1B9A" />
+                                <Setter Property="Background" Value= "#6A1B9A"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -236,8 +244,8 @@
                                 CornerRadius="10"
                                 Background="{TemplateBinding Background}">
 
-                            <ContentPresenter VerticalAlignment="Center"
-                                              HorizontalAlignment="Center" />
+                            <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
                         </Border>
 
 
@@ -247,8 +255,8 @@
             </ToggleButton>
 
             <!--Clear Frame Button-->
-            <Button Content="Clear Canvas"
-                    Grid.Column="2"
+            <Button Content="Clear Canvas" 
+                    Grid.Column="2" 
                     Foreground="LightGray"
                     FontSize="10"
                     FontWeight="light"
@@ -257,11 +265,11 @@
 
                 <Button.Style>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="{Binding Mainbar.Background}" />
-                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Background" Value="{Binding Mainbar.Background}"/>
+                        <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#6A1B9A" />
+                                <Setter Property="Background" Value= "#6A1B9A"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -275,8 +283,8 @@
                                 CornerRadius="10"
                                 Background="{TemplateBinding Background}">
 
-                            <ContentPresenter VerticalAlignment="Center"
-                                              HorizontalAlignment="Center" />
+                            <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
                         </Border>
 
 
@@ -287,21 +295,21 @@
 
             <!--Toggle State Button-->
             <TextBlock Text="Toggle State"
-                       Foreground="LightGray"
-                       Grid.Column="3"
-                       FontSize="10"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="114,0,0,0" />
+                Foreground="LightGray"
+                Grid.Column="3"
+                FontSize="10"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="114,0,0,0"
+             >
+            </TextBlock>
 
-            <local:ToggleButton x:Name="Bu" HorizontalAlignment="Left" Height="22" VerticalAlignment="Center"
-                                Width="44" RenderTransformOrigin="0.5,0.5" Grid.Column="4" Margin="60,0,0,0"
-                                Cursor="Hand" MouseLeftButtonDown="Bu_MouseLeftButtonDown">
+            <local:ToggleButton x:Name="Bu" HorizontalAlignment="Left" Height="22" VerticalAlignment="Center" Width="44" RenderTransformOrigin="0.5,0.5" Grid.Column="4" Margin="60,0,0,0" Cursor="Hand" MouseLeftButtonDown="Bu_MouseLeftButtonDown">
                 <local:ToggleButton.RenderTransform>
                     <TransformGroup>
-                        <ScaleTransform ScaleY="-1" />
-                        <SkewTransform />
-                        <RotateTransform />
-                        <TranslateTransform />
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
                     </TransformGroup>
 
                 </local:ToggleButton.RenderTransform>
@@ -310,31 +318,32 @@
 
             <!--Restore Frame Pop up-->
             <Popup Name="RestoreFramePopUp"
-                   IsOpen="{Binding ElementName=RestoreFrameButton, Path=IsChecked}"
-                   PlacementTarget="{Binding ElementName=RestoreFrameButton}"
-                   Grid.Column="1"
-                   AllowsTransparency="True"
-                   PopupAnimation="Slide"
-                   StaysOpen="False"
-                   Height="100"
-                   Width="100">
+                    IsOpen="{Binding ElementName=RestoreFrameButton, Path=IsChecked}"
+                    PlacementTarget="{Binding ElementName=RestoreFrameButton}"
+                    Grid.Column="1"
+                    AllowsTransparency="True"
+                    PopupAnimation="Slide"
+                    StaysOpen="False"
+                    Height="100"
+                    Width="100">
 
                 <Grid Name="RestoreDropdown" Background="#cfcfcf">
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="2*" />
-                        <RowDefinition Height="3*" />
+                        <RowDefinition Height="2*"></RowDefinition>
+                        <RowDefinition Height="3*"></RowDefinition>
                     </Grid.RowDefinitions>
 
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
-                        <Image Source="/Icons/WhiteboardUX/Toolbar/flag.png" Height="20" Width="20" Margin="0 0 0 0" />
+                    <StackPanel Grid.Row="0" Orientation ="Horizontal">
+                        <Image Source="/Icons/WhiteboardUX/Toolbar/flag.png" Height="20" Width="20" Margin="0 0 0 0"></Image>
                         <TextBlock Text="Checkpoints"
                                    Foreground="Black"
                                    FontSize="14"
                                    FontWeight="light"
                                    VerticalAlignment="Center"
-                                   Margin="2.5 5 0 10" />
+                                   Margin="2.5 5 0 10"
+                        ></TextBlock>
                     </StackPanel>
 
                     <ListBox Grid.Row="1" Background="#cfcfcf">
@@ -373,11 +382,11 @@
 
                 <ToggleButton.Style>
                     <Style TargetType="ToggleButton">
-                        <Setter Property="Background" Value="#D500F9" />
-                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Background" Value="#D500F9"/>
+                        <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#6A1B9A" />
+                                <Setter Property="Background" Value= "#6A1B9A"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -391,8 +400,8 @@
                                 CornerRadius="10"
                                 Background="{TemplateBinding Background}">
 
-                            <ContentPresenter VerticalAlignment="Center"
-                                              HorizontalAlignment="Center" />
+                            <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
                         </Border>
 
 
@@ -402,8 +411,8 @@
             </ToggleButton>
 
             <!--Save Frame Button-->
-            <Button Content="Save Frame"
-                    Grid.Column="6"
+            <Button Content="Save Frame" 
+                    Grid.Column="6" 
                     Foreground="LightGray"
                     FontSize="10"
                     FontWeight="light"
@@ -412,11 +421,11 @@
 
                 <Button.Style>
                     <Style TargetType="Button">
-                        <Setter Property="Background" Value="#D500F9" />
-                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Background" Value="#D500F9"/>
+                        <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#6A1B9A" />
+                                <Setter Property="Background" Value="#6A1B9A"></Setter>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -429,8 +438,8 @@
                                 CornerRadius="10"
                                 Background="{TemplateBinding Background}">
 
-                            <ContentPresenter VerticalAlignment="Center"
-                                              HorizontalAlignment="Center" />
+                            <ContentPresenter VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"/>
 
 
                         </Border>
@@ -455,12 +464,12 @@
                         <StackPanel>
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                    <RowDefinition />
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
                                 </Grid.RowDefinitions>
 
                                 <!--Buttons-->
@@ -547,7 +556,7 @@
                                     <ToggleButton x:Name="PenTool" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="True" Click="CheckedFreehandTool"
                                                   MouseEnter="OpenPopupFreeHandButton_MouseEnter" MouseLeave="OpenPopupFreeHandButton_MouseLeave">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/Pen.png" Margin="2 2 2 2" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/Pen.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
 
                                         <ToggleButton.Style>
@@ -556,7 +565,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                     <!--<Trigger Property="IsPressed" Value="True">
                                                         <Setter Property="Background" Value="DarkRed"></Setter>
@@ -571,11 +580,10 @@
                                                 <Border Width="25"
                                                         Height="25"
                                                         CornerRadius="18"
-                                                        Background="{TemplateBinding Background}"
+                                                        Background="{TemplateBinding Background}" 
                                                         Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </ToggleButton.Template>
@@ -583,7 +591,7 @@
                                 </Grid>
 
                                 <Grid Grid.Row="1">
-                                    <Popup Name="EraserPopUp"
+                                    <!--<Popup Name="EraserPopUp"
                                         IsOpen="{Binding ElementName=EraseTool, Path=IsChecked}"
                                         PlacementTarget="{Binding ElementName=EraseTool}"
                                         AllowsTransparency="True"
@@ -604,13 +612,12 @@
                                                 <Slider x:Name="EraserThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="EraserThicknessSlider_ValueChanged"></Slider>
                                             </StackPanel>
                                         </Grid>
-                                    </Popup>
+                                    </Popup>-->
 
                                     <!--Eraser Button-->
-                                    <ToggleButton x:Name="EraseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool"
-                                                  MouseEnter="OpenPopupEraserButton_MouseEnter" MouseLeave="OpenPopupEraserButton_MouseLeave">
+                                    <ToggleButton x:Name="EraseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEraserTool">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Margin="2 2 2 2" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/Eraser.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
 
                                         <ToggleButton.Style>
@@ -619,7 +626,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -634,8 +641,7 @@
                                                         Background="{TemplateBinding Background}" 
                                                         Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </ToggleButton.Template>
@@ -646,8 +652,7 @@
                                     <!--Select Button-->
                                     <ToggleButton x:Name="SelectTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedSelectTool">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/selectTool.png"
-                                                   Margin="4.5 2 0 2" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/selectTool.png" Margin="4.5 2 0 2"></Image>
                                         </StackPanel>
 
                                         <ToggleButton.Style>
@@ -656,7 +661,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -670,8 +675,7 @@
                                                         CornerRadius="18"
                                                         Background="{TemplateBinding Background}" Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </ToggleButton.Template>
@@ -682,8 +686,7 @@
                                     <!--Rectangle Button-->
                                     <ToggleButton x:Name="RectTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedRectTool">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawRectangle.png"
-                                                   Margin="2 2 2 2" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawRectangle.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
 
                                         <ToggleButton.Style>
@@ -692,7 +695,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -706,8 +709,7 @@
                                                         CornerRadius="18"
                                                         Background="{TemplateBinding Background}" Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </ToggleButton.Template>
@@ -718,10 +720,9 @@
                                     <!--Line Button-->
                                     <ToggleButton x:Name="LineTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedLineTool">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawLine.png" Margin="2 2 2 2"
-                                                   RenderTransformOrigin="0.5,0.5">
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawLine.png" Margin="2 2 2 2" RenderTransformOrigin="0.5,0.5">
                                                 <Image.RenderTransform>
-                                                    <RotateTransform Angle="35" />
+                                                    <RotateTransform Angle="35"></RotateTransform>
                                                 </Image.RenderTransform>
                                             </Image>
                                         </StackPanel>
@@ -732,7 +733,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -747,8 +748,7 @@
                                                         Background="{TemplateBinding Background}" 
                                                         Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </ToggleButton.Template>
@@ -759,8 +759,7 @@
                                     <!--Ellipse Button-->
                                     <ToggleButton x:Name="EllipseTool" HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedEllTool">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawEllipse.png"
-                                                   Margin="2 2 2 2" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/drawEllipse.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
 
                                         <ToggleButton.Style>
@@ -769,7 +768,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -781,11 +780,10 @@
                                                 <Border Width="25"
                                                         Height="25"
                                                         CornerRadius="18"
-                                                        Background="{TemplateBinding Background}"
+                                                        Background="{TemplateBinding Background}" 
                                                         Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </ToggleButton.Template>
@@ -794,6 +792,7 @@
                             </Grid>
                         </StackPanel>
                     </Border>
+
 
 
                     <!--<Image Width="20" Height="25" Margin="0 0 0 160" Source="/Icons/WhiteboardUX/Toolbar/Pen.png" Cursor="Hand" MouseDown="ClickedFreehandTool"/>-->
@@ -809,12 +808,12 @@
 
         <!--Middle Column Containing Canvas-->
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <Canvas Name="MyCanvas" Focusable ="True" MouseDown="OnCanvasMouseButtonDown" MouseMove="OnCanvasMouseMove"  MouseUp ="OnCanvasMouseButtonUp" Margin="0,10,0,10" Background="White" Height="379" Width="580" HorizontalAlignment="Center" ClipToBounds="True">
+            <Canvas Name="MyCanvas" Focusable ="True" MouseDown="OnCanvasMouseButtonDown" MouseMove="OnCanvasMouseMove"  MouseUp ="OnCanvasMouseButtonUp"  MouseLeave="OnCanvasMouseLeave" MouseEnter="OnCanvasMouseEnter" Margin="0,10,0,10" Background="White" Height="379" Width="580" HorizontalAlignment="Center" ClipToBounds="True">
                 <Canvas.RenderTransform>
                     <TransformGroup>
-                        <ScaleTransform />
-                        <SkewTransform />
-                        <TranslateTransform />
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <TranslateTransform/>
                     </TransformGroup>
                 </Canvas.RenderTransform>
 
@@ -830,15 +829,14 @@
         <StackPanel Grid.Row="1" Grid.Column="2">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="1">
                     <!--Select Toolbar Border-->
-                    <Border x:Name="SelectToolBar" Width="30" Height="180" Background="#D500F9" Margin="0,120,0,30"
-                            CornerRadius="15" Visibility="Collapsed">
+                    <Border x:Name="SelectToolBar" Width="30" Height="180" Background="#D500F9" Margin="0,120,0,30" CornerRadius="15" Visibility="Collapsed">
                         <!--<Border.Triggers>
                             <EventTrigger RoutedEvent="Loaded">
                                 <BeginStoryboard>
@@ -854,10 +852,10 @@
                         <StackPanel>
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                    <RowDefinition />
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
                                 </Grid.RowDefinitions>
 
                                 <!--Buttons-->
@@ -947,7 +945,7 @@
                                                   MouseEnter="OpenPopupShapeBorderButton_MouseEnter"  
                                                   MouseLeave="OpenPopupShapeBorderButton_MouseLeave">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/pencil.png" Margin="3 3 3 3" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/pencil.png" Margin="3 3 3 3"></Image>
                                         </StackPanel>
 
                                         <ToggleButton.Style>
@@ -956,7 +954,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                     <!--<Trigger Property="IsPressed" Value="True">
                                                         <Setter Property="Background" Value="DarkRed"></Setter>
@@ -969,13 +967,12 @@
                                         <ToggleButton.Template>
                                             <ControlTemplate TargetType="ToggleButton">
                                                 <Border Width="25"
-                                                        Height="25"
-                                                        CornerRadius="18"
-                                                        Background="{TemplateBinding Background}"
-                                                        Margin="0 15 0 0">
+                                                Height="25"
+                                                CornerRadius="18"
+                                                Background="{TemplateBinding Background}" 
+                                                Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </ToggleButton.Template>
@@ -1057,7 +1054,7 @@
                                                   MouseEnter="OpenPopupFillShapeButton_MouseEnter"
                                                   MouseLeave="OpenPopupFillShapeButton_MouseLeave">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/fill.png" Margin="2 2 2 2" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/fill.png" Margin="2 2 2 2"></Image>
                                         </StackPanel>
 
                                         <ToggleButton.Style>
@@ -1066,7 +1063,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                 </Style.Triggers>
 
@@ -1079,11 +1076,11 @@
                                                 <Border Width="25"
                                                         Height="25"
                                                         CornerRadius="18"
-                                                        Background="{TemplateBinding Background}"
+                                                        Background="{TemplateBinding Background}" 
                                                         Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" 
+                                                        HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </ToggleButton.Template>
@@ -1094,17 +1091,16 @@
                                     <!--Duplicate Shape Button-->
                                     <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedDuplicateTool">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/duplication.png"
-                                                   Margin="3 3 3 3" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/duplication.png" Margin="3 3 3 3"></Image>
                                         </StackPanel>
 
                                         <Button.Style>
                                             <Style TargetType="Button">
-                                                <Setter Property="Background" Value="#D500F9" />
-                                                <Setter Property="Cursor" Value="Hand" />
+                                                <Setter Property="Background" Value="#D500F9"/>
+                                                <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1115,11 +1111,10 @@
                                                 <Border Width="25"
                                                         Height="25"
                                                         CornerRadius="18"
-                                                        Background="{TemplateBinding Background}"
+                                                        Background="{TemplateBinding Background}" 
                                                         Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </Button.Template>
@@ -1130,17 +1125,16 @@
                                     <!--Delete Shape Button-->
                                     <Button HorizontalAlignment="Center" VerticalAlignment="Center" Click="ClickedDeleteTool">
                                         <StackPanel Orientation="Vertical">
-                                            <Image Source="/Icons/WhiteboardUX/Toolbar/bin.png"
-                                                   Margin="2.5 2.5 2.5 2.5" />
+                                            <Image Source="/Icons/WhiteboardUX/Toolbar/bin.png" Margin="2.5 2.5 2.5 2.5"></Image>
                                         </StackPanel>
 
                                         <Button.Style>
                                             <Style TargetType="Button">
-                                                <Setter Property="Background" Value="#D500F9" />
-                                                <Setter Property="Cursor" Value="Hand" />
+                                                <Setter Property="Background" Value="#D500F9"/>
+                                                <Setter Property="Cursor" Value="Hand"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#007C9C" />
+                                                        <Setter Property="Background" Value="#007C9C"></Setter>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -1152,11 +1146,10 @@
                                                 <Border Width="25"
                                                         Height="25"
                                                         CornerRadius="18"
-                                                        Background="{TemplateBinding Background}"
+                                                        Background="{TemplateBinding Background}" 
                                                         Margin="0 15 0 0">
 
-                                                    <ContentPresenter VerticalAlignment="Center"
-                                                                      HorizontalAlignment="Center" />
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Border>
                                             </ControlTemplate>
                                         </Button.Template>
