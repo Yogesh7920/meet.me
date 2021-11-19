@@ -29,7 +29,7 @@ namespace Dashboard.Client.SessionManagement
         {
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
-            Session session = new();
+            TraceManager session = new();
             session.TraceListener();
 
 
