@@ -3,7 +3,85 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        MinWidth="1500" MinHeight="750" Icon="Icons/logo.ico"
+        Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
+    
+    <!-- Parent Grid -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="0.15*"/>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="0.15*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="0.15*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="0.05*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="687*"/>
+            <RowDefinition Height="0.75"/>
+            <RowDefinition Height="82*"/>
+            <RowDefinition Height="15*"/>
+        </Grid.RowDefinitions>
+
+        <!--<DockPanel Background="{StaticResource LightGrayBg}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7">
+            <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="meet.me" Foreground="{StaticResource DarkPurpleBg}" FontSize="40" FontWeight="Bold" FontFamily="ComicSans"/>
+        </DockPanel>-->
+
+        <!-- Buttons -->
+        <DockPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
+            <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50">-->
+            <Button x:Name="Whiteboard" Click="OnWhiteboardClick" ToolTip="WhiteBoard" BorderThickness="0" Background="White" Width="40" Height="40">
+                <Image  Source="/Icons/MainWindow/icons8-whiteboard-150.png"/>
+            </Button>
+            <!-- </Border>-->
+            <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="5 0 5 0">-->
+            <Button x:Name="Screenshare" Click="OnScreenShareClick" ToolTip="ScreenShare"  BorderThickness="0" Background="White" Width="40" Height="40" Margin="5 0 5 0" >
+                <Image Source="/Icons/MainWindow/icons8-present-to-all-50.png"/>
+            </Button>
+            <!-- </Border>-->
+            <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="0 0 5 0">-->
+            <Button x:Name="ChatButton" Click="OnChatButtonClick" ToolTip="Chat" Width="40" Height="40" BorderThickness="0" Background="White" Margin="0 0 5 0">
+                <Image Source="/Icons/MainWindow/icons8-chat-96.png"/>
+            </Button>
+            <!-- </Border>-->
+            <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="0 0 5 0">-->
+            <Button x:Name="Dashboard" Click="OnDashboardClick" ToolTip="Dashboard" Width="40" Height="40" BorderThickness="0" Background="White" Margin="0 0 5 0">
+                <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png"/>
+            </Button>
+            <!-- </Border>-->
+            <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Background="Purple">
+                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="40" Height="40" BorderThickness="0" Background="Purple" >
+                    <Image Source="/Icons/Mainwindow/icons8-end-call-96.png"/>
+                </Button>
+            </Border>
+        </DockPanel>
+
+        <DockPanel Name="ThemeButton" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="4" Grid.Column="4">
+            <Button HorizontalAlignment="Left" Foreground="{DynamicResource Color3Bg}" Content="Switch Theme" Click="OnThemeClick">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="75"
+                                Height="30"
+                                CornerRadius="15"
+                                Background="{DynamicResource Color1Bg}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DockPanel>
+
+        <ContentControl Name="UsersListControl" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="4"/>
+
+        <ContentControl Name="SSwb" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 5"/>
+
+        <ContentControl Name="Chat" Grid.Row="2" Grid.Column="6" Grid.RowSpan="4" Visibility="Collapsed"/>
+
+    </Grid>
 </Window>

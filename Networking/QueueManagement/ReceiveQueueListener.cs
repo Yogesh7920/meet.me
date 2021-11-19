@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,31 +7,31 @@ namespace Networking
 {
     public class ReceiveQueueListener
     {
-        private readonly IQueue _receiveQueue;
         private readonly Dictionary<string, INotificationHandler> _notificationHandlers;
+        private readonly IQueue _receiveQueue;
         private bool _listenRun;
 
         /// <summary>
-        /// ReceiveQueueListener constructor initializes the queue and the notification handler passed.
+        ///     ReceiveQueueListener constructor initializes the queue and the notification handler passed.
         /// </summary>
         public ReceiveQueueListener(IQueue queue, Dictionary<string, INotificationHandler> notificationHandlers)
         {
             _receiveQueue = queue;
             _notificationHandlers = notificationHandlers;
         }
-        
+
         /// <summary>
-        /// Starts the ReceiveQueueListener on a new thread
+        ///     Starts the ReceiveQueueListener on a new thread
         /// </summary>
         public void Start()
         {
-            Thread listener = new Thread(ListenQueue);
+            var listener = new Thread(ListenQueue);
             _listenRun = true;
             listener.Start();
         }
-        
+
         /// <summary>
-        /// Stops the ReceiveQueueListener thread
+        ///     Stops the ReceiveQueueListener thread
         /// </summary>
         public void Stop()
         {
@@ -40,29 +39,27 @@ namespace Networking
         }
 
         /// <summary>
-        /// Listens on the receiving queue and calls Notification Handler of the corresponding module.
+        ///     Listens on the receiving queue and calls Notification Handler of the corresponding module.
         /// </summary>
-        public void ListenQueue()
+        private void ListenQueue()
         {
             while (_listenRun)
+            while (!_receiveQueue.IsEmpty())
             {
-                while (!_receiveQueue.IsEmpty())
-                {
-                    Packet packet = _receiveQueue.Dequeue();
-                    string data = packet.SerializedData;
-                    string moduleIdentifier = packet.ModuleIdentifier;
+                var packet = _receiveQueue.Dequeue();
+                var data = packet.SerializedData;
+                var moduleIdentifier = packet.ModuleIdentifier;
 
-                    // If the _notificationHandlers dictionary contains the moduleIdentifier
-                    if (_notificationHandlers.ContainsKey(moduleIdentifier))
-                    {
-                        INotificationHandler handler = _notificationHandlers[moduleIdentifier];
-                        _ = Task.Run(() => { handler.OnDataReceived(data); });
-                    }
-                    else
-                    {
-                        Trace.WriteLine("Handler does not exist: " + moduleIdentifier);
-                    }
-                }   
+                // If the _notificationHandlers dictionary contains the moduleIdentifier
+                if (_notificationHandlers.ContainsKey(moduleIdentifier))
+                {
+                    var handler = _notificationHandlers[moduleIdentifier];
+                    _ = Task.Run(() => { handler.OnDataReceived(data); });
+                }
+                else
+                {
+                    Trace.WriteLine("Handler does not exist: " + moduleIdentifier);
+                }
             }
         }
     }
