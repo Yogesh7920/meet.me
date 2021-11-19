@@ -8,6 +8,7 @@ namespace Testing.Content
         [SetUp]
         public void Setup()
         {
+			_conch = new ChatClient();
         }
 
         [Test]
@@ -18,7 +19,7 @@ namespace Testing.Content
 			toconvert.Type = MessageType.Chat;
 			toconvert.ReplyThreadId = -1;
 			toconvert.ReceiverIds = new int[0];
-            var x = SendToMessage(toconvert,MessageEvent.NewMessage);
+            var x = _conch.SendToMessage(toconvert,MessageEvent.NewMessage);
 
 			Assert.AreEqual(x.Message, "Apple");
 			Assert.AreEqual(x.Event, MessageEvent.NewMessage);

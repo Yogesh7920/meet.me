@@ -21,7 +21,7 @@ namespace Content
 
         public int UserId { get; set; }
 
-        private MessageData SendToMessage(SendMessageData toconvert, MessageEvent ChatEvent)
+        public MessageData SendToMessage(SendMessageData toconvert, MessageEvent ChatEvent)
         {
             var Converted = new MessageData();
             Converted.Event = ChatEvent;
