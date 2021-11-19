@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Networking;
+using Content;
 
 
 namespace Dashboard
@@ -70,9 +71,9 @@ namespace Dashboard
         /// </summary>
         /// <param name="communicator"> Test communicator to test functionality</param>
         /// <returns></returns>
-        public static ServerSessionManager GetServerSessionManager(ICommunicator communicator)
+        public static ServerSessionManager GetServerSessionManager(ICommunicator communicator, IContentServer contentServer = null)
         {
-            return new ServerSessionManager(communicator);
+            return new ServerSessionManager(communicator, contentServer);
         }
 
         private static IUXClientSessionManager s_clientSessionManager;

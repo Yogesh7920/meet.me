@@ -17,6 +17,7 @@ namespace Testing.Dashboard
         [SetUp]
         public void Setup()
         {
+            _testContentServer = new();
             _testCommunicator = new();
             _testCommunicator.ipAddressAndPort = validIP + ":" + validPort;
             clientSessionManagerA = new(_testCommunicator);
@@ -25,7 +26,7 @@ namespace Testing.Dashboard
             oldUX = new();
             clientSessionManagerB.SubscribeSession(newUX);
             clientSessionManagerA.SubscribeSession(oldUX);
-            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator);
+            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator,_testContentServer);
         }
 
         [Test]
@@ -288,5 +289,6 @@ namespace Testing.Dashboard
         private readonly ISerializer _serializer = new Serializer();
         private TestCommunicator _testCommunicator;
         private readonly string validIP = "192.168.1.1", validPort ="8080";
+        private TestContentServer _testContentServer;
     }
 }
