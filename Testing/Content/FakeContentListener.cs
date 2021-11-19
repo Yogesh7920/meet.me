@@ -11,7 +11,7 @@ namespace Testing.Content
         ///     Handler for messages received by the Content module.
         /// </summary>
         /// <param name="messageData">Received message</param>
-        void OnMessage(ReceiveMessageData messageData)
+        public void OnMessage(ReceiveMessageData messageData)
         {
             Trace.WriteLine("[Fake listener]");
         }
@@ -23,7 +23,7 @@ namespace Testing.Content
         ///     as it is running on the server, not on the clients.
         /// </summary>
         /// <param name="allMessages">list of Thread objects containing all messages</param>
-        void OnAllMessages(List<ChatContext> allMessages)
+        public void OnAllMessages(List<ChatContext> allMessages)
         {
             Trace.WriteLine("[Fake listener]");
         }
