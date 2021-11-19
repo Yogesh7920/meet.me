@@ -106,7 +106,7 @@ namespace NUnitTest_Persistence
             PersistenceFactory pf = new PersistenceFactory();
             ResponseEntity response = pf.GetTelemetryPersistenceInstance().SaveServerData(sdtns);
 
-            ServerDataToSave deserialised_ouput = pf.GetTelemetryPersistenceInstance().RetriveAllSeverData();
+            ServerDataToSave deserialised_ouput = pf.GetTelemetryPersistenceInstance().RetrieveAllSeverData();
             Trace.WriteLine(deserialised_ouput.SessionCount + " " + deserialised_ouput.AllSessionsSummary[0].SessionStartTime);
 
             Assert.IsTrue(IsEqual(sdtns, deserialised_ouput));

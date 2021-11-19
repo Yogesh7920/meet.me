@@ -26,7 +26,7 @@ namespace Dashboard.Server.Persistence
         /// retrives the ServerData after end of all of the sessions.
         /// </summary>
         /// <returns>returns List of SeverData</returns>
-        public ServerDataToSave RetriveAllSeverData();
+        public ServerDataToSave RetrieveAllSeverData();
     }
 
 

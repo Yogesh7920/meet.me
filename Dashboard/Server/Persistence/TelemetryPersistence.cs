@@ -14,7 +14,7 @@ namespace Dashboard.Server.Persistence
 
     public class TelemetryPersistence : ITelemetryPersistence
     {
-        public ServerDataToSave RetriveAllSeverData()
+        public ServerDataToSave RetrieveAllSeverData()
         {
             XmlSerializer deserialiser = new XmlSerializer(typeof(ServerDataToSave));
             string path = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
