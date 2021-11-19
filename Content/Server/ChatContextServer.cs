@@ -32,11 +32,11 @@ namespace Content
 
                 case MessageEvent.Star:
                     Trace.WriteLine("[ChatContextServer] Event is Star, Starring message in existing Thread");
-                    return StarMessage(messageData);
+                    return StarMessage(messageData.ReplyThreadId, messageData.MessageId);
 
                 case MessageEvent.Update:
                     Trace.WriteLine("[ChatContextServer] Event is Update, Updating message in existing Thread");
-                    return UpdateMessage(messageData);
+                    return UpdateMessage(messageData.ReplyThreadId, messageData.MessageId, messageData.Message);
 
                 default:
                     Trace.WriteLine($"Uknown Event {messageData.Event} for chat type.");
@@ -58,11 +58,18 @@ namespace Content
         /// </summary>
         /// <param name="receiveMessageData"></param>
         /// <returns>Returns the message after starring it</returns>
-        private ReceiveMessageData StarMessage(MessageData receiveMessageData)
+        private ReceiveMessageData StarMessage(int replyThreadId, int messageId)
         {
-            ReceiveMessageData message = _contentDatabase.GetMessage(receiveMessageData.ReplyThreadId, receiveMessageData.MessageId);
+            ReceiveMessageData message = _contentDatabase.GetMessage(replyThreadId, messageId);
+
+            if (message == null)
+            {
+                Trace.WriteLine($"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
+                return null;
+            }
+
             message.Starred = !message.Starred;
-            message.Event = receiveMessageData.Event;
+            message.Event = MessageEvent.Star;
             return message;
         }
 
@@ -71,11 +78,18 @@ namespace Content
         /// </summary>
         /// <param name="receiveMessageData"></param>
         /// <returns>Returns the message after updating it</returns>
-        private ReceiveMessageData UpdateMessage(MessageData receiveMessageData)
+        private ReceiveMessageData UpdateMessage(int replyThreadId, int messageId, string msgString)
         {
-            ReceiveMessageData message = _contentDatabase.GetMessage(receiveMessageData.ReplyThreadId, receiveMessageData.MessageId);
-            message.Message = receiveMessageData.Message;
-            message.Event = receiveMessageData.Event;
+            ReceiveMessageData message = _contentDatabase.GetMessage(replyThreadId, messageId);
+
+            if (message == null)
+            {
+                Trace.WriteLine($"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
+                return null;
+            }
+
+            message.Message = msgString;
+            message.Event = MessageEvent.Update;
             return message;
         }
     }

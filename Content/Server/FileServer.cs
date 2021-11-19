@@ -58,6 +58,13 @@ namespace Content
         private MessageData FetchFile(MessageData messageData)
         {
             MessageData receiveMessageData = _contentDatabase.GetFiles(messageData.MessageId);
+
+            if (receiveMessageData == null)
+            {
+                Trace.WriteLine($"[FileServer] File not found messageId: {messageData.MessageId}.");
+                return null;
+            }
+
             // store file path on which the file will be downloaded on the client's system
             receiveMessageData.Message = messageData.Message;
             return receiveMessageData;

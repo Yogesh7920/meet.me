@@ -44,6 +44,10 @@ namespace Content
         /// <returns>Returns the stored file</returns>
         public MessageData GetFiles(int messageId)
         {
+            if (!_files.ContainsKey(messageId))
+            {
+                return null;
+            }
             return _files[messageId];
         }
 
@@ -101,6 +105,10 @@ namespace Content
         /// <returns>Returns the requested message</returns>
         public ReceiveMessageData GetMessage(int replyThreadId, int messageId)
         {
+            if (!(_chatContextsMap.ContainsKey(replyThreadId) && _messageMap.ContainsKey(messageId)))
+            {
+                return null;
+            }
             int threadIndex = _chatContextsMap[replyThreadId];
             int messageIndex = _messageMap[messageId];
             return _chatContexts[threadIndex].MsgList[messageIndex];

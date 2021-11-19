@@ -14,6 +14,7 @@ namespace Content
         private readonly ISerializer _serializer;
         private readonly FileServer _fileServer;
         private readonly ChatContextServer _chatContextServer;
+        private static readonly object _lock = new();
 
         public ContentServer()
         {
@@ -52,7 +53,7 @@ namespace Content
         /// <param name="data"></param>
         public void Receive(string data)
         {
-            MessageData messageData = null;
+            MessageData messageData;
             try
             {
                 messageData = _serializer.Deserialize<MessageData>(data);
@@ -67,23 +68,26 @@ namespace Content
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
             Debug.Assert(messageData != null, "[ContentServer] Received null from Deserializer");
 
-            switch (messageData.Type)
+            lock (_lock)
             {
-                case MessageType.Chat:
-                    Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
-                    receiveMessageData = (MessageData)_chatContextServer.Receive(messageData);
-                    Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
-                    break;
+                switch (messageData.Type)
+                {
+                    case MessageType.Chat:
+                        Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
+                        receiveMessageData = (MessageData)_chatContextServer.Receive(messageData);
+                        Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
+                        break;
 
-                case MessageType.File:
-                    Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
-                    receiveMessageData = _fileServer.Receive(messageData);
-                    Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by FileServer");
-                    break;
+                    case MessageType.File:
+                        Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
+                        receiveMessageData = _fileServer.Receive(messageData);
+                        Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by FileServer");
+                        break;
 
-                default:
-                    Debug.Assert(false, "[ContentServer] Unknown Message Type");
-                    return;
+                    default:
+                        Debug.Assert(false, "[ContentServer] Unknown Message Type");
+                        return;
+                }
             }
 
             if (receiveMessageData == null)
