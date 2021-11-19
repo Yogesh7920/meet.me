@@ -12,7 +12,7 @@ namespace Content
 
         public MessageData Clone()
         {
-            return (MessageData)this.MemberwiseClone();
+            return (MessageData)MemberwiseClone();
         }
     }
 }

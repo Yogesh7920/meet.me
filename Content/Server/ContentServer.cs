@@ -6,13 +6,13 @@ namespace Content
 {
     internal class ContentServer : IContentServer
     {
-        private List<IContentListener> _subscribers;
-        private ICommunicator _communicator;
-        private INotificationHandler _notificationHandler;
-        private ContentDatabase _contentDatabase;
-        private ISerializer _serializer;
-        private FileServer _fileServer;
-        private ChatContextServer _chatContextServer;
+        private readonly List<IContentListener> _subscribers;
+        private readonly ICommunicator _communicator;
+        private readonly INotificationHandler _notificationHandler;
+        private readonly ContentDatabase _contentDatabase;
+        private readonly ISerializer _serializer;
+        private readonly FileServer _fileServer;
+        private readonly ChatContextServer _chatContextServer;
 
         public ContentServer()
         {
@@ -41,13 +41,13 @@ namespace Content
         /// <inheritdoc />
         public void SSendAllMessagesToClient(int userId)
         {
-            var allMessagesSerialized = _serializer.Serialize(_chatContextServer.GetAllMessages());
+            string allMessagesSerialized = _serializer.Serialize(_chatContextServer.GetAllMessages());
             _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
 
         public void Receive(string data)
         {
-            var messageData = _serializer.Deserialize<MessageData>(data);
+            MessageData messageData = _serializer.Deserialize<MessageData>(data);
             MessageData receiveMessageData;
 
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
@@ -97,7 +97,7 @@ namespace Content
             }
             else
             {
-                foreach (var userId in messageData.ReceiverIds)
+                foreach (int userId in messageData.ReceiverIds)
                 {
                     _communicator.Send(message, "Content", userId.ToString());
                 }
@@ -107,13 +107,16 @@ namespace Content
 
         private void SendFile(MessageData messageData)
         {
-            var message = _serializer.Serialize(messageData);
+            string message = _serializer.Serialize(messageData);
             _communicator.Send(message, "Content", messageData.SenderId.ToString());
         }
 
         private void Notify(ReceiveMessageData receiveMessageData)
         {
-            foreach (var subscriber in _subscribers) subscriber.OnMessage(receiveMessageData);
+            foreach (IContentListener subscriber in _subscribers)
+            {
+                subscriber.OnMessage(receiveMessageData);
+            }
         }
     }
 }

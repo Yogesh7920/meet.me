@@ -5,7 +5,7 @@ namespace Content
 {
     internal class ChatContextServer
     {
-        private ContentDatabase _contentDatabase;
+        private readonly ContentDatabase _contentDatabase;
 
         /// <summary>
         /// Constructor for ChatContextServer, initializes the contentDatabse
@@ -13,7 +13,7 @@ namespace Content
         /// <param name="contentDatabase"></param>
         public ChatContextServer(ContentDatabase contentDatabase)
         {
-            this._contentDatabase = contentDatabase;
+            _contentDatabase = contentDatabase;
         }
 
         /// <summary>

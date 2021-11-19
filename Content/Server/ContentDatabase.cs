@@ -7,10 +7,10 @@ namespace Content
 {
     internal class ContentDatabase
     {
-        private Dictionary<int, MessageData> _files;
-        private List<ChatContext> _chatContexts;
-        private Dictionary<int, int> _chatContextsMap;
-        private Dictionary<int, int> _messageMap;
+        private readonly Dictionary<int, MessageData> _files;
+        private readonly List<ChatContext> _chatContexts;
+        private readonly Dictionary<int, int> _chatContextsMap;
+        private readonly Dictionary<int, int> _messageMap;
 
         /// <summary>
         /// Constructor for ContentDatabase, initilizes all the memeber variables.
@@ -66,11 +66,13 @@ namespace Content
             }
             else
             {
-                ChatContext chatContext = new ChatContext();
-                chatContext.CreationTime = messageData.SentTime;
-                chatContext.NumOfMessages = 1;
-                chatContext.MsgList = new List<ReceiveMessageData>();
-                chatContext.ThreadId = IdGenerator.getChatContextId();
+                ChatContext chatContext = new ChatContext
+                {
+                    CreationTime = messageData.SentTime,
+                    NumOfMessages = 1,
+                    MsgList = new List<ReceiveMessageData>(),
+                    ThreadId = IdGenerator.getChatContextId()
+                };
                 messageData.ReplyThreadId = chatContext.ThreadId;
                 chatContext.MsgList.Add(messageData);
 

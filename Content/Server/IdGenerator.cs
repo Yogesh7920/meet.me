@@ -7,7 +7,7 @@
 
         public static int getMessageId()
         {
-            var prevId = _messageId;
+            int prevId = _messageId;
             _messageId++;
             return prevId;
         }
@@ -19,7 +19,7 @@
 
         public static int getChatContextId()
         {
-            var prevId = _chatContextId;
+            int prevId = _chatContextId;
             _chatContextId++;
             return prevId;
         }
