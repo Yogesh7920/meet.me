@@ -25,8 +25,10 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public ClientSessionManager()
         {
+            moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
+            _communicator.Subscribe(moduleIdentifier, this);
             Session session = new();
             session.TraceListener();
            
@@ -37,7 +39,6 @@ namespace Dashboard.Client.SessionManagement
             }
             _clientSessionData = null;
             _user = null;
-            moduleIdentifier = "clientSessionManager";
             chatSummary = null;
         }
 
@@ -49,8 +50,10 @@ namespace Dashboard.Client.SessionManagement
         /// </param>
         public ClientSessionManager(ICommunicator communicator)
         {
+            moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = communicator;
+            _communicator.Subscribe(moduleIdentifier, this);
             Session session = new();
             session.TraceListener();
 
@@ -60,7 +63,6 @@ namespace Dashboard.Client.SessionManagement
                 _clients = new List<IClientSessionNotifications>();
             }
             _clientSessionData = new SessionData();
-            moduleIdentifier = "clientSessionManager";
             chatSummary = null;
         }
 
