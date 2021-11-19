@@ -5,6 +5,7 @@ namespace Testing.Content
 {
     public class ChatClientTests
     {
+		private readonly ChatClient _conch;
         [SetUp]
         public void Setup()
         {
