@@ -109,16 +109,12 @@ namespace Dashboard.Server.SessionManagement
         /// sent present in the meeting. </returns>
         private SummaryData CreateSummary()
         {
-            // this double is reprent the ratio of summary size to the original content size.
-            // the plans are to take this input from the UX, it will be changed accordingly
-            double amountOfSummary = 0.5;
-
             //_contentServer.s
             // fetching all the chats from the content module.
             ChatContext[] allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
 
             // creating the summary from the chats
-            string summary = _summarizer.GetSummary(allChatsTillNow, amountOfSummary);
+            string summary = _summarizer.GetSummary(allChatsTillNow);
 
             // returning the summary
             return new SummaryData(summary);
