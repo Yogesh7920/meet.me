@@ -20,7 +20,7 @@ namespace Testing.Content
 			toconvert.Type = MessageType.Chat;
 			toconvert.ReplyThreadId = -1;
 			toconvert.ReceiverIds = new int[0];
-            MessageData x = _conch.SendToMessage(toconvert,MessageEvent.NewMessage);
+            var x = _conch.SendToMessage(toconvert,MessageEvent.NewMessage).MakeGenericType(MessageData);
 
 			Assert.AreEqual(x.Message, "Apple");
 			Assert.AreEqual(x.Event, MessageEvent.NewMessage);
