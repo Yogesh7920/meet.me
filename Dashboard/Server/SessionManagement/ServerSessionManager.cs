@@ -19,7 +19,7 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public ServerSessionManager()
         {
-
+            moduleIdentifier = "Dashboard";
             _contentServer = ContentServerFactory.GetInstance();
             _sessionData = new SessionData();
             _serializer = new Serializer();
@@ -30,7 +30,6 @@ namespace Dashboard.Server.SessionManagement
             session.TraceListener();
 
             userCount = 0;
-            moduleIdentifier = "serverSessionManager";
 
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(moduleIdentifier, this);
