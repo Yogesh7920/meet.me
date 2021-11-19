@@ -26,8 +26,8 @@ namespace Dashboard.Server.SessionManagement
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
 
-            Session session = new();
-            session.TraceListener();
+            TraceManager traceManager = new();
+            traceManager.TraceListener();
 
             userCount = 0;
 
@@ -46,8 +46,8 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
 
-            Session session = new();
-            session.TraceListener();
+            TraceManager traceManager = new();
+            traceManager.TraceListener();
 
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
