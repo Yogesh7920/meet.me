@@ -1,4 +1,5 @@
 ﻿using Networking;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -45,9 +46,22 @@ namespace Content
             _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
 
+        /// <summary>
+        /// Receives data from ContentServerNotificationHandler and processes it accordingly
+        /// </summary>
+        /// <param name="data"></param>
         public void Receive(string data)
         {
-            MessageData messageData = _serializer.Deserialize<MessageData>(data);
+            MessageData messageData = null;
+            try
+            {
+                messageData = _serializer.Deserialize<MessageData>(data);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentServer] Exception occured while deserialsing data. Exception: {e}");
+                return;
+            }
             MessageData receiveMessageData;
 
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
@@ -72,6 +86,12 @@ namespace Content
                     return;
             }
 
+            if (receiveMessageData == null)
+            {
+                Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
+                return;
+            }
+
             if (messageData.Event != MessageEvent.Download)
             {
                 Trace.WriteLine("[ContentServer] Notifying subscribers");
@@ -81,13 +101,17 @@ namespace Content
             }
             else
             {
-                Trace.WriteLine("[ContentServer] Event is Download, Sending File to client");
+                Trace.WriteLine("[ContentServer] Sending File to client");
                 SendFile(receiveMessageData);
             }
 
             Trace.WriteLine("[ContentServer] Message sent");
         }
 
+        /// <summary>
+        /// Sends the message to clients.
+        /// </summary>
+        /// <param name="messageData"></param>
         private void Send(MessageData messageData)
         {
             string message = _serializer.Serialize(messageData);
@@ -105,12 +129,20 @@ namespace Content
             }
         }
 
+        /// <summary>
+        /// Sends the file back to the requester.
+        /// </summary>
+        /// <param name="messageData"></param>
         private void SendFile(MessageData messageData)
         {
             string message = _serializer.Serialize(messageData);
             _communicator.Send(message, "Content", messageData.SenderId.ToString());
         }
 
+        /// <summary>
+        /// Notifies all the subscribed modules.
+        /// </summary>
+        /// <param name="receiveMessageData"></param>
         private void Notify(ReceiveMessageData receiveMessageData)
         {
             foreach (IContentListener subscriber in _subscribers)

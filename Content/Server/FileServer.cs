@@ -30,11 +30,16 @@ namespace Content
                     return FetchFile(messageData);
 
                 default:
-                    Debug.Assert(false, "[File Server] Unknown Event");
+                    Trace.WriteLine($"[FileServer] Unkown Event {messageData.Event} for file type");
                     return null;
             }
         }
 
+        /// <summary>
+        /// Saves file in the contentDatabase.
+        /// </summary>
+        /// <param name="messageData"></param>
+        /// <returns>Returns the saved file message without the file data.</returns>
         private MessageData SaveFile(MessageData messageData)
         {
             messageData = _contentDatabase.StoreFile(messageData).Clone();
@@ -45,6 +50,11 @@ namespace Content
             return messageData;
         }
 
+        /// <summary>
+        /// Fetches a stored file.
+        /// </summary>
+        /// <param name="messageData"></param>
+        /// <returns>Returns the requested file message.</returns>
         private MessageData FetchFile(MessageData messageData)
         {
             MessageData receiveMessageData = _contentDatabase.GetFiles(messageData.MessageId);

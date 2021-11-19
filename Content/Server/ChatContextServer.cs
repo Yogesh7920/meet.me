@@ -39,7 +39,7 @@ namespace Content
                     return UpdateMessage(messageData);
 
                 default:
-                    Debug.Assert(false, "[ChatContextServer] Unkown Event");
+                    Trace.WriteLine($"Uknown Event {messageData.Event} for chat type.");
                     return null;
             }
         }
