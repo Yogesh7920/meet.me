@@ -81,10 +81,7 @@ namespace Content
             }
             else
             {
-                Trace.WriteLine("[ContentServer] Event is Download");
-                // store file path on which the file will be downloaded on the client's system
-                receiveMessageData.Message = messageData.Message;
-                Trace.WriteLine("[ContentServer] Sending File to client");
+                Trace.WriteLine("[ContentServer] Event is Download, Sending File to client");
                 SendFile(receiveMessageData);
             }
 

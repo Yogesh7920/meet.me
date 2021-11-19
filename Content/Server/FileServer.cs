@@ -11,6 +11,11 @@ namespace Content
             _contentDatabase = contentDatabase;
         }
 
+        /// <summary>
+        /// Recevies the request related to files, will store the new file or return the file requested
+        /// </summary>
+        /// <param name="messageData"></param>
+        /// <returns>Returns the new file message without file data or the file requested</returns>
         public MessageData Receive(MessageData messageData)
         {
             Trace.WriteLine("[FileServer] Received message from ContentServer");
@@ -22,7 +27,7 @@ namespace Content
 
                 case MessageEvent.Download:
                     Trace.WriteLine("[FileServer] MessageEvent is Download, Fetching the file");
-                    return FetchFile(messageData.MessageId);
+                    return FetchFile(messageData);
 
                 default:
                     Debug.Assert(false, "[File Server] Unknown Event");
@@ -40,9 +45,12 @@ namespace Content
             return messageData;
         }
 
-        private MessageData FetchFile(int id)
+        private MessageData FetchFile(MessageData messageData)
         {
-            return _contentDatabase.GetFiles(id);
+            MessageData receiveMessageData = _contentDatabase.GetFiles(messageData.MessageId);
+            // store file path on which the file will be downloaded on the client's system
+            receiveMessageData.Message = messageData.Message;
+            return receiveMessageData;
         }
     }
 }
