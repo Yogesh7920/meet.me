@@ -12,6 +12,9 @@ namespace Content
         private Dictionary<int, int> _chatContextsMap;
         private Dictionary<int, int> _messageMap;
 
+        /// <summary>
+        /// Constructor for ContentDatabase, initilizes all the memeber variables.
+        /// </summary>
         public ContentDatabase()
         {
             _files = new Dictionary<int, MessageData>();
@@ -22,6 +25,11 @@ namespace Content
             IdGenerator.resetMessageId();
         }
 
+        /// <summary>
+        /// Stores Files in a map
+        /// </summary>
+        /// <param name="messageData"></param>
+        /// <returns>Returns the data that was stored</returns>
         public MessageData StoreFile(MessageData messageData)
         {
             MessageData message = StoreMessage(messageData);
@@ -29,11 +37,22 @@ namespace Content
             return message;
         }
 
+        /// <summary>
+        /// Fectches the files from a map based on the messageId.
+        /// </summary>
+        /// <param name="messageId"></param>
+        /// <returns>Returns the stored file</returns>
         public MessageData GetFiles(int messageId)
         {
             return _files[messageId];
         }
 
+        /// <summary>
+        /// Stores a message in _chatContexts, if a message is part of already existing thread appends the message to it
+        /// else creates a new thread and appends the message to the new thread.
+        /// </summary>
+        /// <param name="messageData"></param>
+        /// <returns>Retuns the new message stored</returns>
         public MessageData StoreMessage(MessageData messageData)
         {
             messageData.MessageId = IdGenerator.getMessageId();
@@ -63,11 +82,21 @@ namespace Content
             return messageData;
         }
 
+        /// <summary>
+        /// Gets all the Chat Contexts
+        /// </summary>
+        /// <returns>Returns all the ChatContexts</returns>
         public List<ChatContext> GetChatContexts()
         {
             return _chatContexts;
         }
 
+        /// <summary>
+        /// Gets a particular message based on its messageId and replyThreadId
+        /// </summary>
+        /// <param name="replyThreadId"></param>
+        /// <param name="messageId"></param>
+        /// <returns>Returns the requested message</returns>
         public ReceiveMessageData GetMessage(int replyThreadId, int messageId)
         {
             int threadIndex = _chatContextsMap[replyThreadId];

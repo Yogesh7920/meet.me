@@ -18,11 +18,11 @@ namespace Testing.Content
         [Test]
         public void FileTest()
         {
-            string pathA = @"D:\a.txt";
-            string pathB = @"D:\b.txt";
+            string pathA = @"trace.txt";
+            string pathB = @"whiteboard.dll";
 
             MessageData file1 = new MessageData();
-            file1.Message = "a.txt";
+            file1.Message = "trace.txt";
             file1.Type = MessageType.File;
             file1.FileData = new SendFileData(pathA);
             file1.SenderId = 1;
@@ -40,7 +40,7 @@ namespace Testing.Content
             Assert.AreEqual(file1.FileData.fileContent, recv.FileData.fileContent);
 
             MessageData file2 = new MessageData();
-            file2.Message = "b.txt";
+            file2.Message = "whiteboard.dll";
             file2.Type = MessageType.File;
             file2.FileData = new SendFileData(pathB);
             file2.SenderId = 1;

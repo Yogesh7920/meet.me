@@ -147,5 +147,27 @@ namespace Testing.Content
             Assert.AreEqual(MessageEvent.Update, recv.Event);
             Assert.IsFalse(recv.Starred);
         }
+
+        [Test]
+        public void GetAllMessageTest()
+        {
+            StarTest();
+
+            List<ChatContext> msgList = chatContextServer.GetAllMessages();
+
+            ReceiveMessageData message1 = msgList[0].MsgList[0];
+            Assert.AreEqual("Hello", message1.Message);
+            Assert.AreEqual(MessageType.Chat, message1.Type);
+            Assert.AreEqual(1, message1.SenderId);
+            Assert.AreEqual(MessageEvent.Star, message1.Event);
+            Assert.IsTrue(message1.Starred);
+
+            message1 = msgList[1].MsgList[0];
+            Assert.AreEqual("Hello3", message1.Message);
+            Assert.AreEqual(MessageType.Chat, message1.Type);
+            Assert.AreEqual(1, message1.SenderId);
+            Assert.AreEqual(MessageEvent.Star, message1.Event);
+            Assert.IsTrue(message1.Starred);
+        }
     }
 }
