@@ -1,5 +1,5 @@
-﻿using System;
-using Networking;
+﻿using Networking;
+using System;
 
 namespace Content
 {
@@ -7,9 +7,9 @@ namespace Content
     {
         private readonly ContentServer _contentServer;
 
-        public ContentServerNotificationHandler()
+        internal ContentServerNotificationHandler(ContentServer contentServer)
         {
-            _contentServer = ContentServerFactory.GetInstance() as ContentServer;
+            _contentServer = contentServer;
         }
 
         /// <inheritdoc />

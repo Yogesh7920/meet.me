@@ -22,6 +22,5 @@ namespace Dashboard.Server.Telemetry
         /// <params name="allMessages"> The chat data of all the threads </params>
         /// <returns> SessionAnalytics object </returns>
         SessionAnalytics GetTelemetryAnalytics(ChatContext[] allMessages);
-        
     }
 }

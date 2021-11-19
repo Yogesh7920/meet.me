@@ -39,7 +39,7 @@ namespace Content
             _messageHandlers[MessageEvent.Download] = DownloadMessageHandler;
 
             // subscribe to the network
-            _notifHandler = new ContentClientNotificationHandler();
+            _notifHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe("Content", _notifHandler);
         }
@@ -54,7 +54,7 @@ namespace Content
                 _chatHandler.UserId = value;
             }
         }
-
+ 
         /// <inheritdoc />
         public void CSend(SendMessageData toSend)
         {

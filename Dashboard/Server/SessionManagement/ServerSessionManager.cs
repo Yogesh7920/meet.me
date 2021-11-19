@@ -63,7 +63,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="user"> An object of type UserData </param>
         private void AddUserToSession(UserData user)
         {
-            lock(this)
+            lock (this)
             {
                 _sessionData.users.Add(user);
             }
@@ -129,12 +129,12 @@ namespace Dashboard.Server.SessionManagement
         {
             ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
 
-            bool summarySaved = _summarizer.SaveSummary(allChats,0.5);
+            bool summarySaved = _summarizer.SaveSummary(allChats, 0.5);
 
-            if(summarySaved == true)
+            if (summarySaved == true)
             {
                 UserData user = new(receivedObject.username, receivedObject.userID);
-                SendDataToClient("endMeet",_sessionData, null, user);
+                SendDataToClient("endMeet", _sessionData, null, user);
             }
             // Cannot find telemetry factory yet.
         }
@@ -146,24 +146,33 @@ namespace Dashboard.Server.SessionManagement
         /// <returns> A MeetingCredentials Object containing the port and IP address</returns>
         public MeetingCredentials GetPortsAndIPAddress()
         {
-
-            Trace.WriteLine("Fetching IP Address and port from the networking module");
-            string meetAddress = _communicator.Start();
-
-            if (IsValidIPAddress(meetAddress) != true)
+            try
             {
-                Trace.WriteLine("IP Address is not valid, returning null");
-                return null;
+                Trace.WriteLine("Fetching IP Address and port from the networking module");
+                string meetAddress = _communicator.Start();
+
+                // Debug.Assert(IsValidIPAddress(meetAddress), "IP Address is NOT valid!");
+                if (IsValidIPAddress(meetAddress) != true)
+                {
+                    Trace.WriteLine("IP Address is not valid, returning null");
+                    return null;
+                }
+
+                Trace.WriteLine("Returning the IP Address to the UX");
+                //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
+                string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
+                //int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
+                int port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
+
+
+                return _meetingCredentials = new MeetingCredentials(ipAddress, port);
             }
-            
-            Trace.WriteLine("Returning the IP Address to the UX");
-            //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
-            string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
-            //int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
-            int port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
+            catch (Exception e)
+            {
+                Trace.WriteLine(e.Message);
+                throw;
+            }
 
-
-            return _meetingCredentials = new MeetingCredentials(ipAddress, port);
         }
 
         /// <summary>
@@ -186,7 +195,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="IPAddress">The input ipaddress</param>
         /// <returns> true: For valid IP Addresses
         /// false: otherwise</returns>
-        static bool IsValidIPAddress(string IPAddress)
+        private static bool IsValidIPAddress(string IPAddress)
         {
             // Check for null string, whitespaces or absence of colon
             if (String.IsNullOrWhiteSpace(IPAddress) || IPAddress.Contains(':') == false)
@@ -194,9 +203,19 @@ namespace Dashboard.Server.SessionManagement
                 return false;
             }
 
+            // Take the part after the colon as the port number and check the range
+            string port = IPAddress.Substring(IPAddress.LastIndexOf(':') + 1);
+            if (Int32.TryParse(port, out int portNumber))
+            {
+                if (portNumber < 0 || portNumber > 65535)
+                    return false;
+            }
+
             // Take the part before colon as the ip address
             IPAddress = IPAddress.Substring(0, IPAddress.IndexOf(':'));
             string[] byteValues = IPAddress.Split('.');
+
+
 
             // IPV4 contains 4 bytes separated by .
             if (byteValues.Length != 4)
@@ -218,9 +237,9 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public void NotifyTelemetryModule()
         {
-            for(int i=0;i<_telemetrySubscribers.Count;++i)
+            for (int i = 0; i < _telemetrySubscribers.Count; ++i)
             {
-                lock(this)
+                lock (this)
                 {
                     _telemetrySubscribers[i].OnAnalyticsChanged(_sessionData);
                 }
@@ -236,7 +255,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="socketObject"></param>
         public void OnClientJoined<T>(T socketObject)
         {
-            lock(this)
+            lock (this)
             {
                 userCount += 1;
             }
@@ -290,11 +309,11 @@ namespace Dashboard.Server.SessionManagement
         {
             // raise exception if the user is not in the session or the _sessionData is null
             List<UserData> users = _sessionData.users;
-            for(int i = 0; i < users.Count; ++i)
+            for (int i = 0; i < users.Count; ++i)
             {
-                if(users[i] == userToRemove)
+                if (users[i].Equals(userToRemove))
                 {
-                    lock(this)
+                    lock (this)
                     {
                         _sessionData.users.RemoveAt(i);
                         break;
@@ -303,7 +322,7 @@ namespace Dashboard.Server.SessionManagement
             }
         }
 
-        private void SendDataToClient(string eventName,SessionData sessionData, SummaryData summaryData, UserData user)
+        private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, UserData user)
         {
             ServerToClientData serverToClientData;
             lock (this)
@@ -323,7 +342,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="identifier"> The listener of the subscriber </param>
         public void Subcribe(ITelemetryNotifications listener)
         {
-            lock(this)
+            lock (this)
             {
                 _telemetrySubscribers.Add(listener);
             }
