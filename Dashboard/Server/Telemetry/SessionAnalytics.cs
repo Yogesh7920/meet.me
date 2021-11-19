@@ -6,19 +6,12 @@ using System.Threading.Tasks;
 
 namespace Dashboard
 {
-    ///<summary>
-    /// The data used to plot the visuals
-    ///</summary>
     public class SessionAnalytics{
-        
         /// Stores the userCount(int) at every time stamp(DateTime)
-        public Dictionary<DateTime, int> userCountAtAnyTime;
-
+        Dictionary<int, int> UserCountAtAnyTime;
         /// Stores the chat count(int) for each user(UserData) 
-        public Dictionary<int, int> chatCountForEachUser;
-        
-        /// returns the users who were present in the session for less than
-        /// a certain minimum time(threshold time)
-        public List<int> insincereMembers;
+        Dictionary<int, int> ChatCountForEachUser;
+        /// returns the users who were present in the session for less than the minimum time(threshold time)
+        List<int> InsincereMembers;
     }
 }
