@@ -7,40 +7,70 @@ namespace Content
 {
     internal class ContentDatabase
     {
-        private Dictionary<int, ChatContext> _chatContexts;
-        private readonly Dictionary<int, MessageData> _messages;
+        private Dictionary<int, MessageData> _files;
+        private List<ChatContext> _chatContexts;
+        private Dictionary<int, int> _chatContextsMap;
+        private Dictionary<int, int> _messageMap;
 
         public ContentDatabase()
         {
-            _messages = new Dictionary<int, MessageData>();
+            _files = new Dictionary<int, MessageData>();
+            _chatContexts = new List<ChatContext>();
+            _chatContextsMap = new Dictionary<int, int>();
+            _messageMap = new Dictionary<int, int>();
         }
 
-        public MessageData Store(MessageData messageData)
+        public MessageData StoreFile(MessageData messageData)
+        {
+            MessageData message = StoreMessage(messageData);
+            _files[message.MessageId] = messageData;
+            return message;
+        }
+
+        public MessageData GetFiles(int messageId)
+        {
+            return _files[messageId];
+        }
+
+        public MessageData StoreMessage(MessageData messageData)
         {
             messageData.MessageId = IdGenerator.getMessageId();
-            _messages[messageData.MessageId] = messageData;
+            if (_chatContextsMap.ContainsKey(messageData.ReplyThreadId))
+            {
+                int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
+                ChatContext chatContext = _chatContexts[threadIndex];
+                chatContext.MsgList.Add(messageData);
+                chatContext.NumOfMessages++;
+                _messageMap[messageData.MessageId] = chatContext.NumOfMessages - 1;
+            }
+            else
+            {
+                ChatContext chatContext = new ChatContext();
+                chatContext.CreationTime = messageData.SentTime;
+                chatContext.NumOfMessages = 1;
+                chatContext.MsgList = new List<ReceiveMessageData>();
+                chatContext.ThreadId = IdGenerator.getChatContextId();
+                messageData.ReplyThreadId = chatContext.ThreadId;
+                chatContext.MsgList.Add(messageData);
+
+                _messageMap[messageData.MessageId] = 0;
+                _chatContexts.Add(chatContext);
+                _chatContextsMap[chatContext.ThreadId] = _chatContexts.Count - 1;
+            }
+
             return messageData;
         }
 
-        public void Store(ChatContext chatContext)
+        public List<ChatContext> GetChatContexts()
         {
-            chatContext.ThreadId = IdGenerator.getChatContextId();
-            _chatContexts[chatContext.ThreadId] = chatContext;
+            return _chatContexts;
         }
 
-        public void UpdateMessageData(int id, MessageData messageData)
+        public ReceiveMessageData GetMessage(int replyThreadId, int messageId)
         {
-            _messages[id] = messageData;
-        }
-
-        public void UpdateChatContext(int id, ChatContext chatContext)
-        {
-            _chatContexts[id] = chatContext;
-        }
-
-        public MessageData RetrieveMessage(int messageId)
-        {
-            return _messages[messageId];
+            int threadIndex = _chatContextsMap[replyThreadId];
+            int messageIndex = _messageMap[messageId];
+            return _chatContexts[threadIndex].MsgList[messageIndex];
         }
     }
 }
