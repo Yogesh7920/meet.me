@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="ScottPlot" Version="4.1.27" />
         <ProjectReference Include="..\Content\Content.csproj"/>
     </ItemGroup>
 
