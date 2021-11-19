@@ -87,7 +87,7 @@ namespace Dashboard.Server.Telemetry{
         /// <params name="totalChats"> Total chats in the current session </params>
         public void UpdateServerData(int totalUsers, int totalChats ){
             // retrieve the previous server data till previous session
-            ServerDataToSave serverData = retrieveAllServerData(); 
+            ServerDataToSave serverData = RetrieveAllServerData(); 
             serverData.sessionCount++;
             // current session data
             SessionSummary currSessionSummary = new SessionSummary();
@@ -95,16 +95,16 @@ namespace Dashboard.Server.Telemetry{
             currSessionSummary.chatCount = totalChats;
             currSessionSummary.score = totalChats * totalUsers;
             serverData.allSessionsSummary.Add(currSessionSummary);
-            saveServerData(serverData);
+            SaveServerData(serverData);
         }
 
         /// <summary>
         ///     To get any change in the SessionData
         /// </summary>
-        /// <params name="new_session"> Received new SessionData </params>
-        void OnAnalyticsChanged(SessionData new_session)
+        /// <params name="newSession"> Received new SessionData </params>
+        void OnAnalyticsChanged(SessionData newSession)
         {
-            GetUserCountVsTimeStamp(new_session);
+            GetUserCountVsTimeStamp(newSession);
             GetInsincereMembers();
         }
 
@@ -139,7 +139,7 @@ namespace Dashboard.Server.Telemetry{
         /// <returns>
         ///     Returns SessionAnalytics object which contains analytics of session
         /// </returns>
-        public SessionAnalytics GetTelemetryAnalytics(ChatContext[] all_messages)
+        public SessionAnalytics GetTelemetryAnalytics(ChatContext[] allMessages)
         {
             SessionAnalytics sessionAnalyticsToSend = new SessionAnalytics();
             sessionAnalyticsToSend.chatCountForEachUser=userIdChatCountDic;
