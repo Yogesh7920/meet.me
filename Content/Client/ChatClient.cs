@@ -9,13 +9,20 @@ namespace Content
 {
     internal class ChatClient
     {
-        private readonly ICommunicator _communicator;
+        private ICommunicator _communicator;
+        public ICommunicator Communicator
+        {
+            get => _communicator;
+            set => _communicator = value;
+        }
+
         private readonly string _moduleIdentifier = "Content";
         private readonly ISerializer _serializer;
 
-        public ChatClient()
+        public ChatClient(ICommunicator communicator)
         {
-            _communicator = CommunicationFactory.GetCommunicator();
+            //_communicator = CommunicationFactory.GetCommunicator();
+            _communicator = communicator;
             _serializer = new Serializer();
         }
 

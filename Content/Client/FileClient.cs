@@ -7,14 +7,19 @@ namespace Content
 {
     internal class FileClient
     {
-        private readonly ICommunicator _communicator;
+        private ICommunicator _communicator;
+        public ICommunicator Communicator
+        {
+            get => _communicator;
+            set => _communicator = value;
+        }
 
         private readonly ISerializer _serializer;
 
-        public FileClient()
+        public FileClient(ICommunicator communicator)
         {
             _serializer = new Serializer();
-            _communicator = CommunicationFactory.GetCommunicator();
+            _communicator = communicator;
         }
 
         public int UserId { get; set; }

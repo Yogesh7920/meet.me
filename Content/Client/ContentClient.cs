@@ -10,7 +10,9 @@ namespace Content
     {
         private readonly List<ChatContext> _allMessages;
         private readonly ChatClient _chatHandler;
-        private readonly ICommunicator _communicator;
+        
+        private ICommunicator _communicator;
+
         private readonly Dictionary<int, int> _contextMap;
 
         private readonly FileClient _fileHandler;
@@ -28,8 +30,6 @@ namespace Content
             _subscribers = new List<IContentListener>();
             _allMessages = new List<ChatContext>();
             _contextMap = new Dictionary<int, int>();
-            _fileHandler = new FileClient();
-            _chatHandler = new ChatClient();
 
             // add message handler functions for each event
             _messageHandlers = new Dictionary<MessageEvent, Action<MessageData>>();
@@ -42,6 +42,22 @@ namespace Content
             _notifHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe("Content", _notifHandler);
+
+            // initialize file handler and chat handler
+            _fileHandler = new FileClient(_communicator);
+            _chatHandler = new ChatClient(_communicator);
+        }
+
+        // getter and setter for communicator
+        public ICommunicator Communicator
+        {
+            get => _communicator;
+            set
+            {
+                _communicator = value;
+                _fileHandler.Communicator = value;
+                _chatHandler.Communicator = value;
+            }
         }
 
         public int UserId
