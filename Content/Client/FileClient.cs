@@ -23,6 +23,7 @@ namespace Content
         ///     Send a file type message to the server
         /// </summary>
         /// <param name="message">SendMessageData object specifying the file message to send</param>
+
         public void Send(SendMessageData message)
         {
             Trace.WriteLine("[FileClient] Received file send request");
@@ -72,7 +73,6 @@ namespace Content
 
             // serialize the message and send via network
             var toSendSerialized = _serializer.Serialize(toSend);
-
             Trace.WriteLine("[FileClient] Sending file download request to server");
             _communicator.Send(toSendSerialized, "Content");
         }
