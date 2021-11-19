@@ -5,7 +5,7 @@ using Content;
 
 namespace Dashboard.Server.Telemetry{
     
-    public class Telemetry: ITelemetryAnalysisModel
+    public class Telemetry: ITelemetry
     {
         /// <summary>
         ///     returns a dictionary with DateTime as key and int as value
@@ -118,7 +118,7 @@ namespace Dashboard.Server.Telemetry{
         /// <returns>
         ///     Returns TelemetryAnalyticsModel object which contains analytics of session
         /// </returns>
-        public TelemetryAnalyticsModel getTelemetryAnalytics(ChatContext[] AllMessages){
+        public SessionAnalytics getTelemetryAnalytics(ChatContext[] AllMessages){
             throw new NotImplementedException();
         }
     }

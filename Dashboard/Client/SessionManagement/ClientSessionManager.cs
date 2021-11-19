@@ -161,7 +161,7 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        public ITelemetryAnalysisModel GetAnalytics()
+        public ITelemetry GetAnalytics()
         {
             // the return type will be an analytics object yet to be decided.
             throw new NotImplementedException();
