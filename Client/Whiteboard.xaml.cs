@@ -137,7 +137,7 @@ namespace Client
                             Point fh_pt = e.GetPosition(GlobCanvas);
                             this.viewModel.freeHand.SetColor(curPenColor);
                             this.viewModel.freeHand.SetThickness(penThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true);
                         }
                         break;
                     case (WhiteBoardViewModel.WBTools.Eraser):
@@ -147,7 +147,7 @@ namespace Client
                             Point er_pt = e.GetPosition(GlobCanvas);
                             this.viewModel.freeHand.SetColor(curCanvasBg);
                             this.viewModel.freeHand.SetThickness(eraserThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, creation: true, isEraser:true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, true, true);
                         }
                         break;
                     case (WhiteBoardViewModel.WBTools.NewLine):
@@ -193,7 +193,7 @@ namespace Client
                         {
                             Point fh_pt = e.GetPosition(GlobCanvas);
                             if (mouseDownFlag == 1 && freehandDraw == 1 && (e.OriginalSource is Canvas || e.OriginalSource is System.Windows.Shapes.Polyline))
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:false, shapeComp:true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
                             mouseDownFlag = 0;
                             freehandDraw = 0;
                         }
@@ -203,7 +203,7 @@ namespace Client
                         {
                             Point er_pt = e.GetPosition(GlobCanvas);
                             if (mouseDownFlag == 1 && freehandDraw == 1 && (e.OriginalSource is Canvas || e.OriginalSource is System.Windows.Shapes.Polyline))
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, creation:false, isEraser:true, shapeComp:true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, true);
                             mouseDownFlag = 0;
                             freehandDraw = 0;
                         }
@@ -331,12 +331,12 @@ namespace Client
                             {
                                 freehandDraw = 1;
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true);
                             }
                             else if (mouseDownFlag == 1 && freehandDraw == 1 && (e.OriginalSource is Canvas || e.OriginalSource is System.Windows.Shapes.Polyline))
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
                             }
                             else freehandDraw = 0;
                         }
@@ -348,12 +348,12 @@ namespace Client
                             {
                                 freehandDraw = 1;
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: true, isEraser:true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, true);
                             }
                             else if (mouseDownFlag == 1 && freehandDraw == 1 && (e.OriginalSource is Canvas || e.OriginalSource is System.Windows.Shapes.Polyline))
                             {
                                 Point er_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, creation: false, isEraser:true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, er_pt, false, true);
                             }
                             else freehandDraw = 0;
                         }
