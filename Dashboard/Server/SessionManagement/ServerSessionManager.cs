@@ -124,7 +124,7 @@ namespace Dashboard.Server.SessionManagement
         {
             ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
 
-            bool summarySaved = _summarizer.SaveSummary(allChats, 0.5);
+            bool summarySaved = _summarizer.SaveSummary(allChats);
 
             if (summarySaved == true)
             {
