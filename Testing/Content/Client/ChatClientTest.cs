@@ -26,7 +26,6 @@ namespace Testing.Content
 			Assert.AreEqual(x.Event, MessageEvent.NewMessage);
 			Assert.AreEqual(x.Type, MessageType.Chat);
 			Assert.AreEqual(x.FileData, null);
-			Assert.That(typeof(x.SenderId).ToString() == "int");
 			Assert.AreEqual(x.Starred, false);
 			Assert.AreEqual(x.ReplyThreadId, -1);
 			Assert.AreEqual(x.ReceiverIds.Length, 0);
