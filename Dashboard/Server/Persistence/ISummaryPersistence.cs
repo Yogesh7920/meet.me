@@ -1,3 +1,10 @@
+/// <author>Parmanand Kumar</author>
+/// <created>03/11/2021</created>
+/// <summary>
+///     It contains the public interface required by Summary Module to save Summary data.
+///     It exposes the basic functinality of Telemetry Module
+/// </summary> 
+/// 
 namespace Dashboard.Server.Persistence
 {
     //SummaryPersistence Interface

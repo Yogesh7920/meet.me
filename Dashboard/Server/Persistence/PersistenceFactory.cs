@@ -1,4 +1,10 @@
-//Author: Parmanand Kumar
+/// <author>Parmanand Kumar</author>
+/// <created>03/11/2021</created>
+/// <summary>
+///     It contains the static PersistenceFactory Class, It is the the entry point
+///     of Persisitence Module. We first need to create instances of SummaryPersistence
+///     and TelemetryPersistence to call different functions corresponding their interfaces
+/// </summary>
 
 namespace Dashboard.Server.Persistence
 {
@@ -9,14 +15,18 @@ namespace Dashboard.Server.Persistence
     public static class PersistenceFactory
     {
 
+        ///<summary>
+        ///     It is constructor for the Persistence factory and enables to create only
+        ///     one instance in a single run.
+        /// </summary>
         static PersistenceFactory()
         {
-            if(_summaryPersisitence == null)
+            if (_summaryPersisitence == null)
             {
                 _summaryPersisitence = new SummaryPersistence();
             }
 
-            if(_telemetryPersisitence == null)
+            if (_telemetryPersisitence == null)
             {
                 _telemetryPersisitence = new TelemetryPersistence();
             }

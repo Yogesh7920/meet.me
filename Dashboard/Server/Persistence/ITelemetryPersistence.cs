@@ -1,7 +1,11 @@
-//Author: Parmanand Kumar
+/// <author>Parmanand Kumar</author>
+/// <created>03/11/2021</created>
+/// <summary>
+///     It contains the public interface required by Telemetry Module to SAVE/RETRIEVE different Analytics data
+///     It exposes the basic functinality of Telemetry Module
+/// </summary> 
+
 using Dashboard.Server.Telemetry;
-
-
 
 //Persistence
 namespace Dashboard.Server.Persistence
