@@ -30,7 +30,7 @@ namespace Dashboard.Server.Telemetry{
         ///     indicating chat count of each user.
         /// </summary>
         /// <params name="allMessages"> Takes array of ChatContext object which contains information about Threads </params>
-        void GetUserVsChatCount(ChatContext[] allMessages)
+        public void GetUserVsChatCount(ChatContext[] allMessages)
         {
             foreach(ChatContext currThread in allMessages)
             {
@@ -103,7 +103,7 @@ namespace Dashboard.Server.Telemetry{
         ///     To get any change in the SessionData
         /// </summary>
         /// <params name="newSession"> Received new SessionData </params>
-        void OnAnalyticsChanged(SessionData newSession)
+        public void OnAnalyticsChanged(SessionData newSession)
         {
             GetUserCountVsTimeStamp(newSession);
             GetInsincereMembers();
