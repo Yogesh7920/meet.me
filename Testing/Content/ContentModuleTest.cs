@@ -1,116 +1,7 @@
 using NUnit.Framework;
 using Content;
+using Networking;
 
-/*
-namespace Content
-{
-    public class SendMessageData
-    {
-        /// <summary>
-        ///     Message string if MessageType is Chat else file path if MessageType is File
-        /// </summary>
-        public string Message;
-
-        /// <summary>
-        ///     List of ids for receivers, empty in case of broadcast
-        /// </summary>
-        public int[] ReceiverIds;
-
-        /// <summary>
-        ///     Id of the thread if message belongs to an already existing thread else -1
-        /// </summary>
-        public int ReplyThreadId;
-
-        /// <summary>
-        ///     Message Type - File or Chat
-        /// </summary>
-        public MessageType Type;
-    }
-} 
-
-using System;
-using System.Collections.Generic;
-
-namespace Content
-{
-    public class ChatContext
-    {
-        /// <summary>
-        ///     Time of creation of thread
-        /// </summary>
-        public DateTime CreationTime;
-
-        /// <summary>
-        ///     List of all the messages in the thread
-        /// </summary>
-        public List<ReceiveMessageData> MsgList;
-
-        /// <summary>
-        ///     Number of messages in the thread
-        /// </summary>
-        public int NumOfMessages;
-
-        /// <summary>
-        ///     Id of the thread
-        /// </summary>
-        public int ThreadId;
-    }
-}
-
-using System;
-
-namespace Content
-{
-    [Serializable]
-    public class ReceiveMessageData
-    {
-        /// <summary>
-        ///     Message Event - Update, NewMessage, Star, Download
-        /// </summary>
-        public MessageEvent Event;
-
-        /// <summary>
-        ///     Message string if messageType is Chat else file name for File messageType
-        /// </summary>
-        public string Message;
-
-        /// <summary>
-        ///     Id of the message
-        /// </summary>
-        public int MessageId;
-
-        /// <summary>
-        ///     List of ids for receviers, all if empty
-        /// </summary>
-        public int[] ReceiverIds;
-
-        /// <summary>
-        ///     Id of thread to which this message belongs
-        /// </summary>
-        public int ReplyThreadId;
-
-        /// <summary>
-        ///     User id of the message sender
-        /// </summary>
-        public int SenderId;
-
-        /// <summary>
-        ///     Time at which message was sent
-        /// </summary>
-        public DateTime SentTime;
-
-        /// <summary>
-        ///     True if this message is starred else False
-        /// </summary>
-        public bool Starred;
-
-        /// <summary>
-        ///     Message Type - File or Chat
-        /// </summary>
-        public MessageType Type;
-    }
-}
-*/
 namespace Testing.Content
 {
     [TestFixture]
@@ -122,19 +13,190 @@ namespace Testing.Content
 
         }
 
-
-        
-        
         [Test]
-        public void CSend_PrivateMsgFromUserAToUserBInChatFormat_sentMsgMustBeEqualToRcvMsg()
+        public void CSend_ChatSendingHiMsg_SerializedStringShouldMatchInputMsg()
         {
-            Assert.Pass();
+            Utils _util = new Utils();
+            int UserId = 1001;
+            SendMessageData SampleData = _util.GenerateChatSendMsgData("Hello, How are you?",new int[]{1002},type:MessageType.Chat);
+            MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?", new int[]{ 1002 }, type: MessageType.Chat);
+
+            ISerializer _serializer = new Serializer();
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator(); 
+            _contentClient.UserId = UserId;
+            _contentClient.Communicator = _fakeCommunicator;
+            IContentClient _iContentClient = _contentClient;
+            
+            _iContentClient.CSend(SampleData);
+
+            var sendSerializedMsg = _fakeCommunicator.GetSentData();
+            var deserialized = _serializer.Deserialize<MessageData>(sendSerializedMsg);
+
+            if (deserialized is MessageData)
+            {
+                var receivedMessage = deserialized as MessageData;
+                Assert.AreEqual(receivedMessage.Message, SampleMsgData.Message);
+                Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
+                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.FileData, SampleMsgData.FileData);
+                Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
+                Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
+                Assert.AreEqual(receivedMessage.SenderId, UserId);
+                Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Test]
-        public void CSend_PrivateMsgFromUserAToUserBInFileFormat_sentMsgMustBeEqualToRcvMsg()
+        public void CSend_ChatSendingMsgWithNewline_SerializedStringShouldMatchInputMsg()
         {
-            Assert.Pass();
+            Utils _util = new Utils();
+            int UserId = 1001;
+            SendMessageData SampleData = _util.GenerateChatSendMsgData("Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
+            MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
+
+            ISerializer _serializer = new Serializer();
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
+            _contentClient.UserId = UserId;
+            _contentClient.Communicator = _fakeCommunicator;
+            IContentClient _iContentClient = _contentClient;
+
+            _iContentClient.CSend(SampleData);
+
+            var sendSerializedMsg = _fakeCommunicator.GetSentData();
+            var deserialized = _serializer.Deserialize<MessageData>(sendSerializedMsg);
+
+            if (deserialized is MessageData)
+            {
+                var receivedMessage = deserialized as MessageData;
+                Assert.AreEqual(receivedMessage.Message, SampleMsgData.Message);
+                Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
+                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.FileData, SampleMsgData.FileData);
+                Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
+                Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
+                Assert.AreEqual(receivedMessage.SenderId, UserId);
+                Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [Test]
+        public void CSend_ChatSendingMsgWithNullString_SerializedStringShouldMatchInputMsg()
+        {
+            Utils _util = new Utils();
+            int UserId = 1001;
+            SendMessageData SampleData = _util.GenerateChatSendMsgData(null, new int[] { 1002 }, type: MessageType.Chat);
+            MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, null, new int[] { 1002 }, type: MessageType.Chat);
+
+            ISerializer _serializer = new Serializer();
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
+            _contentClient.UserId = UserId;
+            _contentClient.Communicator = _fakeCommunicator;
+            IContentClient _iContentClient = _contentClient;
+
+            _iContentClient.CSend(SampleData);
+
+            var sendSerializedMsg = _fakeCommunicator.GetSentData();
+            var deserialized = _serializer.Deserialize<MessageData>(sendSerializedMsg);
+
+            if (deserialized is MessageData)
+            {
+                var receivedMessage = deserialized as MessageData;
+                Assert.AreEqual(receivedMessage.Message, SampleMsgData.Message);
+                Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
+                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.FileData, SampleMsgData.FileData);
+                Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
+                Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
+                Assert.AreEqual(receivedMessage.SenderId, UserId);
+                Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [Test]
+        public void CSend_ChatSendingHiMsgWithBroadcast_SerializedStringShouldMatchInputMsg()
+        {
+            Utils _util = new Utils();
+            int UserId = 1001;
+            SendMessageData SampleData = _util.GenerateChatSendMsgData("Hello, How are you?\n I am fine", new int[] {}, type: MessageType.Chat);
+            MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] {}, type: MessageType.Chat);
+
+            ISerializer _serializer = new Serializer();
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
+            _contentClient.UserId = UserId;
+            _contentClient.Communicator = _fakeCommunicator;
+            IContentClient _iContentClient = _contentClient;
+
+            _iContentClient.CSend(SampleData);
+
+            var sendSerializedMsg = _fakeCommunicator.GetSentData();
+            var deserialized = _serializer.Deserialize<MessageData>(sendSerializedMsg);
+
+            if (deserialized is MessageData)
+            {
+                var receivedMessage = deserialized as MessageData;
+                Assert.AreEqual(receivedMessage.Message, SampleMsgData.Message);
+                Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
+                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.FileData, SampleMsgData.FileData);
+                Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
+                Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
+                Assert.AreEqual(receivedMessage.SenderId, UserId);
+                Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [Test]
+        public void CMarkStar_ClientShouldSendProperRequestToServer_SerializedStrMustHaveProperMarkstarReq()
+        {
+            Utils _util = new Utils();
+            int UserId = 1001;
+            int MsgId = 10;
+            MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.Star, "", new int[] {}, type: MessageType.Chat);
+
+            ISerializer _serializer = new Serializer();
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
+            _contentClient.UserId = UserId;
+            _contentClient.Communicator = _fakeCommunicator;
+            IContentClient _iContentClient = _contentClient;
+
+            _iContentClient.CMarkStar(MsgId);
+
+            var sendSerializedMsg = _fakeCommunicator.GetSentData();
+            var deserialized = _serializer.Deserialize<MessageData>(sendSerializedMsg);
+
+            if (deserialized is MessageData)
+            {
+                var receivedMessage = deserialized as MessageData;
+                Assert.AreEqual(receivedMessage.Event, MessageEvent.Star);
+                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.SenderId, UserId);
+                Assert.AreEqual(receivedMessage.MessageId, MsgId);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
     }
 }
