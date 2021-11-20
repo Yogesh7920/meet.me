@@ -230,12 +230,6 @@ namespace Dashboard.Server.Summary
 			if (isEmpty)
 				throw new EmptyStringException();
 			int size = Convert.ToInt32(fraction * cdfScores.Count);
-			if (size == 0)
-			{
-				Trace.WriteLine("Not enough chat sentences to summarize " +
-					"the minimum required is = " + Convert.ToInt32(1 / fraction).ToString());
-				return summary;
-			}
 			while (summary.Count < size)
 			{
 				float p = (float)_random.NextDouble();
