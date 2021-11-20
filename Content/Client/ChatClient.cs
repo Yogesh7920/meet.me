@@ -61,6 +61,7 @@ namespace Content
             toSend.Event = MessageEvent.Update;
             toSend.SenderId = UserId;
 			toSend.Message = newMessage;
+			toSend.Type = MessageType.Chat;
 			var xml = _serializer.Serialize(toSend);
 			Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
             _communicator.Send(xml, _moduleIdentifier);
@@ -72,7 +73,7 @@ namespace Content
             toSend.MessageId = messageId;
             toSend.Event = MessageEvent.Star;
             toSend.SenderId = UserId;
-
+			toSend.Type = MessageType.Chat;
             var xml = _serializer.Serialize(toSend);
 			 Trace.WriteLine("[ChatClient] Marking Event of chat as star and sending to server");
             _communicator.Send(xml, _moduleIdentifier);
