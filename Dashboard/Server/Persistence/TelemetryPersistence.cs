@@ -14,6 +14,10 @@ namespace Dashboard.Server.Persistence
 
     public class TelemetryPersistence : ITelemetryPersistence
     {
+        /// <summary>
+        /// retrives the ServerData after end of all of the sessions.
+        /// </summary>
+        /// <returns>returns List of SeverData</returns>
         public ServerDataToSave RetrieveAllSeverData()
         {
             XmlSerializer deserialiser = new XmlSerializer(typeof(ServerDataToSave));
@@ -36,7 +40,11 @@ namespace Dashboard.Server.Persistence
             }
         }
 
-        public bool Save(SessionAnalytics sessionAnalyticsData)
+        /// <summary>
+        /// save the UserCountVsTimeStamp, UserIdVsChatCount, InsincereMember data as png after each session.
+        /// </summary>
+        /// <param name="sessionAnalyticsData"> takes sessionAnalyticsData from Telemetry. </param>
+        public ResponseEntity Save(SessionAnalytics sessionAnalyticsData)
         {
             // create folder of name sessionId to store all analytics data
             
@@ -54,10 +62,13 @@ namespace Dashboard.Server.Persistence
 
             ResponseEntity t3 = InsincereMembers_SaveUtil(sessionAnalyticsData.InsincereMembers, sessionId);
 
-            return t1.IsSaved & t2.IsSaved & t3.IsSaved;
+            ResponseEntity response = new ResponseEntity();
+            response.IsSaved = t1.IsSaved & t2.IsSaved & t3.IsSaved;
+            response.FileName = sessionId;
+            return response;
         }
 
-        public ResponseEntity InsincereMembers_SaveUtil(List<int> InsincereMembers, string sessionId)
+        private ResponseEntity InsincereMembers_SaveUtil(List<int> InsincereMembers, string sessionId)
         {
             string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
             string TextToSave = "Followings are UserIDs of InsincereMembers : " + Environment.NewLine;
@@ -75,7 +86,7 @@ namespace Dashboard.Server.Persistence
             return response;
             
         }
-        public ResponseEntity ChatCountVsUserID_PlotUtil(Dictionary<int, int> ChatCountForEachUser, string sessionId)
+        private ResponseEntity ChatCountVsUserID_PlotUtil(Dictionary<int, int> ChatCountForEachUser, string sessionId)
         {
             string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
             int[] val1 = ChatCountForEachUser.Values.ToArray();
@@ -116,7 +127,7 @@ namespace Dashboard.Server.Persistence
             
         }
 
-        public ResponseEntity UserCountVsTimeStamp_PlotUtil(Dictionary<int, int> UserCountAtAnyTime, string sessionId)
+        private ResponseEntity UserCountVsTimeStamp_PlotUtil(Dictionary<int, int> UserCountAtAnyTime, string sessionId)
         {
             int[] val = UserCountAtAnyTime.Values.ToArray();
             double[] values = new double[val.Length];
@@ -157,6 +168,11 @@ namespace Dashboard.Server.Persistence
             return response;
         }
 
+        /// <summary>
+        /// append the ServerData into a file after each session end
+        /// </summary>
+        /// <param name="AllserverData"> takes ServerData from Telemetry to be saved into text file </param> 
+        /// <returns>Returns true if saved successfully else returns false</returns>
         public ResponseEntity SaveServerData(ServerDataToSave AllserverData)
         {
             ResponseEntity response = new ResponseEntity();
