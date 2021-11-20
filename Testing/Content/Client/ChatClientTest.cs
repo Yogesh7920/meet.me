@@ -16,8 +16,9 @@ namespace Testing.Content
         [Test]
 		public void TestConvert()
         {
+			Utils _util = new Utils();
 			SendMessageData SampleData = Utils.GetSendMessageData2();
-			ChatClient conch = new ChatClient();
+			ChatClient conch = new ChatClient(Utils.GetFakeCommunicator());
 			MessageData x = conch.SendToMessage(SampleData, MessageEvent.NewMessage);
 
 			Assert.AreEqual(x.Message, SampleData.Message);

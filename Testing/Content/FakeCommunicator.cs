@@ -6,12 +6,12 @@ using System;
 
 namespace Testing.Content
 {
-    internal class FakeCommunicator : ICommunicator
+    public class FakeCommunicator : ICommunicator
     {
         private string _sendSerializedStr;
         private List<INotificationHandler> _subscribers;
 
-        FakeCommunicator()
+        public FakeCommunicator()
         {
             _sendSerializedStr = "";
             _subscribers = new List<INotificationHandler>();

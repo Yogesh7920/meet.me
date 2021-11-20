@@ -9,6 +9,18 @@ namespace Testing.Content
 	/// </summary>
 	public class Utils
     {
+		private static FakeCommunicator _fakeCommunicator;
+
+		public Utils()
+        {
+			_fakeCommunicator = new FakeCommunicator();
+        }
+
+		public static FakeCommunicator GetFakeCommunicator()
+        {
+			return _fakeCommunicator;
+        }
+
 		public static SendMessageData GetSendMessageData1()
 		{
 			var toconvert1 = new SendMessageData();
@@ -22,7 +34,7 @@ namespace Testing.Content
 		public static MessageData GetMessageData1()
         {
 			SendMessageData SampleData = GetSendMessageData1();
-			ChatClient conch = new ChatClient();
+			ChatClient conch = new ChatClient(_fakeCommunicator);
 			MessageData MsgData = conch.SendToMessage(SampleData, MessageEvent.NewMessage);
 			return MsgData;
 		}
