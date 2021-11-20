@@ -12,8 +12,8 @@ namespace Dashboard.Server.Persistence
         /// <summary>
         /// save the UserCountVsTimeStamp, UserIdVsChatCount, InsincereMember data as png after each session.
         /// </summary>
-        /// <param name="sessionAnalyticsData"> takes IntraSessionData from Telemetry. </param>
-        public bool Save(SessionAnalytics sessionAnalyticsData);
+        /// <param name="sessionAnalyticsData"> takes sessionAnalyticsData from Telemetry. </param>
+        public ResponseEntity Save(SessionAnalytics sessionAnalyticsData);
 
         /// <summary>
         /// append the ServerData into a file after each session end
