@@ -40,17 +40,5 @@ namespace Content
                 throw new ArgumentException("Deserialized object of unknown type");
             }
         }
-
-        /// <inheritdoc />
-        public void OnClientJoined<T>(T socketObject)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void OnClientLeft(string clientId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
