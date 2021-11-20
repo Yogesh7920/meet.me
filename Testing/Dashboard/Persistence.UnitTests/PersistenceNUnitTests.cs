@@ -61,6 +61,7 @@ namespace NUnitTest_Persistence
 
             // Reading the file if actually saved
             string TextActuallySaved = File.ReadAllText(Path.Combine(path, response.FileName));
+            File.Delete(Path.Combine(path, response.FileName));
 
             //If text saved and to be saved actually matches
             if (TextToBeSaved == TextActuallySaved)
