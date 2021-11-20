@@ -80,11 +80,8 @@
         <ContentControl Name="UsersListControl" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="4"/>
 
         <ContentControl Name="SSwb" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 5"/>
-        
-        <!-- <ContentControl Name="ChatPane" Grid.Row="2" Grid.Column="4" Grid.RowSpan="4" Content="{Binding }"/> -->
 
         <ContentControl Name="Chat" Grid.Row="2" Grid.Column="6" Grid.RowSpan="4" Visibility="Collapsed"/>
-        
 
     </Grid>
 </Window>
