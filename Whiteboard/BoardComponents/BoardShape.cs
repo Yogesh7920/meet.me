@@ -2,17 +2,87 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 11/01/2021
+ * Date Modified: 11/12/2021
 **/
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Shapes;
 
 namespace Whiteboard
 {
+    /// <summary>
+    /// Class used for storing objects in state Manager.
+    /// </summary>
     public class BoardShape
     {
-        public BoardShape(MainShape mainShapeDefiner, int userLevel, DateTime creationTime, DateTime lastModifiedTime,
-            string uid, string shapeOwnerId, Operation operation)
+        /// <summary>
+        /// The MainShape Object with shape Details.
+        /// </summary>
+        public MainShape MainShapeDefiner { get; set; }
+
+        /// <summary>
+        /// User Level of creator of shape.
+        /// </summary>
+        public int UserLevel { get; set; }
+
+        /// <summary>
+        /// Time of creation of shape.
+        /// </summary>
+        public DateTime CreationTime { get; set; }
+
+        /// <summary>
+        /// Time of last Modification of shape.
+        /// </summary>
+        public DateTime LastModifiedTime { get; set; }
+
+        /// <summary>
+        /// Id of the shape.
+        /// </summary>
+        public string Uid { get; set; }
+
+        /// <summary>
+        /// User Id of shape Owner.
+        /// </summary>
+        public string ShapeOwnerId { get; set; }
+
+        /// <summary>
+        /// Recent operation on shape.
+        /// </summary>
+        public Operation RecentOperation { get; set; }
+
+        /// <summary>
+        /// Clone for DateTime Object.
+        /// </summary>
+        /// <param name="dt">DataTime object to be cloned.</param>
+        /// <returns>Cloned DateTime object.</returns>
+        private DateTime DataTimeClone(DateTime dt)
+        {
+            return new(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+        }
+
+        /// <summary>
+        /// Creates Clone BoardShape Object.
+        /// </summary>
+        /// <returns>Cloned Boardshape.</returns>
+        public BoardShape Clone() => new(MainShapeDefiner.Clone(), UserLevel, DataTimeClone(CreationTime),
+                                         DataTimeClone(LastModifiedTime), (string)Uid.Clone(),
+                                         (string)ShapeOwnerId.Clone(), RecentOperation);
+
+        /// <summary>
+        /// Constructor for creating BoardShape.
+        /// </summary>
+        /// <param name="mainShapeDefiner">The MainShape Object with shape Details.</param>
+        /// <param name="userLevel">User Level of creator of shape.</param>
+        /// <param name="creationTime">Timestamp of creation of shape.</param>
+        /// <param name="lastModifiedTime">Timestamp of last modification operation performed on state.</param>
+        /// <param name="uid">Uid of shape.</param>
+        /// <param name="shapeOwnerId">Id of owner of shape.</param>
+        /// <param name="operation">Recent operation on shape.</param>
+        public BoardShape(MainShape mainShapeDefiner, int userLevel, DateTime creationTime, DateTime lastModifiedTime, String uid, String shapeOwnerId, Operation operation)
         {
             MainShapeDefiner = mainShapeDefiner;
             UserLevel = userLevel;
@@ -23,6 +93,9 @@ namespace Whiteboard
             RecentOperation = operation;
         }
 
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
         public BoardShape()
         {
             MainShapeDefiner = null;
@@ -31,21 +104,9 @@ namespace Whiteboard
             LastModifiedTime = DateTime.Now;
             Uid = null;
             ShapeOwnerId = null;
-            RecentOperation = Operation.CREATE;
+            RecentOperation = Operation.NONE;
         }
 
-        public MainShape MainShapeDefiner { get; set; }
-        public int UserLevel { get; set; }
-        public DateTime CreationTime { get; set; }
-        public DateTime LastModifiedTime { get; set; }
-        public string Uid { get; set; }
-        public string ShapeOwnerId { get; set; }
-        public Operation RecentOperation { get; set; }
 
-        public BoardShape Clone()
-        {
-            return new BoardShape(MainShapeDefiner.Clone(), UserLevel, CreationTime, LastModifiedTime,
-                (string) Uid.Clone(), (string) ShapeOwnerId.Clone(), RecentOperation);
-        }
     }
 }

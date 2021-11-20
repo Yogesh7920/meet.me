@@ -12,20 +12,21 @@ using System.Net.Sockets;
 
 namespace Testing.Dashboard
 {
-    public class DashboardModuleTests
+    public class ModuleTests
     {
         [SetUp]
         public void Setup()
         {
+            _testContentServer = new();
             _testCommunicator = new();
             _testCommunicator.ipAddressAndPort = validIP + ":" + validPort;
             clientSessionManagerA = new(_testCommunicator);
             clientSessionManagerB = new(_testCommunicator);
-            newUX = new();
-            oldUX = new();
+            newUX = new(clientSessionManagerB);
+            oldUX = new(clientSessionManagerA);
             clientSessionManagerB.SubscribeSession(newUX);
             clientSessionManagerA.SubscribeSession(oldUX);
-            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator);
+            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator,_testContentServer);
         }
 
         [Test]
@@ -197,7 +198,6 @@ namespace Testing.Dashboard
 
             CollectionAssert.AreEqual(expectedUsers, recievedSessionData.users);
             CollectionAssert.AreEqual(expectedEventType, recievedServerData.eventType);
-            Assert.Pass();
         }
 
         [Test]
@@ -210,25 +210,22 @@ namespace Testing.Dashboard
             Assert.AreEqual(expectedEvent, deserializedObj.eventType);
         }
 
-        //[TestCase("This is sample summary")]
-        //[TestCase(null)]
-        //[TestCase("")]
-        //[Test]
-        //public void GetSummary_GetSummary_ReturnsSummary(string testSummary)
-        //{
-        //    UserData user = new("John", 1);
-        //    // Adding a user at client
-        //    AddUserClientSide(user.username, user.userID);
-        //    string recievedSummary = null; 
-        //    SummaryData summaryData = new(testSummary);
-        //    ServerToClientData testData = new("getSummary",null,summaryData, user);
-        //    Thread getSummaryThread = new Thread(new ThreadStart(()=> { recievedSummary = clientSessionManagerB.GetSummary(); }));
-        //    getSummaryThread.Start();
-        //    Thread.Sleep(1000);
-        //    clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
-        //    while (getSummaryThread.IsAlive) ;
-        //    Assert.AreEqual(testSummary, recievedSummary);
-        //}
+        [TestCase("This is sample summary")]
+        [TestCase("")]
+        [Test]
+        public void GetSummary_GetSummary_ReturnsSummary(string testSummary)
+        {
+            UserData user = new("John", 1);
+            // Adding a user at client
+            AddUserClientSide(user.username, user.userID);
+            string recievedSummary = null;
+            SummaryData summaryData = new(testSummary);
+            ServerToClientData testData = new("getSummary", null, summaryData, user);
+            clientSessionManagerB.GetSummary();
+            clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
+            recievedSummary = newUX.summary;
+            Assert.AreEqual(testSummary, recievedSummary);
+        }
 
         //[TestCase("This is sample summary")]
         //[TestCase(null)]
@@ -288,5 +285,6 @@ namespace Testing.Dashboard
         private readonly ISerializer _serializer = new Serializer();
         private TestCommunicator _testCommunicator;
         private readonly string validIP = "192.168.1.1", validPort ="8080";
+        private TestContentServer _testContentServer;
     }
 }

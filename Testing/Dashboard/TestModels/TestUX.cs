@@ -10,9 +10,12 @@ namespace Testing.Dashboard.TestModels
 {
     class TestUX : IClientSessionNotifications
     {
-        public TestUX()
+        public TestUX(IUXClientSessionManager sessionManager)
         {
+            _sessionManager = sessionManager;
             gotNotified = false;
+            _sessionManager.SummaryCreated += (summary) => UpdateSummary(summary);
+            summary = null;
         }
         public void OnClientSessionChanged(SessionData session)
         {
@@ -21,7 +24,14 @@ namespace Testing.Dashboard.TestModels
             gotNotified = true;
         }
 
+        private void UpdateSummary(string recievedSummary)
+        {
+            summary = recievedSummary;
+        }
+
+        public string summary;
         public bool gotNotified;
+        private IUXClientSessionManager _sessionManager;
         public SessionData sessionData;
     }
 }

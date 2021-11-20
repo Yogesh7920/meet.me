@@ -1,11 +1,6 @@
-
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Dashboard
+namespace Dashboard.Server.Telemetry
 {
     /// <summary>
     /// The server data that would be stored in Persistance
@@ -23,4 +18,3 @@ namespace Dashboard
         public List<SessionSummary> allSessionsSummary;
     }
 }
-

@@ -4,9 +4,10 @@ using System.IO;
 
 namespace Dashboard
 {
-    public class Session
+    public class TraceManager
     {
-        public Session()
+        private Stream traceFile;
+        public TraceManager()
         {
             TraceListener();
         }
@@ -17,11 +18,16 @@ namespace Dashboard
         /// </summary>
         public void TraceListener()
         {
-            Stream traceFile = File.Open("trace.txt", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            this.traceFile = File.Open("trace.txt", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             Trace.Listeners.Add(new TextWriterTraceListener(traceFile));
             Trace.AutoFlush = true;
             Trace.IndentSize = 4;
-            traceFile.Close();
         }
+        
+        ~TraceManager()
+        {
+            this.traceFile.Close();
+        }
+        
     }
 }

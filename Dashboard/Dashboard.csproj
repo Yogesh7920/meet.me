@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net5.0-windows</TargetFramework>
@@ -6,7 +6,10 @@
 
     <ItemGroup>
       <PackageReference Include="ScottPlot" Version="4.1.27" />
-        <ProjectReference Include="..\Content\Content.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Content\Content.csproj" />
     </ItemGroup>
 
 </Project>

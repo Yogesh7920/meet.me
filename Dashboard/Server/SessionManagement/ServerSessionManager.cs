@@ -19,18 +19,17 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public ServerSessionManager()
         {
-
+            moduleIdentifier = "Dashboard";
             _contentServer = ContentServerFactory.GetInstance();
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
 
-            Session session = new();
-            session.TraceListener();
+            TraceManager traceManager = new();
+            traceManager.TraceListener();
 
             userCount = 0;
-            moduleIdentifier = "serverSessionManager";
 
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(moduleIdentifier, this);
@@ -40,15 +39,15 @@ namespace Dashboard.Server.SessionManagement
         /// Constructor for the ServerSessionManager, calls the 
         /// tracelistener and creates a list for telemetry subscribers.
         /// </summary>
-        public ServerSessionManager(ICommunicator communicator)
+        public ServerSessionManager(ICommunicator communicator, IContentServer contentServer)
         {
-            _contentServer = ContentServerFactory.GetInstance();
+            _contentServer = contentServer;
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
 
-            Session session = new();
-            session.TraceListener();
+            TraceManager traceManager = new();
+            traceManager.TraceListener();
 
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
@@ -328,11 +327,9 @@ namespace Dashboard.Server.SessionManagement
             lock (this)
             {
                 serverToClientData = new ServerToClientData(eventName, sessionData, summaryData, user);
+                string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
+                _communicator.Send(serializedSessionData, moduleIdentifier);
             }
-
-            string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
-            Console.WriteLine(serializedSessionData);
-            _communicator.Send(serializedSessionData, moduleIdentifier);
         }
 
         /// <summary>
