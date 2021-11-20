@@ -4,7 +4,7 @@
 ///     It contains the public interface required by Summary Module to save Summary data.
 ///     It exposes the basic functinality of Telemetry Module
 /// </summary> 
-/// 
+///
 namespace Dashboard.Server.Persistence
 {
     //SummaryPersistence Interface
@@ -16,7 +16,6 @@ namespace Dashboard.Server.Persistence
         /// <param name="message"> takes message string that need to be saved </param>
         /// <returns> return true if succesfully saved else return false </returns>
         public bool SaveSummary(string message);
-
     }
 
 }
