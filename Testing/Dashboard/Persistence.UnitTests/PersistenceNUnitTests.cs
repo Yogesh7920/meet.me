@@ -60,7 +60,7 @@ namespace NUnitTest_Persistence
 
             // Reading the file if actually saved
             string TextActuallySaved = File.ReadAllText(Path.Combine(path, response.FileName));
-            // File.Delete(Path.Combine(path, response.FileName));
+            File.Delete(Path.Combine(path, response.FileName));
 
             //If text saved and to be saved actually matches
             if (TextToBeSaved == TextActuallySaved)
@@ -106,6 +106,7 @@ namespace NUnitTest_Persistence
             //Priting the xml doc
             string TextActuallySaved = File.ReadAllText(Path.Combine(path, response.FileName));
             Trace.WriteLine(TextActuallySaved);
+            File.Delete(Path.Combine(path, response.FileName));
 
         }
 
@@ -139,6 +140,8 @@ namespace NUnitTest_Persistence
 
             // Calling IsEqual to verify if both ServerData to be saved and retrived Server Data Matches
             Assert.IsTrue(IsEqual(sdtns, deserialised_ouput));
+            string path = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            File.Delete(Path.Combine(path, response.FileName));
 
         }
 
@@ -179,6 +182,9 @@ namespace NUnitTest_Persistence
             bool IsChatCountForUserSaved = File.Exists(Path.Combine(p1, "ChatCountVsUserID.png"));
             bool IsInsincereMembersSaved = File.Exists(Path.Combine(p1, "insincereMembersList.txt"));
             bool IsUserCountAtAnyTimeSaved = File.Exists(Path.Combine(p1, "UserCountVsTimeStamp.png"));
+            File.Delete(Path.Combine(p1, "ChatCountVsUserID.png"));
+            File.Delete(Path.Combine(p1, "insincereMembersList.txt"));
+            File.Delete(Path.Combine(p1, "UserCountVsTimeStamp.png"));
             Assert.IsTrue(IsChatCountForUserSaved && IsInsincereMembersSaved && IsUserCountAtAnyTimeSaved);
         }
     }
