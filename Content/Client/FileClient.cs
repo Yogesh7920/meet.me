@@ -40,7 +40,7 @@ namespace Content
             // check if file with given file path exists
             var filepath = message.Message;
 
-            if (!File.Exists(filepath)) throw new FileNotFoundException("File {0} not found", filepath);
+            if (!File.Exists(filepath)) throw new FileNotFoundException("File "+filepath+" not found");
 
             // initialize a MessageData object that will be sent to the server
             var toSend = new MessageData();
