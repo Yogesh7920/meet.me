@@ -34,13 +34,12 @@ namespace NUnitTest_Persistence
         }
 
         [Test]
-        public void SaveSummary_IsAbleToSaveFileCorrectly()
+        public void SaveSummary_AbleToSaveFileCorrectly()
         {
-            PersistenceFactory pf = new PersistenceFactory();
             string path = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
             string summary = "NUnit Testing";
             string TextToBeSaved = "Summary : --------- " + Environment.NewLine + summary + Environment.NewLine;
-            ResponseEntity response = pf.GetSummaryPersistenceInstance().SaveSummary(summary);
+            ResponseEntity response = PersistenceFactory.GetSummaryPersistenceInstance().SaveSummary(summary);
 
             string TextActuallySaved = File.ReadAllText(Path.Combine(path, response.FileName));
 
@@ -54,7 +53,7 @@ namespace NUnitTest_Persistence
         }
 
         [Test]
-        public void saveServerData_CreatesTheXmlFile()
+        public void SaveServerData_CreatesTheXmlFile()
         {
             SessionSummary sessionSummary = new SessionSummary();
             sessionSummary.ChatCount = 5;
@@ -72,8 +71,7 @@ namespace NUnitTest_Persistence
             sdtns.SessionCount = lst.Count;
             sdtns.AllSessionsSummary = lst;
 
-            PersistenceFactory pf = new PersistenceFactory();
-            ResponseEntity response = pf.GetTelemetryPersistenceInstance().SaveServerData(sdtns);
+            ResponseEntity response = PersistenceFactory.GetTelemetryPersistenceInstance().SaveServerData(sdtns);
 
             string path = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
 
@@ -85,7 +83,7 @@ namespace NUnitTest_Persistence
         }
 
         [Test]
-        public void retriveAllSeverData_isReturningCorrectly()
+        public void RetriveAllSeverData_ReturnsServerDataCorrectly()
         {
             SessionSummary sessionSummary = new SessionSummary();
             sessionSummary.ChatCount = 5;
@@ -103,60 +101,17 @@ namespace NUnitTest_Persistence
             sdtns.SessionCount = lst.Count;
             sdtns.AllSessionsSummary = lst;
 
-            PersistenceFactory pf = new PersistenceFactory();
-            ResponseEntity response = pf.GetTelemetryPersistenceInstance().SaveServerData(sdtns);
+            ResponseEntity response = PersistenceFactory.GetTelemetryPersistenceInstance().SaveServerData(sdtns);
 
-            ServerDataToSave deserialised_ouput = pf.GetTelemetryPersistenceInstance().RetrieveAllSeverData();
+            ServerDataToSave deserialised_ouput = PersistenceFactory.GetTelemetryPersistenceInstance().RetrieveAllSeverData();
             Trace.WriteLine(deserialised_ouput.SessionCount + " " + deserialised_ouput.AllSessionsSummary[0].SessionStartTime);
 
             Assert.IsTrue(IsEqual(sdtns, deserialised_ouput));
 
         }
-        [Test]
-        public void ChatCountVsUserID_Plot_SavedSuccessfully()
-        {
-            TelemetryPersistence tp = new TelemetryPersistence();
-            Dictionary<int, int> chatCountVsUserId = new Dictionary<int, int>();
-            chatCountVsUserId.Add(1131, 12);
-            chatCountVsUserId.Add(1124, 15);
-            chatCountVsUserId.Add(1125, 18);
-            string sessionId = string.Format("Analytics_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
-            ResponseEntity response = tp.ChatCountVsUserID_PlotUtil(chatCountVsUserId, sessionId);
-            string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
-            Assert.IsTrue(response.IsSaved && File.Exists(Path.Combine(p1, response.FileName)));
-        }
-        [Test]
-        public void InsincereMembers_SavedSuccessfully()
-        {
-            TelemetryPersistence tp = new TelemetryPersistence();
-            List<int> insincereList = new List<int>();
-            insincereList.Add(1);
-            insincereList.Add(2);
-            insincereList.Add(3);
-            insincereList.Add(4);
-
-            string sessionId = string.Format("Analytics_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
-            ResponseEntity response = tp.InsincereMembers_SaveUtil(insincereList, sessionId);
-
-            string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
-            Assert.IsTrue(response.IsSaved && File.Exists(Path.Combine(p1, response.FileName)));
-        }
 
         [Test]
-        public void UserCountVsTimeStamp_PlotSavedSuccessfully()
-        {
-            TelemetryPersistence tp = new TelemetryPersistence();
-            Dictionary<int, int> UserCountVsTimeStamp = new Dictionary<int, int>();
-            UserCountVsTimeStamp.Add(1131, 12);
-            UserCountVsTimeStamp.Add(1124, 15);
-            UserCountVsTimeStamp.Add(1125, 18);
-            string sessionId = string.Format("Analytics_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
-            ResponseEntity response = tp.UserCountVsTimeStamp_PlotUtil(UserCountVsTimeStamp, sessionId);
-            string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
-            Assert.IsTrue(File.Exists(Path.Combine(p1, response.FileName)) && response.IsSaved);
-        }
-        [Test]
-        public void save_function_actually_savesAllAnalytics()
+        public void Save__SavesAllAnalytics()
         {
             TelemetryPersistence tp = new TelemetryPersistence();
             Dictionary<int, int> UserCountVsTimeStamp = new Dictionary<int, int>();
@@ -176,8 +131,13 @@ namespace NUnitTest_Persistence
             sessionAnalytics.ChatCountForEachUser = chatCountVsUserId;
             sessionAnalytics.UserCountAtAnyTime = UserCountVsTimeStamp;
             sessionAnalytics.InsincereMembers = insincereList;
-            bool savedSuccess = tp.Save(sessionAnalytics);
-            Assert.IsTrue(savedSuccess);
+            ResponseEntity response = tp.Save(sessionAnalytics);
+
+            string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + response.FileName;
+            bool IsChatCountForUserSaved = File.Exists(Path.Combine(p1, "ChatCountVsUserID.png"));
+            bool IsInsincereMembersSaved = File.Exists(Path.Combine(p1, "insincereMembersList.txt"));
+            bool IsUserCountAtAnyTimeSaved = File.Exists(Path.Combine(p1, "UserCountVsTimeStamp.png"));
+            Assert.IsTrue(IsChatCountForUserSaved && IsInsincereMembersSaved && IsUserCountAtAnyTimeSaved);
         }
     }
 }
