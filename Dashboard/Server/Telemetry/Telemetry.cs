@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Dashboard.Server.SessionManagement;
 using Content;
+using Dashboard.Server.Persistence;
 
 namespace Dashboard.Server.Telemetry{
     ///<summary>
@@ -87,7 +88,7 @@ namespace Dashboard.Server.Telemetry{
         /// <params name="totalChats"> Total chats in the current session </params>
         public void UpdateServerData(int totalUsers, int totalChats ){
             // retrieve the previous server data till previous session
-            ServerDataToSave serverData = RetrieveAllServerData(); 
+            ServerDataToSave serverData = _persistence.RetrieveAllSeverData(); 
             serverData.sessionCount++;
             // current session data
             SessionSummary currSessionSummary = new SessionSummary();
@@ -95,7 +96,7 @@ namespace Dashboard.Server.Telemetry{
             currSessionSummary.chatCount = totalChats;
             currSessionSummary.score = totalChats * totalUsers;
             serverData.allSessionsSummary.Add(currSessionSummary);
-            SaveServerData(serverData);
+            _persistence.SaveServerData(serverData);
         }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace Dashboard.Server.Telemetry{
             sessionAnalyticsToSave.chatCountForEachUser=userIdChatCountDic;
             sessionAnalyticsToSave.userCountAtAnyTime= userCountAtEachTimeStamp;
             sessionAnalyticsToSave.insincereMembers=insincereMembers;
-            Save(sessionAnalyticsToSave);
+            _persistence.Save(sessionAnalyticsToSave);
             // saving server data
             int totalChats=0;
             int totalUsers=0;
@@ -153,5 +154,6 @@ namespace Dashboard.Server.Telemetry{
         Dictionary<UserData,DateTime> userExitTime=new Dictionary<UserData, DateTime>();
         Dictionary<int, int> userIdChatCountDic= new Dictionary<int, int>();
         List<int> insincereMembers;
+        private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
     }
 }
