@@ -12,7 +12,7 @@ namespace Client
     /// <summary>
     /// Interaction logic for ChatView.xaml
     /// </summary>
-    public partial class ChatView : Window
+    public partial class ChatView : UserControl
     {
         public int ReplyMsgId { get; set; }
         
@@ -145,13 +145,13 @@ namespace Client
         }
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Window.GetWindow(this).Close();
         }
         private void OnWindowMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                this.DragMove();
+                Window.GetWindow(this).DragMove();
             }
         }
         private void UpdateScrollBar(ListBox listBox)
