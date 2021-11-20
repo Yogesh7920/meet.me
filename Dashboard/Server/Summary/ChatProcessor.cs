@@ -272,7 +272,7 @@ namespace Dashboard.Server.Summary
 			int length = chat.Count;
 			float fraction;
 			if (length > 20)
-				fraction = 10 / length;
+				fraction = (float)10 / length;
 			else
 				fraction = (float)(20 - length) / 20;
 			try
