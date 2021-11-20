@@ -37,13 +37,16 @@ namespace Content
         /// <inheritdoc />
         public List<ChatContext> SGetAllMessages()
         {
-            return _chatContextServer.GetAllMessages();
+            lock (_lock)
+            {
+                return _chatContextServer.GetAllMessages();
+            }
         }
 
         /// <inheritdoc />
         public void SSendAllMessagesToClient(int userId)
         {
-            string allMessagesSerialized = _serializer.Serialize(_chatContextServer.GetAllMessages());
+            string allMessagesSerialized = _serializer.Serialize(SGetAllMessages());
             _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
 

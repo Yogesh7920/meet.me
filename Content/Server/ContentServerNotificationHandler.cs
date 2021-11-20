@@ -16,17 +16,5 @@ namespace Content
         {
             _contentServer.Receive(data);
         }
-
-        /// <inheritdoc />
-        public void OnClientJoined<T>(T socketObject)
-        {
-            return;
-        }
-
-        /// <inheritdoc />
-        public void OnClientLeft(string clientId)
-        {
-            return;
-        }
     }
 }
