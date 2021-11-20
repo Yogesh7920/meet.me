@@ -1,17 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Dashboard
+namespace Dashboard.Server.Telemetry
 {
-    public class SessionAnalytics{
+    public class SessionAnalytics
+    {
         /// Stores the userCount(int) at every time stamp(DateTime)
-        Dictionary<int, int> UserCountAtAnyTime;
+        public Dictionary<int, int> UserCountAtAnyTime;
+
         /// Stores the chat count(int) for each user(UserData) 
-        Dictionary<int, int> ChatCountForEachUser;
+        public Dictionary<int, int> ChatCountForEachUser;
+
         /// returns the users who were present in the session for less than the minimum time(threshold time)
-        List<int> InsincereMembers;
+        public List<int> InsincereMembers;
     }
 }

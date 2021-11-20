@@ -1,24 +1,17 @@
-
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Dashboard
+namespace Dashboard.Server.Telemetry
 {
     public class ServerDataToSave
     {
-      
-        /// Dictionary with SessionData as key and its score(ChatCount * No. of users) as value
-        
-        Dictionary<int, int> ScoreOfEachSession;
+        ///<summary>
+        ///     the total number of sessions
+        ///</summary>
+        public int SessionCount;
 
-        /// Dictionary with SessionData as key and  total user count as value
-        Dictionary<int, int> UserCountForEachSession;
-
-        /// Dictionary with SessionData as key and total chat count as value
-        Dictionary<int, int> ChatCountForEachSession;
+        /// <summary>
+        ///     List of SessionSummary that is summary of each session
+        /// </summary>
+        public List<SessionSummary> AllSessionsSummary;
     }
 }
-
