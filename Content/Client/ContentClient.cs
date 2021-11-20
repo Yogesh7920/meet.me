@@ -132,7 +132,7 @@ namespace Content
         /// <inheritdoc />
         public void CUpdateChat(int messageId, string newMessage)
         {
-            throw new NotImplementedException();
+            _chatHandler.ChatUpdate(int messageId, string newMessage);
         }
 
         /// <inheritdoc />
