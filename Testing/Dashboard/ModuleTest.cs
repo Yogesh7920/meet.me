@@ -183,7 +183,6 @@ namespace Testing.Dashboard
             List<UserData> expectedUsers = Utils.GenerateUserData(sampleSize);
             AddUsersAtServer(expectedUsers);
             UserData departedUser = expectedUsers[userIndex - 1];
-            Console.WriteLine(departedUser);
             expectedUsers.RemoveAt(userIndex - 1);
             string expectedEventType = "removeClient";
 
