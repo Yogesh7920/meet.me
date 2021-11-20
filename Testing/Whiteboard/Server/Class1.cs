@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dashboard.Server.Persistence
+namespace Testing.Whiteboard.Server
 {
-    interface Interface1
+    class Class1
     {
     }
 }
