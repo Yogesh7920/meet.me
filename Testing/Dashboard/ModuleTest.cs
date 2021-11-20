@@ -20,8 +20,8 @@ namespace Testing.Dashboard
             _testContentServer = new();
             _testCommunicator = new();
             _testCommunicator.ipAddressAndPort = validIP + ":" + validPort;
-            clientSessionManagerA = new(_testCommunicator);
-            clientSessionManagerB = new(_testCommunicator);
+            clientSessionManagerA = SessionManagerFactory.GetClientSessionManager(_testCommunicator);
+            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager(_testCommunicator);
             newUX = new(clientSessionManagerB);
             oldUX = new(clientSessionManagerA);
             clientSessionManagerB.SubscribeSession(newUX);
