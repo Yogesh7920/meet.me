@@ -21,7 +21,7 @@ namespace Dashboard
         /// Returns a ClientSessionManager object which 
         /// implements the interface IUXClientSM
         /// </returns>
-        public static IUXClientSessionManager GetClientSessionManager()
+        public static ClientSessionManager GetClientSessionManager()
         {
             return s_clientSessionManager.Value;
         }
@@ -31,7 +31,7 @@ namespace Dashboard
         /// </summary>
         /// <param name="communicator"> Test communicator to test functionality</param>
         /// <returns></returns>
-        public static IUXClientSessionManager GetClientSessionManager(ICommunicator communicator)
+        public static ClientSessionManager GetClientSessionManager(ICommunicator communicator)
         {
             return new ClientSessionManager(communicator);
         }
@@ -44,7 +44,7 @@ namespace Dashboard
         /// Returns a ServerSessionManager object which 
         /// implements the interface ITelemetrySessionManager
         /// </returns>
-        public static ITelemetrySessionManager GetServerSessionManager()
+        public static ServerSessionManager GetServerSessionManager()
         {
             return s_serverSessionManager.Value;
         }

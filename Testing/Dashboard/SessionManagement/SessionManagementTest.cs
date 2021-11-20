@@ -23,7 +23,7 @@ namespace Testing.Dashboard
         public void Setup()
         {
             _communicatorTest = new();
-            _clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+            _clientSessionManager = SessionManagerFactory.GetClientSessionManager(_communicatorTest);
             _serverSessionManager = SessionManagerFactory.GetServerSessionManager(_communicatorTest);
         }
 
