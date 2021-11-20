@@ -34,20 +34,20 @@ namespace Dashboard.Server.Persistence
         }
         /// <summary>Helps to create instance of ISummaryPersistence </summary>
         /// <returns> return ITelemetryPersistence Interface which enables to use functions of class inheriting the same </returns>
-        public static ISummaryPersistence GetSummaryPersistenceInstance()
+        public static SummaryPersistence GetSummaryPersistenceInstance()
         {
             return new SummaryPersistence();
         }
 
         /// <summary>Helps to create instance of ITelemetryPersistence </summary>
         /// <returns> return ITelemetryPersistence Interface which enables to use functions of class inheriting the same </returns>
-        public static ITelemetryPersistence GetTelemetryPersistenceInstance()
+        public static TelemetryPersistence GetTelemetryPersistenceInstance()
         {
             return new TelemetryPersistence();
         }
 
-        private static ISummaryPersistence _summaryPersisitence;
-        private static ITelemetryPersistence _telemetryPersisitence;
+        private static SummaryPersistence _summaryPersisitence;
+        private static TelemetryPersistence _telemetryPersisitence;
 
     }
 

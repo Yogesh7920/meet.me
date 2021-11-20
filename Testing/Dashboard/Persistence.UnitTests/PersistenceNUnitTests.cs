@@ -56,7 +56,7 @@ namespace NUnitTest_Persistence
             string summary = "NUnit Testing";
             string TextToBeSaved = "Summary : --------- " + Environment.NewLine + summary + Environment.NewLine;
             // Saving a Test summary string
-            ResponseEntity response = PersistenceFactory.GetSummaryPersistenceInstance().SaveSummary(summary);
+            ResponseEntity response = PersistenceFactory.GetSummaryPersistenceInstance().SaveSummary(summary, true);
 
             // Reading the file if actually saved
             string TextActuallySaved = File.ReadAllText(Path.Combine(path, response.FileName));

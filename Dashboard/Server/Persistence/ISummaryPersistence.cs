@@ -15,7 +15,8 @@ namespace Dashboard.Server.Persistence
         /// </summary>
         /// <param name="message"> takes message string that need to be saved </param>
         /// <returns> return true if succesfully saved else return false </returns>
-        public ResponseEntity SaveSummary(string message);
+        public bool SaveSummary(string message);
+
     }
 
 }
