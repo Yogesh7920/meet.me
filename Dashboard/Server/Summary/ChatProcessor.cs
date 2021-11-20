@@ -218,10 +218,17 @@ namespace Dashboard.Server.Summary
 				sum += s.Item2;
 				return (s.Item1, res);
 			}).ToList();
-			if (cdfScores.Count == 1 && cdfScores[0].Item1 == "")
+			bool isEmpty = true;
+			foreach(var s in cdfScores)
 			{
-				throw new EmptyStringException();
+				if (s.Item1 != "")
+				{
+					isEmpty = false;
+					break;
+				}
 			}
+			if (isEmpty)
+				throw new EmptyStringException();
 			int size = Convert.ToInt32(fraction * cdfScores.Count);
 			if (size == 0)
 			{
