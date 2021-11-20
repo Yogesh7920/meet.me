@@ -9,13 +9,20 @@ namespace Content
 {
     internal class ChatClient
     {
-        private readonly ICommunicator _communicator;
+        private ICommunicator _communicator;
+        public ICommunicator Communicator
+        {
+            get => _communicator;
+            set => _communicator = value;
+        }
+
         private readonly string _moduleIdentifier = "Content";
         private readonly ISerializer _serializer;
 
-        public ChatClient()
+        public ChatClient(ICommunicator communicator)
         {
-            _communicator = CommunicationFactory.GetCommunicator();
+            //_communicator = CommunicationFactory.GetCommunicator();
+            _communicator = communicator;
             _serializer = new Serializer();
         }
 
@@ -54,6 +61,7 @@ namespace Content
             toSend.Event = MessageEvent.Update;
             toSend.SenderId = UserId;
 			toSend.Message = newMessage;
+			toSend.Type = MessageType.Chat;
 			var xml = _serializer.Serialize(toSend);
 			Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
             _communicator.Send(xml, _moduleIdentifier);
@@ -65,7 +73,7 @@ namespace Content
             toSend.MessageId = messageId;
             toSend.Event = MessageEvent.Star;
             toSend.SenderId = UserId;
-
+			toSend.Type = MessageType.Chat;
             var xml = _serializer.Serialize(toSend);
 			 Trace.WriteLine("[ChatClient] Marking Event of chat as star and sending to server");
             _communicator.Send(xml, _moduleIdentifier);
