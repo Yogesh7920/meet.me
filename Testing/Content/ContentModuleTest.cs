@@ -1,6 +1,10 @@
 using NUnit.Framework;
 using Content;
 using Networking;
+using System.IO;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Testing.Content
 {
@@ -197,6 +201,45 @@ namespace Testing.Content
             {
                 Assert.Fail();
             }
+        }
+
+        [Test]
+        public void CDownload_SendingDownloadReqToServerWithInvalidMsgId_ShouldThrowArgumentException()
+        {
+            Utils _util = new Utils();
+            int UserId = 1001;
+            int MsgId = 10;
+            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string SavePath = CurrentDirectory + "\\SavedTestFile.pdf";
+            MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.Download, SavePath, new int[] { }, type: MessageType.File);
+
+            ISerializer _serializer = new Serializer();
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
+            _contentClient.UserId = UserId;
+            _contentClient.Communicator = _fakeCommunicator;
+            IContentClient _iContentClient = _contentClient;
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _iContentClient.CDownload(MsgId, SavePath));
+            Assert.AreEqual("Message with given message ID not found", ex.Message);
+
+            /*var sendSerializedMsg = _fakeCommunicator.GetSentData();
+            var deserialized = _serializer.Deserialize<MessageData>(sendSerializedMsg);
+
+            if (deserialized is MessageData)
+            {
+                var receivedMessage = deserialized as MessageData;
+                Assert.AreEqual(receivedMessage.Message, SampleMsgData.Message);
+                Assert.AreEqual(receivedMessage.Event, MessageEvent.Download);
+                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.SenderId, UserId);
+                Assert.AreEqual(receivedMessage.MessageId, MsgId);
+                Assert.AreEqual(receivedMessage.FileData, null);
+            }
+            else
+            {
+                Assert.Fail();
+            }*/
         }
     }
 }
