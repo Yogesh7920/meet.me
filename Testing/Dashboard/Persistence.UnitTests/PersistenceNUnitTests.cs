@@ -14,9 +14,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace NUnitTest_Persistence
+namespace Testing.Dashboard.Persistence
 {
-    public class Tests
+    public class PersistenceTests
     {
         /// <summary>
         /// It is just a utility function to compare to Objects of 
