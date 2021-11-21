@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace Testing.Dashboard
+namespace Testing.Dashboard.Persistence
 {
     public class PersistenceTests
     {
