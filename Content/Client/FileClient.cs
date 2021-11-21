@@ -1,3 +1,5 @@
+/// <author>Yuvraj Raghuvanshi</author>
+/// <created>1/11/2021</created>
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,14 +9,19 @@ namespace Content
 {
     internal class FileClient
     {
-        private readonly ICommunicator _communicator;
+        private ICommunicator _communicator;
+        public ICommunicator Communicator
+        {
+            get => _communicator;
+            set => _communicator = value;
+        }
 
         private readonly ISerializer _serializer;
 
-        public FileClient()
+        public FileClient(ICommunicator communicator)
         {
             _serializer = new Serializer();
-            _communicator = CommunicationFactory.GetCommunicator();
+            _communicator = communicator;
         }
 
         public int UserId { get; set; }
@@ -33,7 +40,7 @@ namespace Content
             // check if file with given file path exists
             var filepath = message.Message;
 
-            if (!File.Exists(filepath)) throw new FileNotFoundException("File {0} not found", filepath);
+            if (!File.Exists(filepath)) throw new FileNotFoundException("File "+filepath+" not found");
 
             // initialize a MessageData object that will be sent to the server
             var toSend = new MessageData();

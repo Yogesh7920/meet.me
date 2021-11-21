@@ -460,10 +460,11 @@ namespace Client
                     case (WhiteBoardViewModel.WBTools.FreeHand):
                         lock (this)
                         {
-                            if (mouseDownFlag == 1)
+                            if (mouseDownFlag == 1 && mouseLeftBtnMoveFlag > 5)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
                                 GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
+                                mouseLeftBtnMoveFlag = 0;
                             }
                         }
                         break;
@@ -950,7 +951,7 @@ namespace Client
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
             //To change this 
-            GlobCanvas.Children.Clear();
+            GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
             return;
         }
 
