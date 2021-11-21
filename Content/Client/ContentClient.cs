@@ -73,6 +73,12 @@ namespace Content
             }
         }
 
+        /// <inheritdoc/>
+        public int GetUserId()
+        {
+            return _userId;
+        }
+
         /// <inheritdoc />
         public void CSend(SendMessageData toSend)
         {
