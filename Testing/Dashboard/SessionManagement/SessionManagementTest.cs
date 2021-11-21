@@ -10,7 +10,7 @@ using Dashboard;
 using Networking;
 using Testing.Dashboard.SessionManagement.TestModules;
 
-namespace Testing.Dashboard
+namespace Testing.Dashboard.SessionManagement
 {
     public class SessionManagementTest
     {

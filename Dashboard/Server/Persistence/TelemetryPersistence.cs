@@ -173,72 +173,58 @@ namespace Dashboard.Server.Persistence
         /// </summary>
         /// <param name="UserCountAtAnyTime"> takes UserCountAtAnyTime from Telemetry. </param>
         /// /// <param name="sessionId"> takes sessionId from Telemetry. </param>
-        //private ResponseEntity UserCountVsTimeStamp_PlotUtil(Dictionary<int, int> UserCountAtAnyTime, string sessionId)
-        //{
-        //    // Converting the data Value of dictionary to Array, inorder to use ScottPlot library
-        //    int[] val = UserCountAtAnyTime.Values.ToArray();
-        //    double[] values = new double[val.Length];
-        //    for (int i = 0; i < val.Length; i++)
-        //    {
-        //        values[i] = val[i];
-        //    }
-        //    List<double> pos = new List<double>();
-        //    List<string> lb = new List<string>();
-        //    int x = 0;
-        //    foreach (int k in UserCountAtAnyTime.Keys)
-        //    {
-        //        pos.Add(x);
-        //        lb.Add(k.ToString());
-        //        x++;
-        //    }
-
-        //    //Creating the Fixed labels
-        //    string[] labels = lb.ToArray();
-
-        //    //Fixing the positions of X-labels
-        //    double[] positions = pos.ToArray();
-
-        //    //Creating ScottPlot fig of mentioned dimension
-        //    var plt = new ScottPlot.Plot(600, 400);
-
-        //    // Actually plotting the Bars
-        //    var temp = plt.AddBar(values, positions);
-
-        //    //Adding the Xticks
-        //    plt.XTicks(positions, labels);
-
-        //    //Fixing the Y spacing to 1, to enable ease of readability
-        //    plt.YAxis.ManualTickSpacing(1);
-        //    plt.SetAxisLimits(yMin: 0);
-
-        //    // Changing BarColor to Green
-        //    temp.FillColor = Color.Green;
-
-        //    // Giving names to X and Y axes
-        //    plt.XLabel("TimeStamp");
-        //    plt.YLabel("UserCount At Any Instant");
-        //    ResponseEntity response = new ResponseEntity();
-        //    response.FileName = "UserCountVsTimeStamp.png";
-        //    string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
-
-        //    //Creating Directory if required and save
-        //    if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
-        //    plt.SaveFig(Path.Combine(p1, "UserCountVsTimeStamp.png"));
-        //    Trace.WriteLine("UserCountVsTimeStamp.png saved Successfully!!");
-        //    response.IsSaved = true;
-        //    return response;
-        //}
-
-        /// <summary>
-        /// save the UserCountAtAnyTime data as png after each session.
-        /// </summary>
-        /// <param name="UserCountAtAnyTime"> takes UserCountAtAnyTime from Telemetry. </param>
-        /// /// <param name="sessionId"> takes sessionId from Telemetry. </param>
-        private ResponseEntity UserCountVsTimeStamp_PlotUtil(Dictionary<DateTime, int> userCountAtAnyTime, string sessionId)
+        private ResponseEntity UserCountVsTimeStamp_PlotUtil(Dictionary<DateTime, int> UserCountAtAnyTime, string sessionId)
         {
-            
+            // Converting the data Value of dictionary to Array, inorder to use ScottPlot library
+            int[] val = UserCountAtAnyTime.Values.ToArray();
+            double[] values = new double[val.Length];
+            for (int i = 0; i < val.Length; i++)
+            {
+                values[i] = val[i];
+            }
+            List<double> pos = new List<double>();
+            List<string> lb = new List<string>();
+            int x = 0;
+            foreach (DateTime k in UserCountAtAnyTime.Keys)
+            {
+                pos.Add(x);
+                lb.Add(k.ToString());
+                x++;
+            }
+
+            //Creating the Fixed labels
+            string[] labels = lb.ToArray();
+
+            //Fixing the positions of X-labels
+            double[] positions = pos.ToArray();
+
+            //Creating ScottPlot fig of mentioned dimension
+            var plt = new ScottPlot.Plot(600, 400);
+
+            // Actually plotting the Bars
+            var temp = plt.AddBar(values, positions);
+
+            //Adding the Xticks
+            plt.XTicks(positions, labels);
+
+            //Fixing the Y spacing to 1, to enable ease of readability
+            plt.YAxis.ManualTickSpacing(1);
+            plt.SetAxisLimits(yMin: 0);
+
+            // Changing BarColor to Green
+            temp.FillColor = Color.Green;
+
+            // Giving names to X and Y axes
+            plt.XLabel("TimeStamp");
+            plt.YLabel("UserCount At Any Instant");
             ResponseEntity response = new ResponseEntity();
             response.FileName = "UserCountVsTimeStamp.png";
+            string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
+
+            //Creating Directory if required and save
+            if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
+            plt.SaveFig(Path.Combine(p1, "UserCountVsTimeStamp.png"));
+            Trace.WriteLine("UserCountVsTimeStamp.png saved Successfully!!");
             response.IsSaved = true;
             return response;
         }
