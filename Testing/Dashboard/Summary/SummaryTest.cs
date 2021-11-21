@@ -58,12 +58,12 @@ namespace Testing.Dashboard.Summary
 			Assert.IsTrue(_summarizer.GetSummary(chats).Length > 0);
 		}
 
-		//[Test]
-		//public void SaveSummary_ValidChatsGeneral_ReturnsTrue()
-		//{
-		//	ChatContext[] chats = Utils.GetChatContext("General chat");
-		//	Assert.AreEqual(_summarizer.SaveSummary(chats), true);
-		//}
+		[Test]
+		public void SaveSummary_ValidChatsGeneral_ReturnsTrue()
+		{
+			ChatContext[] chats = Utils.GetChatContext("General chat");
+			Assert.AreEqual(_summarizer.SaveSummary(chats), true);
+		}
 
 		private ISummarizer _summarizer;
 	}
