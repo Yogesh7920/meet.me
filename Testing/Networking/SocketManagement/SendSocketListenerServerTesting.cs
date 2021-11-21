@@ -156,7 +156,7 @@ namespace Testing.Networking.SocketManagement
             string whiteBoardData = "hello ";
             Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             _queueS.Enqueue(whiteBoardPacket);
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             FakeNotificationHandler whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[Modules.WhiteBoard];
             Assert.AreEqual(NotificationEvents.OnClientLeft, whiteBoardHandler.Event);
         }

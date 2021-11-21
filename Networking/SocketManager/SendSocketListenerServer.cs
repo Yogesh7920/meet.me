@@ -164,7 +164,7 @@ namespace Networking
                                     {
                                         for (int t = 0; t < 3; t++)
                                         {
-                                            Thread.Sleep(10);
+                                            Thread.Sleep(1);
                                             if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
                                             {
                                                 var networkStreamTry = tcpSocketTry.GetStream();
