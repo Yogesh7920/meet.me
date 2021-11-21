@@ -90,14 +90,8 @@ namespace Whiteboard
             return new Polyline(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), pointClone, AngleOfRotation);
         }
 
-        /// <summary>
-        /// Resize override for polyline.
-        /// </summary>
-        /// <param name="start">start of mouse drag for resize.</param>
-        /// <param name="end">end of mousedrag for resize.</param>
-        /// <param name="dragPos">The latch selected while resizing.</param>
-        /// <returns></returns>
-        public override bool Resize(Coordinate start, Coordinate end, DragPos dragPos)
+
+        public override bool ResizeAboutCenter([NotNull] Coordinate start, [NotNull] Coordinate end, DragPos dragPos)
         {
             return false;
         }

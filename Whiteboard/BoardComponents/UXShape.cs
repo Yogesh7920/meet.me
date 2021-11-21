@@ -49,7 +49,9 @@ namespace Whiteboard
         /// </summary>
         public int CheckPointNumber;
 
-        // Operation performed on the state.
+        /// <summary>
+        /// Operation to be performed on the state.
+        /// </summary>
         public Operation OperationType;
 
         /// <summary>

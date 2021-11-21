@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/22/2021
 **/
 
 using System;
@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Whiteboard
 {
@@ -67,33 +68,55 @@ namespace Whiteboard
             this.AngleOfRotation = angle;
         }
 
-        // Type of shape.
+        /// <summary>
+        /// Type of shape.
+        /// </summary>
         public ShapeType ShapeIdentifier { get; set; }
 
-        // Height of shape.
+        /// <summary>
+        /// Height of shape.
+        /// </summary>
         public float Height { get; set; }
 
-        // Width of shape.
+        /// <summary>
+        /// Width of shape.
+        /// </summary>
         public float Width { get; set; }
 
-        // Stroke Width of shape.
+        /// <summary>
+        /// Stroke Width of shape.
+        /// </summary>
         public float StrokeWidth { get; set; }
 
-        // Stroke color of shape.
+        /// <summary>
+        /// Stroke color of shape.
+        /// </summary>
         public BoardColor StrokeColor { get; set; }
 
-        // Shape fill of the shape.
+        // 
+        /// <summary>
+        /// Fill color of the shape.
+        /// </summary>
         public BoardColor ShapeFill { get; set; }
 
-        // The Coordinate of start of mouse drag while creation.
+        /// <summary>
+        /// The Coordinate of start of mouse drag while creation.
+        /// </summary>
         public Coordinate Start { get; set; }
 
-        // Coordinate of Center of shape.
+        /// <summary>
+        /// Coordinate of Center of shape.
+        /// </summary>
         public Coordinate Center { get; set; }
 
-        // Angle at which the shape is rotated.
-
+        /// <summary>
+        /// Angle at which the shape is rotated.
+        /// </summary>
         private float _angleOfRotation;
+
+        /// <summary>
+        /// Property setter for angle of rotation, ensuring the angle stays between -180 to 180 degrees.
+        /// </summary>
         public float AngleOfRotation
         {
             get
@@ -196,70 +219,75 @@ namespace Whiteboard
 
             // finding angle of rotation from start and end coordinates.
             float rotAngle = (float)(0.01745 * Vector.AngleBetween(new Vector(v1.C, v1.R), new Vector(v2.C, v2.R)));
-            Console.WriteLine("Angle to be rotated is"+rotAngle.ToString());
             AngleOfRotation += rotAngle;
 
             return true;
         }
 
         /// <summary>
-        /// Performs resize operation on the shape.
+        /// Resize Operation on shape about center.
         /// </summary>
-        /// <param name="start">Start coordinate for Resize.</param>
-        /// <param name="end">End coordinate for Resize.</param>
-        /// <param name="dragPos"></param>
-        /// <returns>Success of resizing operation.</returns>
-        public virtual bool Resize(Coordinate start, Coordinate end, DragPos dragPos)
+        /// <param name="start">Start of mouse drag.</param>
+        /// <param name="end">End of mouse drag.</param>
+        /// <param name="dragPos">The Latch selected for resize operation.</param>
+        /// <returns>True if resizing successful, else false.</returns>
+        public virtual bool ResizeAboutCenter([NotNull] Coordinate start, [NotNull] Coordinate end, DragPos dragPos)
         {
-            // Unit vector at an angle AngleOfRotation from x-axis.
+            // Unit vector at an angle AngleOfRotation from x - axis.
             Vector centerVector = new(Math.Cos(AngleOfRotation), Math.Sin(AngleOfRotation));
 
             // Finding displacement vector.
-            Coordinate deltaCord = end - start;            
+            Coordinate deltaCord = end - start;
             Vector deltaVector = new(deltaCord.C, deltaCord.R);
 
-            double angleBetween = Math.Abs(Vector.AngleBetween(centerVector, deltaVector));
+            double angleBetween = 0.01745 * Vector.AngleBetween(centerVector, deltaVector);
 
             // Magnitude of displacement.
             float deltaNorm = (float)(Math.Sqrt(Math.Pow(deltaCord.R, 2) + Math.Pow(deltaCord.C, 2)));
 
             // Calculating displacements in direction of unit vector
             float xDelta = (float)(deltaNorm * Math.Cos(angleBetween));
-            float yDelta = (int)(deltaNorm * Math.Sin(angleBetween));
+            float yDelta = (float)(deltaNorm * Math.Sin(angleBetween));
 
             // Changing shape attributes after resizing.
             switch (dragPos)
             {
                 // the dignonal direction resizing broken into its 2 components.
                 case DragPos.TOP_RIGHT:
-                    return (Resize(start, end, DragPos.TOP) || Resize(start, end, DragPos.RIGHT));
+                    Height += 2 * yDelta;
+                    Width += 2 * xDelta;
+                    break;
                 case DragPos.BOTTOM_LEFT:
-                    return (Resize(start, end, DragPos.BOTTOM) || Resize(start, end, DragPos.LEFT));
+                    Height -= 2 * yDelta;
+                    Width -= 2 * xDelta;
+                    break;
                 case DragPos.TOP_LEFT:
-                    return (Resize(start, end, DragPos.TOP) || Resize(start, end, DragPos.LEFT));
+                    Height += 2 * yDelta;
+                    Width -= 2 * xDelta;
+                    break;
                 case DragPos.BOTTOM_RIGHT:
-                    return (Resize(start, end, DragPos.BOTTOM) || Resize(start, end, DragPos.RIGHT));
+                    Height -= 2 * yDelta;
+                    Width += 2 * xDelta;
+                    break;
                 case DragPos.LEFT:
-                    Center.Add(new Coordinate((float)((-xDelta/2)*Math.Cos(AngleOfRotation)), (float)((-xDelta/2)*Math.Sin(AngleOfRotation))));
-                    Width += xDelta;
+                    Width -= 2*xDelta;
                     break;
                 case DragPos.RIGHT:
-                    Center.Add(new Coordinate((float)((xDelta/2)*Math.Cos(AngleOfRotation)), (float)((xDelta/2)*Math.Sin(AngleOfRotation))));
-                    Width += xDelta;
+                    Width += 2*xDelta;
                     break;
                 case DragPos.TOP:
-                    Center.Add(new Coordinate((float)((-xDelta/2)*Math.Sin(AngleOfRotation)),(float) ((xDelta/2)*Math.Cos(AngleOfRotation))));
-                    Height += yDelta;
+                    Height += 2*yDelta;
                     break;
                 case DragPos.BOTTOM:
-                    Center.Add(new Coordinate((float)((xDelta/2)*Math.Sin(AngleOfRotation)), (float)((-xDelta/2)*Math.Cos(AngleOfRotation))));
-                    Height += yDelta;
+                    Height -= 2*yDelta;
                     break;
                 default:
                     return false;
-            } 
+            }
             return true;
+
         }
+
     }
 
 }
