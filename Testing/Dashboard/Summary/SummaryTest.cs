@@ -9,8 +9,6 @@
 using Content;
 using Dashboard.Server.Summary;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Testing.Dashboard.Summary
 {
@@ -55,7 +53,6 @@ namespace Testing.Dashboard.Summary
 		public void GetSummary_ValidChatsSmall_NonEmptyString()
 		{
 			ChatContext[] chats = Utils.GetChatContext("Variable chat");
-			//Trace.WriteLine(_summarizer.GetSummary(chats));
 			Assert.IsTrue(_summarizer.GetSummary(chats).Length > 0);
 		}
 
