@@ -20,8 +20,8 @@ namespace Testing.Dashboard
             _testContentServer = new();
             _testCommunicator = new();
             _testCommunicator.ipAddressAndPort = validIP + ":" + validPort;
-            clientSessionManagerA = new(_testCommunicator);
-            clientSessionManagerB = new(_testCommunicator);
+            clientSessionManagerA = SessionManagerFactory.GetClientSessionManager(_testCommunicator);
+            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager(_testCommunicator);
             newUX = new(clientSessionManagerB);
             oldUX = new(clientSessionManagerA);
             clientSessionManagerB.SubscribeSession(newUX);
@@ -183,7 +183,6 @@ namespace Testing.Dashboard
             List<UserData> expectedUsers = Utils.GenerateUserData(sampleSize);
             AddUsersAtServer(expectedUsers);
             UserData departedUser = expectedUsers[userIndex - 1];
-            Console.WriteLine(departedUser);
             expectedUsers.RemoveAt(userIndex - 1);
             string expectedEventType = "removeClient";
 
