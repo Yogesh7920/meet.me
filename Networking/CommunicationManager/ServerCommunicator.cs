@@ -53,6 +53,8 @@ namespace Networking
         /// <summary>
         ///     start the server and return ip and port
         /// </summary>
+        /// <param name="serverIp"> Ip of server</param>
+        /// <param name="serverPort"> port of server</param>
         /// <returns> String</returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
@@ -64,7 +66,7 @@ namespace Networking
             _serverSocket.Start();
 
             //start sendSocketListener of server for sending message 
-            _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket);
+            _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket,_subscribedModules);
             _sendSocketListenerServer.Start();
 
             _receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModules);
@@ -107,6 +109,8 @@ namespace Networking
         ///     It adds client socket to a map and starts listening on that socket
         ///     also adds corresponding listener to a set
         /// </summary>
+        /// <param name="clientId"> Id of client</param>
+        /// <param name="socketObject"> TcpSocket of client</param>
         /// <returns> void </returns>
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
@@ -125,6 +129,7 @@ namespace Networking
         /// <summary>
         ///     It removes client from server
         /// </summary>
+        /// <param name="clientId"> Id of client</param>
         /// <returns> void </returns>
         void ICommunicator.RemoveClient(string clientId)
         {
@@ -147,6 +152,8 @@ namespace Networking
         ///     forms packet object  and push to the
         ///     sending queue for broadcast
         /// </summary>
+        /// <param name="data"> data to be sent</param>
+        /// <param name="identifier"> module Id</param>
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
@@ -166,6 +173,9 @@ namespace Networking
         ///     forms packet object and push to the
         ///     sending queue for private messaging
         /// </summary>
+        /// <param name="data"> data to be sent</param>
+        /// <param name="identifier"> module Id</param>
+        /// <param name="destination"> client id</param>
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier, string destination)
         {
@@ -182,7 +192,7 @@ namespace Networking
         }
 
         /// <summary>
-        ///     It adds notification handler of module
+        ///    This method registers different handler
         /// </summary>
         /// <returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
@@ -195,7 +205,7 @@ namespace Networking
         /// <summary>
         ///     It finds IP4 address of machine which does not end with .1
         /// </summary>
-        /// <returns>IP4 address </returns>
+        /// <returns>String </returns>
         private static string GetLocalIpAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -214,6 +224,7 @@ namespace Networking
         /// <summary>
         ///     scan for free Tcp port.
         /// </summary>
+        /// <param name="ip"> IP for scanning free port</param>
         /// <returns>integer </returns>
         private static int FreeTcpPort(IPAddress ip)
         {

@@ -45,6 +45,7 @@ namespace Networking
         /// <summary>
         ///     This method is for starting the thread
         /// </summary>
+        /// <returns> Void  </returns>
         public void Start()
         {
             _listen = new Thread(Listen);
@@ -56,6 +57,7 @@ namespace Networking
         ///     This forms packet object out of received string
         ///     it looks for EOF to know the end of message
         /// </summary>
+        /// <param name="msg"> string containing data</param>
         /// <returns>Packet </returns>
         private static Packet GetPacket(string[] msg)
         {
@@ -75,6 +77,7 @@ namespace Networking
         /// <summary>
         ///     This method runs on a thread and listen for incoming message
         /// </summary>
+        /// <returns> Void  </returns>
         private void Listen()
         {
             //Variable to store the entire message
@@ -115,6 +118,7 @@ namespace Networking
         /// <summary>
         ///     This method closes the listen thread
         /// </summary>
+        /// <returns> Void  </returns>
         public void Stop()
         {
             _listenRun = false;
@@ -123,6 +127,9 @@ namespace Networking
         /// <summary>
         ///     This method is for pushing the data into the queue
         /// </summary>
+        /// <param name="data"> packet data</param>
+        /// <param name="moduleIdentifier"> module ID </param>
+        /// <returns> Void  </returns>
         private void PushToQueue(string data, string moduleIdentifier)
         {
             var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = data};

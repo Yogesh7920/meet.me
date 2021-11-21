@@ -44,6 +44,7 @@ namespace Networking
         /// <summary>
         ///     This method is for starting the thread
         /// </summary>
+        /// <returns> Void  </returns>
         public void Start()
         {
             _listen = new Thread(Listen);
@@ -56,7 +57,7 @@ namespace Networking
         ///     it also adds EOF to indicate that the message
         ///     that has been popped out from the queue is finished
         /// </summary>
-        /// ///
+        /// <param name="packet">Packet Object.</param>
         /// <returns>String </returns>
         private static string GetMessage(Packet packet)
         {
@@ -70,6 +71,7 @@ namespace Networking
         /// <summary>
         ///     This method is for listen to queue and send to server if some packet comes in queue
         /// </summary>
+        /// <returns> Void  </returns>
         private void Listen()
         {
             while (_listenRun)
@@ -109,6 +111,7 @@ namespace Networking
         /// <summary>
         ///     This method is for stopping the thread
         /// </summary>
+        /// <returns> Void  </returns>
         public void Stop()
         {
             _listenRun = false;
