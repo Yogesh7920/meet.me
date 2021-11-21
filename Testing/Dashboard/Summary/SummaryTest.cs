@@ -1,4 +1,12 @@
-﻿using Content;
+﻿/// <author>Sairoop Bodepudi</author>
+/// <created>19/11/2021</created>
+/// <summary>
+///		This is the unit testing file
+///		for the summary logic module and
+///		tests the summarizer functions.
+/// </summary>
+
+using Content;
 using Dashboard.Server.Summary;
 using NUnit.Framework;
 using System.Collections.Generic;

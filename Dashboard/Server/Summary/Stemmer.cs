@@ -1,4 +1,12 @@
-﻿namespace Dashboard.Server.Summary
+﻿/// <author>Sairoop Bodepudi</author>
+/// <created>3/11/2021</created>
+/// <summary>
+///		This file contains the Porter Stemmer
+///		algorihtm which is used to extract the
+///		lemma from a single token.
+/// </summary>
+
+namespace Dashboard.Server.Summary
 {
 	/// <summary>
 	/// The Stemmer class transforms a word into its root form.

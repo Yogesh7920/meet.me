@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿/// <author>Sairoop Bodepudi</author>
+/// <created>4/11/2021</created>
+/// <summary>
+///		This file contains the preprocessing
+///		implementation of the summarizer and
+///		the calls for the necessary functions.
+/// </summary>
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using Content;
 using Dashboard.Server.Persistence;
