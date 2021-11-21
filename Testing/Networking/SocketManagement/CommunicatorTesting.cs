@@ -1,3 +1,11 @@
+/// <author>Tausif Iqbal</author>
+/// <created>1/11/2021</created>
+/// <summary>
+///     This file covers the unit tests
+///     for client joining the server and leaving the server.
+/// </summary>
+///
+
 using Networking;
 using NUnit.Framework;
 

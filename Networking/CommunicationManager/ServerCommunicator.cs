@@ -1,3 +1,11 @@
+/// <author>Tausif Iqbal</author>
+/// <created>14/10/2021</created>
+/// <modified>16/11/202</modified>
+/// <summary>
+///     This file contains the class definition
+///     of ServerCommunicator
+/// </summary>
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -234,7 +242,18 @@ namespace Networking
                 catch (SocketException e)
                 {
                     if (e.SocketErrorCode == SocketError.Interrupted)
-                        Trace.WriteLine("socket blocking listener has been closed");
+                    {
+                        Trace.WriteLine("Socket blocking listener has been closed");
+                    }
+                    else
+                    {
+                        Trace.WriteLine("Networking: An Exception has been raised in AcceptRequest :"+e.ToString());
+                    }
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("Networking: An Exception has been raised in AcceptRequest :"+e.ToString());
+                    
                 }
         }
     }

@@ -1,3 +1,11 @@
+/// <author>Tausif Iqbal</author>
+/// <created>14/10/2021</created>
+/// <modified>16/11/202</modified>
+/// <summary>
+///     This file contains the class definition
+///     of SendSocketListenerServer
+/// </summary>
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -121,7 +129,7 @@ namespace Networking
                         catch (Exception e)
                         {
                             Trace.WriteLine(
-                                "Networking: Error in SendSocketListenerServerThread "
+                                "Networking: An Exception has been raised in SendSocketListenerServerThread "
                                 + e.Message);
                         }
                     }
