@@ -1,10 +1,10 @@
 /// <author>Yuvraj Raghuvanshi</author>
 /// <created>16/10/2021</created>
+using Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Networking;
 
 namespace Content
 {
@@ -12,7 +12,7 @@ namespace Content
     {
         private readonly List<ChatContext> _allMessages;
         private readonly ChatClient _chatHandler;
-        
+
         private ICommunicator _communicator;
 
         private readonly Dictionary<int, int> _contextMap;
@@ -72,7 +72,7 @@ namespace Content
                 _chatHandler.UserId = value;
             }
         }
- 
+
         /// <inheritdoc />
         public void CSend(SendMessageData toSend)
         {
