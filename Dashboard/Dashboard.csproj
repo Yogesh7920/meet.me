@@ -10,6 +10,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Content\Content.csproj" />
+        <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
+        <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
     </ItemGroup>
 
 </Project>
