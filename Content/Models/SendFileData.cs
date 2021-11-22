@@ -6,16 +6,18 @@ namespace Content
     [Serializable]
     public class SendFileData
     {
-        public SendFileData()
-        {
-
-        }
-
         public byte[] fileContent;
 
         public string fileName;
 
         public long fileSize;
+
+        public SendFileData()
+        {
+            fileContent = new byte[0];
+            fileName = "";
+            fileSize = 0;
+        }
 
         public SendFileData(string filepath)
         {
