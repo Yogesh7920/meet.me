@@ -7,9 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 
 namespace Whiteboard
@@ -236,7 +233,7 @@ namespace Whiteboard
                 throw new IndexOutOfRangeException("Element index in the queue. IncreaseTimestamp failed.");
             }
 
-            if(queueElement.Timestamp > dateTime)
+            if (queueElement.Timestamp > dateTime)
             {
                 Trace.WriteLine("Whiteboard.BoardPriorityQueue.IncreaseTimestamp: Can't decrease timestamp");
                 throw new InvalidOperationException();

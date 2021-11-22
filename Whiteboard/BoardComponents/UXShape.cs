@@ -6,14 +6,9 @@
 **/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Shapes;
-using System.Windows.Controls;
-using System.Windows.Media;
 using System.Diagnostics.CodeAnalysis;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Whiteboard
 {
@@ -106,7 +101,7 @@ namespace Whiteboard
                     X2 = s.Start.R + s.Height,
                     Y2 = s.Start.R + s.Width
                 };
-                
+
                 WindowsShape = LineUXElement;
             }
             else
@@ -134,7 +129,7 @@ namespace Whiteboard
             {
                 WindowsShape.Uid = shapeId;
             }
-            
+
         }
 
         /// <summary>

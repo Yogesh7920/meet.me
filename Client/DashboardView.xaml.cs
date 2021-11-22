@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Client.ViewModel;
 using System.Windows;
 using System.Windows.Input;
-using Client.ViewModel;
 
 namespace Client
 {

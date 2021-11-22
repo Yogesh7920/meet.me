@@ -232,7 +232,6 @@ namespace Content
                     newContext.CreationTime = receivedMessage.SentTime;
 
                     _allMessages.Add(newContext);
-
                     // add entry in the hash table to keep track of ChatContext with given thread Id
                     var index = _allMessages.Count - 1;
                     _contextMap.Add(key, index);

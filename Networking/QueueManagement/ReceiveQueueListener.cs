@@ -50,23 +50,23 @@ namespace Networking
         private void ListenQueue()
         {
             while (_listenRun)
-            while (!_receiveQueue.IsEmpty())
-            {
-                var packet = _receiveQueue.Dequeue();
-                var data = packet.SerializedData;
-                var moduleIdentifier = packet.ModuleIdentifier;
+                while (!_receiveQueue.IsEmpty())
+                {
+                    var packet = _receiveQueue.Dequeue();
+                    var data = packet.SerializedData;
+                    var moduleIdentifier = packet.ModuleIdentifier;
 
-                // If the _notificationHandlers dictionary contains the moduleIdentifier
-                if (_notificationHandlers.ContainsKey(moduleIdentifier))
-                {
-                    var handler = _notificationHandlers[moduleIdentifier];
-                    _ = Task.Run(() => { handler.OnDataReceived(data); });
+                    // If the _notificationHandlers dictionary contains the moduleIdentifier
+                    if (_notificationHandlers.ContainsKey(moduleIdentifier))
+                    {
+                        var handler = _notificationHandlers[moduleIdentifier];
+                        _ = Task.Run(() => { handler.OnDataReceived(data); });
+                    }
+                    else
+                    {
+                        Trace.WriteLine("Handler does not exist: " + moduleIdentifier);
+                    }
                 }
-                else
-                {
-                    Trace.WriteLine("Handler does not exist: " + moduleIdentifier);
-                }
-            }
         }
     }
 }

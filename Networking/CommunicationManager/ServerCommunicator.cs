@@ -103,13 +103,13 @@ namespace Networking
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
             // add clientID and socketObject into Dictionary 
-            _clientIdSocket[clientId] = (TcpClient) (object) socketObject;
+            _clientIdSocket[clientId] = (TcpClient)(object)socketObject;
 
             //Start receiveSocketListener of the client in the 
             //server for listening message from the client
 
             var receiveSocketListener =
-                new ReceiveSocketListener(_receiveQueue, (TcpClient) (object) socketObject);
+                new ReceiveSocketListener(_receiveQueue, (TcpClient)(object)socketObject);
             _clientListener[clientId] = receiveSocketListener;
             receiveSocketListener.Start();
         }
@@ -142,7 +142,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
-            var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
+            var packet = new Packet { ModuleIdentifier = identifier, SerializedData = data };
             try
             {
                 _sendQueue.Enqueue(packet);
@@ -162,7 +162,7 @@ namespace Networking
         void ICommunicator.Send(string data, string identifier, string destination)
         {
             if (!_clientIdSocket.ContainsKey(destination)) throw new Exception("Client does not exist in the room!");
-            var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
+            var packet = new Packet { ModuleIdentifier = identifier, SerializedData = data, Destination = destination };
             try
             {
                 _sendQueue.Enqueue(packet);
@@ -211,7 +211,7 @@ namespace Networking
         {
             var tcp = new TcpListener(ip, 0);
             tcp.Start();
-            var port = ((IPEndPoint) tcp.LocalEndpoint).Port;
+            var port = ((IPEndPoint)tcp.LocalEndpoint).Port;
             tcp.Stop();
             return port;
         }

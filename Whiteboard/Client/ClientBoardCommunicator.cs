@@ -5,9 +5,8 @@
  * Date Modified: 01 Nov 2021
 **/
 
-using System;
-using System.Collections.Generic;
 using Networking;
+using System.Collections.Generic;
 
 namespace Whiteboard
 {
@@ -45,36 +44,36 @@ namespace Whiteboard
                 return instance;
             }
         }
-        
+
         public void OnDataReceived(string data)
         {
             BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
-            foreach (var subscriber in subscribers) 
+            foreach (var subscriber in subscribers)
             {
                 subscriber.OnMessageReceived(deserializedShape);
             }
-            
+
         }
-        
+
         /// <summary>
         /// serializes the shape objects and passes it to communicator.send()
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
-        public void Send(BoardServerShape clientUpdate) 
+        public void Send(BoardServerShape clientUpdate)
         {
             string xml_obj = serializer.Serialize(clientUpdate);
             communicator.Send(xml_obj, moduleIdentifier);
-            
-        }   
+
+        }
         /// <summary>
         /// publishes deserialized objects to listeners
         /// </summary>
         /// <param name="listener">subscriber</param>
-        public void Subscribe(IServerUpdateListener listener) 
+        public void Subscribe(IServerUpdateListener listener)
         {
             subscribers.Add(listener);
         }
-        
+
 
 
     }

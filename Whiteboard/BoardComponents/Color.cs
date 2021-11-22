@@ -5,8 +5,6 @@
  * Date Modified: 11/12/2021
 **/
 
-using System;
-
 namespace Whiteboard
 {
     /// <summary>

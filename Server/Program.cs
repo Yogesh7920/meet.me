@@ -1,5 +1,5 @@
-﻿using System;
-using Dashboard.Server.SessionManagement;
+﻿using Dashboard.Server.SessionManagement;
+using System;
 
 namespace Server
 {

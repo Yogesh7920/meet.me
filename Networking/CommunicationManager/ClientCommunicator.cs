@@ -100,7 +100,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
-            var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
+            var packet = new Packet { ModuleIdentifier = identifier, SerializedData = data };
             try
             {
                 _sendQueue.Enqueue(packet);

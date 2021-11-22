@@ -5,10 +5,10 @@
  *          be used to simulate tests for the networking module.
  */
 
+using Networking;
 using System;
 using System.Dynamic;
 using System.Threading;
-using Networking;
 
 namespace Testing.Networking
 {

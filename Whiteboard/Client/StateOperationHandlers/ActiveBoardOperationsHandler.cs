@@ -9,11 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Windows;
-
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
@@ -98,7 +93,7 @@ namespace Whiteboard
 
                 return Operations;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine("ActiveBoardOperationsHandler:ChangeShapeFill: Failure in changing Shape Fill.");
                 Trace.WriteLine(e.Message);
@@ -128,7 +123,7 @@ namespace Whiteboard
 
                 return Operations;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine("ActiveBoardOperationsHandler:ChangeStrokeWidth: Failure in changing Stroke Color.");
                 Trace.WriteLine(e.Message);
@@ -158,7 +153,7 @@ namespace Whiteboard
 
                 return Operations;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine("ActiveBoardOperationsHandler:ChangeStrokeWidth: Failure in changing Stroke Width.");
                 Trace.WriteLine(e.Message);
@@ -186,10 +181,10 @@ namespace Whiteboard
             string oldShapeId = oldBoardShape.Uid;
 
             // Creation of UXShapes for old boardshape.
-            UXShape oldShape = new (UXOperation.DELETE, oldBoardShape.MainShapeDefiner, oldShapeId);
+            UXShape oldShape = new(UXOperation.DELETE, oldBoardShape.MainShapeDefiner, oldShapeId);
 
             // Creation of UXShape for new boardshape. Shape Id of the shape is kept same, After modification.
-            UXShape uxNewShape = new (UXOperation.CREATE, newBoardShape.MainShapeDefiner, oldShapeId);
+            UXShape uxNewShape = new(UXOperation.CREATE, newBoardShape.MainShapeDefiner, oldShapeId);
 
             // Appending them to list of operations to be performed by the UX.
             operations.Add(oldShape);
@@ -224,7 +219,7 @@ namespace Whiteboard
             try
             {
                 // List of Operations to be send to UX
-                List<UXShape> operations = new ();
+                List<UXShape> operations = new();
                 string prevShapeId;
 
                 // A new shape creation.
@@ -240,7 +235,7 @@ namespace Whiteboard
                     newMainShape.StrokeWidth = strokeWidth;
 
                     // Creating corresponding UX shape to be sent to the UX
-                    UXShape newUxShape = new (UXOperation.CREATE, newMainShape, null);
+                    UXShape newUxShape = new(UXOperation.CREATE, newMainShape, null);
                     prevShapeId = newUxShape.WindowsShape.Uid;
                     operations.Add(newUxShape);
 
@@ -252,7 +247,7 @@ namespace Whiteboard
 
                     _lastDrawn = new LastDrawnDetails
                     {
-                        _shape = new (newMainShape, UserLevel, DateTime.Now, DateTime.Now, prevShapeId, userId, Operation.CREATE),
+                        _shape = new(newMainShape, UserLevel, DateTime.Now, DateTime.Now, prevShapeId, userId, Operation.CREATE),
                         _end = end,
                         _operation = RealTimeOperation.CREATE
                     };
@@ -272,7 +267,7 @@ namespace Whiteboard
 
                     // modify the MainshapeDefiner and also provide another reference to it.
                     MainShape modifiedPrevShape = ShapeFactory.MainShapeCreatorFactory(shapeType, _lastDrawn._end, end, _lastDrawn._shape.MainShapeDefiner);
-                    UXShape newUxShape = new (UXOperation.CREATE, modifiedPrevShape, prevShapeId);
+                    UXShape newUxShape = new(UXOperation.CREATE, modifiedPrevShape, prevShapeId);
                     operations.Add(newUxShape);
 
                     _lastDrawn._shape.LastModifiedTime = DateTime.Now;
@@ -353,7 +348,7 @@ namespace Whiteboard
 
                     // Append the object already rendered on local client for deletion
                     string prevShapeId = _lastDrawn._shape.Uid;
-                    UXShape oldShape = new (UXOperation.DELETE, _lastDrawn._shape.MainShapeDefiner, prevShapeId);
+                    UXShape oldShape = new(UXOperation.DELETE, _lastDrawn._shape.MainShapeDefiner, prevShapeId);
                     operations.Add(oldShape);
                 }
                 else
@@ -385,14 +380,14 @@ namespace Whiteboard
                     newBoardShape.LastModifiedTime = DateTime.Now;
                     newBoardShape.CreationTime = DateTime.Now;
                     UpdateStateManager(newBoardShape);
-                    
+
                     //reset the variables
                     _lastDrawn = null;
                 }
 
                 return operations;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine("ActiveBoardOperationsHandler:ModifyShapeRealTime: Failure in real time shape modification.");
                 Trace.WriteLine(e.Message);
@@ -461,7 +456,7 @@ namespace Whiteboard
                 // get the actual BoardServer object stored in the server
                 BoardShape shapeFromManager = GetShapeFromManager(shapeId);
 
-                UXShape oldShape = new (UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeFromManager.Uid);
+                UXShape oldShape = new(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeFromManager.Uid);
                 operations.Add(oldShape);
 
                 BoardShape shapeFromManagerClone = shapeFromManager.Clone();
@@ -473,7 +468,7 @@ namespace Whiteboard
                 _lastDrawn = null;
                 return operations;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine("ActiveBoardOperationsHandler:Delete: Failure in Resize Operation.");
                 Trace.WriteLine(e.Message);

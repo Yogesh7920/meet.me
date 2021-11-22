@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Networking;
+﻿using Networking;
+using System;
 
 namespace Testing.Dashboard.TestModels
 {
-    public class TestCommunicator : ICommunicator 
+    public class TestCommunicator : ICommunicator
     {
         public TestCommunicator()
         {
@@ -40,7 +36,7 @@ namespace Testing.Dashboard.TestModels
         /// <returns> string port and IP needed for testing </returns>
         public string Start(string serverIP = null, string serverPort = null)
         {
-            if(serverIP == null && serverPort == null)
+            if (serverIP == null && serverPort == null)
                 return ipAddressAndPort;
             if (serverIP + ":" + serverPort == ipAddressAndPort)
                 return "1";
@@ -52,9 +48,9 @@ namespace Testing.Dashboard.TestModels
             throw new NotImplementedException();
         }
 
-        public void Subscribe(string identifier, INotificationHandler handler, int priority=1)
+        public void Subscribe(string identifier, INotificationHandler handler, int priority = 1)
         {
-            
+
         }
 
         public int clientCount;

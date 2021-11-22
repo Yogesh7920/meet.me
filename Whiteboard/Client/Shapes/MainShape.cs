@@ -8,9 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Windows;
 
 namespace Whiteboard
@@ -113,7 +110,7 @@ namespace Whiteboard
                 }
                 if (_angleOfRotation > Math.PI)
                 {
-                    _angleOfRotation = - (float)(2 * Math.PI) + _angleOfRotation;
+                    _angleOfRotation = -(float)(2 * Math.PI) + _angleOfRotation;
                 }
                 if (_angleOfRotation <= -Math.PI)
                 {
@@ -134,7 +131,7 @@ namespace Whiteboard
                 Points = new();
             }
             Points.Add(c);
-        } 
+        }
 
         /// <summary>
         /// Pops and returns the last element of the list of coordinates.
@@ -143,7 +140,7 @@ namespace Whiteboard
         public Coordinate PopLastElementFromList()
         {
             Coordinate lastCord = GetLast();
-            int lastIndex = Points.Count()-1;
+            int lastIndex = Points.Count() - 1;
             Points.RemoveAt(lastIndex);
             return lastCord;
         }
@@ -196,7 +193,7 @@ namespace Whiteboard
 
             // finding angle of rotation from start and end coordinates.
             float rotAngle = (float)(0.01745 * Vector.AngleBetween(new Vector(v1.C, v1.R), new Vector(v2.C, v2.R)));
-            Console.WriteLine("Angle to be rotated is"+rotAngle.ToString());
+            Console.WriteLine("Angle to be rotated is" + rotAngle.ToString());
             AngleOfRotation += rotAngle;
 
             return true;
@@ -215,7 +212,7 @@ namespace Whiteboard
             Vector centerVector = new(Math.Cos(AngleOfRotation), Math.Sin(AngleOfRotation));
 
             // Finding displacement vector.
-            Coordinate deltaCord = end - start;            
+            Coordinate deltaCord = end - start;
             Vector deltaVector = new(deltaCord.C, deltaCord.R);
 
             double angleBetween = Math.Abs(Vector.AngleBetween(centerVector, deltaVector));
@@ -240,24 +237,24 @@ namespace Whiteboard
                 case DragPos.BOTTOM_RIGHT:
                     return (Resize(start, end, DragPos.BOTTOM) || Resize(start, end, DragPos.RIGHT));
                 case DragPos.LEFT:
-                    Center.Add(new Coordinate((float)((-xDelta/2)*Math.Cos(AngleOfRotation)), (float)((-xDelta/2)*Math.Sin(AngleOfRotation))));
+                    Center.Add(new Coordinate((float)((-xDelta / 2) * Math.Cos(AngleOfRotation)), (float)((-xDelta / 2) * Math.Sin(AngleOfRotation))));
                     Width += xDelta;
                     break;
                 case DragPos.RIGHT:
-                    Center.Add(new Coordinate((float)((xDelta/2)*Math.Cos(AngleOfRotation)), (float)((xDelta/2)*Math.Sin(AngleOfRotation))));
+                    Center.Add(new Coordinate((float)((xDelta / 2) * Math.Cos(AngleOfRotation)), (float)((xDelta / 2) * Math.Sin(AngleOfRotation))));
                     Width += xDelta;
                     break;
                 case DragPos.TOP:
-                    Center.Add(new Coordinate((float)((-xDelta/2)*Math.Sin(AngleOfRotation)),(float) ((xDelta/2)*Math.Cos(AngleOfRotation))));
+                    Center.Add(new Coordinate((float)((-xDelta / 2) * Math.Sin(AngleOfRotation)), (float)((xDelta / 2) * Math.Cos(AngleOfRotation))));
                     Height += yDelta;
                     break;
                 case DragPos.BOTTOM:
-                    Center.Add(new Coordinate((float)((xDelta/2)*Math.Sin(AngleOfRotation)), (float)((-xDelta/2)*Math.Cos(AngleOfRotation))));
+                    Center.Add(new Coordinate((float)((xDelta / 2) * Math.Sin(AngleOfRotation)), (float)((-xDelta / 2) * Math.Cos(AngleOfRotation))));
                     Height += yDelta;
                     break;
                 default:
                     return false;
-            } 
+            }
             return true;
         }
     }

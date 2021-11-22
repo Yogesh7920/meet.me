@@ -5,10 +5,10 @@
  *          for ReceiveQueueListener Module.
  */
 
-using System.Collections.Generic;
-using System.Threading;
 using Networking;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Testing.Networking.QueueManagement
 {
@@ -58,10 +58,10 @@ namespace Testing.Networking.QueueManagement
             var screenShareData = Message;
             var fileShareData = Message;
 
-            var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
+            var whiteBoardPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
             var screenSharePacket = new Packet
-                {ModuleIdentifier = Modules.ScreenShare, SerializedData = screenShareData};
-            var fileSharePacket = new Packet {ModuleIdentifier = Modules.File, SerializedData = fileShareData};
+            { ModuleIdentifier = Modules.ScreenShare, SerializedData = screenShareData };
+            var fileSharePacket = new Packet { ModuleIdentifier = Modules.File, SerializedData = fileShareData };
 
             _queue.Enqueue(whiteBoardPacket);
             _queue.Enqueue(screenSharePacket);
@@ -69,9 +69,9 @@ namespace Testing.Networking.QueueManagement
 
             Thread.Sleep(100);
 
-            var whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[Modules.WhiteBoard];
-            var screenShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.ScreenShare];
-            var fileShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.File];
+            var whiteBoardHandler = (FakeNotificationHandler)_notificationHandlers[Modules.WhiteBoard];
+            var screenShareHandler = (FakeNotificationHandler)_notificationHandlers[Modules.ScreenShare];
+            var fileShareHandler = (FakeNotificationHandler)_notificationHandlers[Modules.File];
 
             Assert.AreEqual(NotificationEvents.OnDataReceived, screenShareHandler.Event);
             Assert.AreEqual(screenShareData, screenShareHandler.Data);

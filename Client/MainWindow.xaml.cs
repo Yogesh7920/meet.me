@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Client
 {
@@ -66,7 +65,7 @@ namespace Client
         /// </summary>
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
-            _ssFlag = true;   
+            _ssFlag = true;
             //uncomment below line after respective User Controls are done
             /*this.SSwb.Content = new ScreenShareView();
             if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))

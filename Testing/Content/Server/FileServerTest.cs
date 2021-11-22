@@ -1,5 +1,5 @@
-using NUnit.Framework;
 using Content;
+using NUnit.Framework;
 
 namespace Testing.Content
 {

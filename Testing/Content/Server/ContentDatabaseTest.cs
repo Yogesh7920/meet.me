@@ -1,6 +1,5 @@
-using NUnit.Framework;
 using Content;
-using System;
+using NUnit.Framework;
 using System.Collections.Generic;
 
 namespace Testing.Content

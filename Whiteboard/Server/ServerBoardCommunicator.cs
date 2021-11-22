@@ -5,15 +5,15 @@
  * Date Modified: 01 Nov 2021
 **/
 
-using System;
 using Networking;
+using System;
 
 namespace Whiteboard
 {
     /// <summary>
     /// Bridge the gap between Server side White Board Modules and Networking module
     /// </summary>
-    public sealed class ServerBoardCommunicator : INotificationHandler , IServerBoardCommunicator
+    public sealed class ServerBoardCommunicator : INotificationHandler, IServerBoardCommunicator
     {
 
         private static ServerBoardCommunicator instance = null;
@@ -70,7 +70,7 @@ namespace Whiteboard
             {
                 stateManager.SaveUpdate(deserializedObject);
             }
-            else 
+            else
             {
                 Console.WriteLine("Unidentified Operation at ServerBoardCommunicator");
             }
@@ -88,7 +88,7 @@ namespace Whiteboard
             {
                 communicator.Send(xml_obj, moduleIdentifier);
             }
-            else 
+            else
             {
                 communicator.Send(xml_obj, moduleIdentifier, clientId);
             }

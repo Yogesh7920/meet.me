@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Content;
 using Networking;
-using Dashboard.Server.Telemetry;
+using System;
+using System.Collections.Generic;
 using Whiteboard;
-using Content;
 
 
-namespace Dashboard.Client.SessionManagement 
+namespace Dashboard.Client.SessionManagement
 {
     using Dashboard.Server.Telemetry;
     public delegate void NotifyEndMeet();
@@ -87,7 +83,7 @@ namespace Dashboard.Client.SessionManagement
             }
 
             string serializedClientName;
-            
+
             lock (this)
             {
                 string connectionStatus = _communicator.Start(ipAddress, port.ToString());
@@ -101,7 +97,7 @@ namespace Dashboard.Client.SessionManagement
             }
             ClientToServerData clientName = new("addClient", username);
             serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
-            _communicator.Send(serializedClientName,moduleIdentifier);
+            _communicator.Send(serializedClientName, moduleIdentifier);
             return true;
         }
 
@@ -146,7 +142,7 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="identifier"> The identifier of the subscriber. </param>
         public void SubscribeSession(IClientSessionNotifications listener)
         {
-            lock(this)
+            lock (this)
             {
                 _clients.Add(listener);
             }
@@ -166,9 +162,9 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void NotifyUXSession()
         {
-            for(int i=0;i<_clients.Count;++i)
+            for (int i = 0; i < _clients.Count; ++i)
             {
-                lock(this)
+                lock (this)
                 {
                     _clients[i].OnClientSessionChanged(_clientSessionData);
                 }
@@ -189,7 +185,7 @@ namespace Dashboard.Client.SessionManagement
             string eventType = deserializedObject.eventType;
 
             // based on the type of event, calling the appropriate functions 
-            switch(eventType)
+            switch (eventType)
             {
                 case "addClient":
                     UpdateClientSessionData(deserializedObject);
@@ -227,9 +223,9 @@ namespace Dashboard.Client.SessionManagement
 
             // check if the current user is the one who requested to get the 
             // summary
-            if(receivedUser.userID == _user.userID)
+            if (receivedUser.userID == _user.userID)
             {
-                lock(this)
+                lock (this)
                 {
                     chatSummary = receivedSummary.summary;
                     SummaryCreated?.Invoke(chatSummary);
@@ -255,14 +251,14 @@ namespace Dashboard.Client.SessionManagement
 
             //    }
             //}
-            
+
             // if there was no change in the data then nothing needs to be done
             if (recievedSessionData == _clientSessionData)
                 return;
 
             // a null _user denotes that the user is new and has not be set because all 
             // the old user (already present in the meeting) have their _user set.
-            if(_user == null)
+            if (_user == null)
             {
                 _user = user;
                 clientBoardStateManager.SetUser(user.userID.ToString());
@@ -271,7 +267,7 @@ namespace Dashboard.Client.SessionManagement
 
             // The user received from the server side is equal to _user only in the case of 
             // client departure. So, the _user and received session data are set to null to indicate this departure
-            else if(_user == user)
+            else if (_user == user)
             {
                 _user = null;
                 recievedSessionData = null;
@@ -279,7 +275,7 @@ namespace Dashboard.Client.SessionManagement
             }
 
             // update the sesseon data on the client side and notify the UX about it.
-            lock(this)
+            lock (this)
             {
                 _clientSessionData = (SessionData)recievedSessionData;
             }
