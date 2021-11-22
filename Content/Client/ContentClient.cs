@@ -60,6 +60,7 @@ namespace Content
             set
             {
                 _communicator = value;
+                _communicator.Subscribe("Content", _notifHandler);
                 _fileHandler.Communicator = value;
                 _chatHandler.Communicator = value;
             }
