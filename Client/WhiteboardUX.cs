@@ -593,7 +593,7 @@ namespace Client
 
                 Coordinate C_strt = new Coordinate((float)strt.X, (float)strt.Y);
                 Coordinate C_end = new Coordinate((float)end.X, (float)end.Y);
-                BoardColor fill = new BoardColor(strokeColorBrush.Color.R, strokeColorBrush.Color.G, strokeColorBrush.Color.B);
+                BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
 
 
                
@@ -602,21 +602,25 @@ namespace Client
                 switch (activeTool)
                 {
                     case WhiteBoardViewModel.WBTools.NewLine:
-                        toRender = WBOps.CreateLine(C_strt, C_end, 2, fill, shapeId: null, shapeComp: true);
+                        toRender = WBOps.CreateLine(C_strt, C_end, 2, stroke, shapeId: null, shapeComp: true);
                         break;
                     case WhiteBoardViewModel.WBTools.NewEllipse:
-                        toRender = WBOps.CreateEllipse(C_strt, C_end, 2, fill, shapeId: null, shapeComp: true);
+                        toRender = WBOps.CreateEllipse(C_strt, C_end, 2, stroke, shapeId: null, shapeComp: true);
                         break;
                     case WhiteBoardViewModel.WBTools.NewRectangle:
-                        toRender = WBOps.CreateRectangle(C_strt, C_end, 2, fill, shapeId: null, shapeComp: true);
+                        toRender = WBOps.CreateRectangle(C_strt, C_end, 2, stroke, shapeId: null, shapeComp: true);
                         break;
                 }
                 //Removing temporary render from Canvas
                 cn.Children.Remove(underCreation);
+
+                //setting the rendered-to-be shape fill according to the Canvas background
+                toRender[0].WindowsShape.Fill = strokeColorBrush;
+
                 cn = RenderUXElement(toRender, cn);
 
                 //select the shape 
-                SelectShape(cn, underCreation, WBOps, 0);
+                SelectShape(cn, toRender.ElementAt(0).WindowsShape, WBOps, 0);
             }
 
             return cn;
@@ -1047,28 +1051,23 @@ namespace Client
                 {
                     case (UXOperation.CREATE):
                         //Rendering the new shape with the appropriate geometry in terms of translation and rotation
-                        //TODO: Verify whether TranslationCoordinate refers to topleft corner of the shape (is required), or center of shape
-                        Canvas.SetLeft(shp.WindowsShape, shp.TranslationCoordinate.C);
-                        Canvas.SetTop(shp.WindowsShape, shp.TranslationCoordinate.R);
-                        //Canvas.SetLeft(shp.WindowsShape, shp.TranslationCoordinate.C + shp.WindowsShape.Width / 2);
-                        //Canvas.SetTop(shp.WindowsShape, shp.TranslationCoordinate.R + shp.WindowsShape.Height / 2);       
+                        //DONE: Verify whether TranslationCoordinate refers to topleft corner of the shape (is required), or center of shape
+                        //Canvas.SetLeft(shp.WindowsShape, shp.TranslationCoordinate.R);
+                        //Canvas.SetTop(shp.WindowsShape, shp.TranslationCoordinate.C);
 
+                        //Since WB module stores the center of the shape
+                        Canvas.SetLeft(shp.WindowsShape, (shp.TranslationCoordinate.R - shp.WindowsShape.Height  / 2));
+                        Canvas.SetTop(shp.WindowsShape, (shp.TranslationCoordinate.C - shp.WindowsShape.Width / 2));
+
+                        //Since WB module stores the System.Windows.Shape.Width as height & System.Windows.Shape.Height as width
+                        double temp = shp.WindowsShape.Height;
+                        shp.WindowsShape.Height = shp.WindowsShape.Width;
+                        shp.WindowsShape.Width = temp;
+          
 
                         //Setting the rendering such that bottom-right and top-left adorners adjust appropriately
                         if (shp.AngleOfRotation > 90) shp.AngleOfRotation -= 180;
                         else if (shp.AngleOfRotation < -90) shp.AngleOfRotation += 180;
-
-                        //For setting the rendering such that bottom-right and top-left adorners adjust appropriately in case of Lines
-                        //(X1,Y1) & (X2,Y2) have to be interchanged too?
-                        if (shp.WindowsShape is System.Windows.Shapes.Line)
-                        {
-                            double tempX1 = ((System.Windows.Shapes.Line)shp.WindowsShape).X1;
-                            double tempY1 = ((System.Windows.Shapes.Line)shp.WindowsShape).Y1;
-                            ((System.Windows.Shapes.Line)shp.WindowsShape).X1 = ((System.Windows.Shapes.Line)shp.WindowsShape).X2;
-                            ((System.Windows.Shapes.Line)shp.WindowsShape).Y1 = ((System.Windows.Shapes.Line)shp.WindowsShape).Y2;
-                            ((System.Windows.Shapes.Line)shp.WindowsShape).X2 = tempX1;
-                            ((System.Windows.Shapes.Line)shp.WindowsShape).Y2 = tempY1;
-                        }
 
                         //Setting the angular orientation of bounding box to be same as updated shape
                         RotateTransform rotateTransform = new RotateTransform
@@ -1078,12 +1077,13 @@ namespace Client
                             CenterY = (shp.WindowsShape.Height / 2) //topleft_y
                         };
                         shp.WindowsShape.RenderTransform = rotateTransform;
+
                         cn.Children.Add(shp.WindowsShape);
                         break;
                     case (UXOperation.DELETE):
                         IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
 
-                        //Check Condition 
+                        //Check Condition that the shape to be deleted actually exists within the Canvas and has unique Uid
                         Debug.Assert(iterat.Count() == 1);
 
                         cn.Children.Remove(iterat.ToList()[0]);
@@ -1414,7 +1414,24 @@ namespace Client
         /// </summary>
         public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
         {
-            //Write implementation code
+            //UXShape has attribute
+            foreach (UXShape shp in shps)
+            {
+                switch (shp.UxOperation)
+                {
+                    case (UXOperation.CREATE):
+                        cn.Children.Add(shp.WindowsShape);
+                        break;
+                    case (UXOperation.DELETE):
+                        IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
+
+                        //Check Condition that the shape to be deleted actually exists within the Canvas and has unique Uid
+                        Debug.Assert(iterat.Count() == 1);
+
+                        cn.Children.Remove(iterat.ToList()[0]);
+                        break;
+                }
+            }
             return cn;
         }
 
@@ -1433,6 +1450,12 @@ namespace Client
             if (creation)
             {
                 poly = new System.Windows.Shapes.Polyline();
+                
+                IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == "-1");
+
+                //Check Condition that previous temporary polylines have been cleaned up
+                Debug.Assert(iterat.Count() <= 1);
+
                 //assigning special UID of -1 to temporary shapes
                 poly.Uid = "-1";
 
@@ -1485,7 +1508,45 @@ namespace Client
                 if (isEraser) cn.Children.Remove(poly);
                 else
                 {
-                    //Call WBOps.CreatePolyLine method for integrating server
+                    //Brush for Border 
+                    SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
+                    BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
+                    Coordinate prev = new Coordinate((float)poly.Points[0].X, (float)poly.Points[0].Y);
+
+                    //SERVER REQUEST TO CREATE FINAL SHAPE
+                    List<UXShape> toRender = new List<UXShape>();
+
+                    Coordinate C_end = new Coordinate((float)poly.Points[0].X, (float)poly.Points[0].Y);
+                    toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: null, shapeComp: false);
+                    //storing the assigned Uid of the Polyline
+                    string assgn_uid = toRender[0].WindowsShape.Uid;
+
+                    //Sending intermediate points with shapeComp=false
+                    foreach (Point pnt in poly.Points) {
+                        C_end = new Coordinate((float)pnt.X, (float)pnt.Y);
+                        toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
+                        prev = C_end;
+                    }
+                    //Sending final point with shapeComp=true
+                    C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
+                    toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: true);
+
+                    //Since the WBOps.CreatePolyline sends render requests of form DELETE then CREATE,
+                    //we choose to ignore DELETE as we are doing temporary rendering
+                    System.Windows.Shapes.Polyline pl = (System.Windows.Shapes.Polyline)toRender[1].WindowsShape;
+
+                    //Removing temporary render from Canvas
+                    cn.Children.Remove(poly);
+
+                    //Adjusting the polyline render request to the user preference during Create Polyline operation
+                    ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).Stroke = polyLineColor;
+                    ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeThickness = polyLineThickness;
+                    ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
+                    ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
+
+                    //Rendering the Polyline onto the Canvas
+                    cn = RenderUXElement(new List<UXShape> { toRender[1] } , cn);
+
                 }
             }
             return cn;
