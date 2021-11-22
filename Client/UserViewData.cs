@@ -8,6 +8,7 @@ namespace Client
 {
     class UserViewData
     {
+        public int userid;
         public string username;
         public string shortname;
     }
