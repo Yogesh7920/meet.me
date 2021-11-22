@@ -11,11 +11,6 @@ namespace Content
             _contentDatabase = contentDatabase;
         }
 
-        /// <summary>
-        /// Recevies the request related to files, will store the new file or return the file requested
-        /// </summary>
-        /// <param name="messageData"></param>
-        /// <returns>Returns the new file message without file data or the file requested</returns>
         public MessageData Receive(MessageData messageData)
         {
             Trace.WriteLine("[FileServer] Received message from ContentServer");
@@ -27,19 +22,14 @@ namespace Content
 
                 case MessageEvent.Download:
                     Trace.WriteLine("[FileServer] MessageEvent is Download, Fetching the file");
-                    return FetchFile(messageData);
+                    return FetchFile(messageData.MessageId);
 
                 default:
-                    Trace.WriteLine($"[FileServer] Unkown Event {messageData.Event} for file type");
+                    Debug.Assert(false, "[File Server] Unknown Event");
                     return null;
             }
         }
 
-        /// <summary>
-        /// Saves file in the contentDatabase.
-        /// </summary>
-        /// <param name="messageData"></param>
-        /// <returns>Returns the saved file message without the file data.</returns>
         private MessageData SaveFile(MessageData messageData)
         {
             messageData = _contentDatabase.StoreFile(messageData).Clone();
@@ -50,24 +40,9 @@ namespace Content
             return messageData;
         }
 
-        /// <summary>
-        /// Fetches a stored file.
-        /// </summary>
-        /// <param name="messageData"></param>
-        /// <returns>Returns the requested file message.</returns>
-        private MessageData FetchFile(MessageData messageData)
+        private MessageData FetchFile(int id)
         {
-            MessageData receiveMessageData = _contentDatabase.GetFiles(messageData.MessageId);
-
-            if (receiveMessageData == null)
-            {
-                Trace.WriteLine($"[FileServer] File not found messageId: {messageData.MessageId}.");
-                return null;
-            }
-
-            // store file path on which the file will be downloaded on the client's system
-            receiveMessageData.Message = messageData.Message;
-            return receiveMessageData;
+            return _contentDatabase.GetFiles(id);
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Networking
         /// </summary>
         /// ///
         /// <returns>String </returns>
-        private static string GetMessage(Packet packet)
+        private string GetMessage(Packet packet)
         {
             var msg = packet.ModuleIdentifier;
             msg += ":";
@@ -65,34 +65,32 @@ namespace Networking
         private void Listen()
         {
             while (_listenRun)
+                // If the queue is not empty, get a packet from the front of the queue and remove that packet
+                //from the queue
+            while (!_queue.IsEmpty())
             {
-                // If the queue is not empty, get a packet from the front of the queue
-                // and remove that packet from the queue
-                while (!_queue.IsEmpty())
-                {
-                    // Dequeue the front packet of the queue
-                    var packet = _queue.Dequeue();
+                // Dequeue the front packet of the queue
+                var packet = _queue.Dequeue();
 
-                    //Call GetMessage function to form string msg from the packet object 
-                    var msg = GetMessage(packet);
-                    // Send the message in chunks of threshold number of characters, 
-                    // if the data size is greater than threshold value
-                    for (var i = 0; i < msg.Length; i += Threshold)
+                //Call GetMessage function to form string msg from the packet object 
+                var msg = GetMessage(packet);
+                // Send the message in chunks of threshold number of characters, 
+                // if the data size is greater than threshold value
+                for (var i = 0; i < msg.Length; i += Threshold)
+                {
+                    var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
+                    var outStream = Encoding.ASCII.GetBytes(chunk);
+                    try
                     {
-                        var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
-                        var outStream = Encoding.ASCII.GetBytes(chunk);
-                        try
-                        {
-                            var networkStream = _tcpSocket.GetStream();
-                            networkStream.Write(outStream, 0, outStream.Length);
-                            networkStream.Flush();
-                        }
-                        catch (Exception e)
-                        {
-                            Trace.WriteLine(
-                                "Networking: Error in SendSocketListenerClientThread "
-                                + e.Message);
-                        }
+                        var networkStream = _tcpSocket.GetStream();
+                        networkStream.Write(outStream, 0, outStream.Length);
+                        networkStream.Flush();
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine(
+                            "Networking: Error in SendSocketListenerClientThread "
+                            + e.Message);
                     }
                 }
             }

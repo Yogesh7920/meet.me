@@ -14,6 +14,23 @@ namespace Dashboard
     public static class SessionManagerFactory
     {
         /// <summary>
+        /// Constructor to create client and server session manager objects.
+        /// </summary>
+        static SessionManagerFactory()
+        {
+            // the objects are initialized only once for the program
+            if (s_clientSessionManager == null)
+            {
+                s_clientSessionManager = new ClientSessionManager();
+            }
+
+            if (s_serverSessionManager == null)
+            {
+                s_serverSessionManager = new ServerSessionManager();
+            }
+        }
+
+        /// <summary>
         /// This method will create a Client sided server 
         /// manager that will live till the end of the program
         /// </summary>
@@ -21,9 +38,9 @@ namespace Dashboard
         /// Returns a ClientSessionManager object which 
         /// implements the interface IUXClientSM
         /// </returns>
-        public static ClientSessionManager GetClientSessionManager()
+        public static IUXClientSessionManager GetClientSessionManager()
         {
-            return s_clientSessionManager.Value;
+            return s_clientSessionManager;
         }
 
         /// <summary>
@@ -31,7 +48,7 @@ namespace Dashboard
         /// </summary>
         /// <param name="communicator"> Test communicator to test functionality</param>
         /// <returns></returns>
-        public static ClientSessionManager GetClientSessionManager(ICommunicator communicator)
+        public static IUXClientSessionManager GetClientSessionManager(ICommunicator communicator)
         {
             return new ClientSessionManager(communicator);
         }
@@ -44,9 +61,9 @@ namespace Dashboard
         /// Returns a ServerSessionManager object which 
         /// implements the interface ITelemetrySessionManager
         /// </returns>
-        public static ServerSessionManager GetServerSessionManager()
+        public static ITelemetrySessionManager GetServerSessionManager()
         {
-            return s_serverSessionManager.Value;
+            return s_serverSessionManager;
         }
 
         /// <summary>
@@ -59,7 +76,7 @@ namespace Dashboard
             return new ServerSessionManager(communicator, contentServer);
         }
 
-        private static readonly Lazy<ClientSessionManager> s_clientSessionManager = new(()=>new ClientSessionManager());
-        private static readonly Lazy<ServerSessionManager> s_serverSessionManager = new(()=>new ServerSessionManager());
+        private static IUXClientSessionManager s_clientSessionManager;
+        private static ITelemetrySessionManager s_serverSessionManager;
     }
 }

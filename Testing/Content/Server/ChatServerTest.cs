@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace Testing.Content
 {
-    public class ContentDatabaseTests
+    public class ChatServerTests
     {
         [SetUp]
         public void Setup()

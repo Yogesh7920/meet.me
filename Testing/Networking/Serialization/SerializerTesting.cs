@@ -48,7 +48,7 @@ namespace Testing.Networking
             var serObj = new Fixture().Create<ComplexObject>();
             var xml = _ser.Serialize(serObj);
             // Get object type from xml
-            const string nameSpace = "Testing.Networking.Objects";
+            var nameSpace = "Testing.Networking.Objects";
             var typ = _ser.GetObjectType(xml, nameSpace);
             Assert.That(typeof(ComplexObject).ToString() == typ);
         }

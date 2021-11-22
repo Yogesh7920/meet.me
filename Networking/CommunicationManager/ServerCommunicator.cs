@@ -63,7 +63,7 @@ namespace Networking
             _receiveQueueListener.Start();
 
             //start acceptRequest thread of server for accepting request
-            _acceptRequest = new Thread(AcceptRequest);
+            _acceptRequest = new Thread(() => AcceptRequest());
             _acceptRequestRun = true;
             _acceptRequest.Start();
 

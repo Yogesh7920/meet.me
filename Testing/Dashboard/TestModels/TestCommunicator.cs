@@ -11,7 +11,7 @@ namespace Testing.Dashboard.TestModels
     {
         public TestCommunicator()
         {
-            sentData = null;
+
         }
 
         public void AddClient<T>(string clientID, T socketObject)

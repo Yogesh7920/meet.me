@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Networking;
-using Dashboard.Server.Telemetry;
-using Whiteboard;
-using Content;
 
 
 namespace Dashboard.Client.SessionManagement 
@@ -28,17 +25,15 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public ClientSessionManager()
         {
-            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
-            _contentClient = ContentClientFactory.getInstance();
-            clientBoardStateManager = ClientBoardStateManager.Instance;
-            clientBoardStateManager.Start();
+            TraceManager session = new();
+            session.TraceListener();
+           
 
-
-            if (_clients == null)
+            if(_clients == null)
             {
                 _clients = new List<IClientSessionNotifications>();
             }
@@ -55,13 +50,12 @@ namespace Dashboard.Client.SessionManagement
         /// </param>
         public ClientSessionManager(ICommunicator communicator)
         {
-            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
-            clientBoardStateManager = ClientBoardStateManager.Instance;
-            clientBoardStateManager.Start();
+            TraceManager session = new();
+            session.TraceListener();
 
 
             if (_clients == null)
@@ -131,11 +125,25 @@ namespace Dashboard.Client.SessionManagement
         /// meet till the function was called.
         /// </summary>
         /// <returns> Summary of the chats as a string. </returns>
-        public void GetSummary()
+        public string GetSummary()
         {
+            //string summary = "";
             ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
             string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
             _communicator.Send(serializedData, moduleIdentifier);
+            
+            // This loop will run till the summary is received from the server side.
+            //while(chatSummary == null)
+            //{
+
+            //}
+
+            //lock(this)
+            //{
+            //    summary = chatSummary;
+            //    chatSummary = null;
+            //}
+            return "";
         }
 
         /// <summary>
@@ -155,7 +163,7 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        public SessionAnalytics GetAnalytics()
+        public ITelemetry GetAnalytics()
         {
             // the return type will be an analytics object yet to be decided.
             throw new NotImplementedException();
@@ -212,7 +220,6 @@ namespace Dashboard.Client.SessionManagement
             }
         }
 
-
         /// <summary>
         /// Updates the locally stored summary at the client side to the summary received from the 
         /// server side. The summary will only be updated fro the user who requsted it.
@@ -248,14 +255,6 @@ namespace Dashboard.Client.SessionManagement
             SessionData recievedSessionData = receivedData.sessionData;
             UserData user = receivedData.GetUser();
 
-            //try
-            //{
-            //    if(user.username.Equals(null))
-            //    {
-
-            //    }
-            //}
-            
             // if there was no change in the data then nothing needs to be done
             if (recievedSessionData == _clientSessionData)
                 return;
@@ -265,8 +264,6 @@ namespace Dashboard.Client.SessionManagement
             if(_user == null)
             {
                 _user = user;
-                clientBoardStateManager.SetUser(user.userID.ToString());
-                ContentClientFactory.setUser(user.userID);
             }
 
             // The user received from the server side is equal to _user only in the case of 
@@ -275,7 +272,6 @@ namespace Dashboard.Client.SessionManagement
             {
                 _user = null;
                 recievedSessionData = null;
-                _communicator.Stop();
             }
 
             // update the sesseon data on the client side and notify the UX about it.
@@ -294,8 +290,6 @@ namespace Dashboard.Client.SessionManagement
         private string chatSummary;
         private UserData _user;
         public event NotifyEndMeet MeetingEnded;
-        public event NotifySummaryCreated SummaryCreated;
-        private IContentClient _contentClient;
-        private IClientBoardStateManager clientBoardStateManager;
+        public event NotifySummaryCreated SummaryCreated; 
     }
 }

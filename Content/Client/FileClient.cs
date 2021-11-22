@@ -1,9 +1,9 @@
-using Networking;
 /// <author>Yuvraj Raghuvanshi</author>
 /// <created>1/11/2021</created>
 using System;
 using System.Diagnostics;
 using System.IO;
+using Networking;
 
 namespace Content
 {
@@ -40,7 +40,7 @@ namespace Content
             // check if file with given file path exists
             var filepath = message.Message;
 
-            if (!File.Exists(filepath)) throw new FileNotFoundException("File " + filepath + " not found");
+            if (!File.Exists(filepath)) throw new FileNotFoundException("File "+filepath+" not found");
 
             // initialize a MessageData object that will be sent to the server
             var toSend = new MessageData();

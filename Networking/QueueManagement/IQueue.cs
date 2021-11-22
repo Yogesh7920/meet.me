@@ -1,11 +1,4 @@
-﻿/*
- * Author: Alisetti Sai Vamsi
- * Created on: 13/10/2021
- * Summary: This file contains the definition of
- *          the interface IQueue.
- */
-
-namespace Networking
+﻿namespace Networking
 {
     public interface IQueue
     {
@@ -19,7 +12,6 @@ namespace Networking
         /// <summary>
         ///     Size of the queue.
         /// </summary>
-        /// <returns>The number of packets the queue holds.</returns>
         public int Size();
 
         /// <summary>
@@ -28,29 +20,23 @@ namespace Networking
         public void Clear();
 
         /// <summary>
-        ///     Enqueues an object of IPacket.
+        ///     Enqueues an object of IPacket
         /// </summary>
-        /// <param name="packet">Reference to the packet that has to be enqueued</param>
-        public void Enqueue(Packet packet);
+        public void Enqueue(Packet item);
 
         /// <summary>
-        ///     Dequeues an item from the queue and returns the item.
+        ///     Dequeues an item from the queue and returns the item
         /// </summary>
-        /// <returns>Returns the dequeued packet from the queue.</returns>
-        /// <exception cref="Exception">Cannot dequeue an empty queue</exception>
         public Packet Dequeue();
 
         /// <summary>
-        ///     Peeks into the first element of the queue.
+        ///     Peeks into the first element of the queue
         /// </summary>
-        /// <returns>Returns the peeked packet from the queue.</returns>
-        /// <exception cref="Exception">Cannot peek an empty queue</exception>
         public Packet Peek();
 
         /// <summary>
-        ///     Checks if the queue is empty or not.
+        ///     Checks if the queue is empty or not
         /// </summary>
-        /// <returns>True if queue is empty and false otherwise.</returns>
         public bool IsEmpty();
     }
 }

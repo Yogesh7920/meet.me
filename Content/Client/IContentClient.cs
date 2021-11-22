@@ -3,12 +3,6 @@ namespace Content
     public interface IContentClient
     {
         /// <summary>
-        ///     Getter for the user id associated with the instance
-        /// </summary>
-        /// <returns>User id associated with the instance</returns>
-        int GetUserId();
-
-        /// <summary>
         ///     Sends chat or file message to specified clients
         /// </summary>
         /// <param name="toSend">Message to send. In case of file, toSend.message should contain file path</param>

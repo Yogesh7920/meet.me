@@ -1,10 +1,4 @@
-﻿/*
- * Author: Alisetti Sai Vamsi
- * Created on: 27/10/2021
- * Summary: This file contains the class definition of ReceiveQueueListener.
- */
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;

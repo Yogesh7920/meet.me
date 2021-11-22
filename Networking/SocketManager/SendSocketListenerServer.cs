@@ -47,11 +47,11 @@ namespace Networking
         /// <summary>
         ///     This method form string from packet object
         ///     it also adds EOF to indicate that the message
-        ///     that has been popped out from the queue is finished
+        ///     that has been popped out feom the queue is finished
         /// </summary>
         /// ///
         /// <returns>String </returns>
-        private static string GetMessage(Packet packet)
+        private string GetMessage(Packet packet)
         {
             var msg = packet.ModuleIdentifier;
             msg += ":";

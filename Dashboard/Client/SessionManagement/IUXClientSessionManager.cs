@@ -37,7 +37,7 @@ namespace Dashboard.Client.SessionManagement
         /// meet till the function was called.
         /// </summary>
         /// <returns> Summary of the chats as a string. </returns>
-        void GetSummary();
+        string GetSummary();
 
         /// <summary>
         /// Used to subcribe for any changes in the 
@@ -49,9 +49,9 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        SessionAnalytics GetAnalytics();
+        ITelemetry GetAnalytics();
+
 
         public event NotifySummaryCreated SummaryCreated;
-        public event NotifyEndMeet MeetingEnded;
     }
 }

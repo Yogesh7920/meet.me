@@ -49,15 +49,5 @@ namespace Content
         ///     Message Type - File or Chat
         /// </summary>
         public MessageType Type;
-
-        public ReceiveMessageData()
-        {
-            MessageId = -1;
-            ReceiverIds = new int[0];
-            ReplyThreadId = -1;
-            SenderId = -1;
-            SentTime = new DateTime();
-            Starred = false;
-        }
     }
 }

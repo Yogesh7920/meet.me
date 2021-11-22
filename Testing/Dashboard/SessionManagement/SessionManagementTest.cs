@@ -9,21 +9,21 @@ using Dashboard.Server.SessionManagement;
 using Dashboard;
 using Networking;
 using Testing.Dashboard.SessionManagement.TestModules;
-using System.Net.Sockets;
 
-namespace Testing.Dashboard.SessionManagement
+namespace Testing.Dashboard
 {
     public class SessionManagementTest
     {
         private IUXClientSessionManager _clientSessionManager;
         private ServerSessionManager _serverSessionManager;
         private TestCommunicator _communicatorTest;
+        private SessionData _sessionData;
 
         [SetUp]
         public void Setup()
         {
             _communicatorTest = new();
-            _clientSessionManager = SessionManagerFactory.GetClientSessionManager(_communicatorTest);
+            _clientSessionManager = SessionManagerFactory.GetClientSessionManager();
             _serverSessionManager = SessionManagerFactory.GetServerSessionManager(_communicatorTest);
         }
 
@@ -56,43 +56,30 @@ namespace Testing.Dashboard.SessionManagement
             Assert.AreEqual(meetCreds, null);
         }
 
-        //[Test]
-        //[TestCase("192.168.20.1:8080","192.168.20.1",8080,"Jake Vickers")]
-        //[TestCase("192.168.201.4:480", "192.168.201.4", 480, "Antonio")]
-        //public void AddClient_ValidCredentials_ReturnsTrue(string meetAddress, string ipAddress, int port, string username)
-        //{
-        //    _communicatorTest.meetAddress = meetAddress;
-        //    bool clientAdded =_clientSessionManager.AddClient(ipAddress, port, username);
-        //    Assert.AreEqual(true, clientAdded);
-        //}
+        [Test]
+        public void compareUsers()
+        {
+            List<UserData> users = new List<UserData>();
+            UserData a, b, c;
 
-        //[Test]
-        //[TestCase("","",51,"")]
-        //[TestCase(null, null, null, null)]
-        //[TestCase(null,"162.212.3.1",20,"Chang Jia-han")]
-        //[TestCase("192.168.201.4:480", "192.230.201.4", 480, "Antonio")]
-        //[TestCase("192.168.20.1:8080", "192.168.20.1", 8081, "Jake Vickers")]
-        //public void AddClient_InvalidCredentials_ReturnsFalse(string meetAddress, string ipAddress, int port, string username)
-        //{
-        //    _communicatorTest.meetAddress = meetAddress;
-        //    bool clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
-        //    Assert.AreEqual(false, clientAdded);
-        //}
+            a = new("a", 1);
+            b = new("b", 2);
+            c = new("c", 3);
 
-        //[Test]
-        //[TestCase("192.168.1.1",8080,"Jake")]
-        //public void ClientArrivalProcedure_ClientArrives_BroadcastsNewUser(string ipAddress, int port, string username)
-        //{
-        //    bool clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
-        //    _serverSessionManager.OnClientJoined<TcpClient>(null);
-        //    _serverSessionManager.OnDataReceived(_communicatorTest.transferredData);
+            users.Add(a);
+            users.Add(b);
+            users.Add(c);
 
-        //    UserData updatedUser = _clientSessionManager.GetUser();
-        //    Assert.AreEqual(updatedUser.username, username);
-        //    Assert.NotNull(updatedUser.userID);
-        //}
+            UserData r = new("a", 1);
 
+            foreach (var user in users)
+            {
+                if (user.Equals(r))
+                {
+                    Console.WriteLine("Found the user!");
+                }
+            }
 
-        
+        }
     }
 }

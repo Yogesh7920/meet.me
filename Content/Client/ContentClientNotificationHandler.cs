@@ -21,23 +21,23 @@ namespace Content
         public void OnDataReceived(string data)
         {
             Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
-            string deserializedType = _serializer.GetObjectType(data, "Content");
+            var deserialized = _serializer.Deserialize<object>(data);
 
-            if (string.Equals(deserializedType,"Content.MessageData"))
+            if (deserialized is MessageData)
             {
-                MessageData receivedMessage = _serializer.Deserialize<MessageData>(data);
+                var receivedMessage = deserialized as MessageData;
                 _contentHandler.OnReceive(receivedMessage);
             }
 
-            else if (string.Equals(deserializedType, "Content.ArrayOfChatContext"))
+            else if (deserialized is List<ChatContext>)
             {
-                List<ChatContext> allMessages = _serializer.Deserialize<List<ChatContext>>(data);
+                var allMessages = deserialized as List<ChatContext>;
                 _contentHandler.Notify(allMessages);
             }
 
             else
             {
-                throw new ArgumentException($"Deserialized object of unknown type: {deserializedType}");
+                throw new ArgumentException("Deserialized object of unknown type");
             }
         }
     }

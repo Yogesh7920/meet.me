@@ -7,8 +7,7 @@ using Networking;
 using System.Diagnostics;
 using Dashboard.Server.Summary;
 using Content;
-using Whiteboard;
-using ScreenSharing;
+
 
 namespace Dashboard.Server.SessionManagement
 {
@@ -20,17 +19,15 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public ServerSessionManager()
         {
-            TraceManager traceManager = new();
-
             moduleIdentifier = "Dashboard";
+            _contentServer = ContentServerFactory.GetInstance();
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-            
-            _ = new ServerBoardStateManager();
-            _ = new ScreenShareServer();
-            _contentServer = ContentServerFactory.GetInstance();
+
+            TraceManager traceManager = new();
+            traceManager.TraceListener();
 
             userCount = 0;
 
@@ -48,7 +45,6 @@ namespace Dashboard.Server.SessionManagement
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
-            _summarizer = SummarizerFactory.GetSummarizer();
 
             TraceManager traceManager = new();
             traceManager.TraceListener();
@@ -113,38 +109,32 @@ namespace Dashboard.Server.SessionManagement
         /// sent present in the meeting. </returns>
         private SummaryData CreateSummary()
         {
-            try
-            {
-                //_contentServer.s
-                // fetching all the chats from the content module.
-                ChatContext[] allChatsTillNow;
-                allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
+            // this double is reprent the ratio of summary size to the original content size.
+            // the plans are to take this input from the UX, it will be changed accordingly
+            double amountOfSummary = 0.5;
 
-                // creating the summary from the chats
-                string summary = _summarizer.GetSummary(allChatsTillNow);
+            //_contentServer.s
+            // fetching all the chats from the content module.
+            ChatContext[] allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
 
-                // returning the summary
-                return new SummaryData(summary);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("No messages received: "+e.Message);
-                return null;
-            }
+            // creating the summary from the chats
+            string summary = _summarizer.GetSummary(allChatsTillNow, amountOfSummary);
+
+            // returning the summary
+            return new SummaryData(summary);
         }
 
         private void EndMeetProcedure(ClientToServerData receivedObject)
         {
             ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
 
-            bool summarySaved = _summarizer.SaveSummary(allChats);
+            bool summarySaved = _summarizer.SaveSummary(allChats, 0.5);
 
             if (summarySaved == true)
             {
                 UserData user = new(receivedObject.username, receivedObject.userID);
                 SendDataToClient("endMeet", _sessionData, null, user);
             }
-            _communicator.Stop();
             // Cannot find telemetry factory yet.
         }
 
@@ -223,6 +213,8 @@ namespace Dashboard.Server.SessionManagement
             // Take the part before colon as the ip address
             IPAddress = IPAddress.Substring(0, IPAddress.IndexOf(':'));
             string[] byteValues = IPAddress.Split('.');
+
+
 
             // IPV4 contains 4 bytes separated by .
             if (byteValues.Length != 4)

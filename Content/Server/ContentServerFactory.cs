@@ -12,10 +12,7 @@ namespace Content
         /// </returns>
         public static IContentServer GetInstance()
         {
-            if (_contentServer != null)
-            {
-                return _contentServer;
-            }
+            if (_contentServer != null) return _contentServer;
 
             _contentServer = new ContentServer();
             return _contentServer;

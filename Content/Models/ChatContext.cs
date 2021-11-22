@@ -24,13 +24,5 @@ namespace Content
         ///     Id of the thread
         /// </summary>
         public int ThreadId;
-
-        public ChatContext()
-        {
-            CreationTime = new DateTime();
-            MsgList = new List<ReceiveMessageData>();
-            NumOfMessages = 0;
-            ThreadId = -1;
-        }
     }
 }
