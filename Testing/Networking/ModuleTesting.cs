@@ -112,6 +112,7 @@ namespace Testing.Networking
             _server.WbHandler.Wait();
             // All modules on server will be notified that a client has joined
             Assert.AreEqual(OnClientJoined, _server.WbHandler.Event);
+            _server.SsHandler.Wait();
             Assert.AreEqual(OnClientJoined, _server.SsHandler.Event);
 
             // A module on the server will add the client to the networking module
