@@ -208,6 +208,14 @@ namespace Testing.Dashboard
             Assert.AreEqual(expectedEvent, deserializedObj.eventType);
         }
 
+        [Test]
+        public void EndMeet_RecievedEndMeetingEventClientSide_SendsEndMeetingEventToUX()
+        {
+            ServerToClientData endMeetingMessage = new("endMeet", null, null, null);
+            clientSessionManagerB.OnDataReceived(_serializer.Serialize<ServerToClientData>(endMeetingMessage));
+            Assert.IsTrue(newUX.meetingEndEvent);
+        }
+
         [TestCase("This is sample summary")]
         [TestCase("")]
         [Test]
