@@ -340,6 +340,11 @@ namespace Dashboard.Server.SessionManagement
             }
         }
 
+        public void Stop()
+        {
+            _communicator.Stop();
+        }
+
         /// <summary>
         /// Subscribes to changes in the session object
         /// </summary>

@@ -46,6 +46,8 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="listener"> The subscriber. </param>
         void SubscribeSession(IClientSessionNotifications listener);
 
+        void Stop();
+
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>

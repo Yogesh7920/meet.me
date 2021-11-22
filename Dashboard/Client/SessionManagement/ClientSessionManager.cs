@@ -35,9 +35,9 @@ namespace Dashboard.Client.SessionManagement
             _contentClient = ContentClientFactory.getInstance();
 
             TraceManager session = new();
-            session.TraceListener(); 
+            session.TraceListener();
 
-            if(_clients == null)
+            if (_clients == null)
             {
                 _clients = new List<IClientSessionNotifications>();
             }
@@ -208,6 +208,11 @@ namespace Dashboard.Client.SessionManagement
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public void Stop()
+        {
+            _communicator.Stop();
         }
 
         /// <summary>
