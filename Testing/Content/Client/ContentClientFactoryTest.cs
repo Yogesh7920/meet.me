@@ -1,13 +1,12 @@
 using NUnit.Framework;
 
-namespace Testing.Dashboard
+namespace Testing.Content
 {
-    public class Tests
+    public class ContentClientFactoryTests
     {
         [SetUp]
         public void Setup()
         {
-
         }
 
         [Test]

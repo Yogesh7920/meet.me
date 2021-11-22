@@ -5,10 +5,10 @@ namespace Content
         private static IContentServer _contentServer;
 
         /// <summary>
-        /// Singleton factory for ContentServer
+        ///     Singleton factory for ContentServer
         /// </summary>
         /// <returns>
-        /// Return instance of ContentServer
+        ///     Return instance of ContentServer
         /// </returns>
         public static IContentServer GetInstance()
         {

@@ -49,6 +49,9 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        ITelemetryAnalysisModel GetAnalytics(); 
+        ITelemetry GetAnalytics();
+
+
+        public event NotifySummaryCreated SummaryCreated;
     }
 }

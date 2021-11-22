@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dashboard.Server.Telemetry
+namespace Client
 {
-    public interface ITelemetryAnalysisModel
+    class UserViewData
     {
+        public string username;
+        public string shortname;
     }
 }

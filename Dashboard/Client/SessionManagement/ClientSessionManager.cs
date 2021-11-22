@@ -9,6 +9,8 @@ using Networking;
 namespace Dashboard.Client.SessionManagement 
 {
     using Dashboard.Server.Telemetry;
+    public delegate void NotifyEndMeet();
+    public delegate void NotifySummaryCreated(string summary);
 
     /// <summary>
     /// ClientSessionManager class is used to maintain the client side 
@@ -23,9 +25,11 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public ClientSessionManager()
         {
+            moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
-            Session session = new();
+            _communicator.Subscribe(moduleIdentifier, this);
+            TraceManager session = new();
             session.TraceListener();
            
 
@@ -33,8 +37,32 @@ namespace Dashboard.Client.SessionManagement
             {
                 _clients = new List<IClientSessionNotifications>();
             }
+            _clientSessionData = null;
+            _user = null;
+            chatSummary = null;
+        }
+
+        /// <summary>
+        /// Added for testing the Module
+        /// </summary>
+        /// <param name="communicator">
+        /// Test communicator to test the functionality
+        /// </param>
+        public ClientSessionManager(ICommunicator communicator)
+        {
+            moduleIdentifier = "Dashboard";
+            _serializer = new Serializer();
+            _communicator = communicator;
+            _communicator.Subscribe(moduleIdentifier, this);
+            TraceManager session = new();
+            session.TraceListener();
+
+
+            if (_clients == null)
+            {
+                _clients = new List<IClientSessionNotifications>();
+            }
             _clientSessionData = new SessionData();
-            moduleIdentifier = "clientSessionManager";
             chatSummary = null;
         }
 
@@ -47,6 +75,10 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Boolean denoting the success or failure whether the user was added. </returns>
         public bool AddClient(string ipAddress, int port, string username)
         {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
 
             string serializedClientName;
             
@@ -60,10 +92,9 @@ namespace Dashboard.Client.SessionManagement
                     return false;
                 }
 
-                ClientToServerData clientName = new("addClient", username);
-                serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
             }
-            
+            ClientToServerData clientName = new("addClient", username);
+            serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
             _communicator.Send(serializedClientName,moduleIdentifier);
             return true;
         }
@@ -74,7 +105,9 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void RemoveClient()
         {
-            throw new NotImplementedException();
+            ClientToServerData clientToServerData = new("removeClient", _user.username, _user.userID);
+            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
+            _communicator.Send(serializedData, moduleIdentifier);
         }
 
         /// <summary>
@@ -82,7 +115,9 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void EndMeet()
         {
-            throw new NotImplementedException();
+            ClientToServerData clientToServerData = new("endMeet", _user.username, _user.userID);
+            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
+            _communicator.Send(serializedData, moduleIdentifier);
         }
 
         /// <summary>
@@ -92,23 +127,23 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Summary of the chats as a string. </returns>
         public string GetSummary()
         {
-            string summary = "";
+            //string summary = "";
             ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
             string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
             _communicator.Send(serializedData, moduleIdentifier);
             
             // This loop will run till the summary is received from the server side.
-            while(chatSummary == null)
-            {
+            //while(chatSummary == null)
+            //{
 
-            }
+            //}
 
-            lock(this)
-            {
-                summary = chatSummary;
-                chatSummary = null;
-            }
-            return summary;
+            //lock(this)
+            //{
+            //    summary = chatSummary;
+            //    chatSummary = null;
+            //}
+            return "";
         }
 
         /// <summary>
@@ -128,7 +163,7 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        public ITelemetryAnalysisModel GetAnalytics()
+        public ITelemetry GetAnalytics()
         {
             // the return type will be an analytics object yet to be decided.
             throw new NotImplementedException();
@@ -172,6 +207,14 @@ namespace Dashboard.Client.SessionManagement
                     UpdateSummary(deserializedObject);
                     return;
 
+                case "removeClient":
+                    UpdateClientSessionData(deserializedObject);
+                    return;
+
+                case "endMeet":
+                    MeetingEnded?.Invoke();
+                    return;
+
                 default:
                     throw new NotImplementedException();
             }
@@ -186,7 +229,7 @@ namespace Dashboard.Client.SessionManagement
         private void UpdateSummary(ServerToClientData receivedData)
         {
             // Extract the summary string and the user.
-            SummaryData receivedSummary = (SummaryData) receivedData.GetObject();
+            SummaryData receivedSummary = receivedData.summaryData;
             UserData receivedUser = receivedData.GetUser();
 
             // check if the current user is the one who requested to get the 
@@ -196,6 +239,7 @@ namespace Dashboard.Client.SessionManagement
                 lock(this)
                 {
                     chatSummary = receivedSummary.summary;
+                    SummaryCreated?.Invoke(chatSummary);
                 }
             }
         }
@@ -207,16 +251,30 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="recievedSessionData"> The sessionData received from the server side. </param>
         private void UpdateClientSessionData(ServerToClientData receivedData)
         {
-            SessionData recievedSessionData = (SessionData)receivedData.GetObject();
+            // fetching the session data and user received from the server side
+            SessionData recievedSessionData = receivedData.sessionData;
             UserData user = receivedData.GetUser();
 
+            // if there was no change in the data then nothing needs to be done
             if (recievedSessionData == _clientSessionData)
                 return;
 
-            if(_clientSessionData == null)
+            // a null _user denotes that the user is new and has not be set because all 
+            // the old user (already present in the meeting) have their _user set.
+            if(_user == null)
             {
                 _user = user;
             }
+
+            // The user received from the server side is equal to _user only in the case of 
+            // client departure. So, the _user and received session data are set to null to indicate this departure
+            else if(_user == user)
+            {
+                _user = null;
+                recievedSessionData = null;
+            }
+
+            // update the sesseon data on the client side and notify the UX about it.
             lock(this)
             {
                 _clientSessionData = (SessionData)recievedSessionData;
@@ -231,5 +289,7 @@ namespace Dashboard.Client.SessionManagement
         private readonly List<IClientSessionNotifications> _clients;
         private string chatSummary;
         private UserData _user;
+        public event NotifyEndMeet MeetingEnded;
+        public event NotifySummaryCreated SummaryCreated; 
     }
 }

@@ -19,18 +19,17 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public ServerSessionManager()
         {
-
+            moduleIdentifier = "Dashboard";
             _contentServer = ContentServerFactory.GetInstance();
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
 
-            Session session = new();
-            session.TraceListener();
+            TraceManager traceManager = new();
+            traceManager.TraceListener();
 
             userCount = 0;
-            moduleIdentifier = "serverSessionManager";
 
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(moduleIdentifier, this);
@@ -40,14 +39,15 @@ namespace Dashboard.Server.SessionManagement
         /// Constructor for the ServerSessionManager, calls the 
         /// tracelistener and creates a list for telemetry subscribers.
         /// </summary>
-        public ServerSessionManager(ICommunicator communicator)
+        public ServerSessionManager(ICommunicator communicator, IContentServer contentServer)
         {
+            _contentServer = contentServer;
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
 
-            Session session = new();
-            session.TraceListener();
+            TraceManager traceManager = new();
+            traceManager.TraceListener();
 
             userCount = 0;
             moduleIdentifier = "serverSessionManager";
@@ -62,7 +62,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="user"> An object of type UserData </param>
         private void AddUserToSession(UserData user)
         {
-            lock(this)
+            lock (this)
             {
                 _sessionData.users.Add(user);
             }
@@ -86,7 +86,7 @@ namespace Dashboard.Server.SessionManagement
             NotifyTelemetryModule();
 
             // serialize and broadcast the data back to the client side.
-            SendDataToClient("addClient", _sessionData, user);
+            SendDataToClient("addClient", _sessionData, null, user);
         }
 
         /// <summary>
@@ -109,18 +109,29 @@ namespace Dashboard.Server.SessionManagement
         /// sent present in the meeting. </returns>
         private SummaryData CreateSummary()
         {
-            // this double is reprent the ratio of summary size to the original content size.
-            // the plans are to take this input from the UX, it will be changed accordingly
-            double amountOfSummary = 0.6;
-
+            //_contentServer.s
             // fetching all the chats from the content module.
             ChatContext[] allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
 
             // creating the summary from the chats
-            string summary = _summarizer.GetSummary(allChatsTillNow, amountOfSummary);
+            string summary = _summarizer.GetSummary(allChatsTillNow);
 
             // returning the summary
             return new SummaryData(summary);
+        }
+
+        private void EndMeetProcedure(ClientToServerData receivedObject)
+        {
+            ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
+
+            bool summarySaved = _summarizer.SaveSummary(allChats);
+
+            if (summarySaved == true)
+            {
+                UserData user = new(receivedObject.username, receivedObject.userID);
+                SendDataToClient("endMeet", _sessionData, null, user);
+            }
+            // Cannot find telemetry factory yet.
         }
 
         /// <summary>
@@ -130,24 +141,33 @@ namespace Dashboard.Server.SessionManagement
         /// <returns> A MeetingCredentials Object containing the port and IP address</returns>
         public MeetingCredentials GetPortsAndIPAddress()
         {
-
-            Trace.WriteLine("Fetching IP Address and port from the networking module");
-            string meetAddress = _communicator.Start();
-
-            if (IsValidIPAddress(meetAddress) != true)
+            try
             {
-                Trace.WriteLine("IP Address is not valid, returning null");
-                return null;
+                Trace.WriteLine("Fetching IP Address and port from the networking module");
+                string meetAddress = _communicator.Start();
+
+                // Debug.Assert(IsValidIPAddress(meetAddress), "IP Address is NOT valid!");
+                if (IsValidIPAddress(meetAddress) != true)
+                {
+                    Trace.WriteLine("IP Address is not valid, returning null");
+                    return null;
+                }
+
+                Trace.WriteLine("Returning the IP Address to the UX");
+                //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
+                string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
+                //int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
+                int port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
+
+
+                return _meetingCredentials = new MeetingCredentials(ipAddress, port);
             }
-            
-            Trace.WriteLine("Returning the IP Address to the UX");
-            //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
-            string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
-            //int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
-            int port = Convert.ToInt16(meetAddress[(meetAddress.IndexOf(':') + 2)..]);
+            catch (Exception e)
+            {
+                Trace.WriteLine(e.Message);
+                throw;
+            }
 
-
-            return _meetingCredentials = new MeetingCredentials(ipAddress, port);
         }
 
         /// <summary>
@@ -159,9 +179,9 @@ namespace Dashboard.Server.SessionManagement
         private void GetSummaryProcedure(ClientToServerData receivedObject)
         {
             SummaryData summaryData = CreateSummary();
-            UserData user = new UserData(receivedObject.username, receivedObject.userID);
+            UserData user = new(receivedObject.username, receivedObject.userID);
 
-            SendDataToClient("getSummary", summaryData, user);
+            SendDataToClient("getSummary", null, summaryData, user);
         }
 
         /// <summary>
@@ -170,7 +190,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="IPAddress">The input ipaddress</param>
         /// <returns> true: For valid IP Addresses
         /// false: otherwise</returns>
-        static bool IsValidIPAddress(string IPAddress)
+        private static bool IsValidIPAddress(string IPAddress)
         {
             // Check for null string, whitespaces or absence of colon
             if (String.IsNullOrWhiteSpace(IPAddress) || IPAddress.Contains(':') == false)
@@ -178,9 +198,19 @@ namespace Dashboard.Server.SessionManagement
                 return false;
             }
 
+            // Take the part after the colon as the port number and check the range
+            string port = IPAddress.Substring(IPAddress.LastIndexOf(':') + 1);
+            if (Int32.TryParse(port, out int portNumber))
+            {
+                if (portNumber < 0 || portNumber > 65535)
+                    return false;
+            }
+
             // Take the part before colon as the ip address
             IPAddress = IPAddress.Substring(0, IPAddress.IndexOf(':'));
             string[] byteValues = IPAddress.Split('.');
+
+
 
             // IPV4 contains 4 bytes separated by .
             if (byteValues.Length != 4)
@@ -202,9 +232,9 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public void NotifyTelemetryModule()
         {
-            for(int i=0;i<_telemetrySubscribers.Count;++i)
+            for (int i = 0; i < _telemetrySubscribers.Count; ++i)
             {
-                lock(this)
+                lock (this)
                 {
                     _telemetrySubscribers[i].OnAnalyticsChanged(_sessionData);
                 }
@@ -220,7 +250,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="socketObject"></param>
         public void OnClientJoined<T>(T socketObject)
         {
-            lock(this)
+            lock (this)
             {
                 userCount += 1;
             }
@@ -249,21 +279,53 @@ namespace Dashboard.Server.SessionManagement
                     GetSummaryProcedure(deserializedObj);
                     return;
 
+                case "removeClient":
+                    RemoveClientProcedure(deserializedObj);
+                    return;
+
+                case "endMeet":
+                    EndMeetProcedure(deserializedObj);
+                    return;
+
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private void SendDataToClient(string eventName,IRecievedFromServer objectToSend, UserData user)
+        private void RemoveClientProcedure(ClientToServerData receivedObject)
+        {
+            UserData userToRemove = new(receivedObject.username, receivedObject.userID);
+            RemoveUserFromSession(userToRemove);
+            NotifyTelemetryModule();
+            SendDataToClient("removeClient", _sessionData, null, userToRemove);
+        }
+
+        private void RemoveUserFromSession(UserData userToRemove)
+        {
+            // raise exception if the user is not in the session or the _sessionData is null
+            List<UserData> users = _sessionData.users;
+            for (int i = 0; i < users.Count; ++i)
+            {
+                if (users[i].Equals(userToRemove))
+                {
+                    lock (this)
+                    {
+                        _sessionData.users.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, UserData user)
         {
             ServerToClientData serverToClientData;
             lock (this)
             {
-                serverToClientData = new ServerToClientData(eventName, objectToSend, user);
+                serverToClientData = new ServerToClientData(eventName, sessionData, summaryData, user);
+                string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
+                _communicator.Send(serializedSessionData, moduleIdentifier);
             }
-
-            string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
-            _communicator.Send(serializedSessionData, moduleIdentifier);
         }
 
         /// <summary>
@@ -273,7 +335,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="identifier"> The listener of the subscriber </param>
         public void Subcribe(ITelemetryNotifications listener)
         {
-            lock(this)
+            lock (this)
             {
                 _telemetrySubscribers.Add(listener);
             }

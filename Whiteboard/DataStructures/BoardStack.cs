@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/26/2021
- * Date Modified: 10/26/2021
+ * Date Modified: 11/12/2021
 **/
 
 using System;
@@ -34,7 +34,7 @@ namespace Whiteboard
         /// </summary>
         private void RemoveFirstInserted()
         {
-            if (GetSize() == 0)
+            if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 throw new InvalidOperationException("Stack is empty");
             }
@@ -46,7 +46,7 @@ namespace Whiteboard
         /// </summary>
         private void RemoveLastInserted()
         {
-            if (GetSize() == 0)
+            if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 throw new InvalidOperationException("Stack is empty");
             }
@@ -57,7 +57,7 @@ namespace Whiteboard
         /// Initializes BoardStack. 
         /// </summary>
         /// <param name="capacity">Capacity of stack. Default is 7.</param>
-        public BoardStack(int capacity = 7)
+        public BoardStack(int capacity = BoardConstants.UNDO_REDO_STACK_SIZE)
         {
             s_capacity = capacity;
             _stack = new List<Tuple<BoardShape, BoardShape>>();
@@ -95,12 +95,12 @@ namespace Whiteboard
         /// <returns>Tuple of BoardShape before and after the operation.</returns>
         public Tuple<BoardShape, BoardShape> Top()
         {
-            if (GetSize() == 0)
+            if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 Trace.Indent();
                 Trace.WriteLine("Whiteboard.BoardStack.Top: Stack is empty.");
                 Trace.Unindent();
-                return null;
+                throw new IndexOutOfRangeException("Stack is empty");
             }
             return _stack[GetSize() - 1];
         }
@@ -110,12 +110,12 @@ namespace Whiteboard
         /// </summary>
         public void Pop()
         {
-            if (GetSize() == 0)
+            if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 Trace.Indent();
                 Trace.WriteLine("Whiteboard.BoardStack.Pop: Stack is empty.");
                 Trace.Unindent();
-                return;
+                throw new IndexOutOfRangeException("Stack is empty");
             }
             RemoveLastInserted();
         }
@@ -126,7 +126,15 @@ namespace Whiteboard
         /// <returns>Boolean indicating if stack is empty.</returns>
         public bool IsEmpty()
         {
-            return GetSize() == 0;
+            return GetSize() == BoardConstants.EMPTY_SIZE;
+        }
+
+        /// <summary>
+        /// Removes all elements from stack.
+        /// </summary>
+        public void Clear()
+        {
+            _stack.Clear();
         }
     }
 }

@@ -1,13 +1,12 @@
 using NUnit.Framework;
 
-namespace Testing
+namespace Testing.Content
 {
-    public class Tests
+    public class ContentServerTests
     {
         [SetUp]
         public void Setup()
         {
-
         }
 
         [Test]

@@ -23,7 +23,7 @@ namespace Dashboard.Server.Summary
 		/// String which is the summary of the 
 		/// chat in the particular discusiion
 		/// </returns>
-		string GetSummary(ChatContext[] chats, double fraction);
+		string GetSummary(ChatContext[] chats);
 
 		/// <summary>
 		/// Function to save the summary of the dashboard
@@ -35,13 +35,10 @@ namespace Dashboard.Server.Summary
 		/// which would be used for the summarizer to 
 		/// save the summary in the database
 		/// </param>
-		/// <param name="fraction"> The fraction of the chat 
-		/// length which determines the length of summary
-		/// </param>
 		/// <returns>
 		/// Returns true if summary was succesfully stored 
 		/// and false otherwise
 		/// </returns>
-		bool SaveSummary(ChatContext[] chats, double fraction);
+		bool SaveSummary(ChatContext[] chats);
 	}
 }
