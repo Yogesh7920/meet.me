@@ -60,6 +60,8 @@ namespace Dashboard.Client.SessionManagement
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
+            clientBoardStateManager = ClientBoardStateManager.Instance;
+            clientBoardStateManager.Start();
 
 
             if (_clients == null)
