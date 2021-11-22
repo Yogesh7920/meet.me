@@ -87,8 +87,8 @@ namespace Whiteboard
             else
             {
                 // Modification of previous shape.
-                prevLine.Height = end.R - prevLine.Start.R;
-                prevLine.Width = end.C - prevLine.Start.C;
+                prevLine.Height = Math.Abs(end.R - prevLine.Start.R);
+                prevLine.Width = Math.Abs(end.C - prevLine.Start.C);
                 prevLine.Center = (end + prevLine.Start) / 2;
                 return prevLine;
             }

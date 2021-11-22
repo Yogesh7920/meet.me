@@ -23,12 +23,7 @@ namespace Testing.Whiteboard
             Assert.IsNotNull(newMainShape);
             Assert.IsTrue(newMainShape.Start.Equals(start));
             Assert.IsTrue(newMainShape.Center.Equals(center));
-            Console.WriteLine("exoecetd" + height.ToString() + " got " + newMainShape.Height.ToString() + "\n");
-            Console.WriteLine("exoecetd" + width.ToString() + " got " + newMainShape.Width.ToString() + "\n");
             Assert.IsTrue(Math.Abs(newMainShape.Height - height) < 0.02);
-            //Assert.AreEqual(newMainShape.Height, height);
-            //Assert.AreEqual(newMainShape.Width, width);
-
             Assert.IsTrue(Math.Abs(newMainShape.Width - width) < 0.02);
             Assert.AreEqual(newMainShape.StrokeWidth, strokeWidth);
             Assert.IsTrue(newMainShape.StrokeColor.Equals(strokeColor));

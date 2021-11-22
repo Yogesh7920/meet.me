@@ -15,7 +15,7 @@ using Whiteboard;
 
 namespace Testing.Whiteboard
 {
-    static class RectangleTestIterators
+    static class TestIterators
     {
 
         public static IEnumerable<TestCaseData> ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape_TestCases

@@ -103,10 +103,12 @@ namespace Whiteboard
             {
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
-                    X1 = s.Start.R,
-                    Y1 = s.Start.C,
-                    X2 = s.Start.R + s.Height,
-                    Y2 = s.Start.R + s.Width
+                    X1 = 0,
+                    Y1 = 0,
+                    Height = s.Height,
+                    Width = s.Width,
+                    X2 = s.Height,
+                    Y2 = s.Width
                 };
                 
                 WindowsShape = LineUXElement;

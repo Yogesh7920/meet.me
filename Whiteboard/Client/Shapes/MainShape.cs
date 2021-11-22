@@ -150,7 +150,7 @@ namespace Whiteboard
         /// Add a coordinate to the list of points in the shape.
         /// </summary>
         /// <param name="c">Coordinate to add.</param>
-        public void AddToList(Coordinate c)
+        public void AddToList([NotNull]Coordinate c)
         {
             if (Points == null)
             {
@@ -158,29 +158,6 @@ namespace Whiteboard
             }
             Points.Add(c);
         } 
-
-        /// <summary>
-        /// Pops and returns the last element of the list of coordinates.
-        /// </summary>
-        /// <returns>The last element in the list of Coordinates.</returns>
-        public Coordinate PopLastElementFromList()
-        {
-            Coordinate lastCord = GetLast();
-            int lastIndex = Points.Count()-1;
-            Points.RemoveAt(lastIndex);
-            return lastCord;
-        }
-
-        /// <summary>
-        /// Gets the last element of the list of Coordinates.
-        /// </summary>
-        /// <returns>The last element of the list of Coordinates.</returns>
-        public Coordinate GetLast()
-        {
-            int lastIndex = Points.Count() - 1;
-            Coordinate c = Points.ElementAt(lastIndex);
-            return c.Clone();
-        }
 
         /// <summary>
         /// Returns the Deep Copy of the list of Points.

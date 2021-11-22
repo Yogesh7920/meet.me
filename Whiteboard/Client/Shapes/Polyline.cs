@@ -26,7 +26,7 @@ namespace Whiteboard
         public Polyline(Coordinate start) : base(ShapeType.POLYLINE)
         {
             this.Start = start;
-            Points.Add(Start.Clone());
+            AddToList(Start.Clone());
         }
 
         /// <summary>
@@ -74,9 +74,8 @@ namespace Whiteboard
             if (prevPolyline == null)
             {
                 prevPolyline = new Polyline(start.Clone());
-                AddToList(end.Clone());
             }
-            AddToList(end.Clone());
+            prevPolyline.AddToList(end.Clone());
             return prevPolyline;
         }
 
@@ -86,7 +85,7 @@ namespace Whiteboard
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            List<Coordinate> pointClone = Points.Select(cord => new Coordinate(cord.R, cord.C)).ToList();
+            List<Coordinate> pointClone = Points?.Select(cord => new Coordinate(cord.R, cord.C)).ToList();
             return new Polyline(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), pointClone, AngleOfRotation);
         }
 
