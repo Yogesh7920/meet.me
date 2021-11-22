@@ -232,8 +232,6 @@ namespace Testing.Content
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized as MessageData;
-                Console.WriteLine(Filedata.fileName);
-                Console.WriteLine(receivedMessage.Message);
                 Assert.AreEqual(receivedMessage.Message, Filedata.fileName);
                 Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
                 Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
@@ -362,8 +360,10 @@ namespace Testing.Content
             ReceiveMessageData _receivedData = new ReceiveMessageData();
             string Msg = "hello";  // data will have msg hello
             _receivedData.Message = Msg;
+            _receivedData.MessageId = 2;
             // Notifying to subscribers
             _contentClient.Notify(_receivedData);
+            System.Threading.Thread.Sleep(50);
             // Fetching listened data from listener
             ReceiveMessageData _listenedData = _fakeListener.GetOnMessageData();
             Assert.AreEqual(_listenedData.Message, Msg);
