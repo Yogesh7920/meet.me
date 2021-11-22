@@ -369,6 +369,10 @@ namespace Testing.Content
             Assert.AreEqual(_listenedData.Message, Msg);
         }
 
-
+        [Test]
+        public void OnDataReceived_()
+        {
+            Assert.Pass();
+        }
     }
 }
