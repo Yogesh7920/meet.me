@@ -76,7 +76,6 @@ namespace Whiteboard
             {
                 Color = Color.FromArgb(255, Convert.ToByte(s.ShapeFill.R), Convert.ToByte(s.ShapeFill.G), Convert.ToByte(s.ShapeFill.B))
             };
-
             // setting paramaters based on shape
             if (s.ShapeIdentifier == ShapeType.ELLIPSE)
             {
@@ -103,12 +102,10 @@ namespace Whiteboard
             {
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
-                    X1 = 0,
-                    Y1 = 0,
-                    Height = s.Height,
-                    Width = s.Width,
-                    X2 = s.Height,
-                    Y2 = s.Width
+                    X1 = s.Start.R,
+                    Y1 = s.Start.C,
+                    X2 = s.Start.R + s.Height,
+                    Y2 = s.Start.R + s.Width
                 };
                 
                 WindowsShape = LineUXElement;
@@ -137,6 +134,10 @@ namespace Whiteboard
             if (shapeId != null)
             {
                 WindowsShape.Uid = shapeId;
+            }
+            else
+            {
+                WindowsShape.Uid = Guid.NewGuid().ToString();
             }
             
         }
