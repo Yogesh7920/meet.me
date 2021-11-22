@@ -45,6 +45,7 @@ namespace Dashboard.Server.SessionManagement
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
+            _summarizer = SummarizerFactory.GetSummarizer();
 
             TraceManager traceManager = new();
             traceManager.TraceListener();
