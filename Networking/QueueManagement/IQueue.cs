@@ -1,9 +1,9 @@
-﻿/// <author>Alisetti Sai Vamsi</author>
-/// <created>13/10/2021</created>
-/// <summary>
-///     This file contains the definition of
-///     the interface IQueue.
-/// </summary>
+﻿/*
+ * Author: Alisetti Sai Vamsi
+ * Created on: 13/10/2021
+ * Summary: This file contains the definition of
+ *          the interface IQueue.
+ */
 
 namespace Networking
 {

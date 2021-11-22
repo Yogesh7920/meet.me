@@ -10,7 +10,7 @@ using Dashboard;
 using Networking;
 using Testing.Dashboard.SessionManagement.TestModules;
 
-namespace Testing.Dashboard
+namespace Testing.Dashboard.SessionManagement
 {
     public class SessionManagementTest
     {
@@ -23,7 +23,7 @@ namespace Testing.Dashboard
         public void Setup()
         {
             _communicatorTest = new();
-            _clientSessionManager = SessionManagerFactory.GetClientSessionManager();
+            _clientSessionManager = SessionManagerFactory.GetClientSessionManager(_communicatorTest);
             _serverSessionManager = SessionManagerFactory.GetServerSessionManager(_communicatorTest);
         }
 

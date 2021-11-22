@@ -1,9 +1,9 @@
-﻿/// <author>Alisetti Sai Vamsi</author>
-/// <created>1/11/2021</created>
-/// <summary>
-///     This file contains the unit tests
-///     for the Queue Module.
-/// </summary>
+﻿/*
+ * Author: Alisetti Sai Vamsi
+ * Created on: 01/11/2021
+ * Summary: This file contains the unit tests
+ *          for the Queue Module.
+ */
 
 using System;
 using System.Collections.Generic;

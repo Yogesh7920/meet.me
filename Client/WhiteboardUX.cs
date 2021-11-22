@@ -620,10 +620,11 @@ namespace Client
             }
             else if (mouseDownSh != null && !selectedShapes.Contains(mouseDownSh.Uid))
             {
-                if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                /*if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
                 {
-                    cn = UnselectAllBB(cn, WBOps);
-                }
+                    
+                }*/
+                cn = UnselectAllBB(cn, WBOps);
                 cn = SelectShape(cn, mouseDownSh, WBOps, 1);
             }
             Trace.WriteLine("Beginning moving shape with Uid" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() + "to end point " + end.ToString());
@@ -1356,6 +1357,8 @@ namespace Client
 
                 poly.Stroke = polyLineColor;
                 poly.StrokeThickness = polyLineThickness;
+                poly.StrokeLineJoin = PenLineJoin.Round;
+                poly.StrokeDashCap = PenLineCap.Round;
 
                 if (isEraser == true)
                 {
@@ -1391,7 +1394,7 @@ namespace Client
                     }
                     else
                     {
-                        poly.Points.Add(pt);
+                        if (!poly.Points.Contains(pt)) poly.Points.Add(pt);
                     }
                 }
             }
@@ -1534,6 +1537,13 @@ namespace Client
         {
             WBOps.SwitchState();
             return;
+        }
+
+        public Canvas ClearCanvas(Canvas cn)
+        {
+            cn = shapeManager.UnselectAllBB(cn, WBOps);
+            cn.Children.Clear();
+            return cn;
         }
 
         /// <summary>
