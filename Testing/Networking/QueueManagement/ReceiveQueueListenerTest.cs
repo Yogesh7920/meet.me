@@ -1,4 +1,11 @@
-﻿using System.Collections.Generic;
+﻿/*
+ * Author: Alisetti Sai Vamsi
+ * Created on: 12/11/2021
+ * Summary: This file contains the unit tests
+ *          for ReceiveQueueListener Module.
+ */
+
+using System.Collections.Generic;
 using System.Threading;
 using Networking;
 using NUnit.Framework;
@@ -42,7 +49,7 @@ namespace Testing.Networking.QueueManagement
         private Dictionary<string, INotificationHandler> _notificationHandlers;
         private ReceiveQueueListener _receiveQueueListener;
 
-        private string Message => NetworkingGlobals.GetRandomString();
+        private static string Message => NetworkingGlobals.GetRandomString();
 
         [Test]
         public void ListenQueue_DequeuingFromQueueAndCallingHandler_ShouldCallAppropriateHandler()
