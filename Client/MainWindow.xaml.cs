@@ -12,8 +12,6 @@ namespace Client
     {
         private static WhiteBoardView _whiteboard;
         private string theme = "theme1";
-        public bool thisShared = true;
-        public bool otherShared = true;
         //uncomment below lines after the respective user controls are done
         /*private static ChatView _chat;
         private static UsersList _userslist;*/
@@ -71,17 +69,17 @@ namespace Client
         {
             _ssFlag = true;
             ScreenShareClient ssclient = new ScreenShareClient();
-            if (thisShared)
+            if (ssclient.thisSharing == false && ssclient.otherSharing == false)
             {
                 //ssclient.startSharing();
-                thisShared = false;
-                otherShared = false;
+            }
+            else if(ssclient.thisSharing == true && ssclient.otherSharing == false)
+            {
+                ssclient.stopSharing();
             }
             else
             {
-                ssclient.stopSharing();
-                thisShared = true;
-                otherShared = true;
+                // handle the error message
             }
             //uncomment below line after respective User Controls are done
             /*this.SSwb.Content = new ScreenShareView();

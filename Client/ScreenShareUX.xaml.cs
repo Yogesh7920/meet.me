@@ -42,7 +42,7 @@ namespace Client
             }
             else if (Screenviewmodel._mtype == 0)  // Stop the screen share
             {
-
+                Console.WriteLine("No one is sharing the screen");
             }
             else if (Screenviewmodel._mtype == 1)  // screen share is going now
             {
