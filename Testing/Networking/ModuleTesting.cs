@@ -1,5 +1,7 @@
-/// <author>Subhash S</author>
-/// <created>12/11/2021</created>
+/*
+ * Author: Subhash S
+ * Created on: 12/11/2021
+ */
 
 using System;
 using Networking;

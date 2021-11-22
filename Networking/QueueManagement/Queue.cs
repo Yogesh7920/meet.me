@@ -1,9 +1,8 @@
-﻿/// <author>Alisetti Sai Vamsi</author>
-/// <created>13/10/2021</created>
-/// <summary>
-///     This file contains the implementation of
-///     the IQueue interface.
-/// </summary>
+﻿/*
+ * Author: Alisetti Sai Vamsi
+ * Created on: 13/10/2021
+ * Summary: This file contains the implementation of the IQueue interface.
+ */
 
 using System;
 using System.Collections.Concurrent;
