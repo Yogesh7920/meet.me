@@ -68,7 +68,11 @@ namespace Whiteboard
                     deserializedObject.OperationFlag == Operation.DELETE ||
                     deserializedObject.OperationFlag == Operation.MODIFY)
             {
-                stateManager.SaveUpdate(deserializedObject);
+                bool resp = stateManager.SaveUpdate(deserializedObject);
+                if(resp == true) 
+                { 
+                    communicator.Send(data, moduleIdentifier);
+                }
             }
             else 
             {
