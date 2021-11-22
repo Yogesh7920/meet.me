@@ -28,16 +28,14 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public ClientSessionManager()
         {
-            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
             _contentClient = ContentClientFactory.getInstance();
-            _clientBoardStateManager = ClientBoardStateManager.Instance;
-            _clientBoardStateManager.Start();
 
-            session.TraceListener(); 
+            TraceManager session = new();
+            session.TraceListener();
 
             if (_clients == null)
             {
@@ -56,11 +54,11 @@ namespace Dashboard.Client.SessionManagement
         /// </param>
         public ClientSessionManager(ICommunicator communicator)
         {
-            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
+            TraceManager session = new();
             session.TraceListener();
 
 
@@ -212,10 +210,6 @@ namespace Dashboard.Client.SessionManagement
             }
         }
 
-        public void Stop()
-        {
-            _communicator.Stop();
-        }
 
         /// <summary>
         /// Updates the locally stored summary at the client side to the summary received from the 
@@ -269,7 +263,9 @@ namespace Dashboard.Client.SessionManagement
             if(_user == null)
             {
                 _user = user;
-                _clientBoardStateManager.SetUser(user.userID.ToString());
+                IClientBoardStateManager clientBoardStateManager = ClientBoardStateManager.Instance;
+                clientBoardStateManager.Start();
+                clientBoardStateManager.SetUser(user.userID.ToString());
                 ContentClientFactory.setUser(user.userID);
             }
 
@@ -279,6 +275,7 @@ namespace Dashboard.Client.SessionManagement
             {
                 _user = null;
                 recievedSessionData = null;
+                _communicator.Stop();
             }
 
             // update the sesseon data on the client side and notify the UX about it.
@@ -299,6 +296,5 @@ namespace Dashboard.Client.SessionManagement
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
         private IContentClient _contentClient;
-        private IClientBoardStateManager _clientBoardStateManager;
     }
 }

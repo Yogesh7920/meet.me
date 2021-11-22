@@ -145,6 +145,7 @@ namespace Dashboard.Server.SessionManagement
                 UserData user = new(receivedObject.username, receivedObject.userID);
                 SendDataToClient("endMeet", _sessionData, null, user);
             }
+            _communicator.Stop();
             // Cannot find telemetry factory yet.
         }
 
@@ -338,11 +339,6 @@ namespace Dashboard.Server.SessionManagement
                 string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
                 _communicator.Send(serializedSessionData, moduleIdentifier);
             }
-        }
-
-        public void Stop()
-        {
-            _communicator.Stop();
         }
 
         /// <summary>
