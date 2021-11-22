@@ -53,5 +53,6 @@ namespace Dashboard.Client.SessionManagement
 
 
         public event NotifySummaryCreated SummaryCreated;
+        public event NotifyEndMeet MeetingEnded;
     }
 }

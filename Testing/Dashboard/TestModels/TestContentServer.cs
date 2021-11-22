@@ -37,6 +37,6 @@ namespace Testing.Dashboard.TestModels
         }
 
         public bool gotNotificationToSendMessages;
-        private List<ChatContext> chats;
+        public List<ChatContext> chats;
     }
 }
