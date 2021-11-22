@@ -91,6 +91,15 @@ namespace Testing.Whiteboard
             CollectionAssert.AreEqual(pointClone, modification1.GetPoints());
 
         }
+
+        [Test]
+        public void Resize_PreviousShape_ReturnFalse()
+        {
+            Coordinate start = new(1, 1);
+            Coordinate end = new(-3, -5);
+            MainShape newPolyline = _polyline.ShapeMaker(start, end, null);
+            Assert.IsFalse(newPolyline.ResizeAboutCenter(start.Clone(), end.Clone(), DragPos.TOP_RIGHT));
+        }
     }
 }
 

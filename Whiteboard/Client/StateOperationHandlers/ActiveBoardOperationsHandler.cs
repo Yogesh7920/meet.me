@@ -20,7 +20,7 @@ namespace Whiteboard
     /// <summary>
     /// Handler when board is in Active State.
     /// </summary>
-    class ActiveBoardOperationsHandler : BoardOperationsState
+    public class ActiveBoardOperationsHandler : BoardOperationsState
     {
         /// <summary>
         /// Class for real-time rendering for storing previous temporary object rendered on UX.
@@ -59,6 +59,43 @@ namespace Whiteboard
             {
                 return _shape != null;
             }
+        }
+
+        // Check if running as part of NUnit
+        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
+
+        /// <summary>
+        /// Allows setting stateManager handler when running as part of NUnit tests.
+        /// </summary>
+        /// <param name="stateManager">state Manager object.</param>
+        public void SetStateManager(IClientBoardStateManagerInternal stateManager)
+        {
+            if (IsRunningFromNUnit)
+            {
+                Console.WriteLine("Changing the state manager");
+                _stateManager = stateManager;
+            }
+
+        }
+
+        public BoardShape getLastDrawn()
+        {
+            if (IsRunningFromNUnit)
+            {
+                return _lastDrawn._shape;
+            }
+            return null;
+        }
+
+        public void setLastDrawn(BoardShape shape, Coordinate end, RealTimeOperation operation)
+        {
+            if (IsRunningFromNUnit)
+            {
+                _lastDrawn._shape = shape;
+                _lastDrawn._end = end;
+                _lastDrawn._operation = operation;
+            }
+            
         }
 
         /// <summary>
@@ -244,18 +281,22 @@ namespace Whiteboard
                     prevShapeId = newUxShape.WindowsShape.Uid;
                     operations.Add(newUxShape);
 
+                    
                     string userId = _stateManager.GetUser();
+
                     if (userId == null)
                     {
+                        Console.WriteLine("user id got is " + userId);
                         throw new Exception("Invalid User");
                     }
-
+                    
                     _lastDrawn = new LastDrawnDetails
                     {
                         _shape = new (newMainShape, UserLevel, DateTime.Now, DateTime.Now, prevShapeId, userId, Operation.CREATE),
                         _end = end,
                         _operation = RealTimeOperation.CREATE
                     };
+                    Console.WriteLine("step 2 " + operations.Count() + "\n");
 
                     Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Shape Creation complete.");
 
@@ -277,6 +318,7 @@ namespace Whiteboard
 
                     _lastDrawn._shape.LastModifiedTime = DateTime.Now;
                     _lastDrawn._shape.RecentOperation = Operation.CREATE;
+                    _lastDrawn._end = end.Clone();
 
                     Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Shape updation complete.");
 
@@ -303,11 +345,13 @@ namespace Whiteboard
                     //reset the variables
                     _lastDrawn = null;
                 }
+                Console.WriteLine("Returning oeprations of length " + operations.Count() + "\n");
 
                 return operations;
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Failure in creation of shape.");
                 Trace.WriteLine(e.Message);
                 return null;
@@ -341,10 +385,10 @@ namespace Whiteboard
                     _lastDrawn = new LastDrawnDetails
                     {
                         _shape = shapeFromManager.Clone(),
-                        _operation = realTimeOperation
-                    };
+                        _operation = realTimeOperation,
+                        _end = start
+                };
                     _lastDrawn._shape.RecentOperation = Operation.MODIFY;
-                    _lastDrawn._end = end;
 
                 }
                 else if (_lastDrawn.IsPending() && _lastDrawn._shape.Uid == shapeId && _lastDrawn._operation == realTimeOperation)
@@ -375,6 +419,9 @@ namespace Whiteboard
                     default:
                         throw new Exception("The Operation " + realTimeOperation + "does not support real-time rendering.");
                 }
+                UXShape newUxShape = new(UXOperation.CREATE, lastDrawnMainShape, shapeId);
+                operations.Add(newUxShape);
+                _lastDrawn._end = end;
 
                 if (shapeComp)
                 {
