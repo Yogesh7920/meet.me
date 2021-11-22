@@ -28,14 +28,16 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public ClientSessionManager()
         {
+            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
             _contentClient = ContentClientFactory.getInstance();
+            _clientBoardStateManager = ClientBoardStateManager.Instance;
+            _clientBoardStateManager.Start();
 
-            TraceManager session = new();
-            session.TraceListener();
+            session.TraceListener(); 
 
             if (_clients == null)
             {
@@ -54,11 +56,11 @@ namespace Dashboard.Client.SessionManagement
         /// </param>
         public ClientSessionManager(ICommunicator communicator)
         {
+            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
-            TraceManager session = new();
             session.TraceListener();
 
 
@@ -267,9 +269,7 @@ namespace Dashboard.Client.SessionManagement
             if(_user == null)
             {
                 _user = user;
-                IClientBoardStateManager clientBoardStateManager = ClientBoardStateManager.Instance;
-                clientBoardStateManager.Start();
-                clientBoardStateManager.SetUser(user.userID.ToString());
+                _clientBoardStateManager.SetUser(user.userID.ToString());
                 ContentClientFactory.setUser(user.userID);
             }
 
@@ -299,5 +299,6 @@ namespace Dashboard.Client.SessionManagement
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
         private IContentClient _contentClient;
+        private IClientBoardStateManager _clientBoardStateManager;
     }
 }
