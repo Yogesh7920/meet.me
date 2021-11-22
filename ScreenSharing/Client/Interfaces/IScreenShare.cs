@@ -1,12 +1,9 @@
 /**
- * Owned By: Pulavarti Vinay Kumar
- * Created By: Neeraj
- * Date Created: 10 Oct 2021
- * Date Modified: 16 Nov 2021
+ * owned by: Neeraj Patil
+ * created by: Neeraj Patil
+ * date created: 14/10/2021
+ * date modified: 14/10/2021
 **/
-
-using System;
-using System.Drawing;
 
 namespace ScreenSharing
 {
@@ -18,10 +15,7 @@ namespace ScreenSharing
         /// <summary>
         ///     handles the reception of update from screen share client.
         /// </summary>
-        /// <param name="uid"> Stores the Id of the user sharing the screen.</param>
-        /// <param name="uname"> Stores the username of the user sharing the screen.</param>
-        /// <param name="mtype"> Stores the message type.</param>
-        /// <param name="screen"> Stores the screen in the Bitmap format.</param>
-        public void OnScreenRecieved(string uid, string uname, int mtype, Bitmap screen);
+        /// <param name="screen">SharedScreen type object.</param>
+        public void onScreenRecieved(SharedScreen screen);
     }
 }
