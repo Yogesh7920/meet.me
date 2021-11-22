@@ -288,6 +288,10 @@ namespace Client
                     case (WhiteBoardViewModel.WBTools.Selection):
                         //sets the starting point for usage in TranslateShape/RotateShape
                         this.viewModel.start = e.GetPosition(GlobCanvas);
+                        //setting the initial mouse down position for usage in shapeManager.MoveShape,
+                        //as we need to send the server the very start and very end points during a final move operation
+                        //since we are doing temporary rendering by using differential (start,end) points pair
+                        this.viewModel.setSelectMouseDownPos(e.GetPosition(GlobCanvas));
 
                         if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
                         {

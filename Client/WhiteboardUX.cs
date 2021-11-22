@@ -227,6 +227,7 @@ namespace Client
         private Dictionary<string, string> BBmap = new Dictionary<string, string>();
         private AdornerLayer adornerLayer;
         private Shape underCreation;
+        public System.Windows.Point selectMouseDownPos;
 
         //Variable to keep track of the Uid of the new shape that is currently under creation
         private string uidShapeCreate = null;
@@ -819,12 +820,15 @@ namespace Client
 
             if (shapeComp == true)
             {
-                Coordinate C_strt = new Coordinate(((float)strt.X), ((float)strt.Y));
+                //Coordinate C_strt = new Coordinate(((float)strt.X), ((float)strt.Y));
+                Coordinate C_strt = new Coordinate(((float)selectMouseDownPos.X), ((float)selectMouseDownPos.Y));
                 Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
+
                 toRender = new List<UXShape>();
                 toRender = WBOps.TranslateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
+                //removing the local temporary render and only acknowledging the CREATE UXShape request as we cleaned up temporary render
                 cn.Children.Remove(mouseDownSh);
-                cn = RenderUXElement(toRender, cn);
+                cn = RenderUXElement(new List<UXShape>{ toRender[1]}, cn);
 
                 Trace.WriteLine("Sent move request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
                 "to end point " + end.ToString() + ", where list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());
@@ -1665,6 +1669,12 @@ namespace Client
             }
             return;
 
+        }
+
+        public void setSelectMouseDownPos(System.Windows.Point pnt)
+        {
+            this.shapeManager.selectMouseDownPos = pnt;
+            return;
         }
 
         public WBTools GetActiveTool()
