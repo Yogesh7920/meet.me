@@ -1,15 +1,13 @@
+/// <author>Tausif Iqbal</author>
+/// <created>14/10/2021</created>
+/// <modified>16/11/202</modified>
+
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-/// <summary>
-/// This file contains the implementation of socketListener
-/// socketListener will continously listen for message and
-/// after getting the message it will push into queue 
-/// </summary>
-/// <author>Tausif Iqbal </author>
 namespace Networking
 {
     public class ReceiveSocketListener
@@ -31,8 +29,8 @@ namespace Networking
 
         /// <summary>
         ///     This is the constructor of the class which initializes the params
-        ///     <param name="queue">queue.</param>
-        ///     <param name="clientSocket">clientSocket.</param>
+        ///     <param name="queue">An object of type IQueue that is used by the communicator</param>
+        ///     <param name="clientSocket">The socket object of the connection</param>
         /// </summary>
         public ReceiveSocketListener(IQueue queue, TcpClient clientSocket)
         {
@@ -55,7 +53,7 @@ namespace Networking
         ///     it looks for EOF to know the end of message
         /// </summary>
         /// <returns>Packet </returns>
-        private Packet GetPacket(string[] msg)
+        private static Packet GetPacket(string[] msg)
         {
             var packet = new Packet
             {
@@ -83,7 +81,7 @@ namespace Networking
                     //Get NetworkStream to read message
                     var networkStream = _clientSocket.GetStream();
 
-                    //read when data is availabe into a buffer
+                    //read when data is available into a buffer
                     while (networkStream.DataAvailable)
                     {
                         var inStream = new byte[Threshold];
@@ -92,15 +90,13 @@ namespace Networking
                         for (var i = 0; i < Threshold; i++)
                             if (buffer[i] != '\u0000')
                             {
-                                message = message + buffer[i];
-                                if (message.Contains("EOF"))
-                                {
-                                    //Calls GetPacket method to form packet object out of received message
-                                    var packet = GetPacket(message.Split(":"));
-                                    //Calls the PushToQueue method to push packet into queue
-                                    PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
-                                    message = "";
-                                }
+                                message += buffer[i];
+                                if (!message.Contains("EOF")) continue;
+                                //Calls GetPacket method to form packet object out of received message
+                                var packet = GetPacket(message.Split(":"));
+                                //Calls the PushToQueue method to push packet into queue
+                                PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
+                                message = "";
                             }
                     }
                 }
