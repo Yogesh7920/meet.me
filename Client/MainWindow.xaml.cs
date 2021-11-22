@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using ScreenSharing;
 
 namespace Client
 {
@@ -11,6 +12,7 @@ namespace Client
     {
         private static WhiteBoardView _whiteboard;
         private string theme = "theme1";
+        public bool sharing = false;
         //uncomment below lines after the respective user controls are done
         /*private static ChatView _chat;
         private static UsersList _userslist;*/
@@ -67,18 +69,16 @@ namespace Client
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
             _ssFlag = true;
-            ScreenShareClient ssclient = new ScreenShareClient();
-            if (ssclient.thisSharing == false && ssclient.otherSharing == false)
+            ScreenShareClient _screenshareclient = new ScreenShareClient();
+            if (!sharing)
             {
-                //ssclient.startSharing();
-            }
-            else if(ssclient.thisSharing == true && ssclient.otherSharing == false)
-            {
-                ssclient.stopSharing();
+                //_screenshareclient.startSharing();
+                sharing = true;
             }
             else
             {
-                // handle the error message
+                _screenshareclient.stopSharing();
+                sharing = false;
             }
             //uncomment below line after respective User Controls are done
             /*this.SSwb.Content = new ScreenShareView();
