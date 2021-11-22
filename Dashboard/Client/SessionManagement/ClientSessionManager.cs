@@ -54,12 +54,11 @@ namespace Dashboard.Client.SessionManagement
         /// </param>
         public ClientSessionManager(ICommunicator communicator)
         {
+            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
-            TraceManager session = new();
-            session.TraceListener();
 
 
             if (_clients == null)
