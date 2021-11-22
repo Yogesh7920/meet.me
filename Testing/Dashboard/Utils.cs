@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dashboard;
+using Content;
 
 namespace Testing.Dashboard
 {
@@ -67,6 +68,12 @@ namespace Testing.Dashboard
             return users;
         }
 
+        /// <summary>
+        /// Creates a sample session object
+        /// </summary>
+        /// <param name="size"> size of users to be inserted in session object </param>
+        /// <returns>sample session object</returns>
+
         public static SessionData GenerateSampleSessionData(int size)
         {
             SessionData sData = new();
@@ -75,6 +82,34 @@ namespace Testing.Dashboard
                 sData.AddUser(new(GetRandomString(random.Next(10)), i));
             }
             return sData;
+        }
+
+        /// <summary>
+        /// Generates a sample chat context
+        /// </summary>
+        /// <param name="size"> size of chats in chat context </param>a
+        /// <returns>Sample Chat Context List</returns>
+        public static List<ChatContext> GetSampleChatContext(int size=50)
+        {
+            List<ChatContext> chats = new();
+            for (int i = 0; i < size; i++)
+            {
+                ChatContext c = new();
+                List<ReceiveMessageData> receiveMessageDatas = new();
+                for (int j = 0; j < 5; j++)
+                {
+                    ReceiveMessageData data = new();
+                    data.Message = "Hi from " + (i + j).ToString();
+                    if (i % 5 == 0)
+                        data.Message += ".This is special";
+                    data.Type = MessageType.Chat;
+                    data.Starred = (i % 5) == 0;
+                    receiveMessageDatas.Add(data);
+                }
+                c.MsgList = receiveMessageDatas;
+                chats.Add(c);
+            }
+            return chats;
         }
 
 #pragma warning disable SecurityIntelliSenseCS // MS Security rules violation
