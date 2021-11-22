@@ -1,10 +1,9 @@
-/// <author>Tausif Iqbal</author>
-/// <created>1/11/2021</created>
-/// <summary>
-///     This file covers the unit tests
-///     for client joining the server and leaving the server.
-/// </summary>
-///
+/*
+* Author: Tausif Iqbal
+* Created on: 01/11/2021
+* Summary: This file covers the unit tests
+*           for client joining the server and leaving the server.
+*/
 
 using Networking;
 using NUnit.Framework;
@@ -16,7 +15,7 @@ namespace Testing.Networking.SocketManagement
     {
         [Test]
         [Category("pass")]
-        public void Start_ClientServerStartup_StartupMustPass()
+        public void ClientServerStartAndStopTesting()
         {
             // start the server
             var server = CommunicationFactory.GetCommunicator(false, true);

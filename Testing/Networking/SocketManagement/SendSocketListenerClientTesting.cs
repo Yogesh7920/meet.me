@@ -1,10 +1,9 @@
-/// <author>Tausif Iqbal</author>
-/// <created>1/11/2021</created>
-/// <summary>
-///     This file covers the unit tests
-///     for sending packets in client side.
-/// </summary>
-///
+/*
+* Author: Tausif Iqbal
+* Created on: 01/11/2021
+* Summary: This file covers the unit tests
+*           for the class SendSocketListenerClient.
+*/
 
 using System.Net;
 using System.Net.Sockets;

@@ -1,10 +1,9 @@
-﻿/// <author>Tausif Iqbal</author>
-/// <created>1/11/2021</created>
-/// <summary>
-///     This file covers the unit tests
-///     for receiving packets.
-/// </summary>
-/// 
+﻿/*
+* Author: Tausif Iqbal
+* Created on: 01/11/2021
+* Summary: This file covers the unit tests
+*           for for the class ReceiveSocketListener.
+*/
 
 using System.Net;
 using System.Net.Sockets;
