@@ -59,7 +59,7 @@ namespace Client
            else
            {
                AuthViewModel viewmodel = this.DataContext as AuthViewModel;
-               var result = viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
+               var result = true;//viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
                if (result == true)
                {
                    obj.Show();

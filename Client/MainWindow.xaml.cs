@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 
 namespace Client
 {
     /// <summary>
-    ///     Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         private static WhiteBoardView _whiteboard;
         private string theme = "theme1";
         //uncomment below lines after the respective user controls are done
-        /*private static ChatView _chat;
-        private static UsersList _userslist;*/
+        /*private static ChatView _chat;*/
+        private static UsersList _userslist;
         public MainWindow()
         {
             InitializeComponent();
@@ -23,9 +24,9 @@ namespace Client
 
             //uncomment below lines after the respective User Controls are done
             /*_chat = new ChatView();
-            this.Chat.Content = _chat;
+            this.Chat.Content = _chat;*/
             _userslist = new UsersList(this);
-            this.UsersListControl.Content = _userslist;*/
+            this.UsersListControl.Content = _userslist;
         }
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
         /// <summary>
@@ -46,6 +47,19 @@ namespace Client
         private void OnThemeClick(object sender, RoutedEventArgs e)
         {
             ResourceDictionary dict = new ResourceDictionary();
+            if (Theme.IsChecked == true)//((sender as ToggleButton).IsEnabled)
+            {
+                dict.Source = new Uri("Theme2.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
+            }
+            else
+            {
+                dict.Source = new Uri("Theme1.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
+            }/*
+            ResourceDictionary dict = new ResourceDictionary();
             if (theme.Equals("theme1"))
             {
                 theme = "theme2";
@@ -59,7 +73,42 @@ namespace Client
                 dict.Source = new Uri("Theme1.xaml", UriKind.Relative);
                 Application.Current.Resources.MergedDictionaries.Clear();
                 Application.Current.Resources.MergedDictionaries.Add(dict);
+            }*/
+        }
+        /// <summary>
+        /// Minimize button functionality
+        /// </summary>  
+        private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal || this.WindowState == WindowState.Maximized)
+            {
+                this.WindowState = WindowState.Minimized;
             }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
+        /// Maximize button functionality
+        /// </summary>
+        private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
+        /// Close button functionality
+        /// </summary>
+        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
         /// <summary>
         /// Function to handle ScreenShare button click event
@@ -172,8 +221,8 @@ namespace Client
         private void OnDashboardClick(object sender, RoutedEventArgs e)
         {
             //uncomment after Dashboard is added 
-            /*Dashboard dashboard = new Dashboard();
-            dashboard.Show();*/
+            DashboardView dashboard = new DashboardView();
+            dashboard.Show();
         }
         /// <summary>
         /// Function to handle UsersList expansion button click event
@@ -181,7 +230,7 @@ namespace Client
         public void OnUsersListClick()
         {
             //uncomment below lines after the respective User Controls are done
-            /*if (_userslist.UserListHidden.Equals(true))
+            if (_userslist.UserListHidden.Equals(true))
             {
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
@@ -190,7 +239,6 @@ namespace Client
                     {                        
                         SSwb.SetValue(Grid.ColumnSpanProperty, 1);
                     }
-
                     else
                     {                      
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
@@ -211,7 +259,7 @@ namespace Client
                         SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                     }
                 }
-            }*/
+            }
         }
         /// <summary>
         /// Function to call OnLeaveButtonClick() when Leave button is clicked
