@@ -14,6 +14,12 @@ namespace Content
         /// Clones the messageData object
         /// </summary>
         /// <returns>Returns the cloned instance of the object</returns>
+
+        public MessageData()
+        {
+            FileData = new SendFileData();
+        }
+
         public MessageData Clone()
         {
             return (MessageData)MemberwiseClone();
