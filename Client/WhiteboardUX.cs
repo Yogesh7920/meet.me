@@ -1385,7 +1385,7 @@ namespace Client
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == "-1");
 
                 //Check Condition that previous temporary polylines have been cleaned up
-                Debug.Assert(iterat.Count() <= 1);
+                //Debug.Assert(iterat.Count() <= 1);
 
                 //assigning special UID of -1 to temporary shapes
                 poly.Uid = "-1";

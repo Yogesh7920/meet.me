@@ -144,7 +144,7 @@ namespace Client
                     if (mouseDownFlag == 1)
                     {
                         Point fh_pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, false, true);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, false, true);
                     }
                     break;
                 case (WhiteBoardViewModel.WBTools.Eraser):
