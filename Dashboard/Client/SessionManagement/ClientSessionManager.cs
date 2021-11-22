@@ -296,6 +296,5 @@ namespace Dashboard.Client.SessionManagement
         public event NotifySummaryCreated SummaryCreated;
         private IContentClient _contentClient;
         private IClientBoardStateManager _clientBoardStateManager;
-        private 
     }
 }
