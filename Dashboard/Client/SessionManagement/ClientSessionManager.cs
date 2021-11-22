@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Networking;
+using Dashboard.Server.Telemetry;
+using Whiteboard;
+using Content;
 
 
 namespace Dashboard.Client.SessionManagement 
@@ -29,9 +32,10 @@ namespace Dashboard.Client.SessionManagement
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
+            _contentClient = ContentClientFactory.getInstance();
+
             TraceManager session = new();
-            session.TraceListener();
-           
+            session.TraceListener(); 
 
             if(_clients == null)
             {
@@ -125,25 +129,11 @@ namespace Dashboard.Client.SessionManagement
         /// meet till the function was called.
         /// </summary>
         /// <returns> Summary of the chats as a string. </returns>
-        public string GetSummary()
+        public void GetSummary()
         {
-            //string summary = "";
             ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
             string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
             _communicator.Send(serializedData, moduleIdentifier);
-            
-            // This loop will run till the summary is received from the server side.
-            //while(chatSummary == null)
-            //{
-
-            //}
-
-            //lock(this)
-            //{
-            //    summary = chatSummary;
-            //    chatSummary = null;
-            //}
-            return "";
         }
 
         /// <summary>
@@ -163,7 +153,7 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        public ITelemetry GetAnalytics()
+        public SessionAnalytics GetAnalytics()
         {
             // the return type will be an analytics object yet to be decided.
             throw new NotImplementedException();
@@ -255,6 +245,14 @@ namespace Dashboard.Client.SessionManagement
             SessionData recievedSessionData = receivedData.sessionData;
             UserData user = receivedData.GetUser();
 
+            //try
+            //{
+            //    if(user.username.Equals(null))
+            //    {
+
+            //    }
+            //}
+            
             // if there was no change in the data then nothing needs to be done
             if (recievedSessionData == _clientSessionData)
                 return;
@@ -264,6 +262,10 @@ namespace Dashboard.Client.SessionManagement
             if(_user == null)
             {
                 _user = user;
+                IClientBoardStateManager clientBoardStateManager = ClientBoardStateManager.Instance;
+                clientBoardStateManager.Start();
+                clientBoardStateManager.SetUser(user.userID.ToString());
+                ContentClientFactory.setUser(user.userID);
             }
 
             // The user received from the server side is equal to _user only in the case of 
@@ -290,6 +292,7 @@ namespace Dashboard.Client.SessionManagement
         private string chatSummary;
         private UserData _user;
         public event NotifyEndMeet MeetingEnded;
-        public event NotifySummaryCreated SummaryCreated; 
+        public event NotifySummaryCreated SummaryCreated;
+        private IContentClient _contentClient;
     }
 }
