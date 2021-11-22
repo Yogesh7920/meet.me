@@ -72,7 +72,6 @@ namespace Whiteboard
         {
             if (IsRunningFromNUnit)
             {
-                Console.WriteLine("Changing the state manager");
                 _stateManager = stateManager;
             }
 
@@ -82,7 +81,7 @@ namespace Whiteboard
         {
             if (IsRunningFromNUnit)
             {
-                return _lastDrawn._shape;
+                return _lastDrawn?._shape;
             }
             return null;
         }
@@ -281,7 +280,6 @@ namespace Whiteboard
                     prevShapeId = newUxShape.WindowsShape.Uid;
                     operations.Add(newUxShape);
 
-                    
                     string userId = _stateManager.GetUser();
 
                     if (userId == null)
@@ -296,7 +294,6 @@ namespace Whiteboard
                         _end = end,
                         _operation = RealTimeOperation.CREATE
                     };
-                    Console.WriteLine("step 2 " + operations.Count() + "\n");
 
                     Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Shape Creation complete.");
 
@@ -337,15 +334,11 @@ namespace Whiteboard
                     newBoardShape.LastModifiedTime = DateTime.Now;
                     newBoardShape.CreationTime = DateTime.Now;
 
-                    if (!_stateManager.SaveOperation(newBoardShape))
-                    {
-                        throw new Exception("Couldn't update state of state Manager.");
-                    }
+                    UpdateStateManager(newBoardShape);
 
                     //reset the variables
                     _lastDrawn = null;
                 }
-                Console.WriteLine("Returning oeprations of length " + operations.Count() + "\n");
 
                 return operations;
             }
