@@ -10,9 +10,13 @@ namespace Content
         /// </summary>
         public SendFileData FileData;
 
+        /// <summary>
+        /// Clones the messageData object
+        /// </summary>
+        /// <returns>Returns the cloned instance of the object</returns>
         public MessageData Clone()
         {
-            return (MessageData)this.MemberwiseClone();
+            return (MessageData)MemberwiseClone();
         }
     }
 }
