@@ -33,8 +33,6 @@ namespace Whiteboard
             this.Width = width;
             this.Start = start;
             this.Center = center;
-            this.AddToList(start.Clone());
-            this.AddToList(end.Clone());
         }
 
         /// <summary>
@@ -59,8 +57,6 @@ namespace Whiteboard
                     float angle) :
                     base(ShapeType.LINE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
-            this.AddToList(start.Clone());
-            this.AddToList(new Coordinate(start.R + height, start.C + width));
         }
 
         /// <summary>
@@ -91,11 +87,9 @@ namespace Whiteboard
             else
             {
                 // Modification of previous shape.
-                prevLine.Height = end.R - prevLine.Start.R;
-                prevLine.Width = end.C - prevLine.Start.C;
+                prevLine.Height = Math.Abs(end.R - prevLine.Start.R);
+                prevLine.Width = Math.Abs(end.C - prevLine.Start.C);
                 prevLine.Center = (end + prevLine.Start) / 2;
-                PopLastElementFromList();
-                AddToList(end.Clone());
                 return prevLine;
             }
         }
@@ -106,8 +100,7 @@ namespace Whiteboard
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
         {
-            List<Coordinate> pointClone = Points.Select(cord => new Coordinate(cord.R, cord.C)).ToList();
-            return new Line(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), pointClone, AngleOfRotation);
+            return new Line(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), null, AngleOfRotation);
         }
     }
 }

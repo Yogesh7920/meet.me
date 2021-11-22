@@ -419,7 +419,7 @@ namespace Whiteboard
                 // Create a new BoardShape to perform modification since this changes should not be directly reflected in the object stored in the Manager.
                 BoardShape newBoardShape = shapeFromManager.Clone();
 
-                if (newBoardShape.MainShapeDefiner.Resize(start, end, dragpos))
+                if (newBoardShape.MainShapeDefiner.ResizeAboutCenter(start, end, dragpos))
                 {
                     List<UXShape> Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
                     return Operations;
