@@ -21,7 +21,6 @@ namespace Dashboard.Server.SessionManagement
         public ServerSessionManager()
         {
             TraceManager traceManager = new();
-            traceManager.TraceListener();
 
             moduleIdentifier = "Dashboard";
             _sessionData = new SessionData();

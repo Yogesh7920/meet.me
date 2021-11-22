@@ -28,14 +28,15 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public ClientSessionManager()
         {
+            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
             _contentClient = ContentClientFactory.getInstance();
+            clientBoardStateManager = ClientBoardStateManager.Instance;
+            clientBoardStateManager.Start();
 
-            TraceManager session = new();
-            session.TraceListener();
 
             if (_clients == null)
             {
@@ -262,8 +263,6 @@ namespace Dashboard.Client.SessionManagement
             if(_user == null)
             {
                 _user = user;
-                IClientBoardStateManager clientBoardStateManager = ClientBoardStateManager.Instance;
-                clientBoardStateManager.Start();
                 clientBoardStateManager.SetUser(user.userID.ToString());
                 ContentClientFactory.setUser(user.userID);
             }
@@ -295,5 +294,6 @@ namespace Dashboard.Client.SessionManagement
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
         private IContentClient _contentClient;
+        private IClientBoardStateManager clientBoardStateManager;
     }
 }
