@@ -17,7 +17,6 @@ namespace Content
 
         public MessageData()
         {
-            FileData = new SendFileData();
         }
 
         public MessageData Clone()
