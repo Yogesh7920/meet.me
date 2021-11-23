@@ -19,16 +19,110 @@ namespace Testing.Content
         }
 
         [Test]
-        public void FileTest()
+        public void StoreFile_StoringAFile_ShouldBeAbleToStoreFile()
         {
             string CurrentDirectory = Directory.GetCurrentDirectory() as string;
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            string pathB = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            MessageData file1 = new MessageData();
+            file1.Message = "Test_File.pdf";
+            file1.Type = MessageType.File;
+            file1.FileData = new SendFileData(pathA);
+            file1.SenderId = 1;
+            file1.ReplyThreadId = -1;
+            file1.Event = MessageEvent.NewMessage;
+
+            MessageData recv = contentDatabase.StoreFile(file1);
+
+            Assert.AreEqual(file1.Message, recv.Message);
+            Assert.AreEqual(file1.Type, recv.Type);
+            Assert.AreEqual(file1.SenderId, recv.SenderId);
+            Assert.AreEqual(file1.Event, recv.Event);
+            Assert.AreEqual(file1.FileData.fileSize, recv.FileData.fileSize);
+            Assert.AreEqual(file1.FileData.fileName, recv.FileData.fileName);
+            Assert.AreEqual(file1.FileData.fileContent, recv.FileData.fileContent);
+        }
+
+        [Test]
+        public void GetFiles_StoringAndFetchingAFileFromContentDatabase_ShouldBeAbleToFetchStoredFile()
+        {
+            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
             MessageData file1 = new MessageData();
-            file1.Message = "trace.txt";
+            file1.Message = "Test_File.pdf";
+            file1.Type = MessageType.File;
+            file1.FileData = new SendFileData(pathA);
+            file1.SenderId = 1;
+            file1.ReplyThreadId = -1;
+            file1.Event = MessageEvent.NewMessage;
+
+            MessageData recv = contentDatabase.StoreFile(file1);
+
+            Assert.AreEqual(file1.Message, recv.Message);
+            Assert.AreEqual(file1.Type, recv.Type);
+            Assert.AreEqual(file1.SenderId, recv.SenderId);
+            Assert.AreEqual(file1.Event, recv.Event);
+            Assert.AreEqual(file1.FileData.fileSize, recv.FileData.fileSize);
+            Assert.AreEqual(file1.FileData.fileName, recv.FileData.fileName);
+            Assert.AreEqual(file1.FileData.fileContent, recv.FileData.fileContent);
+
+            recv = contentDatabase.GetFiles(file1.MessageId);
+
+            Assert.AreEqual(file1.Message, recv.Message);
+            Assert.AreEqual(file1.MessageId, recv.MessageId);
+            Assert.AreEqual(file1.Type, recv.Type);
+            Assert.AreEqual(file1.SenderId, recv.SenderId);
+            Assert.AreEqual(file1.Event, recv.Event);
+            Assert.AreEqual(file1.FileData.fileSize, recv.FileData.fileSize);
+            Assert.AreEqual(file1.FileData.fileName, recv.FileData.fileName);
+            Assert.AreEqual(file1.FileData.fileContent, recv.FileData.fileContent);
+            Assert.AreEqual(file1.ReplyThreadId, recv.ReplyThreadId);
+        }
+
+        [Test]
+        public void GetFiles_TryingToFetchAFileThatDoesNotExist_NullShouldBeReturned()
+        {
+            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+
+            MessageData file1 = new MessageData();
+            file1.Message = "Test_File.pdf";
+            file1.Type = MessageType.File;
+            file1.FileData = new SendFileData(pathA);
+            file1.SenderId = 1;
+            file1.ReplyThreadId = -1;
+            file1.Event = MessageEvent.NewMessage;
+
+            MessageData recv = contentDatabase.StoreFile(file1);
+
+            Assert.AreEqual(file1.Message, recv.Message);
+            Assert.AreEqual(file1.Type, recv.Type);
+            Assert.AreEqual(file1.SenderId, recv.SenderId);
+            Assert.AreEqual(file1.Event, recv.Event);
+            Assert.AreEqual(file1.FileData.fileSize, recv.FileData.fileSize);
+            Assert.AreEqual(file1.FileData.fileName, recv.FileData.fileName);
+            Assert.AreEqual(file1.FileData.fileContent, recv.FileData.fileContent);
+
+            recv = contentDatabase.GetFiles(10);
+
+            Assert.IsNull(recv);
+        }
+
+        [Test]
+        public void StoreFile_StoringMultipleFiles_ShouldBeAbleToStoreAndFetchMultipleFiles()
+        {
+            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+
+            string pathB = path[0] + "\\Testing\\Content\\Utils.cs";
+
+            MessageData file1 = new MessageData();
+            file1.Message = "Test_File.pdf";
             file1.Type = MessageType.File;
             file1.FileData = new SendFileData(pathA);
             file1.SenderId = 1;
@@ -46,7 +140,7 @@ namespace Testing.Content
             Assert.AreEqual(file1.FileData.fileContent, recv.FileData.fileContent);
 
             MessageData file2 = new MessageData();
-            file2.Message = "whiteboard.dll";
+            file2.Message = "Utils.cs";
             file2.Type = MessageType.File;
             file2.FileData = new SendFileData(pathB);
             file2.SenderId = 1;
@@ -124,7 +218,44 @@ namespace Testing.Content
         }
 
         [Test]
-        public void MessageTest()
+        public void StoreMessage_StoringASingleMessage_MessageShouldBeStored()
+        {
+            MessageData message1 = _utils.GenerateNewMessageData("Hello", SenderId: 1);
+
+            MessageData recv = contentDatabase.StoreMessage(message1);
+
+            Assert.AreEqual(message1.Message, recv.Message);
+            Assert.AreEqual(message1.Type, recv.Type);
+            Assert.AreEqual(message1.SenderId, recv.SenderId);
+            Assert.AreEqual(message1.Event, recv.Event);
+            Assert.IsNull(recv.FileData);
+        }
+
+        [Test]
+        public void GetMessage_StoringAndFetchingAMessage_ShouldBeAbleToFetchStoredMessage()
+        {
+            MessageData message1 = _utils.GenerateNewMessageData("Hello", SenderId: 1);
+
+            MessageData recv = contentDatabase.StoreMessage(message1);
+
+            Assert.AreEqual(message1.Message, recv.Message);
+            Assert.AreEqual(message1.Type, recv.Type);
+            Assert.AreEqual(message1.SenderId, recv.SenderId);
+            Assert.AreEqual(message1.Event, recv.Event);
+            Assert.IsNull(recv.FileData);
+
+            ReceiveMessageData msg = contentDatabase.GetMessage(message1.ReplyThreadId, message1.MessageId);
+
+            Assert.AreEqual(message1.Message, msg.Message);
+            Assert.AreEqual(msg.MessageId, message1.MessageId);
+            Assert.AreEqual(message1.Type, msg.Type);
+            Assert.AreEqual(message1.SenderId, msg.SenderId);
+            Assert.AreEqual(message1.Event, msg.Event);
+            Assert.AreEqual(message1.ReplyThreadId, msg.ReplyThreadId);
+        }
+
+        [Test]
+        public void StoreMessage_StoringMultipleMessages_ShouldBeAbleToStoreAndFetchMultipleMessages()
         {
             MessageData message1 = _utils.GenerateNewMessageData("Hello", SenderId: 1);
 
@@ -191,12 +322,12 @@ namespace Testing.Content
         }
 
         [Test]
-        public void ChatContextTest()
+        public void GetChatContexts_StoringMultipleFilesAndMessages_ShouldBeAbleToFetchAllChatContextsAndMessagesAreInCorrectChatContexts()
         {
             contentDatabase = new ContentDatabase();
 
-            FileTest();
-            MessageTest();
+            StoreFile_StoringMultipleFiles_ShouldBeAbleToStoreAndFetchMultipleFiles();
+            StoreMessage_StoringMultipleMessages_ShouldBeAbleToStoreAndFetchMultipleMessages();
 
             List<ChatContext> msgList = contentDatabase.GetChatContexts();
 
