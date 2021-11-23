@@ -187,7 +187,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, dragPos, shapeComp);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.RESIZE, start, end, shapeId, dragPos, shapeComp);
         }
 
         /// <summary>
