@@ -2,10 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
-<<<<<<< HEAD
 using ScreenSharing;
-=======
->>>>>>> parent of 4df0296 (Code cleanup)
 
 namespace Client
 {
@@ -112,7 +109,6 @@ namespace Client
         /// </summary>
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
-<<<<<<< HEAD
             _ssFlag = true;
             ScreenShareClient _screenshareclient = new ScreenShareClient();
             if (!sharing)
@@ -125,9 +121,6 @@ namespace Client
                 _screenshareclient.stopSharing();
                 sharing = false;
             }
-=======
-            _ssFlag = true;   
->>>>>>> parent of 4df0296 (Code cleanup)
             //uncomment below line after respective User Controls are done
             this.SSwb.Content = new ScreenShareUX();
             if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
@@ -249,11 +242,11 @@ namespace Client
                 {
                     SSwb.SetValue(Grid.ColumnProperty, 4);
                     if (_chatFlag.Equals(true))
-                    {                        
+                    {
                         SSwb.SetValue(Grid.ColumnSpanProperty, 1);
                     }
                     else
-                    {                      
+                    {
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
                     }
                 }

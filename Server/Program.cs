@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * owned by: Pulavarti Vinay Kumar
  * created by: Pulavarti Vinay Kumar
@@ -7,9 +6,6 @@
 **/
 
 using System;
-=======
-﻿using System;
->>>>>>> parent of 4df0296 (Code cleanup)
 using Dashboard.Server.SessionManagement;
 
 namespace Server
