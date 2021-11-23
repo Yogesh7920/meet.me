@@ -89,36 +89,6 @@ namespace Testing.Dashboard.Persistence
         }
 
         /// <summary>
-        /// It tests the RetrieveAllSeverData_FailsOnEmptyPathExceptions function of TelemetryPersistence
-        /// It must fail to retrive if path is set to empty as No xml file will be found there
-        /// </summary>
-        [Test]
-        public void RetrieveAllSeverData_FailsOnEmptyPathExceptions()
-        {
-            TelemetryPersistence _telemetry_persister = PersistenceFactory.GetTelemetryPersistenceInstance();
-            _telemetry_persister.ServerDataPath = "";
-
-            ServerDataToSave serverdataToSave = _telemetry_persister.RetrieveAllSeverData();
-            Assert.IsTrue(serverdataToSave.sessionCount == -1);
-        }
-
-        /// <summary>
-        /// It tests the SaveSummary function of SummmaryPersistence
-        /// It must fail on ArgumentException of Empty Path
-        /// </summary>
-        [Test]
-        public void SaveSummary_FailsOnEmptyPathAsDirectoryCannotBeCreated()
-        {
-
-            string summary = "NUnit Testing";
-            SummaryPersistence _summary_persister = PersistenceFactory.GetSummaryPersistenceInstance();
-            _summary_persister.summaryPath = "";
-
-            ResponseEntity response = _summary_persister.SaveSummary(summary, true);
-            Assert.IsFalse(response.IsSaved);
-        }
-
-        /// <summary>
         /// It tests the SaveServerData function of TelemetryPersistence
         /// </summary> 
         [Test]
@@ -188,6 +158,36 @@ namespace Testing.Dashboard.Persistence
             string path = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
             File.Delete(Path.Combine(path, response.FileName));
 
+        }
+
+        /// <summary>
+        /// It tests the RetrieveAllSeverData_FailsOnEmptyPathExceptions function of TelemetryPersistence
+        /// It must fail to retrive if path is set to empty as No xml file will be found there
+        /// </summary>
+        [Test]
+        public void RetrieveAllSeverData_FailsOnEmptyPathExceptions()
+        {
+            TelemetryPersistence _telemetry_persister = PersistenceFactory.GetTelemetryPersistenceInstance();
+            _telemetry_persister.ServerDataPath = "";
+
+            ServerDataToSave serverdataToSave = _telemetry_persister.RetrieveAllSeverData();
+            Assert.IsTrue(serverdataToSave.sessionCount == -1);
+        }
+
+        /// <summary>
+        /// It tests the SaveSummary function of SummmaryPersistence
+        /// It must fail on ArgumentException of Empty Path
+        /// </summary>
+        [Test]
+        public void SaveSummary_FailsOnEmptyPathAsDirectoryCannotBeCreated()
+        {
+
+            string summary = "NUnit Testing";
+            SummaryPersistence _summary_persister = PersistenceFactory.GetSummaryPersistenceInstance();
+            _summary_persister.summaryPath = "";
+
+            ResponseEntity response = _summary_persister.SaveSummary(summary, true);
+            Assert.IsFalse(response.IsSaved);
         }
 
         /// <summary>
