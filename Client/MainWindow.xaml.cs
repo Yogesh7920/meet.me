@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Windows;
-<<<<<<< HEAD
-=======
 using System.Windows.Controls;
 using ScreenSharing;
->>>>>>> 4f46db393a8c149693c3a57a33d005c9d876d715
 
 namespace Client
 {
@@ -72,8 +69,6 @@ namespace Client
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
             _ssFlag = true;
-<<<<<<< HEAD
-=======
             ScreenShareClient _screenshareclient = new ScreenShareClient();
             if (!sharing)
             {
@@ -85,7 +80,6 @@ namespace Client
                 _screenshareclient.stopSharing();
                 sharing = false;
             }
->>>>>>> 4f46db393a8c149693c3a57a33d005c9d876d715
             //uncomment below line after respective User Controls are done
             /*this.SSwb.Content = new ScreenShareView();
             if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))

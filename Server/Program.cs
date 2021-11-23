@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-﻿using Dashboard.Server.SessionManagement;
-using System;
-=======
-﻿/**
+/**
  * owned by: Pulavarti Vinay Kumar
  * created by: Pulavarti Vinay Kumar
  * date created: 1/10/2021
@@ -11,7 +7,6 @@ using System;
 
 using System;
 using Dashboard.Server.SessionManagement;
->>>>>>> 4f46db393a8c149693c3a57a33d005c9d876d715
 
 namespace Server
 {
