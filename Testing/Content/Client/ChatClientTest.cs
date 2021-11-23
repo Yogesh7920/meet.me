@@ -129,11 +129,9 @@ namespace Testing.Content
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized as MessageData;
-                Assert.AreEqual(receivedMessage.Message, SampleMsgData.Message);
                 Assert.AreEqual(receivedMessage.Event, MessageEvent.Star);
                 Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
                 Assert.AreEqual(receivedMessage.FileData, SampleMsgData.FileData);
-                Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
                 Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
                 Assert.AreEqual(receivedMessage.SenderId, UserId);
                 Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
