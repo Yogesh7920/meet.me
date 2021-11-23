@@ -59,5 +59,22 @@ namespace Content
             SentTime = new DateTime();
             Starred = false;
         }
+
+        /// <summary>
+        /// Contructor for ReceiveMessageData from MessageData
+        /// </summary>
+        /// <param name="msgData"></param>
+        /// <returns></returns>
+        public ReceiveMessageData(MessageData msgData)
+        {
+            this.Event = msgData.Event;
+            this.Message = msgData.Message;
+            this.MessageId = msgData.MessageId;
+            this.ReceiverIds = msgData.ReceiverIds;
+            this.SenderId = msgData.SenderId;
+            this.ReplyThreadId = msgData.ReplyThreadId;
+            this.Starred = msgData.Starred;
+            this.Type = msgData.Type;
+        }
     }
 }
