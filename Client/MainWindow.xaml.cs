@@ -76,6 +76,13 @@ namespace Client
             }*/
         }
         /// <summary>
+        /// Drag functionality
+        /// </summary>
+        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+        /// <summary>
         /// Minimize button functionality
         /// </summary>  
         private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
@@ -232,6 +239,7 @@ namespace Client
             //uncomment below lines after the respective User Controls are done
             if (_userslist.UserListHidden.Equals(true))
             {
+                UsersListControl.SetValue(Grid.ColumnSpanProperty, 3);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
                     SSwb.SetValue(Grid.ColumnProperty, 4);
@@ -247,6 +255,7 @@ namespace Client
             }
             else
             {
+                UsersListControl.SetValue(Grid.ColumnSpanProperty, 1);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
                     SSwb.SetValue(Grid.ColumnProperty, 2);
@@ -256,6 +265,7 @@ namespace Client
                     }
                     else
                     {
+                        SSwb.SetValue(Grid.ColumnProperty, 1);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                     }
                 }

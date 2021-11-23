@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        MinWidth="1500" MinHeight="750" WindowStyle="None"
+        MinWidth="1500" MinHeight="850" WindowStyle="None"
         Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
 
     <Window.Resources>
@@ -15,8 +15,8 @@
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel Orientation="Horizontal">
                             <Grid >
-                                <Border Width="20" Height="10" Background="{DynamicResource Color3Bg}" CornerRadius="5" Margin="5,0"></Border>
-                                <Border x:Name="button" Height="13" Width="10" CornerRadius="12.5" HorizontalAlignment="Left"  ></Border>
+                                <Border Width="30" Height="15" Background="{DynamicResource Color2Bg}" CornerRadius="5" Margin="5,0"></Border>
+                                <Border x:Name="button" Height="15" Width="15" CornerRadius="10" HorizontalAlignment="Left"  ></Border>
                             </Grid>
                             <ContentPresenter x:Name="content" Margin="10,0,0,0" Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
                         </StackPanel>
@@ -62,13 +62,13 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
-            <ColumnDefinition Width="0.15*"/>
+            <ColumnDefinition Width="0.02*"/>
             <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="0.15*"/>
+            <ColumnDefinition Width="0.02*"/>
             <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="0.15*"/>
+            <ColumnDefinition Width="0.02*"/>
             <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="0.05*"/>
+            <ColumnDefinition Width="0.0*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -81,10 +81,14 @@
         </Grid.RowDefinitions>
 
         <!-- Title Bar -->
-        <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}" >
+        <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown" >
             <TextBlock Text="meet.me" HorizontalAlignment="Center" VerticalAlignment="Top"  
                        FontWeight="Bold" FontFamily="Champagne &amp; Limousines"  FontSize="25" Foreground="White"/>
             <DockPanel HorizontalAlignment="Right" Margin="10,0">
+                <DockPanel Name="ThemeButton" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 10 0">
+                    <TextBlock Text="Theme" Foreground="{DynamicResource Color3Bg}" FontSize="12" FontWeight="DemiBold"></TextBlock>
+                    <CheckBox Name="Theme" Click="OnThemeClick" FontSize="15" Background="{DynamicResource Color2Bg}" Foreground="{DynamicResource Color3Bg}" Margin="10 0" ></CheckBox>
+                </DockPanel>
                 <!-- Minimize button -->
                 <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick" 
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
@@ -112,53 +116,37 @@
         <!-- Buttons -->
         <DockPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
             <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50">-->
-            <Button x:Name="Whiteboard" Click="OnWhiteboardClick" ToolTip="WhiteBoard" BorderThickness="0" Background="White" Width="40" Height="40">
+            <Button x:Name="Whiteboard" Click="OnWhiteboardClick" ToolTip="WhiteBoard" Width="30" Height="30" BorderThickness="0" Background="White" >
                 <Image  Source="/Icons/MainWindow/icons8-whiteboard-150.png"/>
             </Button>
             <!-- </Border>-->
             <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="5 0 5 0">-->
-            <Button x:Name="Screenshare" Click="OnScreenShareClick" ToolTip="ScreenShare"  BorderThickness="0" Background="White" Width="40" Height="40" Margin="5 0 5 0" >
+            <Button x:Name="Screenshare" Click="OnScreenShareClick" ToolTip="ScreenShare"  Width="30" Height="30" BorderThickness="0" Background="White" Margin="5 0 5 0" >
                 <Image Source="/Icons/MainWindow/icons8-present-to-all-50.png"/>
             </Button>
             <!-- </Border>-->
             <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="0 0 5 0">-->
-            <Button x:Name="ChatButton" Click="OnChatButtonClick" ToolTip="Chat" Width="40" Height="40" BorderThickness="0" Background="White" Margin="0 0 5 0">
+            <Button x:Name="ChatButton" Click="OnChatButtonClick" ToolTip="Chat" Width="30" Height="30" BorderThickness="0" Background="White" Margin="0 0 5 0">
                 <Image Source="/Icons/MainWindow/icons8-chat-96.png"/>
             </Button>
             <!-- </Border>-->
             <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="0 0 5 0">-->
-            <Button x:Name="Dashboard" Click="OnDashboardClick" ToolTip="Dashboard" Width="40" Height="40" BorderThickness="0" Background="White" Margin="0 0 5 0">
+            <Button x:Name="Dashboard" Click="OnDashboardClick" ToolTip="Dashboard" Width="30" Height="30" BorderThickness="0" Background="White" Margin="0 0 5 0">
                 <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png"/>
             </Button>
             <!-- </Border>-->
-            <Border Width="60" Height="60" BorderBrush="{DynamicResource Color1Bg}" BorderThickness="1" CornerRadius="50" Background="{DynamicResource Color1B}">
-                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="40" Height="40" BorderThickness="0" Background="{DynamicResource Color1Bg}" >
+            <Border Width="35" Height="35" BorderBrush="{DynamicResource Color1Bg}" BorderThickness="1" CornerRadius="50" Background="{DynamicResource Color1Bg}">
+                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="22" Height="22" BorderThickness="0" Background="{DynamicResource Color1Bg}" >
                     <Image Source="/Icons/Mainwindow/icons8-end-call-96.png"/>
                 </Button>
             </Border>
         </DockPanel>
 
-        <DockPanel Name="ThemeButton" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="4" Grid.Column="4">
-            <!--<Button HorizontalAlignment="Left" Foreground="{DynamicResource Color3Bg}" Content="Switch Theme" Click="OnThemeClick">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Border Width="75"
-                                Height="30"
-                                CornerRadius="15"
-                                Background="{DynamicResource Color1Bg}">
-                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>-->
-            <CheckBox  Name="Theme" Click="OnThemeClick" FontSize="15" Background="{DynamicResource Color1Bg}" Foreground="{DynamicResource Color1Bg}" >Theme</CheckBox>
-        </DockPanel>
+        <ContentControl Name="UsersListControl" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="5"/>
 
-        <ContentControl Name="UsersListControl" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="4"/>
+        <ContentControl Name="SSwb" Grid.Row="2" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
-        <ContentControl Name="SSwb" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-
-        <ContentControl Name="Chat" Grid.Row="2" Grid.Column="6" Grid.RowSpan="4" Visibility="Collapsed"/>
+        <ContentControl Name="Chat" Grid.Row="1" Grid.Column="6" Grid.RowSpan="5" Visibility="Collapsed"/>
 
     </Grid>
 </Window>
