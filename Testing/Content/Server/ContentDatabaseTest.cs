@@ -1,5 +1,5 @@
-using NUnit.Framework;
 using Content;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,17 +21,19 @@ namespace Testing.Content
         [Test]
         public void StoreFile_StoringAFile_ShouldBeAbleToStoreFile()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = contentDatabase.StoreFile(file1);
 
@@ -47,17 +49,19 @@ namespace Testing.Content
         [Test]
         public void GetFiles_StoringAndFetchingAFileFromContentDatabase_ShouldBeAbleToFetchStoredFile()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = contentDatabase.StoreFile(file1);
 
@@ -85,17 +89,19 @@ namespace Testing.Content
         [Test]
         public void GetFiles_TryingToFetchAFileThatDoesNotExist_NullShouldBeReturned()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = contentDatabase.StoreFile(file1);
 
@@ -115,19 +121,21 @@ namespace Testing.Content
         [Test]
         public void StoreFile_StoringMultipleFiles_ShouldBeAbleToStoreAndFetchMultipleFiles()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
             string pathB = path[0] + "\\Testing\\Content\\Utils.cs";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = contentDatabase.StoreFile(file1);
 
@@ -139,13 +147,15 @@ namespace Testing.Content
             Assert.AreEqual(file1.FileData.fileName, recv.FileData.fileName);
             Assert.AreEqual(file1.FileData.fileContent, recv.FileData.fileContent);
 
-            MessageData file2 = new MessageData();
-            file2.Message = "Utils.cs";
-            file2.Type = MessageType.File;
-            file2.FileData = new SendFileData(pathB);
-            file2.SenderId = 1;
-            file2.ReplyThreadId = -1;
-            file2.Event = MessageEvent.NewMessage;
+            MessageData file2 = new MessageData
+            {
+                Message = "Utils.cs",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathB),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             recv = contentDatabase.StoreFile(file2);
 
@@ -159,13 +169,15 @@ namespace Testing.Content
             Assert.AreEqual(file2.FileData.fileName, recv.FileData.fileName);
             Assert.AreEqual(file2.FileData.fileContent, recv.FileData.fileContent);
 
-            MessageData file3 = new MessageData();
-            file3.Message = "c.txt";
-            file3.Type = MessageType.File;
-            file3.FileData = new SendFileData(pathB);
-            file3.SenderId = 1;
-            file3.ReplyThreadId = file1.ReplyThreadId;
-            file3.Event = MessageEvent.NewMessage;
+            MessageData file3 = new MessageData
+            {
+                Message = "c.txt",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathB),
+                SenderId = 1,
+                ReplyThreadId = file1.ReplyThreadId,
+                Event = MessageEvent.NewMessage
+            };
 
             recv = contentDatabase.StoreFile(file3);
 
@@ -374,9 +386,9 @@ namespace Testing.Content
 
             List<ChatContext> msgList = contentDatabase.GetChatContexts();
 
-            foreach (var m in msgList)
+            foreach (ChatContext m in msgList)
             {
-                foreach (var n in m.MsgList)
+                foreach (ReceiveMessageData n in m.MsgList)
                 {
                     Assert.AreEqual(n, contentDatabase.GetMessage(m.ThreadId, n.MessageId));
                 }

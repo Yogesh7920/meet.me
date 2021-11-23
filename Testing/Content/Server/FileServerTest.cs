@@ -1,7 +1,7 @@
-using NUnit.Framework;
 using Content;
-using System.IO;
+using NUnit.Framework;
 using System;
+using System.IO;
 
 namespace Testing.Content
 {
@@ -20,17 +20,19 @@ namespace Testing.Content
         [Test]
         public void Receive_StoringFile_ShouldBeAbleToStoreFile()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = fileServer.Receive(file1);
 
@@ -44,17 +46,19 @@ namespace Testing.Content
         [Test]
         public void Receive_FetchingFile_ShouldBeAbleToFetchAStoredFile()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = fileServer.Receive(file1);
 
@@ -64,10 +68,12 @@ namespace Testing.Content
             Assert.AreEqual(file1.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file = new MessageData();
-            file.MessageId = recv.MessageId;
-            file.Type = MessageType.File;
-            file.Event = MessageEvent.Download;
+            MessageData file = new MessageData
+            {
+                MessageId = recv.MessageId,
+                Type = MessageType.File,
+                Event = MessageEvent.Download
+            };
 
             recv = fileServer.Receive(file);
 
@@ -85,17 +91,19 @@ namespace Testing.Content
         [Test]
         public void Receive_GivingInvalidEventForFileType_NullShouldBeReturned()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = fileServer.Receive(file1);
 
@@ -105,18 +113,22 @@ namespace Testing.Content
             Assert.AreEqual(file1.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file = new MessageData();
-            file.MessageId = 0;
-            file.Type = MessageType.File;
-            file.Event = MessageEvent.Star;
+            MessageData file = new MessageData
+            {
+                MessageId = 0,
+                Type = MessageType.File,
+                Event = MessageEvent.Star
+            };
 
             recv = fileServer.Receive(file);
             Assert.IsNull(recv);
 
-            file = new MessageData();
-            file.MessageId = 0;
-            file.Type = MessageType.File;
-            file.Event = MessageEvent.Update;
+            file = new MessageData
+            {
+                MessageId = 0,
+                Type = MessageType.File,
+                Event = MessageEvent.Update
+            };
 
             recv = fileServer.Receive(file);
             Assert.IsNull(recv);
@@ -125,17 +137,19 @@ namespace Testing.Content
         [Test]
         public void Receive_FetchingAFilesThatDoesNotExist_NullShouldBeReturned()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = fileServer.Receive(file1);
 
@@ -145,10 +159,12 @@ namespace Testing.Content
             Assert.AreEqual(file1.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file = new MessageData();
-            file.MessageId = 10;
-            file.Type = MessageType.File;
-            file.Event = MessageEvent.Download;
+            MessageData file = new MessageData
+            {
+                MessageId = 10,
+                Type = MessageType.File,
+                Event = MessageEvent.Download
+            };
 
             recv = fileServer.Receive(file);
             Assert.IsNull(recv);
@@ -157,19 +173,21 @@ namespace Testing.Content
         [Test]
         public void Receive_StoringAndFetchingMultipleFiles_ShouldBeAbleToStoreFilesAndFetchThem()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
             string pathB = path[0] + "\\Testing\\Content\\Utils.cs";
 
-            MessageData file1 = new MessageData();
-            file1.Message = "Test_File.pdf";
-            file1.Type = MessageType.File;
-            file1.FileData = new SendFileData(pathA);
-            file1.SenderId = 1;
-            file1.ReplyThreadId = -1;
-            file1.Event = MessageEvent.NewMessage;
+            MessageData file1 = new MessageData
+            {
+                Message = "Test_File.pdf",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathA),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             MessageData recv = fileServer.Receive(file1);
 
@@ -179,13 +197,15 @@ namespace Testing.Content
             Assert.AreEqual(file1.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file2 = new MessageData();
-            file2.Message = "Utils.cs";
-            file2.Type = MessageType.File;
-            file2.FileData = new SendFileData(pathB);
-            file2.SenderId = 1;
-            file2.ReplyThreadId = -1;
-            file2.Event = MessageEvent.NewMessage;
+            MessageData file2 = new MessageData
+            {
+                Message = "Utils.cs",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathB),
+                SenderId = 1,
+                ReplyThreadId = -1,
+                Event = MessageEvent.NewMessage
+            };
 
             recv = fileServer.Receive(file2);
 
@@ -197,13 +217,15 @@ namespace Testing.Content
             Assert.AreEqual(file2.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file3 = new MessageData();
-            file3.Message = "c.txt";
-            file3.Type = MessageType.File;
-            file3.FileData = new SendFileData(pathB);
-            file3.SenderId = 1;
-            file3.ReplyThreadId = file1.ReplyThreadId;
-            file3.Event = MessageEvent.NewMessage;
+            MessageData file3 = new MessageData
+            {
+                Message = "c.txt",
+                Type = MessageType.File,
+                FileData = new SendFileData(pathB),
+                SenderId = 1,
+                ReplyThreadId = file1.ReplyThreadId,
+                Event = MessageEvent.NewMessage
+            };
 
             recv = fileServer.Receive(file3);
 

@@ -1,6 +1,5 @@
-using NUnit.Framework;
 using Content;
-using System;
+using NUnit.Framework;
 using System.Collections.Generic;
 
 namespace Testing.Content
@@ -46,11 +45,13 @@ namespace Testing.Content
             Assert.AreEqual(message1.Event, recv.Event);
             Assert.IsFalse(recv.Starred);
 
-            MessageData starMessage = new MessageData();
-            starMessage.MessageId = recv.MessageId;
-            starMessage.ReplyThreadId = recv.ReplyThreadId;
-            starMessage.Type = MessageType.Chat;
-            starMessage.Event = MessageEvent.Star;
+            MessageData starMessage = new MessageData
+            {
+                MessageId = recv.MessageId,
+                ReplyThreadId = recv.ReplyThreadId,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Star
+            };
 
             recv = chatContextServer.Receive(starMessage);
 
@@ -75,11 +76,13 @@ namespace Testing.Content
             Assert.AreEqual(message1.Event, recv.Event);
             Assert.IsFalse(recv.Starred);
 
-            MessageData starMessage = new MessageData();
-            starMessage.MessageId = 1;
-            starMessage.ReplyThreadId = recv.ReplyThreadId;
-            starMessage.Type = MessageType.Chat;
-            starMessage.Event = MessageEvent.Star;
+            MessageData starMessage = new MessageData
+            {
+                MessageId = 1,
+                ReplyThreadId = recv.ReplyThreadId,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Star
+            };
 
             recv = chatContextServer.Receive(starMessage);
 
@@ -106,12 +109,14 @@ namespace Testing.Content
             Assert.AreEqual(message1.Event, recv.Event);
             Assert.IsFalse(recv.Starred);
 
-            MessageData updateMessage = new MessageData();
-            updateMessage.Message = "Hello World!";
-            updateMessage.MessageId = recv.MessageId;
-            updateMessage.ReplyThreadId = recv.ReplyThreadId;
-            updateMessage.Type = MessageType.Chat;
-            updateMessage.Event = MessageEvent.Update;
+            MessageData updateMessage = new MessageData
+            {
+                Message = "Hello World!",
+                MessageId = recv.MessageId,
+                ReplyThreadId = recv.ReplyThreadId,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Update
+            };
 
             recv = chatContextServer.Receive(updateMessage);
 
@@ -136,12 +141,14 @@ namespace Testing.Content
             Assert.AreEqual(message1.Event, recv.Event);
             Assert.IsFalse(recv.Starred);
 
-            MessageData updateMessage = new MessageData();
-            updateMessage.Message = "Hello World!";
-            updateMessage.MessageId = 1;
-            updateMessage.ReplyThreadId = recv.ReplyThreadId;
-            updateMessage.Type = MessageType.Chat;
-            updateMessage.Event = MessageEvent.Update;
+            MessageData updateMessage = new MessageData
+            {
+                Message = "Hello World!",
+                MessageId = 1,
+                ReplyThreadId = recv.ReplyThreadId,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Update
+            };
 
             recv = chatContextServer.Receive(updateMessage);
 
@@ -215,11 +222,13 @@ namespace Testing.Content
 
             Receive_StoringMultipleMessages_AllMessagesAreStoredAndReturned();
 
-            MessageData message1 = new MessageData();
-            message1.MessageId = 0;
-            message1.ReplyThreadId = 0;
-            message1.Type = MessageType.Chat;
-            message1.Event = MessageEvent.Star;
+            MessageData message1 = new MessageData
+            {
+                MessageId = 0,
+                ReplyThreadId = 0,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Star
+            };
 
             ReceiveMessageData recv = chatContextServer.Receive(message1);
 
@@ -229,11 +238,13 @@ namespace Testing.Content
             Assert.AreEqual(MessageEvent.Star, recv.Event);
             Assert.IsTrue(recv.Starred);
 
-            message1 = new MessageData();
-            message1.MessageId = 2;
-            message1.ReplyThreadId = 1;
-            message1.Type = MessageType.Chat;
-            message1.Event = MessageEvent.Star;
+            message1 = new MessageData
+            {
+                MessageId = 2,
+                ReplyThreadId = 1,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Star
+            };
 
             recv = chatContextServer.Receive(message1);
 
@@ -252,12 +263,14 @@ namespace Testing.Content
 
             Receive_StoringMultipleMessages_AllMessagesAreStoredAndReturned();
 
-            MessageData message1 = new MessageData();
-            message1.MessageId = 0;
-            message1.Message = "Hello World!";
-            message1.ReplyThreadId = 0;
-            message1.Type = MessageType.Chat;
-            message1.Event = MessageEvent.Update;
+            MessageData message1 = new MessageData
+            {
+                MessageId = 0,
+                Message = "Hello World!",
+                ReplyThreadId = 0,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Update
+            };
 
             ReceiveMessageData recv = chatContextServer.Receive(message1);
 
@@ -267,12 +280,14 @@ namespace Testing.Content
             Assert.AreEqual(MessageEvent.Update, recv.Event);
             Assert.IsFalse(recv.Starred);
 
-            message1 = new MessageData();
-            message1.MessageId = 2;
-            message1.Message = "Hello There";
-            message1.ReplyThreadId = 1;
-            message1.Type = MessageType.Chat;
-            message1.Event = MessageEvent.Update;
+            message1 = new MessageData
+            {
+                MessageId = 2,
+                Message = "Hello There",
+                ReplyThreadId = 1,
+                Type = MessageType.Chat,
+                Event = MessageEvent.Update
+            };
 
             recv = chatContextServer.Receive(message1);
 

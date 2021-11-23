@@ -67,14 +67,14 @@ namespace Content
         /// <returns></returns>
         public ReceiveMessageData(MessageData msgData)
         {
-            this.Event = msgData.Event;
-            this.Message = msgData.Message;
-            this.MessageId = msgData.MessageId;
-            this.ReceiverIds = msgData.ReceiverIds;
-            this.SenderId = msgData.SenderId;
-            this.ReplyThreadId = msgData.ReplyThreadId;
-            this.Starred = msgData.Starred;
-            this.Type = msgData.Type;
+            Event = msgData.Event;
+            Message = msgData.Message;
+            MessageId = msgData.MessageId;
+            ReceiverIds = msgData.ReceiverIds;
+            SenderId = msgData.SenderId;
+            ReplyThreadId = msgData.ReplyThreadId;
+            Starred = msgData.Starred;
+            Type = msgData.Type;
         }
     }
 }
