@@ -85,6 +85,7 @@ namespace Testing.Dashboard.Persistence
             _summary_persister.summaryPath = null;
             
             ResponseEntity response = _summary_persister.SaveSummary(summary, true);
+            _summary_persister.summaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
             Assert.IsFalse(response.IsSaved);
         }
 
@@ -114,6 +115,7 @@ namespace Testing.Dashboard.Persistence
             ResponseEntity response = PersistenceFactory.GetTelemetryPersistenceInstance().SaveServerData(sdtns);
 
             string path = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            Trace.WriteLine("IsSaved = " + response.IsSaved);
 
             //Checking if File actually exists
             Assert.IsTrue(File.Exists(Path.Combine(path, response.FileName)));
@@ -171,6 +173,7 @@ namespace Testing.Dashboard.Persistence
             _telemetry_persister.ServerDataPath = "";
 
             ServerDataToSave serverdataToSave = _telemetry_persister.RetrieveAllSeverData();
+            _telemetry_persister.ServerDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
             Assert.IsTrue(serverdataToSave.sessionCount == -1);
         }
 
@@ -187,6 +190,7 @@ namespace Testing.Dashboard.Persistence
             _summary_persister.summaryPath = "";
 
             ResponseEntity response = _summary_persister.SaveSummary(summary, true);
+            _summary_persister.summaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
             Assert.IsFalse(response.IsSaved);
         }
 
