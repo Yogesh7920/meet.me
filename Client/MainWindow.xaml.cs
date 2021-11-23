@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
+using ScreenSharing;
 
 namespace Client
 {
@@ -12,8 +13,9 @@ namespace Client
     {
         private static WhiteBoardView _whiteboard;
         private string theme = "theme1";
+        public bool sharing = false;
         //uncomment below lines after the respective user controls are done
-        /*private static ChatView _chat;*/
+        private static ChatView _chat;
         private static UsersList _userslist;
         public MainWindow()
         {
@@ -23,8 +25,9 @@ namespace Client
             this.SSwb.Content = _whiteboard;
 
             //uncomment below lines after the respective User Controls are done
-            /*_chat = new ChatView();
-            this.Chat.Content = _chat;*/
+
+            _chat = new ChatView();
+            this.Chat.Content = _chat;
             _userslist = new UsersList(this);
             this.UsersListControl.Content = _userslist;
         }
@@ -122,7 +125,18 @@ namespace Client
         /// </summary>
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
-            _ssFlag = true;   
+            _ssFlag = true;
+            ScreenShareClient _screenshareclient = new ScreenShareClient();
+            if (!sharing)
+            {
+                //_screenshareclient.startSharing();
+                sharing = true;
+            }
+            else
+            {
+                _screenshareclient.stopSharing();
+                sharing = false;
+            }
             //uncomment below line after respective User Controls are done
             /*this.SSwb.Content = new ScreenShareView();
             if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
@@ -183,7 +197,7 @@ namespace Client
         {
             //uncomment below lines after the respective user controls are done
 
-            /*if (_chatFlag.Equals(false))
+            if (_chatFlag.Equals(false))
             {
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
@@ -220,7 +234,7 @@ namespace Client
                         SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                     }
                 }
-            }*/
+            }
         }
         /// <summary>
         /// Function to handle Dashboard button click event

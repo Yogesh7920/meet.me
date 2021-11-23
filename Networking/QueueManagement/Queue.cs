@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Author: Alisetti Sai Vamsi
+ * Created on: 13/10/2021
+ * Summary: This file contains the implementation of the IQueue interface.
+ */
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +14,7 @@ namespace Networking
 {
     public class Queue : IQueue
     {
+        private readonly object _lockObj = new();
         private readonly ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
         private readonly ConcurrentDictionary<string, int> _priorityMap;
         private int _avoidStateChange;
@@ -16,7 +23,6 @@ namespace Networking
         private int _currentWeight;
         private List<string> _moduleIdentifiers;
         private int _queueSize;
-        private readonly object lockObj = new();
 
         /// <summary>
         ///     Queue constructor initializes multilevel queue, priority map dictionaries and also the state of the queue.
@@ -37,6 +43,7 @@ namespace Networking
         /// </summary>
         /// <param name="moduleId">Unique Id for module.</param>
         /// <param name="priority">Priority Number indicating the weight to be given to the module.</param>
+        /// <exception cref="Exception">Does not allow duplicate module identifier</exception>
         public void RegisterModule(string moduleId, int priority)
         {
             if (priority <= 0) throw new Exception("Priority should be positive integer");
@@ -88,7 +95,7 @@ namespace Networking
         public void Clear()
         {
             Trace.WriteLine("Clearing all packets from the queue");
-            lock (lockObj)
+            lock (_lockObj)
             {
                 _queueSize = 0;
             }
@@ -99,19 +106,20 @@ namespace Networking
         /// <summary>
         ///     Enqueues an object of IPacket.
         /// </summary>
-        public void Enqueue(Packet item)
+        /// <param name="packet">Reference to the packet that has to be enqueued</param>
+        public void Enqueue(Packet packet)
         {
-            var moduleIdentifier = item.ModuleIdentifier;
+            var moduleIdentifier = packet.ModuleIdentifier;
 
             // Check if the _multiLevelQueue dictionary contains the moduleIdentifier
             if (_multiLevelQueue.ContainsKey(moduleIdentifier))
             {
-                lock (lockObj)
+                lock (_lockObj)
                 {
                     _queueSize += 1;
                 }
 
-                _multiLevelQueue[moduleIdentifier].Enqueue(item);
+                _multiLevelQueue[moduleIdentifier].Enqueue(packet);
             }
             else
             {
@@ -125,46 +133,40 @@ namespace Networking
         ///     Dequeues an item from the queue and returns the item.
         /// </summary>
         /// <returns>Returns the dequeued packet from the queue.</returns>
+        /// <exception cref="Exception">Cannot dequeue an empty queue</exception>
         public Packet Dequeue()
         {
-            if (!IsEmpty())
+            if (IsEmpty()) throw new Exception("Cannot Dequeue empty queue");
+            FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
+
+            var moduleIdentifier = _moduleIdentifiers[_currentQueue];
+            _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
+            _currentWeight -= 1;
+            _avoidStateChange = 1;
+            Trace.WriteLine("Dequeuing Packet");
+            lock (_lockObj)
             {
-                FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
-
-                var moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
-                _currentWeight -= 1;
-                _avoidStateChange = 1;
-                Trace.WriteLine("Dequeuing Packet");
-                lock (lockObj)
-                {
-                    _queueSize -= 1;
-                }
-
-                return packet;
+                _queueSize -= 1;
             }
 
-            throw new Exception("Cannot Dequeue empty queue");
+            return packet;
         }
 
         /// <summary>
         ///     Peeks into the first element of the queue.
         /// </summary>
         /// <returns>Returns the peeked packet from the queue.</returns>
+        /// <exception cref="Exception">Cannot peek an empty queue</exception>
         public Packet Peek()
         {
-            if (!IsEmpty())
-            {
-                FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
+            if (IsEmpty()) throw new Exception("Cannot Peek into empty queue");
+            FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
 
-                var moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                _multiLevelQueue[moduleIdentifier].TryPeek(out var packet);
+            var moduleIdentifier = _moduleIdentifiers[_currentQueue];
+            _multiLevelQueue[moduleIdentifier].TryPeek(out var packet);
 
-                Trace.WriteLine("Peeking into the queue");
-                return packet;
-            }
-
-            throw new Exception("Cannot Peek into empty queue");
+            Trace.WriteLine("Peeking into the queue");
+            return packet;
         }
 
         /// <summary>
@@ -181,29 +183,31 @@ namespace Networking
         /// </summary>
         private void FindNext()
         {
-            var moduleIdentifier = _moduleIdentifiers[_currentQueue];
+            while (true)
+            {
+                var moduleIdentifier = _moduleIdentifiers[_currentQueue];
 
-            if (_currentWeight == 0)
-            {
-                // Go to the next queue and set the _currentWeight
-                _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
-                moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                _currentWeight = _priorityMap[moduleIdentifier];
-                _currentModuleIdentifier = moduleIdentifier;
-                FindNext(); // To circumvent the case of the next queue having no packets
-            }
-            else
-            {
+                if (_currentWeight == 0)
+                {
+                    // Go to the next queue and set the _currentWeight
+                    _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
+                    moduleIdentifier = _moduleIdentifiers[_currentQueue];
+                    _currentWeight = _priorityMap[moduleIdentifier];
+                    _currentModuleIdentifier = moduleIdentifier;
+                    continue;
+                }
+
                 // If the current queue has no packets, otherwise do nothing
-                if (_multiLevelQueue[moduleIdentifier].Count == 0)
-                    // Finding the next queue with packets
-                    while (_multiLevelQueue[moduleIdentifier].Count == 0)
-                    {
-                        _currentQueue = (_currentQueue + 1) % _moduleIdentifiers.Count;
-                        moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                        _currentWeight = _priorityMap[moduleIdentifier];
-                        _currentModuleIdentifier = moduleIdentifier;
-                    }
+                if (!_multiLevelQueue[moduleIdentifier].IsEmpty) return;
+                while (_multiLevelQueue[moduleIdentifier].IsEmpty)
+                {
+                    _currentQueue = (_currentQueue + 1) % _moduleIdentifiers.Count;
+                    moduleIdentifier = _moduleIdentifiers[_currentQueue];
+                    _currentWeight = _priorityMap[moduleIdentifier];
+                    _currentModuleIdentifier = moduleIdentifier;
+                }
+
+                break;
             }
         }
     }
