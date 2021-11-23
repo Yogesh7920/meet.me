@@ -250,6 +250,140 @@ namespace Testing.Whiteboard
                 ), Times.Once());
         }
 
+        [Test]
+        public void ChangeStrokeWidth_ChangeWidth_SuccessfulChange()
+        {
+            string uid = "123";
+            setupManagerForNonRealTimeOperations(uid);
+            List<UXShape> operations = _handler.ChangeStrokeWidth(2, "123");
+
+            // Previous Shape Checks
+            Assert.AreEqual(operations[0].WindowsShape.Uid, uid);
+
+            // New Shape checks
+            Assert.AreEqual(operations[1].WindowsShape.Uid, uid);
+
+            _mockStateManager.Verify(m => m.SaveOperation(
+                It.Is<BoardShape>(obj => (obj.Uid.Equals("123") && DecimalEqual(obj.MainShapeDefiner.StrokeWidth, 2) && (obj.RecentOperation == Operation.MODIFY)))
+                ), Times.Once());
+        }
+
+        [Test]
+        public void ChangeStrokeWidth_ServerUpdateFailure_ReturnsNull()
+        {
+            string uid = "123";
+            setupManagerForNonRealTimeOperations(uid, false);
+            List<UXShape> operations = _handler.ChangeStrokeWidth(2, "123");
+
+            Assert.IsNull(operations);
+        }
+
+        // to do
+        [Test]
+        public void ChangeStrokeColor_ChangeColor_SuccessfulChange()
+        {
+            string uid = "123";
+            setupManagerForNonRealTimeOperations(uid);
+            BoardColor color = new(300, 300, 300);
+            BoardColor expectedColor = new(255, 255, 255);
+            List<UXShape> operations = _handler.ChangeStrokeColor(color.Clone(), "123");
+
+            // Previous Shape Checks
+            Assert.AreEqual(operations[0].WindowsShape.Uid, uid);
+
+            // New Shape checks
+            Assert.AreEqual(operations[1].WindowsShape.Uid, uid);
+
+            _mockStateManager.Verify(m => m.SaveOperation(
+                It.Is<BoardShape>(obj => (obj.Uid.Equals("123") && obj.MainShapeDefiner.StrokeColor.Equals(expectedColor) && (obj.RecentOperation == Operation.MODIFY)))
+                ), Times.Once());
+        }
+
+        [Test]
+        public void ChangeStrokeColor_ServerUpdateFailure_ReturnsNull()
+        {
+            string uid = "123";
+            setupManagerForNonRealTimeOperations(uid, false);
+            List<UXShape> operations = _handler.ChangeStrokeColor(new(1,2,3), "123");
+
+            Assert.IsNull(operations);
+        }
+
+        // to do
+        [Test]
+        public void ChangeShapeFill_ChangesShapeFill_SuccessfulChange()
+        {
+            string uid = "123";
+            setupManagerForNonRealTimeOperations(uid);
+            BoardColor color = new(255, 255, 3);
+            List<UXShape> operations = _handler.ChangeShapeFill(color.Clone(), "123");
+
+            // Previous Shape Checks
+            Assert.AreEqual(operations[0].WindowsShape.Uid, uid);
+
+            // New Shape checks
+            Assert.AreEqual(operations[1].WindowsShape.Uid, uid);
+
+            _mockStateManager.Verify(m => m.SaveOperation(
+                It.Is<BoardShape>(obj => (obj.Uid.Equals("123") && obj.MainShapeDefiner.ShapeFill.Equals(color) && (obj.RecentOperation == Operation.MODIFY)))
+                ), Times.Once());
+        }
+
+        [Test]
+        public void ChangeShapeFill_ServerUpdateFailure_ReturnsNull()
+        {
+            string uid = "123";
+            setupManagerForNonRealTimeOperations(uid, false);
+            List<UXShape> operations = _handler.ChangeShapeFill(new(1, 2, 3), "123");
+
+            Assert.IsNull(operations);
+        }
+
+
+        [Test]
+        public void Delete_ValidId_SuccessDelete()
+        {
+            string uid = "123";
+            setupManagerForNonRealTimeOperations(uid);
+            List<UXShape> operations = _handler.Delete("123");
+            Assert.IsTrue(operations.Count == 1);
+            Assert.AreEqual(operations[0].WindowsShape.Uid, "123");
+
+            _mockStateManager.Verify(m => m.SaveOperation(
+                It.Is<BoardShape>(obj => (obj.Uid.Equals("123") && (obj.RecentOperation == Operation.DELETE)))
+                ), Times.Once());
+
+        }
+
+        [Test]
+        public void Delete_InvalidId_SuccessDelete()
+        {
+
+            string uid = "123";
+            setupManagerForNonRealTimeOperations(uid, false);
+            List<UXShape> operations = _handler.Delete( "123");
+
+            Assert.IsNull(operations);
+
+        }
+
+
+
+        void setupManagerForNonRealTimeOperations(string uid, bool setSuccess = true)
+        {
+            MainShape mainShape = new Line(2, 2, new(1, 1), new(2, 2));
+            BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.CREATE);
+            _mockStateManager.Setup(m => m.GetBoardShape(It.IsAny<string>())).Returns(shape);
+            if (setSuccess)
+            {
+                _mockStateManager.Setup(m => m.SaveOperation(It.IsAny<BoardShape>())).Returns(true);
+            }
+            else
+            {
+                _mockStateManager.Setup(m => m.SaveOperation(It.IsAny<BoardShape>())).Returns(false);
+            }
+        }
+
         private bool DecimalEqual(float a, float b)
         {
             return (Math.Abs(Math.Round(a, 2) - Math.Round(b, 2)) < 0.02);
