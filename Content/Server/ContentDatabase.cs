@@ -81,7 +81,7 @@ namespace Content
                 messageData.ReplyThreadId = chatContext.ThreadId;
                 ReceiveMessageData msg = new ReceiveMessageData(messageData);
                 chatContext.MsgList.Add(msg);
-
+                
                 _messageMap[messageData.MessageId] = 0;
                 _chatContexts.Add(chatContext);
                 _chatContextsMap[chatContext.ThreadId] = _chatContexts.Count - 1;

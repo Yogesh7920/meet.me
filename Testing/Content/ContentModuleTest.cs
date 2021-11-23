@@ -672,33 +672,6 @@ namespace Testing.Content
         }
 
         [Test]
-        public void SSubscribe_SubcribingToContentServer_SubscriberShouldGetMsgOnNotify()
-        {
-            Utils _util = new Utils();
-            ContentServer _contentServer = ContentServerFactory.GetInstance() as ContentServer;
-            IContentServer _iContentServer = _contentServer;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeServerListener = _fakeListener;
-            ISerializer _serializer = new Serializer();
-            // Subscribing to content client
-            _iContentServer.SSubscribe(_iFakeServerListener);
-            // Building receiveMessageData to notify to subscribers
-            MessageData _receivedData = new MessageData();
-            string Msg = "hello";  // data will have msg hello
-            _receivedData.Message = Msg;
-            _receivedData.ReplyThreadId = -1;
-            _receivedData.Type = MessageType.Chat;
-            _receivedData.Event = MessageEvent.NewMessage;
-            _receivedData.ReceiverIds = new int[0];
-            // Notifying to subscribers
-            _contentServer.Receive(_serializer.Serialize(_receivedData));
-            System.Threading.Thread.Sleep(50);
-            // Fetching listened data from listener
-            ReceiveMessageData _listenedData = _fakeListener.GetOnMessageData();
-            Assert.AreEqual(_listenedData.Message, Msg);
-        }
-
-        [Test]
         ///<summary>
         /// Here we are testing SGetAllMessages and SSendAllMessages of server by sending it three new message
         /// starring first message, updating second message and keeping third same which will be replies in context of first message
@@ -760,7 +733,7 @@ namespace Testing.Content
         ///<summary>
         /// Here we are testing file related functionality of server, i.e storing new file message and handling donwload request
         /// </summary>
-        public void ReceivingAndSendingFile_NewFileMessageAndDownloadRequest_ShouldReturnProperResponse()
+        public void SSendingAndReceivingFileServer_NewFileMessageAndDownloadRequest_ShouldReturnProperResponse()
         {
             ContentServer contentServer = ContentServerFactory.GetInstance() as ContentServer;
             FakeCommunicator fakeClientCommunicator = new FakeCommunicator();
@@ -797,6 +770,43 @@ namespace Testing.Content
             Assert.AreEqual(fileReturnedData.MessageId, fileReplyMsg.MessageId);
         }
 
+        [Test]
+        public void SSubscribe_SubcribingToContentServer_SubscriberShouldGetMsgOnNotify()
+        {
+            Utils _util = new Utils();
+            ContentServer _contentServer = ContentServerFactory.GetInstance() as ContentServer;
+            IContentServer _iContentServer = _contentServer;
+            FakeContentListener _fakeListener = new FakeContentListener();
+            IContentListener _iFakeServerListener = _fakeListener;
+            ISerializer _serializer = new Serializer();
+            // Subscribing to content client
+            _iContentServer.SSubscribe(_iFakeServerListener);
+            // Building receiveMessageData to notify to subscribers
+            MessageData _receivedData = new MessageData();
+            string Msg = "hello";  // data will have msg hello
+            _receivedData.Message = Msg;
+            _receivedData.ReplyThreadId = -1;
+            _receivedData.Type = MessageType.Chat;
+            _receivedData.Event = MessageEvent.NewMessage;
+            _receivedData.ReceiverIds = new int[0];
+            // Notifying to subscribers
+            _contentServer.Receive(_serializer.Serialize(_receivedData));
+            System.Threading.Thread.Sleep(50);
+            // Fetching listened data from listener
+            ReceiveMessageData _listenedData = _fakeListener.GetOnMessageData();
+            Assert.AreEqual(_listenedData.Message, Msg);
+        }
+
+        /// <summary>
+        /// This function compares message, senderID and type fields of two given message datas
+        /// </summary>
+        public void TestMsgDataFieldsServer(MessageData m1, MessageData m2)
+        {
+            Assert.AreEqual(m1.Message, m2.Message);
+            Assert.AreEqual(m1.SenderId, m2.SenderId);
+            Assert.AreEqual(m1.Type, m2.Type);
+        }
+
         /// <summary>
         /// This function checks SSendAllMessage of server where it will deserialize string from communicator
         /// will check if msg sent to valid user in private manner and will compare List of chatcontexts
@@ -811,7 +821,6 @@ namespace Testing.Content
             List<string> rcvIds = communicator.GetRcvIds();
             bool broadcastFlag = communicator.GetIsBroadcast();
             // Checking for private send
-            Console.WriteLine("ssend");
             Assert.AreEqual(1, rcvIds.Count);
             Assert.AreEqual(true, rcvIds.Contains(userId.ToString()));
             Assert.AreEqual(broadcastFlag, false);
@@ -832,15 +841,6 @@ namespace Testing.Content
             }
         }
 
-        /// <summary>
-        /// This function compares message, senderID and type fields of two given message datas
-        /// </summary>
-        public void TestMsgDataFieldsServer(MessageData m1, MessageData m2)
-        {
-            Assert.AreEqual(m1.Message, m2.Message);
-            Assert.AreEqual(m1.SenderId, m2.SenderId);
-            Assert.AreEqual(m1.Type, m2.Type);
-        }
 
         /// <summary>
         /// This function fetched msg string sent over fake communicator and deserialize it into message object
@@ -848,7 +848,7 @@ namespace Testing.Content
         /// </summary>
         public MessageData GetMsgFromCommunicator(FakeCommunicator communicator, ISerializer serializer, bool isBroadcast, List<int> rcvIds)
         {
-            if(rcvIds == null)
+            if (rcvIds == null)
             {
                 rcvIds = new List<int>();
             }
@@ -865,7 +865,7 @@ namespace Testing.Content
             {
                 Assert.AreEqual(broadcastFlag, false);
                 Assert.AreEqual(receiverIds.Count, rcvIds.Count);
-                foreach(int i in rcvIds)
+                foreach (int i in rcvIds)
                 {
                     if (!receiverIds.Contains(i.ToString()))
                     {

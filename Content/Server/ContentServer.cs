@@ -109,7 +109,6 @@ namespace Content
                 Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
                 return;
             }
-
             if (messageData.Event != MessageEvent.Download)
             {
                 Trace.WriteLine("[ContentServer] Notifying subscribers");
