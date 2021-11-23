@@ -689,6 +689,7 @@ namespace Testing.Content
             _receivedData.ReplyThreadId = -1;
             _receivedData.Type = MessageType.Chat;
             _receivedData.Event = MessageEvent.NewMessage;
+            _receivedData.ReceiverIds = new int[0];
             // Notifying to subscribers
             _contentServer.Receive(_serializer.Serialize(_receivedData));
             System.Threading.Thread.Sleep(50);

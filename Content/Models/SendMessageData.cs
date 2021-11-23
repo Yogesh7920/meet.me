@@ -25,7 +25,7 @@ namespace Content
         public SendMessageData()
         {
             Message = "";
-            ReceiverIds = new int[0];
+            ReceiverIds = null;
             ReplyThreadId = -1;
         }
     }
