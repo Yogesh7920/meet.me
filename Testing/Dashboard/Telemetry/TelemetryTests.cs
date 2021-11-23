@@ -24,13 +24,13 @@ namespace Testing.Dashboard.Telemetry
             session2.AddUser(user1);
             session2.AddUser(user2);
             //Act
-            DateTime currTime= DateTime.Now;
+            DateTime currTime= new DateTime(2021,11,23,1,0,0);
             TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1,currTime);
             int userCount1 = TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[currTime];
             bool check1=false;
             // total users in session1 is 1
             if(userCount1==1) check1=true;
-            DateTime time2= DateTime.Now;
+            DateTime time2= new DateTime(2021,11,23,1,30,0);
             TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2, time2);
             int userCount2= TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[time2];
             bool check2=false;
@@ -59,7 +59,7 @@ namespace Testing.Dashboard.Telemetry
             TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2,time2);
             int elementAtZero = TelemetryFactory.GetTelemetryInstance().insincereMembers[0];
             //Assert
-            Assert.AreEqual(elementAtZero,1);
+            Assert.IsTrue(elementAtZero==1);
         }
 
         [Test]
