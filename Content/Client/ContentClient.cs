@@ -11,7 +11,7 @@ namespace Content
 {
     internal class ContentClient : IContentClient
     {
-        private readonly List<ChatContext> _allMessages;
+        private List<ChatContext> _allMessages;
         private readonly object _lock;
         private readonly ChatClient _chatHandler;
 
@@ -136,13 +136,33 @@ namespace Content
         /// <inheritdoc />
         public void CMarkStar(int messageId)
         {
-            _chatHandler.ChatStar(messageId);
+            ReceiveMessageData msg = RetrieveMessage(messageId);
+
+            if (msg is null)
+            {
+                throw new ArgumentException($"Message with given message id doesn't exist");
+            }
+
+            if (msg.Type == MessageType.Chat)
+                _chatHandler.ChatStar(messageId);
+            else
+                throw new ArgumentException($"Message with given message id isn't a chat message");
         }
 
         /// <inheritdoc />
         public void CUpdateChat(int messageId, string newMessage)
         {
-            _chatHandler.ChatUpdate(messageId, newMessage);
+            ReceiveMessageData msg = RetrieveMessage(messageId);
+            
+            if(msg is null)
+            {
+                throw new ArgumentException($"Message with given message id doesn't exist");
+            }
+
+            if (msg.Type == MessageType.Chat && msg.SenderId == UserId)
+                _chatHandler.ChatUpdate(messageId, newMessage);
+            else
+                throw new ArgumentException($"Message with given message id can't be updated. Make sure it's a chat message and was sent by this client");
         }
 
         /// <inheritdoc />
@@ -184,6 +204,9 @@ namespace Content
         /// <param name="allMessages">The entire message history to call OnAllMessages function of subscribers with</param>
         public void Notify(List<ChatContext> allMessages)
         {
+            // since the received message history is from the server and thus more definitive,
+            // replace the current message history with it
+            _allMessages = allMessages;
             Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared in the meeting until now");
             foreach (var subscriber in _subscribers)
             {
@@ -325,6 +348,25 @@ namespace Content
 
             Trace.WriteLine("[ContentClient] Saving file to path: {0}", savepath);
             File.WriteAllBytes(savepath, message.FileData.fileContent);
+        }
+
+        /// <summary>
+        /// Helper function that retrieves a message from inbox using message id
+        /// </summary>
+        /// <param name="messageid">Id of the message to be retrieved</param>
+        /// <returns>ReceiveMessageData object if message exists otherwise null</returns>
+        private ReceiveMessageData RetrieveMessage(int messageid)
+        {
+            foreach (var context in _allMessages)
+            {
+                foreach(var message in context.MsgList)
+                {
+                    if (message.MessageId == messageid)
+                        return message;
+                }
+            }
+
+            return null;
         }
     }
 }
