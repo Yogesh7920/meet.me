@@ -37,7 +37,7 @@ namespace Client
         {
             string propertyName = e.PropertyName;
             ChatViewModel viewModel = this.DataContext as ChatViewModel;
-            if (propertyName == "ReceivedFile")
+            if (propertyName == "ReceivedMsg")
             {
                 allmessages.Add(viewModel.ReceivedMsg);
             }

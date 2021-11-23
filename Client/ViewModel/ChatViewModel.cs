@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
+using Dashboard.Client.SessionManagement;
+using Dashboard;
 using Content;
 
 namespace Client.ViewModel
 {
     public class ChatViewModel :
         INotifyPropertyChanged, // Notifies clients that a property value has changed.
-        IContentListener // Notifies clients that has a message has been received.
+        IContentListener, // Notifies clients that has a message has been received.
+        IClientSessionNotifications
     {
 
         IDictionary<int, string> _messages;
+        IDictionary<int, string> _users;
         public int UserId
         {
             get; private set;
@@ -61,7 +65,7 @@ namespace Client.ViewModel
         {
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<string, string>((path, text) =>
+                        new Action<ReceiveMessageData>(messageData =>
                         {
                             lock (this)
                             {
@@ -71,6 +75,7 @@ namespace Client.ViewModel
                                     _messages.Add(messageData.MessageId, messageData.Message);
                                     ReceivedMsg = new Message();
                                     ReceivedMsg.MessageId = messageData.MessageId;
+                                    ReceivedMsg.UserName = _users[messageData.MessageId];
                                     ReceivedMsg.TextMessage = messageData.Message;
                                     ReceivedMsg.Time = messageData.SentTime.ToString();
                                     ReceivedMsg.ToFrom = UserId == messageData.MessageId;
@@ -83,8 +88,33 @@ namespace Client.ViewModel
                         messageData);
         }
 
+        public void OnClientSessionChanged(SessionData session)
+        {
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<SessionData>(session =>
+                        {
+                            lock (this)
+                            {
+                                _users.Clear();
+                                foreach (UserData user in session.users)
+                                {
+                                    _users.Add(user.userID, user.username);
+                                }
+                            }
+                        }),
+                        session);
+        }
+
         public void OnAllMessages(List<ChatContext> allMessages)
         {
+            foreach (ChatContext msgLst in allMessages)
+            {
+                foreach(ReceiveMessageData message in msgLst.MsgList)
+                {
+
+                }
+            }
             throw new NotImplementedException();
         }
 
