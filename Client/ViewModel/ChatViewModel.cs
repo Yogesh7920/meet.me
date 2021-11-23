@@ -108,14 +108,33 @@ namespace Client.ViewModel
 
         public void OnAllMessages(List<ChatContext> allMessages)
         {
-            //foreach (ChatContext msgLst in allMessages)
-            //{
-            //    foreach(ReceiveMessageData message in msgLst.MsgList)
-            //    {
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<List<ChatContext>>(allMessages =>
+                        {
+                            lock (this)
+                            {
+                                foreach (ChatContext msgLst in allMessages)
+                                {
+                                    foreach(ReceiveMessageData messageData in msgLst.MsgList)
+                                    {
+                                        _messages.Add(messageData.MessageId, messageData.Message);
+                                        ReceivedMsg = new Message();
+                                        ReceivedMsg.MessageId = messageData.MessageId;
+                                        ReceivedMsg.UserName = _users[messageData.MessageId];
+                                        ReceivedMsg.TextMessage = messageData.Message;
+                                        ReceivedMsg.Time = messageData.SentTime.ToString();
+                                        ReceivedMsg.ToFrom = UserId == messageData.MessageId;
+                                        ReceivedMsg.ReplyMessage = messageData.ReplyThreadId == -1 ? "" : _messages[messageData.ReplyThreadId];
+                                        ReceivedMsg.Type = messageData.Type == MessageType.Chat;
+                                        this.OnPropertyChanged("ReceivedMsg");
+                                    }
+                                }
+                            }
+                        }),
+                        allMessages);
 
-            //    }
-            //}
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         /// <summary>
