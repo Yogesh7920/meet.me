@@ -1,18 +1,22 @@
 using NUnit.Framework;
+using Content;
 
 namespace Testing.Content
 {
     public class ContentServerFactoryTests
     {
+        private IContentServer contentServer;
+
         [SetUp]
         public void Setup()
         {
+            contentServer = ContentServerFactory.GetInstance();
         }
 
         [Test]
-        public void Test1()
+        public void GetInstanceTest()
         {
-            Assert.Pass();
+            Assert.AreEqual(contentServer, ContentServerFactory.GetInstance());
         }
     }
 }
