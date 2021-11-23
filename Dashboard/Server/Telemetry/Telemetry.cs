@@ -23,9 +23,8 @@ namespace Dashboard.Server.Telemetry{
         ///     and whenever the session data changes, Telemetry get notified, 
         ///     based on it timestamp can be stored.
         /// </params>
-        public void GetUserCountVsTimeStamp(SessionData newSession)
+        public void GetUserCountVsTimeStamp(SessionData newSession, DateTime currTime)
         {
-            DateTime currTime = DateTime.Now;
             userCountAtEachTimeStamp[currTime] = newSession.users.Count;
         }
 
@@ -107,9 +106,9 @@ namespace Dashboard.Server.Telemetry{
         ///     To get any change in the SessionData
         /// </summary>
         /// <params name="newSession"> Received new SessionData </params>
-        public void OnAnalyticsChanged(SessionData newSession)
+        public void OnAnalyticsChanged(SessionData newSession, DateTime time)
         {
-            GetUserCountVsTimeStamp(newSession);
+            GetUserCountVsTimeStamp(newSession, time);
             GetInsincereMembers();
         }
 

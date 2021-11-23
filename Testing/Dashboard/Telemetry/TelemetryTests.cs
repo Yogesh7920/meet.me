@@ -24,13 +24,15 @@ namespace Testing.Dashboard.Telemetry
             session2.AddUser(user1);
             session2.AddUser(user2);
             //Act
-            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1);
-            int userCount1 = TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[DateTime.Now];
+            DateTime currTime= DateTime.Now;
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1,currTime);
+            int userCount1 = TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[currTime];
             bool check1=false;
             // total users in session1 is 1
             if(userCount1==1) check1=true;
-            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2);
-            int userCount2= TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[DateTime.Now];
+            DateTime time2= DateTime.Now;
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2, time2);
+            int userCount2= TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[time2];
             bool check2=false;
             // total users in session2 is 2.
             if(userCount2==2) check2=true;
@@ -51,8 +53,10 @@ namespace Testing.Dashboard.Telemetry
             session2.AddUser(user2);
             // user1 left the meeting in session2
             // Act
-            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1);
-            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2);
+            DateTime time1= new DateTime(2021,11,23,1,0,0);
+            DateTime time2= new DateTime(2021,11,23,1,15,0);
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1,time1);
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2,time2);
             int elementAtZero = TelemetryFactory.GetTelemetryInstance().insincereMembers[0];
             //Assert
             Assert.AreEqual(elementAtZero,1);
