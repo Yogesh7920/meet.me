@@ -9,17 +9,17 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
-            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="0.02*"/>
             <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="0.15*"/>
+            <ColumnDefinition Width="0.02*"/>
             <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="0.15*"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="0.10*"/>
+            <ColumnDefinition Width="0.02*"/>
+            <ColumnDefinition Width="3.2*"/>
+            <ColumnDefinition Width="0.05*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="65*"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="687*"/>
             <RowDefinition Height="0.75"/>
@@ -33,8 +33,8 @@
                     <Image Source="/Icons/ExpCol.png"/>
                 </Button>
             </Grid>
-            <ListView x:Name="UsersListView" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="#FF340051" Foreground="White" BorderThickness="0" MaxHeight="750">
-                <!--<ListView.ItemTemplate>
+            <ListView x:Name="UsersListView" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="{DynamicResource Color1Bg}" Foreground="White" BorderThickness="0" MaxHeight="750">
+                <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="0 5" Height="30">
                             <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
@@ -43,255 +43,7 @@
                             <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="{Binding username}" TextWrapping="WrapWithOverflow"/>
                         </StackPanel>
                     </DataTemplate>
-                </ListView.ItemTemplate>-->
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="LA"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Lance Armstrong" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
-                <ListViewItem Margin="0 5" Height="30">
-                    <DockPanel >
-                        <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="HS"/>
-                        </Border>
-                        <TextBlock VerticalAlignment="Center" Margin="8 0 0 0" Text="Harvey Spectre" TextWrapping="WrapWithOverflow"/>
-                    </DockPanel>
-                </ListViewItem>
+                </ListView.ItemTemplate>
             </ListView>
         </StackPanel>
     </Grid>
