@@ -35,7 +35,7 @@ namespace Testing.Dashboard.Telemetry
             // total users in session2 is 2.
             if(userCount2==2) check2=true;
             //Assert
-            Assert.isTrue(check1 && check2);
+            Assert.IsTrue(check1 && check2);
             
         }
 
@@ -104,7 +104,7 @@ namespace Testing.Dashboard.Telemetry
             }
             
             //Assert
-            Assert.isTrue(check1 && check2);
+            Assert.IsTrue(check1 && check2);
 
         }
 
