@@ -33,7 +33,7 @@ namespace Client.ViewModel
             _messages = new Dictionary<int, string>();
             _model = ContentClientFactory.getInstance();
             _model.CSubscribe(this);
-            //this.UserId = _model.UserId;
+            this.UserId = _model.GetUserId();
         }
 
         public void SendChat(string message, int replyMsgId)
