@@ -1,18 +1,20 @@
 /// <author>Yuvraj Raghuvanshi</author>
 /// <created>16/10/2021</created>
+using Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Networking;
+using System.Threading.Tasks;
 
 namespace Content
 {
     internal class ContentClient : IContentClient
     {
         private readonly List<ChatContext> _allMessages;
+        private readonly object _lock;
         private readonly ChatClient _chatHandler;
-        
+
         private ICommunicator _communicator;
 
         private readonly Dictionary<int, int> _contextMap;
@@ -29,6 +31,7 @@ namespace Content
         public ContentClient()
         {
             _userId = -1;
+            _lock = new();
             _subscribers = new List<IContentListener>();
             _allMessages = new List<ChatContext>();
             _contextMap = new Dictionary<int, int>();
@@ -57,6 +60,7 @@ namespace Content
             set
             {
                 _communicator = value;
+                _communicator.Subscribe("Content", _notifHandler);
                 _fileHandler.Communicator = value;
                 _chatHandler.Communicator = value;
             }
@@ -72,7 +76,13 @@ namespace Content
                 _chatHandler.UserId = value;
             }
         }
- 
+
+        /// <inheritdoc/>
+        public int GetUserId()
+        {
+            return _userId;
+        }
+
         /// <inheritdoc />
         public void CSend(SendMessageData toSend)
         {
@@ -162,7 +172,10 @@ namespace Content
         public void Notify(ReceiveMessageData message)
         {
             Trace.WriteLine("[ContentClient] Notifying subscribers of new received message");
-            foreach (var subscriber in _subscribers) subscriber.OnMessage(message);
+            foreach (var subscriber in _subscribers)
+            {
+                _ = Task.Run(() => { subscriber.OnMessage(message); });
+            }
         }
 
         /// <summary>
@@ -172,7 +185,10 @@ namespace Content
         public void Notify(List<ChatContext> allMessages)
         {
             Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared in the meeting until now");
-            foreach (var subscriber in _subscribers) subscriber.OnAllMessages(allMessages);
+            foreach (var subscriber in _subscribers)
+            {
+                _ = Task.Run(() => { subscriber.OnAllMessages(allMessages); });
+            }
         }
 
 
@@ -196,28 +212,32 @@ namespace Content
 
             // add the message to the correct ChatContext in allMessages
             var key = receivedMessage.ReplyThreadId;
-            if (_contextMap.ContainsKey(key))
+
+            // use locks because the list of chat contexts may be shared across multiple threads
+            lock (_lock)
             {
-                var index = _contextMap[key];
-                _allMessages[index].MsgList.Add(receivedMessage);
-                _allMessages[index].NumOfMessages += 1;
+                if (_contextMap.ContainsKey(key))
+                {
+                    var index = _contextMap[key];
+                    _allMessages[index].MsgList.Add(receivedMessage);
+                    _allMessages[index].NumOfMessages += 1;
+                }
+                else // in case the message is part of a new thread
+                {
+                    // create new thread with given id
+                    var newContext = new ChatContext();
+                    newContext.ThreadId = key;
+                    newContext.MsgList.Add(receivedMessage);
+                    newContext.NumOfMessages = 1;
+                    newContext.CreationTime = receivedMessage.SentTime;
+
+                    _allMessages.Add(newContext);
+
+                    // add entry in the hash table to keep track of ChatContext with given thread Id
+                    var index = _allMessages.Count - 1;
+                    _contextMap.Add(key, index);
+                }
             }
-            else // in case the message is part of a new thread
-            {
-                // create new thread with given id
-                var newContext = new ChatContext();
-                newContext.ThreadId = key;
-                newContext.MsgList.Add(receivedMessage);
-                newContext.NumOfMessages = 1;
-                newContext.CreationTime = receivedMessage.SentTime;
-
-                _allMessages.Add(newContext);
-
-                // add entry in the hash table to keep track of ChatContext with given thread Id
-                var index = _allMessages.Count - 1;
-                _contextMap.Add(key, index);
-            }
-
             // notify the subscribers of the new message
             Notify(receivedMessage);
         }
@@ -236,13 +256,17 @@ namespace Content
                 var index = _contextMap[key];
                 var numMessages = _allMessages[index].NumOfMessages;
                 int i;
-                for (i = 0; i < numMessages; i++)
+                // again, use locks to ensure thread-safe updation
+                lock (_lock)
                 {
-                    var id = _allMessages[index].MsgList[i].MessageId;
-                    if (id == receivedMessage.MessageId)
+                    for (i = 0; i < numMessages; i++)
                     {
-                        _allMessages[index].MsgList[i] = receivedMessage;
-                        break;
+                        var id = _allMessages[index].MsgList[i].MessageId;
+                        if (id == receivedMessage.MessageId)
+                        {
+                            _allMessages[index].MsgList[i] = receivedMessage;
+                            break;
+                        }
                     }
                 }
 
@@ -269,16 +293,18 @@ namespace Content
                 var index = _contextMap[contextId];
                 var numMessages = _allMessages[index].NumOfMessages;
                 int i;
-                for (i = 0; i < numMessages; i++)
+                lock (_lock)
                 {
-                    var id = _allMessages[index].MsgList[i].MessageId;
-                    if (id == messageId)
+                    for (i = 0; i < numMessages; i++)
                     {
-                        _allMessages[index].MsgList[i].Starred = true;
-                        break;
+                        var id = _allMessages[index].MsgList[i].MessageId;
+                        if (id == messageId)
+                        {
+                            _allMessages[index].MsgList[i].Starred = true;
+                            break;
+                        }
                     }
                 }
-
                 // if no match was found, there is an error
                 if (i == numMessages) throw new ArgumentException("No message with given id exists");
             }

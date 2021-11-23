@@ -2,12 +2,9 @@ using NUnit.Framework;
 using Networking;
 using Testing.Dashboard.TestModels;
 using System.Collections.Generic;
-using System;
-using Testing.Dashboard;
 using Dashboard.Server.SessionManagement;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
-using System.Threading;
 using System.Net.Sockets;
 
 namespace Testing.Dashboard
@@ -20,8 +17,8 @@ namespace Testing.Dashboard
             _testContentServer = new();
             _testCommunicator = new();
             _testCommunicator.ipAddressAndPort = validIP + ":" + validPort;
-            clientSessionManagerA = new(_testCommunicator);
-            clientSessionManagerB = new(_testCommunicator);
+            clientSessionManagerA = SessionManagerFactory.GetClientSessionManager(_testCommunicator);
+            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager (_testCommunicator);
             newUX = new(clientSessionManagerB);
             oldUX = new(clientSessionManagerA);
             clientSessionManagerB.SubscribeSession(newUX);
@@ -154,7 +151,7 @@ namespace Testing.Dashboard
         }
 
         [Test]
-        public void RemoveClient_ClientDeparture_SendsServerDepartedUser()
+        public void RemoveClient_ClientDepartureClientSide_SendsServerDepartedUser()
         {
             IUXClientSessionManager _uxSessionManager = clientSessionManagerB;
             string username = "John";
@@ -183,7 +180,6 @@ namespace Testing.Dashboard
             List<UserData> expectedUsers = Utils.GenerateUserData(sampleSize);
             AddUsersAtServer(expectedUsers);
             UserData departedUser = expectedUsers[userIndex - 1];
-            Console.WriteLine(departedUser);
             expectedUsers.RemoveAt(userIndex - 1);
             string expectedEventType = "removeClient";
 
@@ -210,10 +206,18 @@ namespace Testing.Dashboard
             Assert.AreEqual(expectedEvent, deserializedObj.eventType);
         }
 
+        [Test]
+        public void EndMeet_RecievedEndMeetingEventClientSide_SendsEndMeetingEventToUX()
+        {
+            ServerToClientData endMeetingMessage = new("endMeet", null, null, null);
+            clientSessionManagerB.OnDataReceived(_serializer.Serialize<ServerToClientData>(endMeetingMessage));
+            Assert.IsTrue(newUX.meetingEndEvent);
+        }
+
         [TestCase("This is sample summary")]
         [TestCase("")]
         [Test]
-        public void GetSummary_GetSummary_ReturnsSummary(string testSummary)
+        public void GetSummary_GetSummaryClientSide_ReturnsSummary(string testSummary)
         {
             UserData user = new("John", 1);
             // Adding a user at client
@@ -225,6 +229,50 @@ namespace Testing.Dashboard
             clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
             recievedSummary = newUX.summary;
             Assert.AreEqual(testSummary, recievedSummary);
+        }
+
+        //[Test]
+        //public void GetSummaryProcedure_GetSummarryServerSideWhenChatContextNull_ReturnsEmptyString()
+        //{
+        //    _testContentServer.chats = null;
+        //    ClientToServerData sampleClientRequest = new ClientToServerData("getSummary", "John", 1);
+        //    serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+        //    ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+        //    string actualSummary = deserialisedReceivedData.summaryData.summary;
+        //    Assert.IsEmpty(actualSummary);
+        //}
+
+        [Test]
+        public void GetSummaryProcedure_GetSummarryServerSideWhenNoChats_ReturnsEmptyString()
+        {
+            _testContentServer.chats = new();
+            ClientToServerData sampleClientRequest = new ClientToServerData("getSummary", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            string actualSummary = deserialisedReceivedData.summaryData.summary;
+            Assert.IsEmpty(actualSummary);
+        }
+
+        [Test]
+        public void GetSummaryProcedure_GetSummarryServerSideSmallSampleChats_ReturnsSummaryString()
+        {
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            ClientToServerData sampleClientRequest = new("getSummary", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            string actualSummary = deserialisedReceivedData.summaryData.summary;
+            Assert.IsNotEmpty(actualSummary);
+        }
+
+        [Test]
+        public void GetSummaryProcedure_GetSummarryServerSideLargeSampleChats_ReturnsSummaryString()
+        {
+            _testContentServer.chats = Utils.GetSampleChatContext(1000);
+            ClientToServerData sampleClientRequest = new("getSummary", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            string actualSummary = deserialisedReceivedData.summaryData.summary;
+            Assert.IsNotEmpty(actualSummary);
         }
 
         //[TestCase("This is sample summary")]
