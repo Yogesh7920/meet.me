@@ -32,7 +32,7 @@ namespace Client.ViewModel
         {
             _messages = new Dictionary<int, string>();
             _users = new Dictionary<int, string>();
-            _model = ContentClientFactory.getInstance();
+            _model = ContentClientFactory.GetInstance();
             _model.CSubscribe(this);
             this.UserId = _model.GetUserId();
 
