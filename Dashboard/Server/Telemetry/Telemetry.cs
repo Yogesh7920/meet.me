@@ -39,7 +39,13 @@ namespace Dashboard.Server.Telemetry{
             {
                 foreach(ReceiveMessageData currMessage in currThread.MsgList)
                 {
-                    userIdChatCountDic[currMessage.SenderId]++;
+                    Console.WriteLine(currMessage.SenderId);
+                    if(userIdChatCountDic.ContainsKey(currMessage.SenderId)) userIdChatCountDic[currMessage.SenderId]++;
+                    else
+                    {
+                        userIdChatCountDic.Add(currMessage.SenderId, 1);
+                    }
+                    Console.WriteLine(userIdChatCountDic[currMessage.SenderId]);
                 }
             }
         }
@@ -76,9 +82,10 @@ namespace Dashboard.Server.Telemetry{
             {
                 UserData  currUser = user_i.Key;
                 // if difference of exit and enter time is less than 30 min.
-                if(userExitTime[currUser].Subtract(user_i.Value).TotalMinutes<30)
+                if(userExitTime.ContainsKey(currUser) && userExitTime[currUser].Subtract(user_i.Value).TotalMinutes<30)
                 {
-                    insincereMembers.Add(currUser.userID);
+                    int id = currUser.userID;
+                    insincereMembers.Add(id);
                 }
             }
         }
@@ -158,7 +165,7 @@ namespace Dashboard.Server.Telemetry{
         public Dictionary<UserData,DateTime> userEnterTime=new Dictionary<UserData, DateTime>();
         public Dictionary<UserData,DateTime> userExitTime=new Dictionary<UserData, DateTime>();
         public Dictionary<int, int> userIdChatCountDic= new Dictionary<int, int>();
-        public List<int> insincereMembers;
+        public List<int> insincereMembers= new List<int>();
         private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
         // private ITelemetrySessionManager _sm = new ITelemetrySessionManager();
     }
