@@ -112,7 +112,7 @@ namespace Testing.Content
 			Utils _util = new Utils();
             int UserId = 1001;
 			int MsgId = 10;
-            MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.Update, "Apple", new int[] { }, type: MessageType.Chat);
+            MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.Update, "", new int[] { }, type: MessageType.Chat);
 
             ISerializer _serializer = new Serializer();
            
