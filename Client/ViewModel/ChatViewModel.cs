@@ -16,8 +16,12 @@ namespace Client.ViewModel
     {
 
         IDictionary<int, string> _messages;
+<<<<<<< Updated upstream
         private IDictionary<int, string> _users;
         public int UserId
+=======
+        public static int UserId
+>>>>>>> Stashed changes
         {
             get; private set;
         }
