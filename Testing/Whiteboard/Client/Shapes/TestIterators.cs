@@ -1,8 +1,8 @@
 ﻿/**
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
- * Date Created: 15/22/2021
- * Date Modified: 15/22/2021
+ * Date Created: 11/22/2021
+ * Date Modified: 11/23/2021
 **/
 
 using NUnit.Framework;
@@ -17,7 +17,9 @@ namespace Testing.Whiteboard
 {
     static class TestIterators
     {
-
+        /// <summary>
+        /// Test cases for creation of shapes from previous shapes
+        /// </summary>
         public static IEnumerable<TestCaseData> ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape_TestCases
         {
             get
@@ -35,6 +37,9 @@ namespace Testing.Whiteboard
             }
         }
 
+        /// <summary>
+        /// Test Cases for Rotation when originally the shape is in first quadrant.
+        /// </summary>
         public static IEnumerable<TestCaseData> Rotate_Quad1_TestCases
         {
             get
@@ -50,6 +55,9 @@ namespace Testing.Whiteboard
             }
         }
 
+        /// <summary>
+        ///  Test Cases for Rotation when originally the shape is in second quadrant.
+        /// </summary>
         public static IEnumerable<TestCaseData> Rotate_Quad2_TestCases
         {
             get
@@ -65,6 +73,9 @@ namespace Testing.Whiteboard
             }
         }
 
+        /// <summary>
+        /// Test cases for resizing for all the four latches
+        /// </summary>
         public static IEnumerable<TestCaseData> Resize_AllLatch_TestCases
         {
             get
