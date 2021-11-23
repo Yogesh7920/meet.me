@@ -30,7 +30,7 @@ namespace Client
         /// <param name="e"></param>
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+           this.Close();
         }
 
         /// <summary>
