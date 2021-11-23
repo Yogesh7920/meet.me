@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 
-namespace Client.ViewModels
+namespace Client.ViewModel
 {
     public class AuthViewModel
     {
