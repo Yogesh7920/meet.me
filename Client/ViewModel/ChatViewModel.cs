@@ -16,12 +16,9 @@ namespace Client.ViewModel
     {
 
         IDictionary<int, string> _messages;
-<<<<<<< Updated upstream
         private IDictionary<int, string> _users;
-        public int UserId
-=======
+
         public static int UserId
->>>>>>> Stashed changes
         {
             get; private set;
         }
@@ -36,9 +33,9 @@ namespace Client.ViewModel
         {
             _messages = new Dictionary<int, string>();
             _users = new Dictionary<int, string>();
-            _model = ContentClientFactory.getInstance();
+            _model = ContentClientFactory.GetInstance();
             _model.CSubscribe(this);
-            this.UserId = _model.GetUserId();
+            UserId = _model.GetUserId();
 
             _modelDb = SessionManagerFactory.GetClientSessionManager();
             _modelDb.SubscribeSession(this);
