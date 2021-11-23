@@ -1,3 +1,10 @@
+/*
+ * Author: Subhash S
+ * Created on: 12/11/2021
+ * Summary: This file contains some mock objects which can
+ *          be used to simulate tests for the networking module.
+ */
+
 using System;
 using System.Dynamic;
 using System.Threading;
@@ -6,15 +13,18 @@ using Networking;
 namespace Testing.Networking
 {
     /// <summary>
-    ///     This class represents an abstract machine.
-    ///     clients and server inherit from this machine.
+    ///     This is a mock class used to represent a machine.
     /// </summary>
     public class Machine
     {
+        // Each machine has two handlers, one for whiteboard and one for screen-share
         public readonly FakeNotificationHandler SsHandler;
 
         public readonly FakeNotificationHandler WbHandler;
 
+        /// <summary>
+        ///     Initialize handlers for both whiteboard and screen-share
+        /// </summary>
         protected Machine()
         {
             WbHandler = new FakeNotificationHandler();
@@ -23,12 +33,19 @@ namespace Testing.Networking
 
         public ICommunicator Communicator { get; set; }
 
+        /// <summary>
+        ///     Subscribes both the modules on the machine to the networking module
+        /// </summary>
         public void Subscribe()
         {
             Communicator.Subscribe(Modules.WhiteBoard, WbHandler, Priorities.WhiteBoard);
             Communicator.Subscribe(Modules.ScreenShare, SsHandler, Priorities.ScreenShare);
         }
 
+        /// <summary>
+        ///     Reset states of both handlers, this includes their local data which
+        ///     is used to identify the type of event and the data
+        /// </summary>
         public void Reset()
         {
             WbHandler.Reset();
@@ -36,9 +53,12 @@ namespace Testing.Networking
         }
     }
 
+    /// <summary>
+    ///     A client with ID "A"
+    /// </summary>
     public class FakeClientA : Machine
     {
-        public string Id = "A";
+        public const string Id = "A";
 
         public FakeClientA()
         {
@@ -46,9 +66,12 @@ namespace Testing.Networking
         }
     }
 
+    /// <summary>
+    ///     A client with ID "B"
+    /// </summary>
     public class FakeClientB : Machine
     {
-        public string Id = "B";
+        public const string Id = "B";
 
         public FakeClientB()
         {
@@ -56,6 +79,9 @@ namespace Testing.Networking
         }
     }
 
+    /// <summary>
+    ///     A mock server
+    /// </summary>
     public class FakeServer : Machine
     {
         public FakeServer()
@@ -65,6 +91,9 @@ namespace Testing.Networking
     }
 
 
+    /// <summary>
+    ///     The list of all modules that can be used for testing.
+    /// </summary>
     public static class Modules
     {
         public const string
@@ -76,6 +105,9 @@ namespace Testing.Networking
             Invalid = "Invalid";
     }
 
+    /// <summary>
+    ///     The priorities of all modules that are used for testing.
+    /// </summary>
     public static class Priorities
     {
         public const int
@@ -87,6 +119,9 @@ namespace Testing.Networking
             Invalid = -1;
     }
 
+    /// <summary>
+    ///     These are the events that the networking module uses to notify modules.
+    /// </summary>
     public enum NotificationEvents
     {
         OnDataReceived,
@@ -109,10 +144,9 @@ namespace Testing.Networking
         {
             Event = NotificationEvents.OnDataReceived;
             Data = data;
-            /*
-             * Ignore this message since this test already failed due to timout
-             * and the current test needs the next data.
-             */
+
+            // Ignore this message since this test already failed due to timout
+            // and the current test needs the new data.
             if (_timeOutCount-- > 0) return;
             _autoResetEvent.Set();
         }
@@ -140,23 +174,24 @@ namespace Testing.Networking
         /// <param name="timeOut">
         ///     Double value indicating the number of seconds to wait before timing out.
         /// </param>
-        /// <exception cref="TimeoutException"></exception>
+        /// <exception cref="TimeoutException">
+        ///     Indicates that no events have been received for longer than the timeOut period.
+        /// </exception>
         public void Wait(double timeOut = 15)
         {
             // wait for a maximum of timeOut seconds
             var signalReceived = _autoResetEvent.WaitOne(TimeSpan.FromSeconds(timeOut));
-            if (!signalReceived)
-            {
-                /*
-                 * If the wait has timed out, increase the number of timeouts
-                 * this allows us to ignore messages that were previously timed out.
-                 */
-                _timeOutCount++;
-                _autoResetEvent.Reset();
-                throw new TimeoutException("Wait failed due to timeout!");
-            }
+            if (signalReceived) return;
+            // If the wait has timed out, increase the number of timeouts
+            // this allows us to ignore messages that were previously timed out.
+            _timeOutCount++;
+            _autoResetEvent.Reset();
+            throw new TimeoutException("Wait failed due to timeout!");
         }
 
+        /// <summary>
+        ///     Reset Data and Event to null and also reset the AutoResetEvent
+        /// </summary>
         public void Reset()
         {
             Event = null;
@@ -170,11 +205,17 @@ namespace Testing.Networking
         public string Message { get; set; }
         public string Timestamp { get; set; }
 
+        /// <summary>
+        ///     Creates a fake chat object.
+        /// </summary>
+        /// <returns>A FakeChat object.</returns>
         public static FakeChat GetFakeChat()
         {
-            var fakeChat = new FakeChat();
-            fakeChat.Message = NetworkingGlobals.GetRandomString();
-            fakeChat.Timestamp = DateTime.Now.ToString();
+            var fakeChat = new FakeChat
+            {
+                Message = NetworkingGlobals.GetRandomString(),
+                Timestamp = DateTime.Now.ToString()
+            };
             return fakeChat;
         }
     }
@@ -185,9 +226,15 @@ namespace Testing.Networking
 
         public static ICommunicator NewServerCommunicator => CommunicationFactory.GetCommunicator(false, true);
 
+        /// <summary>
+        ///     Returns a random string of given length. Makes sure "EOF" does not
+        ///     appear in the string.
+        /// </summary>
+        /// <param name="length">Length of the randomly generated string.</param>
+        /// <returns>A string.</returns>
         public static string GetRandomString(int length = 10)
         {
-            var chars = "ABCDEGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const string chars = "ABCDEGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             var stringChars = new char[length];
             var random = new Random();
 

@@ -1,7 +1,15 @@
-﻿using System;
+﻿/// <author>Sairoop Bodepudi</author>
+/// <created>4/11/2021</created>
+/// <summary>
+///		This file contains the preprocessing
+///		implementation of the summarizer and
+///		the calls for the necessary functions.
+/// </summary>
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using Content;
+using Dashboard.Server.Persistence;
 
 namespace Dashboard.Server.Summary
 {
@@ -19,6 +27,7 @@ namespace Dashboard.Server.Summary
 		public Summarizer()
 		{
 			_processor = new ChatProcessor();
+			_persister = PersistenceFactory.GetSummaryPersistenceInstance();
 		}
 
 		/// <summary>
@@ -68,10 +77,10 @@ namespace Dashboard.Server.Summary
 		/// </returns>
 		public bool SaveSummary(ChatContext[] chats)
 		{
-			string summary = GetSummary(chats);
-			throw new NotImplementedException();
+			return _persister.SaveSummary(GetSummary(chats));
 		}
 
 		private readonly ChatProcessor _processor;
+		private readonly ISummaryPersistence _persister;
 	}
 }
