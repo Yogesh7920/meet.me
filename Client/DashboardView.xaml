@@ -123,12 +123,10 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
                 <!--Section: Summary Text-->
-                <Grid Grid.Row="0" Grid.RowSpan="1" Grid.ColumnSpan="4" HorizontalAlignment="Center" Width="auto" Height="auto">
+                <Grid Grid.Row="0" Grid.RowSpan="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" Width="auto" Height="auto">
 
                     <Grid Margin="80 10 80 20">
                         <Grid.OpacityMask>
@@ -142,7 +140,7 @@
                     </Grid>
                 </Grid>
 
-                <Grid Grid.Row="0" Grid.ColumnSpan="4">
+                <Grid Grid.Row="0" Grid.ColumnSpan="2">
                     <Rectangle x:Name="SummaryText" Height="200" Margin="50 45 50 10" 
                                Fill="White" RadiusY="10" RadiusX="10" >
                         <Rectangle.Effect>
@@ -175,7 +173,7 @@
                 </Grid>
 
                 <!--Section: Chart UserCount vs Time-->
-                <Grid Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" >
+                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" HorizontalAlignment="Center" >
 
                     <Grid Background="White" Margin="20 50 20 40">
                         <Grid.OpacityMask>
@@ -232,9 +230,9 @@
                 </Grid>
 
                 <!--<Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Width="580" Height="450">-->
-                <Grid Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+                <Grid Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" HorizontalAlignment="Center">
 
-                    <Grid Background="White" Margin="20 50 20 40">
+                    <Grid Background="White" Margin="20 50 20 40" Name="MessagePlottingGrid">
                         <Grid.OpacityMask>
                             <VisualBrush Visual="{ Binding ElementName=BorderG1 }"/>
                         </Grid.OpacityMask>
@@ -242,7 +240,7 @@
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20">
                             <TextBlock Text="Insights about the messages sent by users in the session" 
-                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"  
+                                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                        FontFamily="Champagne &amp; Limousines" FontSize="18" FontWeight="Bold" Foreground="Gray"/>
                         </StackPanel>
 
@@ -253,7 +251,7 @@
                         </Grid.OpacityMask>
                         <Border x:Name="BorderG2_2" CornerRadius="15" Background="#FF340051"/>
 
-                        <!-- Chart: Users vs Sent Messages (Function defined in VM) -->
+                        <!-- Chart: Users vs Sent Messages (If Function defined in VM) -->
 
                         <!--<lvc:CartesianChart x:Name="cartesianChart1" Series="{Binding Path = MessagesVsUsersPlot}">
 
