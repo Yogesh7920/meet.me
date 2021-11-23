@@ -6,6 +6,8 @@ using Dashboard.Server.SessionManagement;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 using System.Net.Sockets;
+using Dashboard.Server.Persistence;
+using System.IO;
 
 namespace Testing.Dashboard
 {
@@ -213,6 +215,17 @@ namespace Testing.Dashboard
             clientSessionManagerB.OnDataReceived(_serializer.Serialize<ServerToClientData>(endMeetingMessage));
             Assert.IsTrue(newUX.meetingEndEvent);
         }
+        
+        [Test]
+        public void EndMeetingProcedure_MeetingEnds_SaveSummaryOfSession()
+        {
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            ClientToServerData sampleClientRequest = new("endMeet", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            string path = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+            string actualSavedSummary = File.ReadAllText(Path.Combine(path, PersistenceFactory.lastSaveResponse.FileName));
+            Assert.IsNotEmpty(actualSavedSummary);
+        }
 
         [TestCase("This is sample summary")]
         [TestCase("")]
@@ -230,6 +243,7 @@ namespace Testing.Dashboard
             recievedSummary = newUX.summary;
             Assert.AreEqual(testSummary, recievedSummary);
         }
+
 
         //[Test]
         //public void GetSummaryProcedure_GetSummarryServerSideWhenChatContextNull_ReturnsEmptyString()
