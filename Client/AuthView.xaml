@@ -4,13 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
-        Title="Login" ResizeMode="CanMinimize" Icon="Icons/logo.ico" 
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Login" ResizeMode="CanMinimize" WindowStyle="None"
         Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
     <Window.Resources>
         
         <LinearGradientBrush x:Key="BackGroundPattern" StartPoint="0,0" EndPoint="0,1">       
-           <GradientStop Color="{StaticResource Color1}" Offset="0.5" />
            <GradientStop Color="{StaticResource Color3}" Offset="0.5" />
+           <GradientStop Color="{StaticResource Color1}" Offset="0.5" />
         </LinearGradientBrush>
         
         <Color x:Key="InnerBackground">White</Color>
@@ -29,6 +30,15 @@
         </Grid.ColumnDefinitions>
        
         <Grid.RowDefinitions>
+            <!--<RowDefinition Height="3*"/>
+            <RowDefinition Height="0.4*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.6*"/>
+            <RowDefinition Height="3*"/>-->
+            <RowDefinition Height="50"/>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="0.4*"/>
             <RowDefinition Height="0.5*"/>
@@ -38,30 +48,54 @@
             <RowDefinition Height="0.6*"/>
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
-        <DockPanel Grid.Row="0" Grid.Column="2">
-            <Image Height="35" Width="40" Margin="0 100 0 5" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/Icons/logo.png"/>
-            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Name="Login" Text="meet.me" Foreground="{StaticResource Color3Bg}" FontSize="45" FontWeight="Bold" FontFamily="ComicSans"/>
+
+        <!-- Title Bar -->
+        <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown" >
+            <Image Height="35" Width="40" Margin="0 0 220 0"  HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Icons/meet.me_logo_no_bg.png"/>
+            <TextBlock Text="meet.me" HorizontalAlignment="Center" VerticalAlignment="Top"  
+                       FontWeight="Bold" FontFamily="ComicSans"  FontSize="40" Foreground="{DynamicResource Color3Bg}"/>
+            <DockPanel HorizontalAlignment="Right" Margin="10,0">
+                <!-- Minimize button -->
+                <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        ToolTip="Minimize" ToolTipService.ShowDuration="3000">
+                    <materialDesign:PackIcon Kind="WindowMinimize"/>
+                </Button>
+
+                <!--Close button-->
+                <Button x:Name="CloseButton" Click="OnCloseButtonClick"
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        ToolTip="Close" ToolTipService.ShowDuration="3000">
+                    <materialDesign:PackIcon Kind="Close"/>
+                </Button>
+            </DockPanel>
+        </Grid>
+        <!-- Title Bar ends -->
+
+        <DockPanel Grid.Row="1" Grid.Column="2">
+            <!--<Image Height="35" Width="40" Margin="0 100 0 5" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/Icons/meet.me_logo_no_bg.png"/>-->
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Name="Login" Text="Login" Foreground="{StaticResource Color1Bg}" FontSize="40" FontWeight="Bold" FontFamily="ComicSans"/>
         </DockPanel>
-        
-        <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="6" Grid.ColumnSpan="3" Background="{StaticResource InnerBackgroundBrush}" CornerRadius="10"/>
+
+        <Border Grid.Row="2" Grid.Column="1" Grid.RowSpan="6" Grid.ColumnSpan="3" Background="{StaticResource InnerBackgroundBrush}" CornerRadius="10"/>
         <TextBlock Name="ErrorMsg" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 0 0 10" Text="Sorry! Invalid Credentials" FontSize="20" Foreground="Red" Visibility="Collapsed"/>
         
-        <DockPanel Grid.Row="2" Grid.Column="2">
+        <DockPanel Grid.Row="3" Grid.Column="2">
             <TextBlock Height="20" Name="IP" Text="IP Address" FontFamily="Calibre" FontWeight="Medium" FontSize="12"/>
             <TextBox Height="20" Width="121" Margin="25 0 0 0" Name="IpBox" />
         </DockPanel>
 
-        <DockPanel Grid.Row="3" Grid.Column="2">
+        <DockPanel Grid.Row="4" Grid.Column="2">
             <TextBlock Height="20" Name="PortNumber" Text="Port Number" FontFamily="Calibre" FontWeight="Medium" FontSize="12"/>
             <TextBox Height="20" Width="121" Margin="8 0 0 0" Name="PortNumberBox"  />
         </DockPanel>
 
-        <DockPanel Grid.Row="4" Grid.Column="2">
+        <DockPanel Grid.Row="5" Grid.Column="2">
             <TextBlock Height="20" Name="Username" Text="Username" FontFamily="Calibre" FontWeight="Medium" FontSize="12"/>
             <TextBox Height="20" Width="121" Margin="27 0 0 0" Name="UsernameBox" />
         </DockPanel>
 
-        <DockPanel Grid.Row="5" Grid.Column="2">
+        <DockPanel Grid.Row="6" Grid.Column="2">
             <Button IsDefault="True" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Join Room" FontSize="12" FontFamily="Calibre" Foreground="{StaticResource Color3Bg}" Click="OnJoinClick">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">

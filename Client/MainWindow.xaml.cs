@@ -12,7 +12,6 @@ namespace Client
     public partial class MainWindow : Window
     {
         private static WhiteBoardView _whiteboard;
-        private string theme = "theme1";
         public bool sharing = false;
         //uncomment below lines after the respective user controls are done
         private static ChatView _chat;
@@ -138,7 +137,7 @@ namespace Client
                 sharing = false;
             }
             //uncomment below line after respective User Controls are done
-            /*this.SSwb.Content = new ScreenShareView();
+            this.SSwb.Content = new ScreenShareUX();
             if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
@@ -158,7 +157,7 @@ namespace Client
             {
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 5);
-            }*/
+            }
         }
         /// <summary>
         /// Function to handle Whiteboard button click event
@@ -169,7 +168,7 @@ namespace Client
             this.SSwb.Content = _whiteboard;
 
             //uncomment below lines after the respective User Controls are done
-            /*if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
+            if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 1);
@@ -188,7 +187,7 @@ namespace Client
             {
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 5);
-            }*/
+            }
         }
         /// <summary>
         /// Function to handle Chat button click event

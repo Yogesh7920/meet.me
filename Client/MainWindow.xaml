@@ -83,7 +83,7 @@
         <!-- Title Bar -->
         <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown" >
             <TextBlock Text="meet.me" HorizontalAlignment="Center" VerticalAlignment="Top"  
-                       FontWeight="Bold" FontFamily="Champagne &amp; Limousines"  FontSize="25" Foreground="White"/>
+                       FontWeight="Bold" FontFamily="ComicSans"  FontSize="25" Foreground="White"/>
             <DockPanel HorizontalAlignment="Right" Margin="10,0">
                 <DockPanel Name="ThemeButton" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 10 0">
                     <TextBlock Text="Theme" Foreground="{DynamicResource Color3Bg}" FontSize="12" FontWeight="DemiBold"></TextBlock>
