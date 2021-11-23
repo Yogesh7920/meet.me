@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-using Content;
-using Networking;
-using NUnit.Framework;
-using System;
-using System.IO;
-=======
 using NUnit.Framework;
 using Content;
 using FluentAssertions;
 using Networking;
->>>>>>> parent of 4df0296 (Code cleanup)
+
 namespace Testing.Content
 {
     public class ChatClientTests
@@ -22,11 +15,7 @@ namespace Testing.Content
 		}
 
         [Test]
-<<<<<<< HEAD
         public void Test_Converting_SendMessageObject_To_MessageData()
-=======
-		public void TestConvert()
->>>>>>> parent of 4df0296 (Code cleanup)
         {
 			Utils _util = new Utils();
 			SendMessageData SampleData = _util.GetSendMessageData2();
@@ -41,7 +30,7 @@ namespace Testing.Content
 			Assert.AreEqual(x.ReplyThreadId, SampleData.ReplyThreadId);
 			Assert.AreEqual(x.ReceiverIds.Length, SampleData.ReceiverIds.Length);
         }
-<<<<<<< HEAD
+
 		[Test]
 		public void Test_ChatNewMessage()
 		{
@@ -156,7 +145,4 @@ namespace Testing.Content
             }
 		}
     }
-=======
-	}
->>>>>>> parent of 4df0296 (Code cleanup)
 }

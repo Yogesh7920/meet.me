@@ -47,17 +47,24 @@ namespace Testing.Content
 			return MsgData;
 		}
 
-		public SendMessageData GetSendMessageData1()
+		public MessageData GenerateNewMessageData(string Message, int MessageId = 1, int[] rcvIds = null, int ReplyThreadId = -1, int SenderId = -1, bool Starred = false, MessageType Type = MessageType.Chat)
 		{
-			var toconvert1 = new SendMessageData();
-			toconvert1.Message = "Hello";
-			toconvert1.Type = MessageType.Chat;
-			toconvert1.ReplyThreadId = -1;
-			toconvert1.ReceiverIds = new int[0];
-			return toconvert1;
+			if (rcvIds == null)
+			{
+				rcvIds = new int[0];
+			}
+			var msg = new MessageData();
+			msg.Event = MessageEvent.NewMessage;
+			msg.Message = Message;
+			msg.MessageId = MessageId;
+			msg.ReceiverIds = rcvIds;
+			msg.SenderId = SenderId;
+			msg.ReplyThreadId = ReplyThreadId;
+			msg.Starred = Starred;
+			msg.Type = Type;
+			return msg;
 		}
 
-<<<<<<< HEAD
         public ReceiveMessageData GenerateNewReceiveMessageData(string Message, int MessageId = 1, int[] rcvIds = null, int ReplyThreadId = -1, int SenderId = -1, bool Starred = false, MessageType Type = MessageType.Chat)
         {
             if (rcvIds == null)
@@ -76,11 +83,17 @@ namespace Testing.Content
             return msg;
         }
 
+		public SendMessageData GetSendMessageData1()
+		{
+			var toconvert1 = new SendMessageData();
+			toconvert1.Message = "Hello";
+			toconvert1.Type = MessageType.Chat;
+			toconvert1.ReplyThreadId = -1;
+			toconvert1.ReceiverIds = new int[0];
+			return toconvert1;
+		}
 
-        public MessageData GenerateStarMessageData(string Message, int MessageId = 1, int[] rcvIds = null, int ReplyThreadId = -1, int SenderId = -1, bool Starred = false, MessageType Type = MessageType.Chat)
-=======
 		public MessageData GetMessageData1()
->>>>>>> parent of 4df0296 (Code cleanup)
         {
 			SendMessageData SampleData = GetSendMessageData1();
 			ChatClient conch = new ChatClient(_fakeCommunicator);
