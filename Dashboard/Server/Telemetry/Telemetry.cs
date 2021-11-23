@@ -25,8 +25,6 @@ namespace Dashboard.Server.Telemetry{
         /// </params>
         public void GetUserCountVsTimeStamp(SessionData newSession, DateTime currTime)
         {
-            Console.WriteLine("inside getusercountvsTime funciton time= ");
-            Console.WriteLine(currTime);
             userCountAtEachTimeStamp[currTime] = newSession.users.Count;
         }
 
@@ -51,9 +49,8 @@ namespace Dashboard.Server.Telemetry{
         ///     changes, that means any user has either entered or exited.
         /// </summary>
         /// <params name="newSession"> Takes the session data which contains the list of users </params>
-        public void CalculateEnterExitTimes(SessionData newSession)
+        public void CalculateEnterExitTimes(SessionData newSession, DateTime currTime)
         {
-            DateTime currTime= DateTime.Now;
             foreach(UserData user_i in newSession.users )
             {
                 if(userEnterTime.ContainsKey(user_i)==false)
@@ -110,10 +107,8 @@ namespace Dashboard.Server.Telemetry{
         /// <params name="newSession"> Received new SessionData </params>
         public void OnAnalyticsChanged(SessionData newSession, DateTime time)
         {
-            Console.WriteLine("inside OnAnalyticsChanged time = ");
-            Console.WriteLine(time);
             GetUserCountVsTimeStamp(newSession, time);
-            GetInsincereMembers();
+            CalculateEnterExitTimes(newSession, time);
         }
 
         /// <summary>
@@ -124,6 +119,7 @@ namespace Dashboard.Server.Telemetry{
         {
             // save the session data
             GetUserVsChatCount(allMessages);
+            GetInsincereMembers();
             SessionAnalytics sessionAnalyticsToSave = new SessionAnalytics();
             sessionAnalyticsToSave.chatCountForEachUser=userIdChatCountDic;
             sessionAnalyticsToSave.userCountAtAnyTime= userCountAtEachTimeStamp;
@@ -149,6 +145,8 @@ namespace Dashboard.Server.Telemetry{
         /// </returns>
         public SessionAnalytics GetTelemetryAnalytics(ChatContext[] allMessages)
         {
+            GetUserVsChatCount(allMessages);
+            GetInsincereMembers();
             SessionAnalytics sessionAnalyticsToSend = new SessionAnalytics();
             sessionAnalyticsToSend.chatCountForEachUser=userIdChatCountDic;
             sessionAnalyticsToSend.userCountAtAnyTime= userCountAtEachTimeStamp;
