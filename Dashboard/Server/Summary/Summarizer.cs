@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Content;
 
 namespace Dashboard.Server.Summary
@@ -27,23 +29,27 @@ namespace Dashboard.Server.Summary
 		/// which would contain an array of chat messages
 		/// which would be used for the summarizer to 
 		/// generate the summary
-		/// </param>
-		/// <param name="fraction"> The fraction of the chat 
-		/// length which determines the length of summary
-		/// </param>
 		/// <returns>
 		/// String which is the summary of the 
 		/// chat in the particular discusiion
 		/// </returns>>
-		public string GetSummary(ChatContext[] chats, double fraction = 0.2)
+		public string GetSummary(ChatContext[] chats)
 		{
-			string discussionChat = "";
+			if (chats == null || chats.Length == 0)
+			{
+				Trace.WriteLine("Empty chat context obtained.");
+				return "";
+			}
+			List<(string, bool)> discussionChat = new();
 			foreach (ChatContext chat in chats)
 			{
 				foreach (ReceiveMessageData msg in chat.MsgList)
-					discussionChat += msg.Message;
+				{
+					if (msg.Type == MessageType.Chat)
+						discussionChat.Add((msg.Message, msg.Starred));
+				}
 			}
-			return _processor.Summarize(discussionChat, fraction);
+			return _processor.Summarize(discussionChat);
 		}
 
 		/// <summary>
@@ -56,16 +62,13 @@ namespace Dashboard.Server.Summary
 		/// which would be used for the summarizer to 
 		/// save the summary in the database
 		/// </param>
-		/// <param name="fraction"> The fraction of the chat 
-		/// length which determines the length of summary
-		/// </param>
 		/// <returns>
 		/// Returns true if summary was succesfully stored 
 		/// and false otherwise
 		/// </returns>
-		public bool SaveSummary(ChatContext[] chats, double fraction = 0.2)
+		public bool SaveSummary(ChatContext[] chats)
 		{
-			string summary = GetSummary(chats, fraction);
+			string summary = GetSummary(chats);
 			throw new NotImplementedException();
 		}
 

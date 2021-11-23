@@ -23,6 +23,36 @@
 
     <ItemGroup>
 
+      <None Remove="Icons\ChatUX\arrow.png" />
+
+      <None Remove="Icons\ChatUX\close.png" />
+
+      <None Remove="Icons\ChatUX\download.jpg" />
+
+      <None Remove="Icons\ChatUX\download.png" />
+
+      <None Remove="Icons\ChatUX\download1.png" />
+
+      <None Remove="Icons\ChatUX\download2.jpg" />
+
+      <None Remove="Icons\ChatUX\file.png" />
+
+      <None Remove="Icons\ChatUX\file2.jpg" />
+
+      <None Remove="Icons\ChatUX\file3.png" />
+
+      <None Remove="Icons\ChatUX\logo.png" />
+
+      <None Remove="Icons\ChatUX\options.png" />
+
+      <None Remove="Icons\ChatUX\reply.png" />
+
+      <None Remove="Icons\ChatUX\reply3.png" />
+
+      <None Remove="Icons\ChatUX\send.png" />
+
+      <None Remove="Icons\ChatUX\upload1.png" />
+
       <None Remove="Icons\ExpCol.png" />
       <None Remove="Icons\logo.ico" />
       <None Remove="Icons\logo.png" />
@@ -45,6 +75,51 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Resource Include="Icons\ChatUX\arrow.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\close.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\download.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\download.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\download1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\download2.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\file.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\file2.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\file3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\logo.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\options.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\reply.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\reply3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\send.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\upload1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
       <Resource Include="Icons\ExpCol.png">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
