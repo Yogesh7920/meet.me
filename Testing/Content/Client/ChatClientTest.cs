@@ -2,6 +2,9 @@ using NUnit.Framework;
 using Content;
 using FluentAssertions;
 using Networking;
+using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace Testing.Content
 {
@@ -68,6 +71,23 @@ namespace Testing.Content
                 Assert.Fail();
             }
         }
+		[Test]
+		public void Test_ChatNewMessage_EmptyString()
+		{
+			Utils _util = new Utils();
+            int UserId = 1001;
+            SendMessageData SampleData = _util.GenerateChatSendMsgData("", new int[] { 1002 }, type: MessageType.Chat);
+            ISerializer _serializer = new Serializer();
+           
+			ChatClient _contentChat = new ChatClient(_util.GetFakeCommunicator());
+            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
+            _contentChat.UserId = UserId;
+            _contentChat.Communicator = _fakeCommunicator;
+
+            
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _contentChat.ChatNewMessage(SampleData));
+            Assert.AreEqual("Empty Message String", ex.Message);
+		}
 		[Test]
 		public void Test_ChatUpdate()
 		{
