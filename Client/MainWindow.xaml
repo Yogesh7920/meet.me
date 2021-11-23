@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        MinWidth="1500" MinHeight="750" Icon="Icons/logo.ico"
+        MinWidth="1500" MinHeight="850" Icon="Icons/logo.ico"
         Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
     
     <!-- Parent Grid -->
