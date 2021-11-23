@@ -16,6 +16,7 @@ namespace Testing.Client.Chat
         public void ChatViewModelTest()
         {
             _viewModel = new ChatViewModel();
+
         }
     }
 }

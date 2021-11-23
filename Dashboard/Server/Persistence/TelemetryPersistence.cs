@@ -20,6 +20,14 @@ namespace Dashboard.Server.Persistence
 
     public class TelemetryPersistence : ITelemetryPersistence
     {
+        
+        public TelemetryPersistence()
+        {
+            serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            telemetryAnalyticsPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
+        }
+
+
         /// <summary>
         /// retrives the ServerData after end of all of the sessions.
         /// </summary>
@@ -30,11 +38,12 @@ namespace Dashboard.Server.Persistence
             XmlSerializer deserialiser = new XmlSerializer(typeof(ServerDataToSave));
 
             //Saving the Path to save find the XML file.
-            string path = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            string path = serverDataPath;
             object objectsList = null;
             try
             {
-                using (StreamReader stream = new StreamReader(Path.Combine(path, "GlobalServerData.xml")))
+                string FullPath = Path.Combine(path, "GlobalServerData.xml");
+                using (StreamReader stream = new StreamReader(FullPath))
                 {
                     objectsList = deserialiser.Deserialize(stream);
                 }
@@ -45,10 +54,12 @@ namespace Dashboard.Server.Persistence
             {
                 // Handling Exception if someone calls the retriveFunction even before saving the XML file
                 Trace.WriteLine(exp.Message);
+                Trace.WriteLine("Yeah it is being catched here....");
                 ServerDataToSave sdts = new ServerDataToSave();
                 sdts.sessionCount = -1;
                 return sdts;
             }
+             
         }
 
         /// <summary>
@@ -74,9 +85,18 @@ namespace Dashboard.Server.Persistence
 
             ResponseEntity t3 = InsincereMembers_SaveUtil(sessionAnalyticsData.insincereMembers, sessionId);
 
+            List<string> l1 = new List<string>();
+            l1.Add(t1.FileName);
+            l1.Add(t2.FileName);
+            l1.Add(t3.FileName);
+
             ResponseEntity response = new ResponseEntity();
             response.IsSaved = t1.IsSaved & t2.IsSaved & t3.IsSaved;
             response.FileName = sessionId;
+            response.TelemetryAnalyticsFiles = l1;
+            
+            PersistenceFactory.lastSaveResponse = response;
+
             return response;
         }
 
@@ -89,7 +109,7 @@ namespace Dashboard.Server.Persistence
         private ResponseEntity InsincereMembers_SaveUtil(List<int> InsincereMembers, string sessionId)
         {
             //Saving the Path to save find the XML file.
-            string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
+            string p1 = telemetryAnalyticsPath + sessionId;
             string TextToSave = "Followings are UserIDs of InsincereMembers : " + Environment.NewLine;
             ResponseEntity response = new ResponseEntity();
             response.FileName = "insincereMembersList.txt";
@@ -97,14 +117,24 @@ namespace Dashboard.Server.Persistence
             {
                 TextToSave = TextToSave + w.ToString() + Environment.NewLine;
             }
-            //Check if directory exists if not create a directory.
-            if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
 
-            //Writing the Text to Text file.
-            File.WriteAllText(Path.Combine(p1, "insincereMembersList.txt"), TextToSave);
-            Trace.WriteLine("insincereMembersList.txt saved Successfully!!");
-            response.IsSaved = true;
-            return response;
+            try
+            {
+                //Check if directory exists if not create a directory.
+                if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
+
+                //Writing the Text to Text file.
+                File.WriteAllText(Path.Combine(p1, "insincereMembersList.txt"), TextToSave);
+                Trace.WriteLine("insincereMembersList.txt saved Successfully!!");
+                response.IsSaved = true;
+                return response;
+            }
+            catch(Exception except)
+            {
+                Trace.WriteLine(except.Message);
+                response.IsSaved = false;
+                return response;
+            }
 
         }
 
@@ -115,7 +145,7 @@ namespace Dashboard.Server.Persistence
         /// /// <param name="sessionId"> takes sessionId from Telemetry. </param>
         private ResponseEntity ChatCountVsUserID_PlotUtil(Dictionary<int, int> ChatCountForEachUser, string sessionId)
         {
-            string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
+            string p1 = telemetryAnalyticsPath + sessionId;
             // Converting the data Value of dictionary to Array, inorder to use ScottPlot library
             int[] val1 = ChatCountForEachUser.Values.ToArray();
             double[] values1 = new double[val1.Length];
@@ -159,12 +189,22 @@ namespace Dashboard.Server.Persistence
             ResponseEntity response = new ResponseEntity();
             response.FileName = "ChatCountVsUserID.png";
 
-            //Creating Directory if required and save
-            if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
-            plt1.SaveFig(Path.Combine(p1, "ChatCountVsUserID.png"));
-            response.IsSaved = true;
-            Trace.WriteLine("ChatCountVsUserID.png saved Successfully!!");
-            return response;
+            try
+            {
+                //Creating Directory if required and save
+                if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
+                plt1.SaveFig(Path.Combine(p1, "ChatCountVsUserID.png"));
+                response.IsSaved = true;
+                Trace.WriteLine("ChatCountVsUserID.png saved Successfully!!");
+                return response;
+
+            }
+            catch(Exception except)
+            {
+                Trace.WriteLine(except.Message);
+                response.IsSaved = false;
+                return response;
+            }
 
         }
 
@@ -219,14 +259,23 @@ namespace Dashboard.Server.Persistence
             plt.YLabel("UserCount At Any Instant");
             ResponseEntity response = new ResponseEntity();
             response.FileName = "UserCountVsTimeStamp.png";
-            string p1 = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/" + sessionId;
+            string p1 = telemetryAnalyticsPath + sessionId;
 
-            //Creating Directory if required and save
-            if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
-            plt.SaveFig(Path.Combine(p1, "UserCountVsTimeStamp.png"));
-            Trace.WriteLine("UserCountVsTimeStamp.png saved Successfully!!");
-            response.IsSaved = true;
-            return response;
+            try
+            {
+                //Creating Directory if required and save
+                if (!Directory.Exists(p1)) Directory.CreateDirectory(p1);
+                plt.SaveFig(Path.Combine(p1, "UserCountVsTimeStamp.png"));
+                Trace.WriteLine("UserCountVsTimeStamp.png saved Successfully!!");
+                response.IsSaved = true;
+                return response;
+            }
+            catch(Exception except)
+            {
+                Trace.WriteLine(except.Message);
+                response.IsSaved = false;
+                return response;
+            }
         }
 
         /// <summary>
@@ -240,18 +289,34 @@ namespace Dashboard.Server.Persistence
 
             //Creating the XmlSerializer Instance
             XmlSerializer xmlser = new XmlSerializer(typeof(ServerDataToSave));
-            string path = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-
-            // Calling Serialize method
-            using (System.IO.StreamWriter stream = new System.IO.StreamWriter(Path.Combine(path, "GlobalServerData.xml")))
+            string path = serverDataPath;
+            try
             {
-                xmlser.Serialize(stream, AllserverData);
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+                // Calling Serialize method
+                using (System.IO.StreamWriter stream = new System.IO.StreamWriter(Path.Combine(path, "GlobalServerData.xml")))
+                {
+                    xmlser.Serialize(stream, AllserverData);
+                }
+                Trace.WriteLine("ServerData saved Succesfully!!");
+                response.IsSaved = true;
+                response.FileName = "GlobalServerData.xml";
+                PersistenceFactory.lastSaveResponse = response;
+                return response;
             }
-            Trace.WriteLine("ServerData saved Succesfully!!");
-            response.IsSaved = true;
-            response.FileName = "GlobalServerData.xml";
-            return response;
+            catch(Exception except)
+            {
+                Trace.WriteLine(except.Message);
+                response.IsSaved = false;
+                return response;
+            }
         }
+
+        private string serverDataPath;
+        private string telemetryAnalyticsPath;
+
+        public string ServerDataPath { get => serverDataPath; set => serverDataPath = value; }
+        public string TelemetryAnalyticsPath { get => telemetryAnalyticsPath; set => telemetryAnalyticsPath = value; }
     }
 }
