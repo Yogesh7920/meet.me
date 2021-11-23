@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dashboard;
+﻿using Dashboard;
 using Dashboard.Client.SessionManagement;
+using System;
 
-namespace Client.ViewModels
+namespace Client.ViewModel
 {
     public class AuthViewModel
     {
@@ -31,7 +27,7 @@ namespace Client.ViewModels
             }
             catch(Exception _)
             {
-                return true;
+                return false;
             }
         }
     }
