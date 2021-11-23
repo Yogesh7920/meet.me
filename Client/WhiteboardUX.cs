@@ -728,9 +728,11 @@ namespace Client
                 //removing the local temporary render and only acknowledging the CREATE UXShape request as we cleaned up temporary render
                 cn = UnselectAllBB(cn, WBOps);
                 cn.Children.Remove(sh);
-                //since the WB module only sends CREATE request if start to end point of Move operation is directly given to them, hence toRender[0] corresponds to CREATE operation
-                cn = RenderUXElement(new List<UXShape> { toRender[0] }, cn);
-                cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
+                //Since we are removing rendered temporary shape above and toRender[1] corresponds to CREATE operation
+                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+
+                //Bugged, adr.ClipEnabled gives NullException??
+                //cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
 
                 Trace.WriteLine("Sent move request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
                 "to end point " + end.ToString() + ", where list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());

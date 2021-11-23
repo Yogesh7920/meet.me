@@ -187,8 +187,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false)
         {
-            Debug.Assert(shapeComp == true);
-            return _boardState.Resize(start, end, shapeId, dragPos);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, dragPos, shapeComp);
         }
 
         /// <summary>
@@ -201,7 +200,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, shapeComp);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, DragPos.NONE, shapeComp);
         }
 
         /// <summary>
@@ -225,7 +224,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, shapeComp);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, DragPos.NONE, shapeComp);
         }
 
         /// <summary>

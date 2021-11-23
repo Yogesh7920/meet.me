@@ -120,7 +120,7 @@ namespace Whiteboard
                     X2 = s.Start.R + deltaH,
                     Y2 = s.Start.C + deltaW
                 };
-                
+
                 WindowsShape = LineUXElement;
             }
             else

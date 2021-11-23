@@ -77,7 +77,7 @@ namespace Whiteboard
         /// <param name="shapeId">Id of the shape.</param>
         /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        abstract public List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false);
 
         /// <summary>
         /// Delete a shape with given shape Id.
@@ -97,16 +97,6 @@ namespace Whiteboard
         /// </summary>
         ///  <returns>The List of operations on Shapes for UX to render.</returns>
         abstract public List<UXShape> Undo();
-
-        /// <summary>
-        /// Perform resizing operation on shape.
-        /// </summary>
-        /// <param name="start">Start of mouse drag.</param>
-        /// <param name="end">End of mouse drag.</param>
-        /// <param name="shapeId">Id of the shape.</param>
-        /// <param name="dragpos">The latch used for resizing.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> Resize(Coordinate start, Coordinate end, string shapeId, DragPos dragpos);
 
         /// <summary>
         /// Gets the username for given shape Id.
