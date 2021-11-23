@@ -10,7 +10,7 @@ using Dashboard;
 using Dashboard.Client.SessionManagement;
 using Client;
 
-namespace Client.ViewModels
+namespace Client.ViewModel
 {
 
     class HomePageViewModel : IClientSessionNotifications

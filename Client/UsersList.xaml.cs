@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Client.ViewModels;
+using Client.ViewModel;
 
 namespace Client
 {
