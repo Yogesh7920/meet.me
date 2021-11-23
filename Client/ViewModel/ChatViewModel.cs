@@ -16,7 +16,7 @@ namespace Client.ViewModel
     {
 
         IDictionary<int, string> _messages;
-        private readonly IDictionary<int, string> _users;
+        private IDictionary<int, string> _users;
         public int UserId
         {
             get; private set;
@@ -31,7 +31,8 @@ namespace Client.ViewModel
         public ChatViewModel()
         {
             _messages = new Dictionary<int, string>();
-            _model = ContentClientFactory.GetInstance();
+            _users = new Dictionary<int, string>();
+            _model = ContentClientFactory.getInstance();
             _model.CSubscribe(this);
             this.UserId = _model.GetUserId();
 
