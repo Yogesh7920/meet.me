@@ -19,18 +19,18 @@ namespace Testing.Content
         [Test]
         public void GetInstance_ContentClientFactory_IContentClientShouldBeSingleton()
         {
-            IContentClient _client1 = ContentClientFactory.GetInstance();
-            IContentClient _client2 = ContentClientFactory.GetInstance();
-            Assert.AreEqual(_client1, _client2);
+            IContentClient client1 = ContentClientFactory.GetInstance();
+            IContentClient client2 = ContentClientFactory.GetInstance();
+            Assert.AreEqual(client1, client2);
         }
 
         [Test]
         public void SetUser_ContentClientFactory_UserIdOfContentClientShouldMatchWithGivenID()
         {
-            int UserId = 1001;
-            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
-            ContentClientFactory.SetUser(UserId);
-            Assert.AreEqual(UserId, _contentClient.UserId);
+            int userId = 1001;
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            ContentClientFactory.SetUser(userId);
+            Assert.AreEqual(userId, contentClient.UserId);
         }
 
         [Test]
@@ -695,6 +695,12 @@ namespace Testing.Content
             // Fetching listened data from listener
             ReceiveMessageData _listenedData = _fakeListener.GetOnMessageData();
             Assert.AreEqual(_listenedData.Message, Msg);
+        }
+
+        [Test]
+        public void ReceiveNewMsgServer_ReceivingRequestFromClient_ProperReplyShouldSend()
+        {
+
         }
 
         public void CompareReceiveMessageData(ReceiveMessageData m1, ReceiveMessageData m2)
