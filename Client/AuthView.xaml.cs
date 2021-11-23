@@ -1,4 +1,11 @@
-﻿using Client.ViewModel;
+﻿/**
+ * owned by: Irene Casmir
+ * created by: Irene Casmir
+ * date created: 25/10/2021
+ * date modified: 23/11/2021
+**/
+
+using Client.ViewModel;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -40,6 +47,20 @@ namespace Client
             if (this.WindowState == WindowState.Normal || this.WindowState == WindowState.Maximized)
             {
                 this.WindowState = WindowState.Minimized;
+            }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
+        /// Maximize button functionality
+        /// </summary>
+        private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal)
+            {
+                this.WindowState = WindowState.Maximized;
             }
             else
             {
