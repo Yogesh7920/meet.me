@@ -65,6 +65,20 @@ namespace Testing.Content
 			return msg;
 		}
 
+		public ReceiveMessageData MessageDataToReceiveMessageData(MessageData msgData)
+        {
+			var msg = new ReceiveMessageData();
+			msg.Event = msgData.Event;
+			msg.Message = msgData.Message;
+			msg.MessageId = msgData.MessageId;
+			msg.ReceiverIds = msgData.ReceiverIds;
+			msg.SenderId = msgData.SenderId;
+			msg.ReplyThreadId = msgData.ReplyThreadId;
+			msg.Starred = msgData.Starred;
+			msg.Type = msgData.Type;
+			return msg;
+		}
+
         public ReceiveMessageData GenerateNewReceiveMessageData(string Message, int MessageId = 1, int[] rcvIds = null, int ReplyThreadId = -1, int SenderId = -1, bool Starred = false, MessageType Type = MessageType.Chat)
         {
             if (rcvIds == null)
