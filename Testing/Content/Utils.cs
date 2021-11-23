@@ -41,11 +41,47 @@ namespace Testing.Content
             {
 				rcvIds = new int[0];
             }
-			SendMessageData SampleData = GenerateChatSendMsgData(msg,rcvIds,replyId,type);
+			SendMessageData sampleData = GenerateChatSendMsgData(msg,rcvIds,replyId,type);
 			ChatClient contentChatClient = new ChatClient(_fakeCommunicator);
-			MessageData MsgData = contentChatClient.SendToMessage(SampleData, chatEvent);
-			return MsgData;
+			MessageData msgData = contentChatClient.SendToMessage(sampleData, chatEvent);
+			return msgData;
 		}
+
+		public MessageData GenerateNewMessageData(string Message, int MessageId = 1, int[] rcvIds = null, int ReplyThreadId = -1, int SenderId = -1, bool Starred = false, MessageType Type = MessageType.Chat)
+		{
+			if (rcvIds == null)
+			{
+				rcvIds = new int[0];
+			}
+			var msg = new MessageData();
+			msg.Event = MessageEvent.NewMessage;
+			msg.Message = Message;
+			msg.MessageId = MessageId;
+			msg.ReceiverIds = rcvIds;
+			msg.SenderId = SenderId;
+			msg.ReplyThreadId = ReplyThreadId;
+			msg.Starred = Starred;
+			msg.Type = Type;
+			return msg;
+		}
+
+        public ReceiveMessageData GenerateNewReceiveMessageData(string Message, int MessageId = 1, int[] rcvIds = null, int ReplyThreadId = -1, int SenderId = -1, bool Starred = false, MessageType Type = MessageType.Chat)
+        {
+            if (rcvIds == null)
+            {
+                rcvIds = new int[0];
+            }
+            var msg = new ReceiveMessageData();
+            msg.Event = MessageEvent.NewMessage;
+            msg.Message = Message;
+            msg.MessageId = MessageId;
+            msg.ReceiverIds = rcvIds;
+            msg.SenderId = SenderId;
+            msg.ReplyThreadId = ReplyThreadId;
+            msg.Starred = Starred;
+            msg.Type = Type;
+            return msg;
+        }
 
 		public SendMessageData GetSendMessageData1()
 		{
@@ -59,10 +95,10 @@ namespace Testing.Content
 
 		public MessageData GetMessageData1()
         {
-			SendMessageData SampleData = GetSendMessageData1();
+			SendMessageData sampleData = GetSendMessageData1();
 			ChatClient conch = new ChatClient(_fakeCommunicator);
-			MessageData MsgData = conch.SendToMessage(SampleData, MessageEvent.NewMessage);
-			return MsgData;
+			MessageData msgData = conch.SendToMessage(sampleData, MessageEvent.NewMessage);
+			return msgData;
 		}
 
 		public SendMessageData GetSendMessageData2()

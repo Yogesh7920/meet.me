@@ -7,17 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Icons\ChatUX\**" />
-      <EmbeddedResource Remove="Icons\ChatUX\**" />
-      <None Remove="Icons\ChatUX\**" />
-      <Page Remove="Icons\ChatUX\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="ChatView.xaml.cs" />
       <Compile Remove="ScreenShareView.xaml.cs" />
-      <Compile Remove="UsersList.xaml.cs" />
-      <Compile Remove="ViewModels\HomePageViewModel.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,6 +23,36 @@
 
     <ItemGroup>
 
+      <None Remove="Icons\ChatUX\arrow.png" />
+
+      <None Remove="Icons\ChatUX\close.png" />
+
+      <None Remove="Icons\ChatUX\download.jpg" />
+
+      <None Remove="Icons\ChatUX\download.png" />
+
+      <None Remove="Icons\ChatUX\download1.png" />
+
+      <None Remove="Icons\ChatUX\download2.jpg" />
+
+      <None Remove="Icons\ChatUX\file.png" />
+
+      <None Remove="Icons\ChatUX\file2.jpg" />
+
+      <None Remove="Icons\ChatUX\file3.png" />
+
+      <None Remove="Icons\ChatUX\logo.png" />
+
+      <None Remove="Icons\ChatUX\options.png" />
+
+      <None Remove="Icons\ChatUX\reply.png" />
+
+      <None Remove="Icons\ChatUX\reply3.png" />
+
+      <None Remove="Icons\ChatUX\send.png" />
+
+      <None Remove="Icons\ChatUX\upload1.png" />
+
       <None Remove="Icons\ExpCol.png" />
       <None Remove="Icons\logo.ico" />
       <None Remove="Icons\logo.png" />
@@ -43,6 +63,8 @@
       <None Remove="Icons\MainWindow\icons8-whiteboard-150.png" />
       <None Remove="Icons\Eraser.cur" />
       <None Remove="Icons\Eraser_2.cur" />
+      <None Remove="Icons\meet.me_logo_no_bg.png" />
+      <None Remove="Icons\screenshare.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
@@ -51,12 +73,55 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Page Remove="ChatView.xaml" />
       <Page Remove="ScreenShareView.xaml" />
-      <Page Remove="UsersList.xaml" />
     </ItemGroup>
 
     <ItemGroup>
+      <Resource Include="Icons\ChatUX\arrow.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\close.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\download.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\download.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\download1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\download2.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\file.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\file2.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\file3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\logo.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\options.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\reply.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\reply3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\send.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\ChatUX\upload1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
       <Resource Include="Icons\ExpCol.png">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Resource>
@@ -86,6 +151,12 @@
     <ItemGroup>
         <Resource Include="Icons\Eraser.cur" />
         <Resource Include="Icons\Eraser_2.cur" />
+        <Resource Include="Icons\meet.me_logo_no_bg.png">
+          <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Resource>
+        <Resource Include="Icons\screenshare.png">
+          <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Resource>
         <Resource Include="Icons\WhiteboardUX\Toolbar\bin.png" />
     </ItemGroup>
 
