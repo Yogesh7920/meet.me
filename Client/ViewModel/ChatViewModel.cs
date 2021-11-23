@@ -17,7 +17,8 @@ namespace Client.ViewModel
 
         IDictionary<int, string> _messages;
         private IDictionary<int, string> _users;
-        public int UserId
+
+        public static int UserId
         {
             get; private set;
         }
@@ -34,7 +35,7 @@ namespace Client.ViewModel
             _users = new Dictionary<int, string>();
             _model = ContentClientFactory.GetInstance();
             _model.CSubscribe(this);
-            this.UserId = _model.GetUserId();
+            UserId = _model.GetUserId();
 
             _modelDb = SessionManagerFactory.GetClientSessionManager();
             _modelDb.SubscribeSession(this);
