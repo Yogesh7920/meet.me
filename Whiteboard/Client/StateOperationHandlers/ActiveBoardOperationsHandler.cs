@@ -416,6 +416,7 @@ namespace Whiteboard
 
                         Coordinate delta = end - _lastDrawn._end;
                         lastDrawnMainShape.Center.Add(delta);
+                        lastDrawnMainShape.Start.Add(delta);
                         operationSuccess = true;
                         break;
                     case RealTimeOperation.ROTATE:

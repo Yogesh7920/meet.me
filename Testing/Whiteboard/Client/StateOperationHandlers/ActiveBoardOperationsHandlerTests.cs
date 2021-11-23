@@ -183,14 +183,12 @@ namespace Testing.Whiteboard
             // The UXObject at list position 2 should be the one to be created.
             CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.LINE, new(3, 3), 0);
             Assert.AreEqual(operations[1].WindowsShape.Uid, uid);
-            Assert.AreEqual(operations[1].WindowsShape.Height, 2);
-            Assert.AreEqual(operations[1].WindowsShape.Width, 2);
 
             System.Windows.Shapes.Line operationLine = (System.Windows.Shapes.Line) operations[1].WindowsShape;
-            Assert.AreEqual(operationLine.X1, -1);
-            Assert.AreEqual(operationLine.Y1, -1);
-            Assert.AreEqual(operationLine.X2, 1);
-            Assert.AreEqual(operationLine.Y2, 1);
+            Assert.AreEqual(operationLine.X1, 2);
+            Assert.AreEqual(operationLine.Y1, 2);
+            Assert.AreEqual(operationLine.X2, 4);
+            Assert.AreEqual(operationLine.Y2, 4);
             Assert.IsTrue(operations[1].TranslationCoordinate.Equals(new(3, 3)));
 
             // checking the _lastDrawn Object has correct details
