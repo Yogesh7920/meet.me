@@ -227,7 +227,7 @@ namespace Dashboard.Server.Summary
 				return (s.Item1, res);
 			}).ToList();
 			bool isEmpty = true;
-			foreach(var s in cdfScores)
+			foreach (var s in cdfScores)
 			{
 				if (s.Item1 != "")
 				{

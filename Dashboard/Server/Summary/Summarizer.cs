@@ -6,10 +6,10 @@
 ///		the calls for the necessary functions.
 /// </summary>
 
-using System.Collections.Generic;
-using System.Diagnostics;
 using Content;
 using Dashboard.Server.Persistence;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Dashboard.Server.Summary
 {
