@@ -71,29 +71,24 @@ namespace Networking
         ///     This method stops all the running thread
         ///     of client and closes the connection
         /// </summary>
-        /// <returns> void </returns>
         void ICommunicator.Stop()
         {
-            if (_clientSocket.Connected)
-            {
-                // stop the listener of the client 
-                _sendSocketListenerClient.Stop();
-                _receiveSocketListener.Stop();
-                _receiveQueueListener.Stop();
+            if (!_clientSocket.Connected) return;
+            // stop the listener of the client 
+            _sendSocketListenerClient.Stop();
+            _receiveSocketListener.Stop();
+            _receiveQueueListener.Stop();
 
-                //close stream  and connection of the client
-                _clientSocket.GetStream().Close();
-                _clientSocket.Close();
-            }
+            //close stream  and connection of the client
+            _clientSocket.GetStream().Close();
+            _clientSocket.Close();
         }
 
-        /// <inheritdoc />
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
             throw new NotSupportedException();
         }
 
-        /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientId)
         {
             throw new NotSupportedException();
@@ -117,13 +112,11 @@ namespace Networking
             }
         }
 
-        /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier, string destination)
         {
             throw new NotSupportedException();
         }
 
-        /// <inheritdoc />
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);

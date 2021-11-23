@@ -21,5 +21,12 @@ namespace Content
         ///     Message Type - File or Chat
         /// </summary>
         public MessageType Type;
+
+        public SendMessageData()
+        {
+            Message = "";
+            ReceiverIds = new int[0];
+            ReplyThreadId = -1;
+        }
     }
 }

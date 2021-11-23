@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
+using ScreenSharing;
 
 namespace Client
 {
     /// <summary>
-    ///     Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         private static WhiteBoardView _whiteboard;
-        private string theme = "theme1";
+        public bool sharing = false;
         //uncomment below lines after the respective user controls are done
-        /*private static ChatView _chat;
-        private static UsersList _userslist;*/
+        private static ChatView _chat;
+        private static UsersList _userslist;
         public MainWindow()
         {
             InitializeComponent();
@@ -22,10 +24,11 @@ namespace Client
             this.SSwb.Content = _whiteboard;
 
             //uncomment below lines after the respective User Controls are done
-            /*_chat = new ChatView();
+
+            _chat = new ChatView();
             this.Chat.Content = _chat;
             _userslist = new UsersList(this);
-            this.UsersListControl.Content = _userslist;*/
+            this.UsersListControl.Content = _userslist;
         }
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
         /// <summary>
@@ -46,29 +49,80 @@ namespace Client
         private void OnThemeClick(object sender, RoutedEventArgs e)
         {
             ResourceDictionary dict = new ResourceDictionary();
-            if (theme.Equals("theme1"))
+            if (Theme.IsChecked == true)//((sender as ToggleButton).IsEnabled)
             {
-                theme = "theme2";
                 dict.Source = new Uri("Theme2.xaml", UriKind.Relative);
                 Application.Current.Resources.MergedDictionaries.Clear();
                 Application.Current.Resources.MergedDictionaries.Add(dict);
             }
             else
             {
-                theme = "theme1";
                 dict.Source = new Uri("Theme1.xaml", UriKind.Relative);
                 Application.Current.Resources.MergedDictionaries.Clear();
                 Application.Current.Resources.MergedDictionaries.Add(dict);
             }
         }
         /// <summary>
+        /// Drag functionality
+        /// </summary>
+        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+        /// <summary>
+        /// Minimize button functionality
+        /// </summary>  
+        private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal || this.WindowState == WindowState.Maximized)
+            {
+                this.WindowState = WindowState.Minimized;
+            }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
+        /// Maximize button functionality
+        /// </summary>
+        private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
+        /// Close button functionality
+        /// </summary>
+        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+        /// <summary>
         /// Function to handle ScreenShare button click event
         /// </summary>
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
-            _ssFlag = true;   
+            _ssFlag = true;
+            ScreenShareClient _screenshareclient = new ScreenShareClient();
+            if (!sharing)
+            {
+                //_screenshareclient.startSharing();
+                sharing = true;
+            }
+            else
+            {
+                _screenshareclient.stopSharing();
+                sharing = false;
+            }
             //uncomment below line after respective User Controls are done
-            /*this.SSwb.Content = new ScreenShareView();
+            this.SSwb.Content = new ScreenShareUX();
             if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
@@ -88,7 +142,7 @@ namespace Client
             {
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 5);
-            }*/
+            }
         }
         /// <summary>
         /// Function to handle Whiteboard button click event
@@ -99,7 +153,7 @@ namespace Client
             this.SSwb.Content = _whiteboard;
 
             //uncomment below lines after the respective User Controls are done
-            /*if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
+            if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 1);
@@ -118,7 +172,7 @@ namespace Client
             {
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 5);
-            }*/
+            }
         }
         /// <summary>
         /// Function to handle Chat button click event
@@ -127,7 +181,7 @@ namespace Client
         {
             //uncomment below lines after the respective user controls are done
 
-            /*if (_chatFlag.Equals(false))
+            if (_chatFlag.Equals(false))
             {
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
@@ -164,7 +218,7 @@ namespace Client
                         SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                     }
                 }
-            }*/
+            }
         }
         /// <summary>
         /// Function to handle Dashboard button click event
@@ -172,8 +226,8 @@ namespace Client
         private void OnDashboardClick(object sender, RoutedEventArgs e)
         {
             //uncomment after Dashboard is added 
-            /*Dashboard dashboard = new Dashboard();
-            dashboard.Show();*/
+            DashboardView dashboard = new DashboardView();
+            dashboard.Show();
         }
         /// <summary>
         /// Function to handle UsersList expansion button click event
@@ -181,8 +235,9 @@ namespace Client
         public void OnUsersListClick()
         {
             //uncomment below lines after the respective User Controls are done
-            /*if (_userslist.UserListHidden.Equals(true))
+            if (_userslist.UserListHidden.Equals(true))
             {
+                UsersListControl.SetValue(Grid.ColumnSpanProperty, 3);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
                     SSwb.SetValue(Grid.ColumnProperty, 4);
@@ -190,7 +245,6 @@ namespace Client
                     {                        
                         SSwb.SetValue(Grid.ColumnSpanProperty, 1);
                     }
-
                     else
                     {                      
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
@@ -199,6 +253,7 @@ namespace Client
             }
             else
             {
+                UsersListControl.SetValue(Grid.ColumnSpanProperty, 1);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
                     SSwb.SetValue(Grid.ColumnProperty, 2);
@@ -208,10 +263,11 @@ namespace Client
                     }
                     else
                     {
+                        SSwb.SetValue(Grid.ColumnProperty, 1);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 5);
                     }
                 }
-            }*/
+            }
         }
         /// <summary>
         /// Function to call OnLeaveButtonClick() when Leave button is clicked

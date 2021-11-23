@@ -46,7 +46,7 @@ namespace Testing.Networking.SocketManagement
         private TcpClient _serverSocket;
         private TcpClient _clientSocket;
 
-        private string GetMessage(Packet packet)
+        private static string GetMessage(Packet packet)
         {
             var msg = packet.ModuleIdentifier;
             msg += ":";
@@ -58,7 +58,7 @@ namespace Testing.Networking.SocketManagement
         [Test]
         public void SinglePacketReceiveTesting()
         {
-            var whiteBoardData = "hello ";
+            const string whiteBoardData = "hello ";
             var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             var msg1 = GetMessage(whiteBoardPacket);
             var stream = _clientSocket.GetStream();
@@ -82,9 +82,8 @@ namespace Testing.Networking.SocketManagement
             var whiteBoardData = NetworkingGlobals.GetRandomString(4000);
             var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             var message = GetMessage(whiteBoardPacket);
-            var msg1 = message;
             var stream = _clientSocket.GetStream();
-            stream.Write(Encoding.ASCII.GetBytes(msg1), 0, msg1.Length);
+            stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             stream.Flush();
 
             while (_queue.IsEmpty())
