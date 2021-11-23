@@ -68,6 +68,7 @@ namespace Dashboard.Server.Persistence
             File.WriteAllText(Path.Combine(path, sessionId1 + ".txt"), createText);
             Trace.WriteLine("Summary saved Suceessfully!!");
             response.IsSaved = true;
+            PersistenceFactory.lastSaveResponse = response;
             return response.IsSaved;
 
         }

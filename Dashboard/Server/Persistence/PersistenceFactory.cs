@@ -48,6 +48,7 @@ namespace Dashboard.Server.Persistence
 
         private static SummaryPersistence _summaryPersisitence;
         private static TelemetryPersistence _telemetryPersisitence;
+        public static ResponseEntity lastSaveResponse;
 
     }
 
