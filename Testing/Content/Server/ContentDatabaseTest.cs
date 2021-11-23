@@ -255,6 +255,49 @@ namespace Testing.Content
         }
 
         [Test]
+        public void GetMessage_FetchingAnInvalidMessage_NullShouldBeReturned()
+        {
+            MessageData message1 = _utils.GenerateNewMessageData("Hello", SenderId: 1);
+
+            MessageData message2 = _utils.GenerateNewMessageData("Hello2", SenderId: 1);
+
+            MessageData recv = contentDatabase.StoreMessage(message1);
+
+            Assert.AreEqual(message1.Message, recv.Message);
+            Assert.AreEqual(message1.Type, recv.Type);
+            Assert.AreEqual(message1.SenderId, recv.SenderId);
+            Assert.AreEqual(message1.Event, recv.Event);
+            Assert.IsNull(recv.FileData);
+
+            recv = contentDatabase.StoreMessage(message2);
+
+            Assert.AreEqual(message2.Message, recv.Message);
+            Assert.AreEqual(message2.Type, recv.Type);
+            Assert.AreEqual(message2.SenderId, recv.SenderId);
+            Assert.AreEqual(message2.Event, recv.Event);
+            Assert.IsNull(recv.FileData);
+
+            MessageData message3 = _utils.GenerateNewMessageData("Hello3", SenderId: 1, ReplyThreadId: message1.ReplyThreadId);
+
+            recv = contentDatabase.StoreMessage(message3);
+
+            Assert.AreEqual(message3.Message, recv.Message);
+            Assert.AreEqual(message3.Type, recv.Type);
+            Assert.AreEqual(message3.SenderId, recv.SenderId);
+            Assert.AreEqual(message3.Event, recv.Event);
+            Assert.IsNull(recv.FileData);
+
+            ReceiveMessageData msg = contentDatabase.GetMessage(10, message1.MessageId);
+            Assert.IsNull(msg);
+
+            msg = contentDatabase.GetMessage(message1.ReplyThreadId, 10);
+            Assert.IsNull(msg);
+
+            msg = contentDatabase.GetMessage(message2.ReplyThreadId, 2);
+            Assert.IsNull(msg);
+        }
+
+        [Test]
         public void StoreMessage_StoringMultipleMessages_ShouldBeAbleToStoreAndFetchMultipleMessages()
         {
             MessageData message1 = _utils.GenerateNewMessageData("Hello", SenderId: 1);
