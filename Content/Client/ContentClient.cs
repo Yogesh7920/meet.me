@@ -136,19 +136,33 @@ namespace Content
         /// <inheritdoc />
         public void CMarkStar(int messageId)
         {
-            if (MessageTypeIs(messageId, MessageType.Chat))
+            ReceiveMessageData msg = RetrieveMessage(messageId);
+
+            if (msg is null)
+            {
+                throw new ArgumentException($"Message with given message id doesn't exist");
+            }
+
+            if (msg.Type == MessageType.Chat)
                 _chatHandler.ChatStar(messageId);
             else
-                throw new ArgumentException($"Message with given message id either doesn't exist or isn't a chat message");
+                throw new ArgumentException($"Message with given message id isn't a chat message");
         }
 
         /// <inheritdoc />
         public void CUpdateChat(int messageId, string newMessage)
         {
-            if (MessageTypeIs(messageId, MessageType.Chat))
+            ReceiveMessageData msg = RetrieveMessage(messageId);
+            
+            if(msg is null)
+            {
+                throw new ArgumentException($"Message with given message id doesn't exist");
+            }
+
+            if (msg.Type == MessageType.Chat && msg.SenderId == UserId)
                 _chatHandler.ChatUpdate(messageId, newMessage);
             else
-                throw new ArgumentException($"Message with given message id either doesn't exist or isn't a chat message");
+                throw new ArgumentException($"Message with given message id can't be updated. Make sure it's a chat message and was sent by this client");
         }
 
         /// <inheritdoc />
@@ -336,40 +350,23 @@ namespace Content
             File.WriteAllBytes(savepath, message.FileData.fileContent);
         }
 
-        // helper function that checks if a message with given message id exists
-        private bool MessageExists(int messageid)
+        /// <summary>
+        /// Helper function that retrieves a message from inbox using message id
+        /// </summary>
+        /// <param name="messageid">Id of the message to be retrieved</param>
+        /// <returns>ReceiveMessageData object if message exists otherwise null</returns>
+        private ReceiveMessageData RetrieveMessage(int messageid)
         {
             foreach (var context in _allMessages)
             {
                 foreach(var message in context.MsgList)
                 {
                     if (message.MessageId == messageid)
-                        return true;
+                        return message;
                 }
             }
 
-            return false;
-        }
-
-        // helper function that tells if message type of a message with a given id is as specified
-        // returns false if message with given message id doesn't exist
-        private bool MessageTypeIs(int messageid, MessageType assumedType)
-        {
-            foreach (var context in _allMessages)
-            {
-                foreach (var message in context.MsgList)
-                {
-                    if (message.MessageId == messageid)
-                    {
-                        if (message.Type == assumedType)
-                            return true;
-                        else
-                            return false;
-                    }
-                }
-            }
-            // if execution reaches this point, messageid search has been unsuccessful
-            return false;
+            return null;
         }
     }
 }
