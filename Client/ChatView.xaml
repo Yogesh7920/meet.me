@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        MouseDown="OnWindowMouseDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        MouseDown="OnWindowMouseDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:DesignWidth="363.639" d:DesignHeight="807.376">
     <!--Height="780" Width="470"-->
     <UserControl.Resources>
         <SolidColorBrush x:Key="DynamicTextClr" Color="White"/>
@@ -30,7 +30,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-   
+
         <Style TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{DynamicResource DynamicButtonBack}" />
             <Setter Property="BorderBrush" Value="{DynamicResource DynamicButtonBack}"/>
@@ -198,7 +198,7 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0" Background="{DynamicResource DynamicChatBackGrd}" >
-                        <TextBlock Foreground="Black" Text="You" x:Name="SenderName" TextWrapping="Wrap" Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
+                        <TextBlock Foreground="Black" Text="{Binding UserName}" x:Name="SenderName" TextWrapping="Wrap" Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource DynamicRecvMsg}" BorderThickness="5" Background="{DynamicResource DynamicRecvFile}" Opacity="0.5">
@@ -247,7 +247,7 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0" Background="{DynamicResource DynamicChatBackGrd}" >
-                        <TextBlock Foreground="Black" Text="You" x:Name="SenderName" TextWrapping="Wrap" Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
+                        <TextBlock Foreground="Black" Text="{Binding UserName}" x:Name="SenderName" TextWrapping="Wrap" Width="250" FontSize="14" TextAlignment="Left" Padding="8,2,8,2" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource DynamicRecvMsg}" BorderThickness="5" Background="{DynamicResource DynamicRecvFile}" Opacity="0.5">
@@ -313,10 +313,10 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="670" />
-                    <RowDefinition Height="90" />
+                    <RowDefinition Height="95" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" Margin="5,5,5,0">
-                    <ListBox Background="{DynamicResource DynamicChatBackGrd}" VerticalAlignment="Stretch" BorderBrush="{DynamicResource DynamicChatBackGrd}" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="myChat" ItemTemplateSelector="{StaticResource ChatBubbleTemplateSelector}">
+                    <ListBox Background="{DynamicResource DynamicChatBackGrd}" HorizontalAlignment="Stretch" BorderBrush="{DynamicResource DynamicChatBackGrd}" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="myChat" ItemTemplateSelector="{StaticResource ChatBubbleTemplateSelector}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Template">
@@ -343,18 +343,18 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" CornerRadius="8" Background="{DynamicResource DynamicSendBox}" BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="2" Margin="7,0,0,0">
-                        <Grid>
+                        <Grid VerticalAlignment="Bottom">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
-                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0">
                                     <Border CornerRadius="8" BorderBrush="{DynamicResource DynamicSendBox}" BorderThickness="1" Background="{DynamicResource DynamicReplyBox}" Opacity="0.5">
                                         <TextBlock Name="ReplyTextBox" Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicTextClr}" TextWrapping="Wrap" Width="425" FontSize="16" Padding="8,5,8,5"/>
                                     </Border>
                                 </Grid>
-                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="{DynamicResource DynamicTextClr}" Background="Transparent" BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Center" Text=""/>
+                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="{DynamicResource DynamicTextClr}" Background="Transparent" BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom" Text=""/>
                             </Grid>
                             <Button Background="Transparent" HorizontalAlignment="Right" Width="30" Margin="3,5,2,6" Click="OnUploadButtonClick" VerticalAlignment="Bottom">
                                 <Image Source="Icons/ChatUX/upload1.png" Width="20" Height="20"/>
