@@ -30,9 +30,6 @@ namespace Dashboard.Server.Persistence
         {
             // Creating the name of the File, according to Current DateTime in feasible format of file. 
             string sessionId1 = string.Format("Summary_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
-            // Storing the Path
-           // string path = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
-
             // Summary Creation
             string createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
 
