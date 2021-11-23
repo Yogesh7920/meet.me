@@ -101,8 +101,8 @@ namespace Whiteboard
             else if (s.ShapeIdentifier == ShapeType.LINE)
             {
                 Coordinate dir = s.Center - s.Start;
-                float deltaH = s.Height;
-                float deltaW = s.Width;
+                float deltaH = s.Height/2;
+                float deltaW = s.Width/2;
 
                 if (dir.R < 0)
                 {
@@ -115,10 +115,12 @@ namespace Whiteboard
 
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
-                    X1 = s.Start.R,
-                    Y1 = s.Start.C,
-                    X2 = s.Start.R + deltaH,
-                    Y2 = s.Start.C + deltaW
+                    X1 = -deltaH,
+                    Y1 = -deltaW,
+                    X2 = deltaH,
+                    Y2 = deltaW,
+                    Height = s.Height,
+                    Width = s.Width
                 };
                 
                 WindowsShape = LineUXElement;

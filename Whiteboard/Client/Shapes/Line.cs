@@ -27,7 +27,7 @@ namespace Whiteboard
         /// <param name="height">Height of Line.</param>
         /// <param name="width">Width of Line.</param>
         /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
-        public Line(float height, float width, Coordinate start, Coordinate end, Coordinate center) : base(ShapeType.LINE)
+        public Line(float height, float width, Coordinate start, Coordinate center) : base(ShapeType.LINE)
         {
             this.Height = height;
             this.Width = width;
@@ -82,7 +82,7 @@ namespace Whiteboard
                 float height = Math.Abs(start.R - end.R);
                 float width = Math.Abs(start.C - end.C);
                 Coordinate center = (end + start) / 2;
-                return new Line(height, width, start.Clone(), end.Clone(), center);
+                return new Line(height, width, start.Clone(), center);
             }
             else
             {

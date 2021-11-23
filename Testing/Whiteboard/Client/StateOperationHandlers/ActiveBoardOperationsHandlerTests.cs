@@ -45,6 +45,7 @@ namespace Testing.Whiteboard
             BoardColor strokecolor = new(2, 3, 4);
             float strokeWidth = 2;
 
+            _handler.SetLastDrawn(null);
             List<UXShape> operations = _handler.CreateShape(ShapeType.RECTANGLE,start, end, strokeWidth, strokecolor, null);
             _mockStateManager.Verify(m => m.GetUser(), Times.Once());
             Assert.IsNotNull(operations);
@@ -57,7 +58,7 @@ namespace Testing.Whiteboard
             Assert.AreEqual(operations[0].WindowsShape.Height, 2);
 
             // checking the _lastDrawn Object has correct details
-            BoardShape lastDrawn = _handler.getLastDrawn();
+            BoardShape lastDrawn = _handler.GetLastDrawn();
             Assert.IsNotNull(lastDrawn);
             Assert.AreEqual(lastDrawn.Uid, operations[0].WindowsShape.Uid);
             Assert.AreEqual(lastDrawn.RecentOperation, Operation.CREATE);
@@ -69,7 +70,7 @@ namespace Testing.Whiteboard
             // creating a shape with start 1,1 end 3,3
             MainShape mainShape = new Rectangle(2, 2, new(1, 1), new(2, 2));
             BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.CREATE);
-            _handler.setLastDrawn(shape, new(3, 3), RealTimeOperation.CREATE);
+            _handler.SetLastDrawn(shape, new(3, 3), RealTimeOperation.CREATE);
         }
 
         [Test]
@@ -108,7 +109,7 @@ namespace Testing.Whiteboard
 
 
             // checking the _lastDrawn Object has correct details
-            BoardShape lastDrawn = _handler.getLastDrawn();
+            BoardShape lastDrawn = _handler.GetLastDrawn();
             Assert.IsNotNull(lastDrawn);
             Assert.AreEqual(lastDrawn.Uid, uid);
             Assert.AreEqual(lastDrawn.RecentOperation, Operation.CREATE);
@@ -138,7 +139,7 @@ namespace Testing.Whiteboard
 
 
             // checking the _lastDrawn Object has correct details
-            BoardShape lastDrawn = _handler.getLastDrawn();
+            BoardShape lastDrawn = _handler.GetLastDrawn();
             Assert.IsNull(lastDrawn);
 
             _mockStateManager.Verify(m => m.SaveOperation(
@@ -164,6 +165,49 @@ namespace Testing.Whiteboard
             SetHandlerBoardShape(uid);
             List<UXShape> operations = _handler.CreateShape(ShapeType.RECTANGLE, new(3, 3), new(5, 5), 2, new(2, 3, 4), uid, true);
             Assert.IsNull(operations);
+        }
+
+        //Testing the Modify shape realtime operation
+        [Test]
+        public void ModifyShapeRealTime_LocalModification_ModifyAndNoServerUpdate()
+        {
+            string uid = "123";
+            MainShape mainShape = new Line(2, 2, new(1, 1), new(2, 2));
+            BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.CREATE);
+            _mockStateManager.Setup(m => m.GetBoardShape(It.IsAny<string>())).Returns(shape);
+            _handler.SetLastDrawn(null);
+
+            List<UXShape> operations = _handler.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, new(2, 2), new(3, 3), "123", DragPos.NONE, false);
+            Assert.IsNotNull(operations);
+            Assert.IsTrue(operations.Count == 2);
+
+            //Verifying the UXShape received
+            // The UXobject at list position 1 should be the one to be deleted
+            CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.LINE, new(2, 2), 0);
+            Assert.IsNotNull(operations[0].WindowsShape.Uid);
+            Assert.AreEqual(operations[0].WindowsShape.Uid, uid);
+
+
+            // The UXObject at list position 2 should be the one to be created.
+            CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.LINE, new(3, 3), 0);
+            Assert.AreEqual(operations[1].WindowsShape.Uid, uid);
+            Assert.AreEqual(operations[1].WindowsShape.Height, 2);
+            Assert.AreEqual(operations[1].WindowsShape.Width, 2);
+
+            System.Windows.Shapes.Line operationLine = (System.Windows.Shapes.Line) operations[1].WindowsShape;
+            Assert.AreEqual(operationLine.X1, -1);
+            Assert.AreEqual(operationLine.Y1, -1);
+            Assert.AreEqual(operationLine.X2, 1);
+            Assert.AreEqual(operationLine.Y2, 1);
+            Assert.IsTrue(operations[1].TranslationCoordinate.Equals(new(3, 3)));
+
+            // checking the _lastDrawn Object has correct details
+            BoardShape lastDrawn = _handler.GetLastDrawn();
+            Assert.IsNotNull(lastDrawn);
+            Assert.AreEqual(lastDrawn.Uid, uid);
+            Assert.AreEqual(lastDrawn.RecentOperation, Operation.MODIFY);
+            Assert.AreEqual(lastDrawn.MainShapeDefiner.ShapeIdentifier, ShapeType.LINE);
+
         }
 
 
