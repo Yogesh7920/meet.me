@@ -518,6 +518,37 @@ namespace Client
             return;
         }
 
+        //MouseWheel function to mock Canvas coordinate system
+        private void MyCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            MessageBox.Show("Scrolled at X =" + e.GetPosition(GlobCanvas).X.ToString() + " ,Y = " + e.GetPosition(GlobCanvas).Y.ToString());
+            MessageBox.Show("Canvas has Width = " + GlobCanvas.Width + " , Height = " + GlobCanvas.Height);
+
+            SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
+
+            System.Windows.Shapes.Rectangle shp = new System.Windows.Shapes.Rectangle { Width = 50, Height = 50, Stroke = blackBrush };
+            GlobCanvas.Children.Add(shp);
+
+            //Check for Systems.Windows Canvas.SetLeft & SetTop
+            Canvas.SetLeft(shp, 20);
+            Canvas.SetTop(shp, 100);
+            MessageBox.Show("The Shape should be present at X=20 & Y=100 acc. to System.Windows convention");
+
+            //Check for System.Windows Shapes Height & Width
+            double origHt = shp.Height;
+            double origWt = shp.Width;
+            shp.Width = 150;
+            shp.Height = 30;
+
+            MessageBox.Show("The Shape should be of Width=150 (parallel to X axis) & Height=30 (parallel to Y axis) acc. to System.Windows convention");
+
+            shp.Height = origHt;
+            shp.Width = origWt;
+
+            GlobCanvas.Children.Remove(shp);
+            return;
+        }
+        
 
         //Pop-up togglers 
         //Canvas BG color Pop-Up
@@ -970,6 +1001,6 @@ namespace Client
             }
         }
 
-
+       
     }
 }

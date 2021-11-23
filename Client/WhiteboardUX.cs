@@ -115,10 +115,10 @@ namespace Client
             
             FrameworkElement adornedElement = this.AdornedElement as FrameworkElement;
             Thumb corner = sender as Thumb;
-            if (corner.Equals(topLeft)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on topLeft");
+            /*if (corner.Equals(topLeft)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on topLeft");
             else if (corner.Equals(bottomRight)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on bottomRight");
 
-            /*Transform rt = adornedElement.RenderTransform;
+            Transform rt = adornedElement.RenderTransform;
 
             var mat = new Matrix();
             //mat.Rotate(rt.Angle);
@@ -625,8 +625,13 @@ namespace Client
                 underCreation.StrokeThickness = 2;
                 uidShapeCreate = null;
 
-                Coordinate C_strt = new Coordinate((float)strt.X, (float)strt.Y);
-                Coordinate C_end = new Coordinate((float)end.X, (float)end.Y);
+                //Coordinate C_strt = new Coordinate((float)strt.X, (float)strt.Y);
+                //Coordinate C_end = new Coordinate((float)end.X, (float)end.Y);
+
+                Coordinate C_strt = new Coordinate(((int)(cn.Height - strt.Y)), ((int)strt.X));
+                Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
+
+
                 BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
 
                 //SERVER REQUEST TO CREATE FINAL SHAPE
@@ -755,8 +760,11 @@ namespace Client
             if (shapeComp == true)
             {
                 //Coordinate C_strt = new Coordinate(((float)strt.X), ((float)strt.Y));
-                Coordinate C_strt = new Coordinate(((float)selectMouseDownPos.X), ((float)selectMouseDownPos.Y));
-                Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
+                //Coordinate C_strt = new Coordinate(((float)selectMouseDownPos.X), ((float)selectMouseDownPos.Y));
+                //Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
+
+                Coordinate C_strt = new Coordinate(((int)(cn.Height - strt.Y)), ((int)strt.X));
+                Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
 
                 toRender = new List<UXShape>();
                 toRender = WBOps.TranslateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
@@ -902,9 +910,9 @@ namespace Client
                 cn = UnselectAllBB(cn, WBOps);
                 cn.Children.Remove(sh);
 
-                Coordinate C_strt = new Coordinate(((float)selectMouseDownPos.X), ((float)selectMouseDownPos.Y));
-                Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
-                
+                Coordinate C_strt = new Coordinate(((int)(cn.Height - selectMouseDownPos.Y)), ((int)selectMouseDownPos.X));
+                Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
+
                 toRender = new List<UXShape>();
                 toRender = WBOps.RotateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
 
@@ -996,10 +1004,6 @@ namespace Client
                 switch (shp.UxOperation)
                 {
                     case (UXOperation.CREATE):
-                        //Rendering the new shape with the appropriate geometry in terms of translation and rotation
-                        //DONE: Verify whether TranslationCoordinate refers to topleft corner of the shape (is required), or center of shape
-                        //Canvas.SetLeft(shp.WindowsShape, shp.TranslationCoordinate.R);
-                        //Canvas.SetTop(shp.WindowsShape, shp.TranslationCoordinate.C);
 
                         //Convert Radians from WB to Degrres for Render Transform 
                         int degrees = (int)(shp.AngleOfRotation * (180 / Math.PI));
@@ -1007,22 +1011,20 @@ namespace Client
                         //Setting the rendering such that bottom-right and top-left adorners adjust appropriately
                         if (degrees > 90) degrees -= 180;
                         else if (degrees < -90) degrees += 180;
+                        shp.AngleOfRotation = degrees;
 
-                        shp.AngleOfRotation = (-1) * degrees;
-
-                        
-
+                        //shp.AngleOfRotation = (-1) * degrees;
 
                         if (shp.WindowsShape is not System.Windows.Shapes.Line)
                         {
-                            //Since WB module stores the System.Windows.Shape.Width as height & System.Windows.Shape.Height as width
-                            double temp = shp.WindowsShape.Height;
-                            shp.WindowsShape.Height = shp.WindowsShape.Width;
-                            shp.WindowsShape.Width = temp;
 
-                            //Since WB module stores the center of the shape
-                            Canvas.SetLeft(shp.WindowsShape, (shp.TranslationCoordinate.R - shp.WindowsShape.Width / 2));
-                            Canvas.SetTop(shp.WindowsShape, (shp.TranslationCoordinate.C - shp.WindowsShape.Height / 2));
+                            Canvas.SetLeft(shp.WindowsShape, (shp.TranslationCoordinate.C - shp.WindowsShape.Width  / 2));
+                            Canvas.SetTop(shp.WindowsShape, ((cn.Height - shp.TranslationCoordinate.R) - shp.WindowsShape.Height / 2));
+
+                            //Since WB module stores the System.Windows.Shape.Width as height & System.Windows.Shape.Height as width?
+                            /*double temp = shp.WindowsShape.Height;
+                            shp.WindowsShape.Height = shp.WindowsShape.Width;
+                            shp.WindowsShape.Width = temp;*/
 
                             //Setting the angular orientation of bounding box to be same as updated shape
                             RotateTransform rotateTransform = new RotateTransform
@@ -1041,8 +1043,8 @@ namespace Client
                             Shape ParsedLineUXElement = new System.Windows.Shapes.Line();
                             ((System.Windows.Shapes.Line)ParsedLineUXElement).X1 = 0;
                             ((System.Windows.Shapes.Line)ParsedLineUXElement).Y1 = 0;
-                            ((System.Windows.Shapes.Line)ParsedLineUXElement).X2 = recv_Line.X2 - recv_Line.X1;
-                            ((System.Windows.Shapes.Line)ParsedLineUXElement).Y2 = recv_Line.Y2 - recv_Line.Y1;
+                            ((System.Windows.Shapes.Line)ParsedLineUXElement).X2 = recv_Line.Y2 - recv_Line.Y1;
+                            ((System.Windows.Shapes.Line)ParsedLineUXElement).Y2 = recv_Line.X2 - recv_Line.X1;
                             //((System.Windows.Shapes.Line)ParsedLineUXElement).RenderTransform = rotateTransform;
                             ParsedLineUXElement.Stroke = recv_Line.Stroke;
                             ParsedLineUXElement.StrokeThickness = recv_Line.StrokeThickness;
@@ -1065,8 +1067,8 @@ namespace Client
                             
                             //NOT WORKING
                             //shp.WindowsShape.RenderTransform = rotateTransform;
-                            Canvas.SetLeft(shp.WindowsShape, recv_Line.X1);
-                            Canvas.SetTop(shp.WindowsShape, recv_Line.Y1);
+                            Canvas.SetLeft(shp.WindowsShape, recv_Line.Y1);
+                            Canvas.SetTop(shp.WindowsShape, recv_Line.X1);
                         }
 
                         cn.Children.Add(shp.WindowsShape);
@@ -1403,8 +1405,13 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOp, Shape shp, Point strt, Point end, AdornerDragPos pos)
         {
-            Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
-            Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
+            //Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
+            //Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
+
+
+            Coordinate C_strt = new Coordinate(((int)(cn.Height - strt.Y)), ((int)strt.X));
+            Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
+
             List<UXShape> toRender;
 
             DragPos drgPos = DragPos.NONE;
@@ -1520,6 +1527,14 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false, bool shapeComp = false)
         {
+            List<UXShape> toRender;
+            string assgn_uid = "";
+            Coordinate prev = new Coordinate(0, 0);
+
+            //Brush for Border 
+            SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
+            BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
+
             if (creation)
             {
                 poly = new System.Windows.Shapes.Polyline();
@@ -1537,6 +1552,8 @@ namespace Client
                 poly.StrokeLineJoin = PenLineJoin.Round;
                 poly.StrokeDashCap = PenLineCap.Round;
 
+                poly.Points.Add(pt);
+
                 if (isEraser == true)
                 {
                     poly.Tag = "ERASER";
@@ -1545,9 +1562,15 @@ namespace Client
                 else
                 {
                     poly.Tag = "FREEHAND";
+                    prev = new Coordinate((float)pt.X, (float)pt.Y);
+                    Coordinate C_end = new Coordinate((float)pt.X, (float)pt.Y);
+                    toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: null, shapeComp: false);
+                    //storing the assigned Uid of the Polyline
+                    assgn_uid = toRender[0].WindowsShape.Uid;
+
                 }
 
-                poly.Points.Add(pt);
+                
                 cn.Children.Add(poly);
             }
             else
@@ -1571,7 +1594,15 @@ namespace Client
                     }
                     else
                     {
-                        if (!poly.Points.Contains(pt)) poly.Points.Add(pt);
+                        if (!poly.Points.Contains(pt))
+                        {
+                            poly.Points.Add(pt);
+
+                            Coordinate C_end = new Coordinate((float)pt.X, (float)pt.Y);
+                            toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
+                            prev = C_end;
+
+                        }
                     }
                 }
             }
@@ -1581,7 +1612,7 @@ namespace Client
                 if (isEraser) cn.Children.Remove(poly);
                 else
                 {
-                    //Brush for Border 
+                    /*//Brush for Border 
                     SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
                     BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
                     Coordinate prev = new Coordinate((float)poly.Points[0].X, (float)poly.Points[0].Y);
@@ -1600,10 +1631,10 @@ namespace Client
                         C_end = new Coordinate((float)pnt.X, (float)pnt.Y);
                         toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
                         prev = C_end;
-                    }
+                    }*/
                     //Sending final point with shapeComp=true
-                    C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
-                    toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: true);
+                    Coordinate C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
+                    toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: true);
 
                     //Since the WBOps.CreatePolyline sends render requests of form DELETE then CREATE,
                     //we choose to ignore DELETE as we are doing temporary rendering
