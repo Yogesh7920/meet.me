@@ -57,6 +57,7 @@ namespace Testing.Dashboard.Telemetry
             DateTime time2= new DateTime(2021,11,23,1,15,0);
             TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1,time1);
             TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2,time2);
+            TelemetryFactory.GetTelemetryInstance().GetInsincereMembers();
             int elementAtZero = TelemetryFactory.GetTelemetryInstance().insincereMembers[0];
             //Assert
             Assert.IsTrue(elementAtZero==1);
