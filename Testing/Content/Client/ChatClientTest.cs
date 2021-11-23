@@ -2,6 +2,9 @@ using NUnit.Framework;
 using Content;
 using FluentAssertions;
 using Networking;
+using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace Testing.Content
 {
