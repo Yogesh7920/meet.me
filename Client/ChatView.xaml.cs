@@ -12,7 +12,7 @@ namespace Client
     /// <summary>
     /// Interaction logic for ChatView.xaml
     /// </summary>
-    public partial class ChatView : Window
+    public partial class ChatView : UserControl
     {
         public int ReplyMsgId { get; set; }
         
@@ -27,10 +27,10 @@ namespace Client
             this.DataContext = viewModel;
 
             allmessages = new ObservableCollection<Message>();
-            allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToString(), ToFrom = true });
-            allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToString(), ToFrom = false });
-            allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToString(), ToFrom = false });
-            allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToString(), ToFrom = true });
+            allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
+            allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
+            allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
+            allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
             this.myChat.ItemsSource = allmessages;
         }
         private void Listner(object sender, PropertyChangedEventArgs e)
@@ -145,13 +145,13 @@ namespace Client
         }
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Window.GetWindow(this).Close();
         }
         private void OnWindowMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                this.DragMove();
+                Window.GetWindow(this).DragMove();
             }
         }
         private void UpdateScrollBar(ListBox listBox)
