@@ -1,17 +1,16 @@
+using Dashboard;
+using Dashboard.Server.Persistence;
+using Dashboard.Server.Telemetry;
+using Content;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dashboard.Server.Telemetry;
-using Dashboard.Server.Persistence;
-using Content;
-using Dashboard;
+using System.Diagnostics;
+using System.IO;
 
-namespace Testing.Dashboard
+namespace Testing.Dashboard.Telemetry
 {
-    public class Telemetry
+    public class TelemetryNunitTests
     {
         [Test]
         public void OnAnalyticsChanged_GetUserCountVsTimeStamp_UpdatingUserCount()
@@ -25,14 +24,14 @@ namespace Testing.Dashboard
             session2.AddUser(user1);
             session2.AddUser(user2);
             //Act
-            _telemetry.OnAnalyticsChanged(session1);
-            int userCount1 = _telemetry.UserCountAtEachTimeStamp[DateTime.Now];
-            bool check1;
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1);
+            int userCount1 = TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[DateTime.Now];
+            bool check1=false;
             // total users in session1 is 1
             if(userCount1==1) check1=true;
-            _telemetry.OnAnlyticsChanged(session2);
-            int userCount2= _telemetry.UserCountAtEachTimeStamp[DateTime.Now];
-            bool check2;
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2);
+            int userCount2= TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[DateTime.Now];
+            bool check2=false;
             // total users in session2 is 2.
             if(userCount2==2) check2=true;
             //Assert
@@ -52,9 +51,9 @@ namespace Testing.Dashboard
             session2.AddUser(user2);
             // user1 left the meeting in session2
             // Act
-            _telemetry.OnAnalyticsChanged(session1);
-            _telemetry.OnAnalyticsChanged(session2);
-            int elementAtZero = _telemetry.insincereMembers.ElementAt(0);
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1);
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2);
+            int elementAtZero = TelemetryFactory.GetTelemetryInstance().insincereMembers[0];
             //Assert
             Assert.AreEqual(elementAtZero,1);
         }
@@ -65,39 +64,39 @@ namespace Testing.Dashboard
             // Arrange
             ReceiveMessageData  message1= new ReceiveMessageData();
             message1.Message= "Hello from user 1";
-            messsage1.SenderId=1;
+            message1.SenderId=1;
             ReceiveMessageData  message2= new ReceiveMessageData();
             message1.Message= "Another Hello from user 1";
-            messsage1.SenderId=1;
+            message1.SenderId=1;
             ReceiveMessageData  message3= new ReceiveMessageData();
             message1.Message= "Hello from user 2";
-            messsage1.SenderId=2;
+            message1.SenderId=2;
 
-            List<ReceivedMessageData> msgList1 = new List<ReceivedMessageData>();
+            List<ReceiveMessageData> msgList1 = new List<ReceiveMessageData>();
             msgList1.Add(message1);
             msgList1.Add(message2);
-            List<ReceivedMessageData> msgList2 = new List<ReceivedMessageData>();
+            List<ReceiveMessageData> msgList2 = new List<ReceiveMessageData>();
             msgList2.Add(message3);
 
             ChatContext[] allMessages = new ChatContext[2];
-            ChatConext chat1 = new ChatConext();
+            ChatContext chat1 = new ChatContext();
             chat1.CreationTime = DateTime.Now;
             chat1.MsgList=msgList1;
-            ChatConext chat2 = new ChatConext();
+            ChatContext chat2 = new ChatContext();
             chat2.CreationTime = DateTime.Now;
             chat2.MsgList=msgList2;
             allMessages[0]=chat1;
             allMessages[1]=chat2;
 
             //Act
-            _telemetry.SaveAnalytics(allMessages);
-            int chatCountUser1= _telemetry.userIdChatCountDic[1];
+            TelemetryFactory.GetTelemetryInstance().SaveAnalytics(allMessages);
+            int chatCountUser1= TelemetryFactory.GetTelemetryInstance().userIdChatCountDic[1];
             bool check1=false;
             if(chatCountUser1==2)
             {
                 check1=true;
             }
-            int chatCountUser2= _telemetry.userIdChatCountDic[2];
+            int chatCountUser2=TelemetryFactory.GetTelemetryInstance(). userIdChatCountDic[2];
             bool check2=false;
             if(chatCountUser2==1)
             {
@@ -113,7 +112,7 @@ namespace Testing.Dashboard
         public void UpdateServerData_Retreiving_RetrievingCorrectly()
         {
             // Arrange
-            ServerDataToSave serverData= RetrieveAllSeverData();
+            ServerDataToSave serverData=_persistence. RetrieveAllSeverData();
             Assert.IsNotNull(serverData);
         }
 
@@ -150,9 +149,9 @@ namespace Testing.Dashboard
             serverData.sessionCount++;
             serverData.allSessionsSummary.Add(session1);
             //Act
-            ResponseEntity response = SaveServerData(serverData);
+            ResponseEntity response = _persistence.SaveServerData(serverData);
             Assert.IsTrue(response.IsSaved);
         }
-        private Telemetry _telemetry = new Telemetry();
+        private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
     }
 }

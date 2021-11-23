@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Dashboard.Server.SessionManagement;
-using Content;
 
 namespace Dashboard.Server.Telemetry
 {
@@ -18,10 +16,10 @@ namespace Dashboard.Server.Telemetry
             }
         }
 
-        public static ITelemetry GetTelemetryInstance()
+        public static Telemetry GetTelemetryInstance()
         {
             return new Telemetry();
         }
-        private static ITelemetry _telemetry;
+        private static Telemetry _telemetry;
     }
 }

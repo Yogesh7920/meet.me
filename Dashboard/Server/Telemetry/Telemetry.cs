@@ -10,6 +10,10 @@ namespace Dashboard.Server.Telemetry{
     ///</summary>
     public class Telemetry: ITelemetry
     {
+        // public void Telemetry
+        // {
+        //     _sessionmanager.subscribe();
+        // }
         /// <summary>
         ///     constructs a dictionary with DateTime as key and int as value
         ///     which indicates UserCount at corresponding DateTime 
@@ -149,11 +153,12 @@ namespace Dashboard.Server.Telemetry{
             return sessionAnalyticsToSend;
         }
 
-        Dictionary<DateTime, int> userCountAtEachTimeStamp = new Dictionary<DateTime, int>();
-        Dictionary<UserData,DateTime> userEnterTime=new Dictionary<UserData, DateTime>();
-        Dictionary<UserData,DateTime> userExitTime=new Dictionary<UserData, DateTime>();
-        Dictionary<int, int> userIdChatCountDic= new Dictionary<int, int>();
-        List<int> insincereMembers;
+        public Dictionary<DateTime, int> userCountAtEachTimeStamp = new Dictionary<DateTime, int>();
+        public Dictionary<UserData,DateTime> userEnterTime=new Dictionary<UserData, DateTime>();
+        public Dictionary<UserData,DateTime> userExitTime=new Dictionary<UserData, DateTime>();
+        public Dictionary<int, int> userIdChatCountDic= new Dictionary<int, int>();
+        public List<int> insincereMembers;
         private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
+        // private ITelemetrySessionManager _sm = new ITelemetrySessionManager();
     }
 }
