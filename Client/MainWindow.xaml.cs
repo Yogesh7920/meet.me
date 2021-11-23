@@ -60,22 +60,7 @@ namespace Client
                 dict.Source = new Uri("Theme1.xaml", UriKind.Relative);
                 Application.Current.Resources.MergedDictionaries.Clear();
                 Application.Current.Resources.MergedDictionaries.Add(dict);
-            }/*
-            ResourceDictionary dict = new ResourceDictionary();
-            if (theme.Equals("theme1"))
-            {
-                theme = "theme2";
-                dict.Source = new Uri("Theme2.xaml", UriKind.Relative);
-                Application.Current.Resources.MergedDictionaries.Clear();
-                Application.Current.Resources.MergedDictionaries.Add(dict);
             }
-            else
-            {
-                theme = "theme1";
-                dict.Source = new Uri("Theme1.xaml", UriKind.Relative);
-                Application.Current.Resources.MergedDictionaries.Clear();
-                Application.Current.Resources.MergedDictionaries.Add(dict);
-            }*/
         }
         /// <summary>
         /// Drag functionality

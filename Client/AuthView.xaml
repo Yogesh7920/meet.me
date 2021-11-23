@@ -78,7 +78,7 @@
         </DockPanel>
 
         <Border Grid.Row="2" Grid.Column="1" Grid.RowSpan="6" Grid.ColumnSpan="3" Background="{StaticResource InnerBackgroundBrush}" CornerRadius="10"/>
-        <TextBlock Name="ErrorMsg" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 0 0 10" Text="Sorry! Invalid Credentials" FontSize="20" Foreground="Red" Visibility="Collapsed"/>
+        <TextBlock Name="ErrorMsg" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 0 0 10" Text="Sorry! Invalid Credentials" FontSize="20" Foreground="Red" Visibility="Collapsed"/>
         
         <DockPanel Grid.Row="3" Grid.Column="2">
             <TextBlock Height="20" Name="IP" Text="IP Address" FontFamily="Calibre" FontWeight="Medium" FontSize="12"/>

@@ -83,7 +83,7 @@
         <!-- Title Bar -->
         <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown" >
             <TextBlock Text="meet.me" HorizontalAlignment="Center" VerticalAlignment="Top"  
-                       FontWeight="Bold" FontFamily="ComicSans"  FontSize="25" Foreground="White"/>
+                       FontWeight="Bold" FontFamily="ComicSans"  FontSize="25" Foreground="{DynamicResource Color3Bg}"/>
             <DockPanel HorizontalAlignment="Right" Margin="10,0">
                 <DockPanel Name="ThemeButton" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 10 0">
                     <TextBlock Text="Theme" Foreground="{DynamicResource Color3Bg}" FontSize="12" FontWeight="DemiBold"></TextBlock>
@@ -115,26 +115,22 @@
 
         <!-- Buttons -->
         <DockPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
-            <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50">-->
             <Button x:Name="Whiteboard" Click="OnWhiteboardClick" ToolTip="WhiteBoard" Width="30" Height="30" BorderThickness="0" Background="White" >
                 <Image  Source="/Icons/MainWindow/icons8-whiteboard-150.png"/>
             </Button>
-            <!-- </Border>-->
-            <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="5 0 5 0">-->
+            
             <Button x:Name="Screenshare" Click="OnScreenShareClick" ToolTip="ScreenShare"  Width="30" Height="30" BorderThickness="0" Background="White" Margin="5 0 5 0" >
                 <Image Source="/Icons/MainWindow/icons8-present-to-all-50.png"/>
             </Button>
-            <!-- </Border>-->
-            <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="0 0 5 0">-->
+            
             <Button x:Name="ChatButton" Click="OnChatButtonClick" ToolTip="Chat" Width="30" Height="30" BorderThickness="0" Background="White" Margin="0 0 5 0">
                 <Image Source="/Icons/MainWindow/icons8-chat-96.png"/>
             </Button>
-            <!-- </Border>-->
-            <!-- <Border Width="60" Height="60" BorderBrush="Purple" BorderThickness="1" CornerRadius="50" Margin="0 0 5 0">-->
+            
             <Button x:Name="Dashboard" Click="OnDashboardClick" ToolTip="Dashboard" Width="30" Height="30" BorderThickness="0" Background="White" Margin="0 0 5 0">
                 <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png"/>
             </Button>
-            <!-- </Border>-->
+            
             <Border Width="35" Height="35" BorderBrush="{DynamicResource Color1Bg}" BorderThickness="1" CornerRadius="50" Background="{DynamicResource Color1Bg}">
                 <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="22" Height="22" BorderThickness="0" Background="{DynamicResource Color1Bg}" >
                     <Image Source="/Icons/Mainwindow/icons8-end-call-96.png"/>
