@@ -300,7 +300,8 @@ namespace Content
                         var id = _allMessages[index].MsgList[i].MessageId;
                         if (id == messageId)
                         {
-                            _allMessages[index].MsgList[i].Starred = true;
+                            bool starStatus = _allMessages[index].MsgList[i].Starred;
+                            _allMessages[index].MsgList[i].Starred = !starStatus;
                             break;
                         }
                     }

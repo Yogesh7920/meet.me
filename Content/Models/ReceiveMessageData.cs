@@ -53,7 +53,7 @@ namespace Content
         public ReceiveMessageData()
         {
             MessageId = -1;
-            ReceiverIds = new int[0];
+            ReceiverIds = null;
             ReplyThreadId = -1;
             SenderId = -1;
             SentTime = new DateTime();
