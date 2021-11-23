@@ -12,8 +12,8 @@ namespace Client
         private static WhiteBoardView _whiteboard;
         private string theme = "theme1";
         //uncomment below lines after the respective user controls are done
-        /*private static ChatView _chat;
-        private static UsersList _userslist;*/
+        private static ChatView _chat;
+        private static UsersList _userslist;
         public MainWindow()
         {
             InitializeComponent();
@@ -22,9 +22,9 @@ namespace Client
             this.SSwb.Content = _whiteboard;
 
             //uncomment below lines after the respective User Controls are done
-            /*_chat = new ChatView();
+            _chat = new ChatView();
             this.Chat.Content = _chat;
-            _userslist = new UsersList(this);
+            /*_userslist = new UsersList(this);
             this.UsersListControl.Content = _userslist;*/
         }
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
@@ -127,22 +127,22 @@ namespace Client
         {
             //uncomment below lines after the respective user controls are done
 
-            /*if (_chatFlag.Equals(false))
+            if (_chatFlag.Equals(false))
             {
-                if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
-                {
-                    if (_userslist.UserListHidden.Equals(false))
-                    {
-                        SSwb.SetValue(Grid.ColumnProperty, 4);
-                        SSwb.SetValue(Grid.ColumnSpanProperty, 1);
-                    }
+                //if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
+                //{
+                //    if (_userslist.UserListHidden.Equals(false))
+                //    {
+                //        SSwb.SetValue(Grid.ColumnProperty, 4);
+                //        SSwb.SetValue(Grid.ColumnSpanProperty, 1);
+                //    }
 
-                    else
-                    {
-                        SSwb.SetValue(Grid.ColumnProperty, 2);
-                        SSwb.SetValue(Grid.ColumnSpanProperty, 3);
-                    }
-                }
+                //    else
+                //    {
+                //        SSwb.SetValue(Grid.ColumnProperty, 2);
+                //        SSwb.SetValue(Grid.ColumnSpanProperty, 3);
+                //    }
+                //}
                 //uncomment after Chat user control is done
                 this.Chat.Visibility = Visibility.Visible;
                 _chatFlag = true;
@@ -151,20 +151,20 @@ namespace Client
             {
                 this.Chat.Visibility = Visibility.Collapsed;
                 _chatFlag = false;
-                if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
-                {
-                    if (_userslist.UserListHidden.Equals(false))
-                    {
-                        SSwb.SetValue(Grid.ColumnProperty, 4);
-                        SSwb.SetValue(Grid.ColumnSpanProperty, 3);
-                    }
-                    else
-                    {
-                        SSwb.SetValue(Grid.ColumnProperty, 2);
-                        SSwb.SetValue(Grid.ColumnSpanProperty, 5);
-                    }
-                }
-            }*/
+                //if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
+                //{
+                //    if (_userslist.UserListHidden.Equals(false))
+                //    {
+                //        SSwb.SetValue(Grid.ColumnProperty, 4);
+                //        SSwb.SetValue(Grid.ColumnSpanProperty, 3);
+                //    }
+                //    else
+                //    {
+                //        SSwb.SetValue(Grid.ColumnProperty, 2);
+                //        SSwb.SetValue(Grid.ColumnSpanProperty, 5);
+                //    }
+                //}
+            }
         }
         /// <summary>
         /// Function to handle Dashboard button click event
