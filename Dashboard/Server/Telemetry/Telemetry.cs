@@ -39,13 +39,11 @@ namespace Dashboard.Server.Telemetry{
             {
                 foreach(ReceiveMessageData currMessage in currThread.MsgList)
                 {
-                    Console.WriteLine(currMessage.SenderId);
                     if(userIdChatCountDic.ContainsKey(currMessage.SenderId)) userIdChatCountDic[currMessage.SenderId]++;
                     else
                     {
                         userIdChatCountDic.Add(currMessage.SenderId, 1);
                     }
-                    Console.WriteLine(userIdChatCountDic[currMessage.SenderId]);
                 }
             }
         }
