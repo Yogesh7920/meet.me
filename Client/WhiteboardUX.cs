@@ -872,9 +872,12 @@ namespace Client
                 
                 toRender = new List<UXShape>();
                 toRender = WBOps.RotateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
-                
-                cn = RenderUXElement(toRender, cn);
-                cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
+
+                //Since we already removed our side of temporary render, DELETE operation by WB module is not acknowledged, whereas toRender[1] refers to necessary CREATE operation with the updated shape
+                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+
+                //Bugged as adr.isClipEnabled gives Null Exception
+                //cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
 
                 Trace.WriteLine("Sent rotate request to the client for the shape with Uid:" + mouseDownSh.Uid.ToString() + "from start point" + strt.ToString() +
                 "to end point " + end.ToString() + ", where the list of Uids of selected shapes are:" + selectedShapes.ToString() + "with shapeComp = ", shapeComp.ToString());
@@ -972,13 +975,7 @@ namespace Client
 
                         shp.AngleOfRotation = (-1) * degrees;
 
-                        //Setting the angular orientation of bounding box to be same as updated shape
-                        RotateTransform rotateTransform = new RotateTransform
-                        {
-                            Angle = shp.AngleOfRotation,
-                            CenterX = (shp.WindowsShape.Width / 2), //topleft_x,
-                            CenterY = (shp.WindowsShape.Height / 2) //topleft_y
-                        };
+                        
 
 
                         if (shp.WindowsShape is not System.Windows.Shapes.Line)
@@ -992,6 +989,13 @@ namespace Client
                             Canvas.SetLeft(shp.WindowsShape, (shp.TranslationCoordinate.R - shp.WindowsShape.Width / 2));
                             Canvas.SetTop(shp.WindowsShape, (shp.TranslationCoordinate.C - shp.WindowsShape.Height / 2));
 
+                            //Setting the angular orientation of bounding box to be same as updated shape
+                            RotateTransform rotateTransform = new RotateTransform
+                            {
+                                Angle = shp.AngleOfRotation,
+                                CenterX = (shp.WindowsShape.Width / 2), //topleft_x,
+                                CenterY = (shp.WindowsShape.Height / 2) //topleft_y
+                            };
                             shp.WindowsShape.RenderTransform = rotateTransform;
 
                         }
@@ -1010,6 +1014,15 @@ namespace Client
                             ParsedLineUXElement.Uid = recv_Line.Uid;
                             //Height = recv_Line.Width,
                             //Width = recv_Line.Height,
+
+                            //Setting the angular orientation of bounding box to be same as updated shape
+                            RotateTransform rotateTransform = new RotateTransform
+                            {
+                                Angle = shp.AngleOfRotation,
+                                CenterX = (((System.Windows.Shapes.Line)ParsedLineUXElement).X2 / 2), //topleft_x,
+                                CenterY = (((System.Windows.Shapes.Line)ParsedLineUXElement).Y2 / 2) //topleft_y
+                            };
+                            ((System.Windows.Shapes.Line)ParsedLineUXElement).RenderTransform = rotateTransform;
 
                             System.Windows.Shapes.Line transf_Line = (System.Windows.Shapes.Line)ParsedLineUXElement;
 
