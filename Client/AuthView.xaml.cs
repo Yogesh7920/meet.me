@@ -39,6 +39,31 @@ namespace Client
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
         }
+        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+        /// <summary>
+        /// Minimize button functionality
+        /// </summary>  
+        private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal || this.WindowState == WindowState.Maximized)
+            {
+                this.WindowState = WindowState.Minimized;
+            }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
+        /// Close button functionality
+        /// </summary>
+        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
         /// <summary>
         /// Handler method for Join Room button click
         /// </summary>
@@ -59,7 +84,7 @@ namespace Client
            else
            {
                AuthViewModel viewmodel = this.DataContext as AuthViewModel;
-               var result = viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
+               var result = true;//viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
                if (result == true)
                {
                    obj.Show();

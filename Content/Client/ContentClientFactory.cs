@@ -13,7 +13,7 @@ namespace Content
         {
         }
 
-        private static void createInstance()
+        private static void CreateInstance()
         {
             Trace.WriteLine("[ContentClientFactory] IContentClient instance created");
             // acquire lock before creating object to ensure thread saftey
@@ -30,9 +30,9 @@ namespace Content
         ///     if the instance doesn't exist yet, it is created
         /// </summary>
         /// <param name="userId">User ID of the client</param>
-        public static void setUser(int userId)
+        public static void SetUser(int userId)
         {
-            if (instance == null) createInstance();
+            if (instance == null) CreateInstance();
             instance.UserId = userId;
         }
 
@@ -41,9 +41,9 @@ namespace Content
         ///     IContentClient interface in a thread safe way
         /// </summary>
         /// <returns>Object that implements the IContentClient interface</returns>
-        public static IContentClient getInstance()
+        public static IContentClient GetInstance()
         {
-            if (instance == null) createInstance();
+            if (instance == null) CreateInstance();
             return instance;
         }
     }
