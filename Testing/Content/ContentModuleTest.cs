@@ -19,8 +19,8 @@ namespace Testing.Content
         [Test]
         public void GetInstance_ContentClientFactory_IContentClientShouldBeSingleton()
         {
-            IContentClient _client1 = ContentClientFactory.getInstance();
-            IContentClient _client2 = ContentClientFactory.getInstance();
+            IContentClient _client1 = ContentClientFactory.GetInstance();
+            IContentClient _client2 = ContentClientFactory.GetInstance();
             Assert.AreEqual(_client1, _client2);
         }
 
@@ -28,8 +28,8 @@ namespace Testing.Content
         public void SetUser_ContentClientFactory_UserIdOfContentClientShouldMatchWithGivenID()
         {
             int UserId = 1001;
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
-            ContentClientFactory.setUser(UserId);
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            ContentClientFactory.SetUser(UserId);
             Assert.AreEqual(UserId, _contentClient.UserId);
         }
 
@@ -45,9 +45,9 @@ namespace Testing.Content
         public void GetUserId_GettingContentClientUserId_UserIdOfContentClientShouldMatchWithReturnedID()
         {
             int UserId = 1001;
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
-            ContentClientFactory.setUser(UserId);
-            IContentClient _iContentClient = ContentClientFactory.getInstance();
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            ContentClientFactory.SetUser(UserId);
+            IContentClient _iContentClient = ContentClientFactory.GetInstance();
             int RcvUserId = _iContentClient.GetUserId();
             Assert.AreEqual(RcvUserId, _contentClient.UserId);
         }
@@ -58,7 +58,7 @@ namespace Testing.Content
             Utils _util = new Utils();
             int UserId = 1001;
             SendMessageData SampleData = _util.GenerateChatSendMsgData("Hello, How are you?", new int[] { 1002 }, type: (MessageType)2);
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             _contentClient.UserId = UserId;
             IContentClient _iContentClient = _contentClient;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _iContentClient.CSend(SampleData));
@@ -74,7 +74,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?", new int[] { 1002 }, type: MessageType.Chat);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -112,7 +112,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -150,7 +150,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, null, new int[] { 1002 }, type: MessageType.Chat);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -188,7 +188,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { }, type: MessageType.Chat);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -230,7 +230,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -271,7 +271,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -290,7 +290,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.Star, "", new int[] { }, type: MessageType.Chat);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -325,7 +325,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.Update, UpdateChat , new int[] { }, type: MessageType.Chat);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -362,7 +362,7 @@ namespace Testing.Content
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.Download, SavePath, new int[] { }, type: MessageType.File);
 
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -380,7 +380,7 @@ namespace Testing.Content
             string CurrentDirectory = Directory.GetCurrentDirectory() as string;
             string SavePath = CurrentDirectory + "\\SavedTestFile.pdf";
             Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient _iContentClient = _contentClient;
             FakeContentListener _fakeListener = new FakeContentListener();
             IContentListener _iFakeListener = _fakeListener;
@@ -416,7 +416,7 @@ namespace Testing.Content
             SampleMsgDataDownload.MessageId = MsgId;
             SampleMsgDataDownload.SenderId = UserId;
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             _contentClient.UserId = UserId;
             _contentClient.Communicator = _fakeCommunicator;
@@ -448,7 +448,7 @@ namespace Testing.Content
         public void CSubscribe_SubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
         {
             Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient _iContentClient = _contentClient;
             FakeContentListener _fakeListener = new FakeContentListener();
             IContentListener _iFakeListener = _fakeListener;
@@ -471,7 +471,7 @@ namespace Testing.Content
         public void CSubscribe_MultipleSubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
         {
             Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient _iContentClient = _contentClient;
             FakeContentListener _fakeListener1 = new FakeContentListener();
             IContentListener _iFakeListener1 = _fakeListener1;
@@ -498,7 +498,7 @@ namespace Testing.Content
         public void OnDataReceived_NewMessage_SameMsgShouldReceivedToSubscriber()
         {
             Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient _iContentClient = _contentClient;
             FakeContentListener _fakeListener = new FakeContentListener();
             IContentListener _iFakeListener = _fakeListener;
@@ -521,7 +521,7 @@ namespace Testing.Content
         public void OnDataReceived_MultipleNewMessage_SameMsgShouldReceivedToSubscriber()
         {
             Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient _iContentClient = _contentClient;
             FakeContentListener _fakeListener = new FakeContentListener();
             IContentListener _iFakeListener = _fakeListener;
@@ -559,7 +559,7 @@ namespace Testing.Content
             SendMessageData SampleData = _util.GenerateChatSendMsgData(FilePath, new int[] { }, type: MessageType.File);
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
             ISerializer _serializer = new Serializer();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
             INotificationHandler _notificationHandler = new ContentClientNotificationHandler(_contentClient);
             _contentClient.Communicator = _fakeCommunicator;
@@ -583,7 +583,7 @@ namespace Testing.Content
         public void OnDataReceived_ListChatContext_SameChatContextsShouldReceivedToSubscriber()
         {
             Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient _iContentClient = _contentClient;
             FakeContentListener _fakeListener = new FakeContentListener();
             IContentListener _iFakeListener = _fakeListener;
@@ -622,7 +622,7 @@ namespace Testing.Content
         public void CGetThread_ReturnsChatContextOfGivenThreadIDMultipleThreads_ShouldMatchWithConstructedChatContext()
         {
             Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient _iContentClient = _contentClient;
             FakeContentListener _fakeListener = new FakeContentListener();
             IContentListener _iFakeListener = _fakeListener;
@@ -656,7 +656,7 @@ namespace Testing.Content
         public void CGetThread_InvalidThreadIdGiven_ShouldThrowException()
         {
             Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient _iContentClient = _contentClient;
             FakeContentListener _fakeListener = new FakeContentListener();
             IContentListener _iFakeListener = _fakeListener;
