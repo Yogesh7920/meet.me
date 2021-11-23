@@ -25,6 +25,8 @@ namespace Dashboard.Server.Telemetry{
         /// </params>
         public void GetUserCountVsTimeStamp(SessionData newSession, DateTime currTime)
         {
+            Console.WriteLine("inside getusercountvsTime funciton time= ");
+            Console.WriteLine(currTime);
             userCountAtEachTimeStamp[currTime] = newSession.users.Count;
         }
 
@@ -108,6 +110,8 @@ namespace Dashboard.Server.Telemetry{
         /// <params name="newSession"> Received new SessionData </params>
         public void OnAnalyticsChanged(SessionData newSession, DateTime time)
         {
+            Console.WriteLine("inside OnAnalyticsChanged time = ");
+            Console.WriteLine(time);
             GetUserCountVsTimeStamp(newSession, time);
             GetInsincereMembers();
         }

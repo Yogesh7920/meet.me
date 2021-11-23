@@ -25,6 +25,8 @@ namespace Testing.Dashboard.Telemetry
             session2.AddUser(user2);
             //Act
             DateTime currTime= new DateTime(2021,11,23,1,0,0);
+            Console.WriteLine("Inside test time1= ");
+            Console.WriteLine(currTime);
             TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1,currTime);
             int userCount1 = TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[currTime];
             bool check1=false;
