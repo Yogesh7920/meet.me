@@ -62,25 +62,6 @@ namespace Content
         }
 
         /// <summary>
-        /// This function convets MessageData to ReceiveMessageData for chatContexts
-        /// </summary>
-        /// <param name="msgData"></param>
-        /// <returns></returns>
-        public MessageData ReceiveMessageDataToMessageData(ReceiveMessageData msgData)
-        {
-            var msg = new MessageData();
-            msg.Event = msgData.Event;
-            msg.Message = msgData.Message;
-            msg.MessageId = msgData.MessageId;
-            msg.ReceiverIds = msgData.ReceiverIds;
-            msg.SenderId = msgData.SenderId;
-            msg.ReplyThreadId = msgData.ReplyThreadId;
-            msg.Starred = msgData.Starred;
-            msg.Type = msgData.Type;
-            return msg;
-        }
-
-        /// <summary>
         /// Receives data from ContentServerNotificationHandler and processes it accordingly
         /// </summary>
         /// <param name="data"></param>
@@ -107,7 +88,13 @@ namespace Content
                 {
                     case MessageType.Chat:
                         Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
-                        receiveMessageData = ReceiveMessageDataToMessageData(_chatContextServer.Receive(messageData));
+                        ReceiveMessageData receivedMessage = _chatContextServer.Receive(messageData);
+                        if (receivedMessage == null)
+                        {
+                            Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
+                            return;
+                        }
+                        receiveMessageData = new MessageData(receivedMessage);
                         Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
                         break;
 
@@ -128,7 +115,6 @@ namespace Content
                 Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
                 return;
             }
-
             if (messageData.Event != MessageEvent.Download)
             {
                 Trace.WriteLine("[ContentServer] Notifying subscribers");
