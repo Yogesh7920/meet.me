@@ -16,7 +16,7 @@ namespace Client.ViewModel
     {
 
         IDictionary<int, string> _messages;
-        IDictionary<int, string> _users;
+        private readonly IDictionary<int, string> _users;
         public int UserId
         {
             get; private set;
@@ -34,6 +34,9 @@ namespace Client.ViewModel
             _model = ContentClientFactory.getInstance();
             _model.CSubscribe(this);
             this.UserId = _model.GetUserId();
+
+            _modelDb = SessionManagerFactory.GetClientSessionManager();
+            _modelDb.SubscribeSession(this);
         }
 
         public void SendChat(string message, int replyMsgId)
@@ -165,5 +168,6 @@ namespace Client.ViewModel
         /// Underlying data model.
         /// </summary>
         private IContentClient _model;
+        private IUXClientSessionManager _modelDb;
     }
 }
