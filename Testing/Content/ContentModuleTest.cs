@@ -18,6 +18,44 @@ namespace Testing.Content
         }
 
         [Test]
+        public void GetInstance_ContentClientFactory_IContentClientShouldBeSingleton()
+        {
+            IContentClient _client1 = ContentClientFactory.getInstance();
+            IContentClient _client2 = ContentClientFactory.getInstance();
+            Assert.AreEqual(_client1, _client2);
+        }
+
+        [Test]
+        public void SetUser_ContentClientFactory_UserIdOfContentClientShouldMatchWithGivenID()
+        {
+            int UserId = 1001;
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            ContentClientFactory.setUser(UserId);
+            Assert.AreEqual(UserId, _contentClient.UserId);
+        }
+
+        [Test]
+        public void GetInstance_ContentServerFactory_IContentServerShouldBeSingleton()
+        {
+            IContentServer _server1 = ContentServerFactory.GetInstance();
+            IContentServer _server2 = ContentServerFactory.GetInstance();
+            Assert.AreEqual(_server1, _server2);
+        }
+
+        [Test]
+        public void CSend_InvalidTypeSend_ShouldThrowException()
+        {
+            Utils _util = new Utils();
+            int UserId = 1001;
+            SendMessageData SampleData = _util.GenerateChatSendMsgData("Hello, How are you?", new int[] { 1002 }, type: (MessageType)2);
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            _contentClient.UserId = UserId;
+            IContentClient _iContentClient = _contentClient;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _iContentClient.CSend(SampleData));
+            Assert.AreEqual("Invalid MessageType field. Must be one of MessageType.Chat or MessageType.File", ex.Message);
+        }
+
+        [Test]
         public void CSend_ChatSendingHiMsg_SerializedStringShouldMatchInputMsg()
         {
             Utils _util = new Utils();
@@ -194,8 +232,6 @@ namespace Testing.Content
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized as MessageData;
-                Console.WriteLine(Filedata.fileName);
-                Console.WriteLine(receivedMessage.Message);
                 Assert.AreEqual(receivedMessage.Message, Filedata.fileName);
                 Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
                 Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
@@ -306,6 +342,37 @@ namespace Testing.Content
             {
                 Assert.Fail();
             }*/
+        }
+
+        // CDownload valid file remaining, not file download remaining
+
+        [Test]
+        public void CSubscribe_SubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
+        {
+            Utils _util = new Utils();
+            ContentClient _contentClient = ContentClientFactory.getInstance() as ContentClient;
+            IContentClient _iContentClient = _contentClient;
+            FakeContentListener _fakeListener = new FakeContentListener();
+            IContentListener _iFakeListener = _fakeListener;
+            // Subscribing to content client
+            _iContentClient.CSubscribe(_iFakeListener);
+            // Building receiveMessageData to notify to subscribers
+            ReceiveMessageData _receivedData = new ReceiveMessageData();
+            string Msg = "hello";  // data will have msg hello
+            _receivedData.Message = Msg;
+            _receivedData.MessageId = 2;
+            // Notifying to subscribers
+            _contentClient.Notify(_receivedData);
+            System.Threading.Thread.Sleep(50);
+            // Fetching listened data from listener
+            ReceiveMessageData _listenedData = _fakeListener.GetOnMessageData();
+            Assert.AreEqual(_listenedData.Message, Msg);
+        }
+
+        [Test]
+        public void OnDataReceived_()
+        {
+            Assert.Pass();
         }
     }
 }

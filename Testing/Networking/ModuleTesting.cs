@@ -1,3 +1,8 @@
+/*
+ * Author: Subhash S
+ * Created on: 12/11/2021
+ */
+
 using System;
 using Networking;
 using NUnit.Framework;
@@ -9,6 +14,14 @@ namespace Testing.Networking
     [TestFixture]
     public class ModuleTesting
     {
+        
+        private readonly ISerializer _serializer = new Serializer();
+        private static string RandomMessage => GetRandomString();
+        private string _serverIp, _serverPort;
+        private readonly FakeServer _server = new();
+        private readonly FakeClientA _clientA = new();
+        private readonly FakeClientB _clientB = new();
+        
         [OneTimeSetUp]
         public void Init_StartServerAndClients_ServerIsNotifiedAboutClients()
         {
@@ -27,11 +40,10 @@ namespace Testing.Networking
             // start client A
             Assert.AreEqual("1", _clientA.Communicator.Start(_serverIp, _serverPort));
             _clientA.Subscribe();
-            _clientACommunicator = _clientA.Communicator;
             Assert.AreEqual(OnClientJoined, _server.WbHandler.Event);
             Assert.AreEqual(OnClientJoined, _server.SsHandler.Event);
             // add client A to server
-            _server.Communicator.AddClient(_clientA.Id, _server.WbHandler.Data);
+            _server.Communicator.AddClient(FakeClientA.Id, _server.WbHandler.Data);
 
             // start clientB
             Assert.AreEqual("1", _clientB.Communicator.Start(_serverIp, _serverPort));
@@ -39,7 +51,7 @@ namespace Testing.Networking
             Assert.AreEqual(OnClientJoined, _server.WbHandler.Event);
             Assert.AreEqual(OnClientJoined, _server.SsHandler.Event);
             // add clientB to server
-            _server.Communicator.AddClient(_clientB.Id, _server.WbHandler.Data);
+            _server.Communicator.AddClient(FakeClientB.Id, _server.WbHandler.Data);
         }
 
         [OneTimeTearDown]
@@ -58,34 +70,26 @@ namespace Testing.Networking
             _clientB.Reset();
         }
 
-        private readonly ISerializer _serializer = new Serializer();
-        private string RandomMessage => GetRandomString();
-        private string _serverIp, _serverPort;
-        private readonly FakeServer _server = new();
-        private readonly FakeClientA _clientA = new();
-        private readonly FakeClientB _clientB = new();
-        private ICommunicator _clientACommunicator;
-
         [Test]
         public void RemoveClient_ClientLeavesRoom_ServerIsNotifiedAndCannotSendMessage()
         {
             // A module asks the server communicator to remove the client.
-            _server.Communicator.RemoveClient(_clientA.Id);
+            _server.Communicator.RemoveClient(FakeClientA.Id);
             // All threads on client are stopped.
             _clientA.Communicator.Stop();
-            var moduleId = Modules.WhiteBoard;
+            const string moduleId = Modules.WhiteBoard;
             var message = RandomMessage;
-            var expectedMessage = "Client does not exist in the room!";
+            const string expectedMessage = "Client does not exist in the room!";
 
             // When server tries to send a message to the same client, error must be thrown.
-            Assert.That(() => _server.Communicator.Send(message, moduleId, _clientA.Id),
+            Assert.That(() => _server.Communicator.Send(message, moduleId, FakeClientA.Id),
                 Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));
 
             // Reset client A back to original state.
             _clientA.Communicator = NewClientCommunicator;
             Assert.AreEqual("1", _clientA.Communicator.Start(_serverIp, _serverPort));
             _clientA.Subscribe();
-            _server.Communicator.AddClient(_clientA.Id, _server.WbHandler.Data);
+            _server.Communicator.AddClient(FakeClientA.Id, _server.WbHandler.Data);
         }
 
         [Test]
@@ -95,7 +99,7 @@ namespace Testing.Networking
         public void Start_ClientRejoinsCall_ClientShouldReceiveMessages()
         {
             // Simulates a client leaving the room.
-            _server.Communicator.RemoveClient(_clientA.Id);
+            _server.Communicator.RemoveClient(FakeClientA.Id);
             _clientA.Communicator.Stop();
 
             // Client re-joining routine begins.
@@ -108,13 +112,14 @@ namespace Testing.Networking
             _server.WbHandler.Wait();
             // All modules on server will be notified that a client has joined
             Assert.AreEqual(OnClientJoined, _server.WbHandler.Event);
+            _server.SsHandler.Wait();
             Assert.AreEqual(OnClientJoined, _server.SsHandler.Event);
 
             // A module on the server will add the client to the networking module
-            _server.Communicator.AddClient(_clientA.Id, _server.WbHandler.Data);
+            _server.Communicator.AddClient(FakeClientA.Id, _server.WbHandler.Data);
 
             var message = RandomMessage;
-            _server.Communicator.Send(message, Modules.WhiteBoard, _clientA.Id);
+            _server.Communicator.Send(message, Modules.WhiteBoard, FakeClientA.Id);
             _clientA.WbHandler.Wait();
             Assert.AreEqual(OnDataReceived, _clientA.WbHandler.Event);
         }
@@ -124,7 +129,7 @@ namespace Testing.Networking
         {
             var message = RandomMessage;
             // Networking module does not exist, so must throw an error.
-            var expectedMessage = "Key Error: Packet holds invalid module identifier";
+            const string expectedMessage = "Key Error: Packet holds invalid module identifier";
 
             Assert.That(() => _clientA.Communicator.Send(Modules.Networking, message),
                 Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));
@@ -137,7 +142,7 @@ namespace Testing.Networking
         public void Send_ClientSendsToServer_OnlySendingModuleNotifiedOnServer()
         {
             // Send message as whiteboard module.
-            var moduleId = Modules.WhiteBoard;
+            const string moduleId = Modules.WhiteBoard;
             var message = RandomMessage;
 
             // Send should be successful
@@ -154,7 +159,7 @@ namespace Testing.Networking
         [Test]
         public void Send_ServerBroadCastsMessage_OnlySendingModuleOnAllClientsNotified()
         {
-            var moduleId = Modules.WhiteBoard;
+            const string moduleId = Modules.WhiteBoard;
             var message = RandomMessage;
 
             // Server send shouldn't fail
@@ -174,11 +179,11 @@ namespace Testing.Networking
         [Test]
         public void Send_ServerSendsPrivateMessage_OnlySendingModuleOnSingleClientNotified()
         {
-            var moduleId = Modules.WhiteBoard;
+            const string moduleId = Modules.WhiteBoard;
             var message = RandomMessage;
 
             // Server send shouldn't fail
-            Assert.DoesNotThrow(() => _server.Communicator.Send(message, moduleId, _clientA.Id));
+            Assert.DoesNotThrow(() => _server.Communicator.Send(message, moduleId, FakeClientA.Id));
 
             _clientA.WbHandler.Wait();
             // Only whiteboard module on client A should receive it.
@@ -213,7 +218,7 @@ namespace Testing.Networking
         public void Send_SerializeAndSend_SenderShouldReceiveSameMessage()
         {
             // message sent by whiteboard module.
-            var moduleId = Modules.WhiteBoard;
+            const string moduleId = Modules.WhiteBoard;
             var fakeChat = FakeChat.GetFakeChat();
             var message = _serializer.Serialize(fakeChat);
             // client A serializes and sends the message
@@ -244,7 +249,7 @@ namespace Testing.Networking
         [Test]
         public void Send_ClientSendsLargeMessage_ServerReceivesLargeMessage()
         {
-            var moduleId = Modules.WhiteBoard;
+            const string moduleId = Modules.WhiteBoard;
             // This message length is greater than the threshold.
             var message = GetRandomString(2000);
 
