@@ -1,6 +1,10 @@
-﻿using Content;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Networking;
-using System;
+using Content;
 
 
 namespace Dashboard
@@ -55,7 +59,7 @@ namespace Dashboard
             return new ServerSessionManager(communicator, contentServer);
         }
 
-        private static readonly Lazy<ClientSessionManager> s_clientSessionManager = new(() => new ClientSessionManager());
-        private static readonly Lazy<ServerSessionManager> s_serverSessionManager = new(() => new ServerSessionManager());
+        private static readonly Lazy<ClientSessionManager> s_clientSessionManager = new(()=>new ClientSessionManager());
+        private static readonly Lazy<ServerSessionManager> s_serverSessionManager = new(()=>new ServerSessionManager());
     }
 }

@@ -1,35 +1,47 @@
+<<<<<<< HEAD
 using Content;
 using Networking;
 using NUnit.Framework;
 using System;
 using System.IO;
+=======
+using NUnit.Framework;
+using Content;
+using FluentAssertions;
+using Networking;
+>>>>>>> parent of 4df0296 (Code cleanup)
 namespace Testing.Content
 {
     public class ChatClientTests
     {
-
+		
         [SetUp]
         public void Setup()
         {
-
-        }
+			
+		}
 
         [Test]
+<<<<<<< HEAD
         public void Test_Converting_SendMessageObject_To_MessageData()
+=======
+		public void TestConvert()
+>>>>>>> parent of 4df0296 (Code cleanup)
         {
-            Utils _util = new Utils();
-            SendMessageData SampleData = _util.GetSendMessageData2();
-            ChatClient conch = new ChatClient(_util.GetFakeCommunicator());
-            MessageData x = conch.SendToMessage(SampleData, MessageEvent.NewMessage);
+			Utils _util = new Utils();
+			SendMessageData SampleData = _util.GetSendMessageData2();
+			ChatClient conch = new ChatClient(_util.GetFakeCommunicator());
+			MessageData x = conch.SendToMessage(SampleData, MessageEvent.NewMessage);
 
-            Assert.AreEqual(x.Message, SampleData.Message);
-            Assert.AreEqual(x.Event, MessageEvent.NewMessage);
-            Assert.AreEqual(x.Type, SampleData.Type);
-            Assert.AreEqual(x.FileData, null);
-            Assert.AreEqual(x.Starred, false);
-            Assert.AreEqual(x.ReplyThreadId, SampleData.ReplyThreadId);
-            Assert.AreEqual(x.ReceiverIds.Length, SampleData.ReceiverIds.Length);
+			Assert.AreEqual(x.Message, SampleData.Message);
+			Assert.AreEqual(x.Event, MessageEvent.NewMessage);
+			Assert.AreEqual(x.Type, SampleData.Type);
+			Assert.AreEqual(x.FileData, null);
+			Assert.AreEqual(x.Starred, false);
+			Assert.AreEqual(x.ReplyThreadId, SampleData.ReplyThreadId);
+			Assert.AreEqual(x.ReceiverIds.Length, SampleData.ReceiverIds.Length);
         }
+<<<<<<< HEAD
 		[Test]
 		public void Test_ChatNewMessage()
 		{
@@ -144,4 +156,7 @@ namespace Testing.Content
             }
 		}
     }
+=======
+	}
+>>>>>>> parent of 4df0296 (Code cleanup)
 }

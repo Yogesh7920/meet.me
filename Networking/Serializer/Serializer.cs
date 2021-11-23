@@ -43,7 +43,7 @@ namespace Networking
             {
                 var serializer = new XmlSerializer(typeof(T));
                 using var stringReader = new StringReader(serializedString);
-                return (T)serializer.Deserialize(stringReader);
+                return (T) serializer.Deserialize(stringReader);
             }
             catch (Exception ex)
             {

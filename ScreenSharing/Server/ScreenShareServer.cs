@@ -5,17 +5,17 @@
  * date modified: 14/10/2021
 **/
 
-using Networking;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Networking;
 
 namespace ScreenSharing
 {
-    /// <summary>
-    ///     Server Side screen sharing class
-    /// </summary>
-    public class ScreenShareServer : INotificationHandler
+	/// <summary>
+	///     Server Side screen sharing class
+	/// </summary>
+	public class ScreenShareServer : INotificationHandler
     {
         public static string identifier;
 

@@ -1,7 +1,7 @@
-using Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Networking;
 
 namespace Content
 {
@@ -22,7 +22,8 @@ namespace Content
         {
             Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
             string deserializedType = _serializer.GetObjectType(data, "Content");
-            if (string.Equals(deserializedType, "Content.MessageData"))
+
+            if (string.Equals(deserializedType,"Content.MessageData"))
             {
                 MessageData receivedMessage = _serializer.Deserialize<MessageData>(data);
                 _contentHandler.OnReceive(receivedMessage);

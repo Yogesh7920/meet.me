@@ -93,40 +93,40 @@ namespace Networking
             while (_listenRun)
                 // If the queue is not empty, get a packet from the front of the queue and remove that packet
                 // from the queue
-                while (_queue.Size() != 0)
+            while (_queue.Size() != 0)
+            {
+                // Dequeue the front packet of the queue
+                var packet = _queue.Dequeue();
+
+                // Call GetMessage function to form string msg from the packet object 
+                var msg = GetMessage(packet);
+
+                // Call GetDestination function to know destination from the packet object
+                var tcpSockets = GetDestination(packet);
+
+                // Send the message in chunks of threshold number of characters, 
+                // if the data size is greater than threshold value
+                for (var i = 0; i < msg.Length; i += Threshold)
                 {
-                    // Dequeue the front packet of the queue
-                    var packet = _queue.Dequeue();
-
-                    // Call GetMessage function to form string msg from the packet object 
-                    var msg = GetMessage(packet);
-
-                    // Call GetDestination function to know destination from the packet object
-                    var tcpSockets = GetDestination(packet);
-
-                    // Send the message in chunks of threshold number of characters, 
-                    // if the data size is greater than threshold value
-                    for (var i = 0; i < msg.Length; i += Threshold)
+                    var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
+                    foreach (var tcpSocket in tcpSockets)
                     {
-                        var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
-                        foreach (var tcpSocket in tcpSockets)
+                        var outStream = Encoding.ASCII.GetBytes(chunk);
+                        try
                         {
-                            var outStream = Encoding.ASCII.GetBytes(chunk);
-                            try
-                            {
-                                var networkStream = tcpSocket.GetStream();
-                                networkStream.Write(outStream, 0, outStream.Length);
-                                networkStream.Flush();
-                            }
-                            catch (Exception e)
-                            {
-                                Trace.WriteLine(
-                                    "Networking: Error in SendSocketListenerServerThread "
-                                    + e.Message);
-                            }
+                            var networkStream = tcpSocket.GetStream();
+                            networkStream.Write(outStream, 0, outStream.Length);
+                            networkStream.Flush();
+                        }
+                        catch (Exception e)
+                        {
+                            Trace.WriteLine(
+                                "Networking: Error in SendSocketListenerServerThread "
+                                + e.Message);
                         }
                     }
                 }
+            }
         }
 
         /// <summary>

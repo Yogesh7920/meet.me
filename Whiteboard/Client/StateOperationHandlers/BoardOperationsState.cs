@@ -8,6 +8,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Whiteboard
 {
@@ -118,13 +121,13 @@ namespace Whiteboard
                 BoardShape shapeFromManager = GetShapeFromManager(shapeId);
                 return shapeFromManager.ShapeOwnerId;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 Trace.WriteLine("ActiveBoardOperationsHandler:Delete: Failure in getting user Name Operation.");
                 Trace.WriteLine(e.Message);
                 return null;
             }
-
+           
         }
 
         /// <summary>

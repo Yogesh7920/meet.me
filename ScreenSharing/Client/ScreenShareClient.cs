@@ -5,17 +5,17 @@
  * date modified: 14/10/2021
 **/
 
-using Networking;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Networking;
 
 namespace ScreenSharing
 {
-    /// <summary>
-    ///     Client Side screen sharing class
-    /// </summary>
-    public class ScreenShareClient : INotificationHandler
+	/// <summary>
+	///     Client Side screen sharing class
+	/// </summary>
+	public class ScreenShareClient : INotificationHandler
     {
         //Store the Communicator instance which is used to send screen over the network.
         public ICommunicator _communicator;

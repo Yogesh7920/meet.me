@@ -1,9 +1,9 @@
-﻿using Content;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
+using Content;
 
 namespace Client.ViewModel
 {
@@ -66,7 +66,7 @@ namespace Client.ViewModel
                             lock (this)
                             {
 
-                                if (messageData.Event == MessageEvent.NewMessage)
+                                if(messageData.Event == MessageEvent.NewMessage)
                                 {
                                     _messages.Add(messageData.MessageId, messageData.Message);
                                     ReceivedMsg = new Message();

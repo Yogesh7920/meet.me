@@ -5,12 +5,12 @@
  *          for the Queue Module.
  */
 
-using Networking;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Networking;
+using NUnit.Framework;
 
 namespace Testing.Networking.QueueManagement
 {
@@ -51,7 +51,7 @@ namespace Testing.Networking.QueueManagement
                 var moduleIndex = random.Next(0, 4);
                 var tempModuleId = _moduleIdentifiers[moduleIndex];
                 var item = new Packet
-                { ModuleIdentifier = tempModuleId, SerializedData = Message };
+                    {ModuleIdentifier = tempModuleId, SerializedData = Message};
                 _testPackets.Add(item);
             }
         }
@@ -76,7 +76,7 @@ namespace Testing.Networking.QueueManagement
         {
             const string moduleId = Modules.ScreenShare;
             var packet = new Packet
-            { ModuleIdentifier = moduleId, SerializedData = Message };
+                {ModuleIdentifier = moduleId, SerializedData = Message};
             _queue.Enqueue(packet);
             var size = _queue.Size();
             Assert.AreEqual(1, size);
@@ -86,7 +86,7 @@ namespace Testing.Networking.QueueManagement
         public void Enqueue_InvalidModuleIdentifier_ThrowsException()
         {
             const string moduleId = Modules.Invalid;
-            var packet = new Packet { ModuleIdentifier = moduleId, SerializedData = Message };
+            var packet = new Packet {ModuleIdentifier = moduleId, SerializedData = Message};
 
             var ex = Assert.Throws<Exception>(() => { _queue.Enqueue(packet); });
 
@@ -142,7 +142,7 @@ namespace Testing.Networking.QueueManagement
         {
             const string moduleId = Modules.ScreenShare;
 
-            var packet = new Packet { ModuleIdentifier = moduleId, SerializedData = Message };
+            var packet = new Packet {ModuleIdentifier = moduleId, SerializedData = Message};
             _queue.Enqueue(packet);
 
             try
@@ -219,7 +219,7 @@ namespace Testing.Networking.QueueManagement
         {
             const string moduleId = Modules.ScreenShare;
             var data = Message;
-            var packet = new Packet { ModuleIdentifier = moduleId, SerializedData = data };
+            var packet = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
             var thread1 = Task.Run(() => { _queue.Enqueue(packet); });
             Task.WaitAll(thread1);
             var thread2 = Task.Run(() =>
@@ -259,7 +259,7 @@ namespace Testing.Networking.QueueManagement
         {
             const string moduleId = Modules.ScreenShare;
             var data = Message;
-            var packet = new Packet { ModuleIdentifier = moduleId, SerializedData = data };
+            var packet = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
             _queue.Enqueue(packet);
             var p = _queue.Peek();
             Assert.AreEqual(p.ModuleIdentifier, moduleId);
@@ -277,12 +277,12 @@ namespace Testing.Networking.QueueManagement
             var yData1 = Message;
             var yData2 = Message;
 
-            var xPacket1 = new Packet { ModuleIdentifier = moduleId1, SerializedData = xData1 };
-            var xPacket2 = new Packet { ModuleIdentifier = moduleId1, SerializedData = xData2 };
-            var xPacket3 = new Packet { ModuleIdentifier = moduleId1, SerializedData = xData3 };
+            var xPacket1 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData1};
+            var xPacket2 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData2};
+            var xPacket3 = new Packet {ModuleIdentifier = moduleId1, SerializedData = xData3};
 
-            var yPacket1 = new Packet { ModuleIdentifier = moduleId2, SerializedData = yData1 };
-            var yPacket2 = new Packet { ModuleIdentifier = moduleId2, SerializedData = yData2 };
+            var yPacket1 = new Packet {ModuleIdentifier = moduleId2, SerializedData = yData1};
+            var yPacket2 = new Packet {ModuleIdentifier = moduleId2, SerializedData = yData2};
 
 
             var thread1 = Task.Run(() =>
@@ -342,9 +342,9 @@ namespace Testing.Networking.QueueManagement
             var newData = Message;
             const int newPriority = Priorities.Networking;
 
-            var packet1 = new Packet { ModuleIdentifier = moduleId, SerializedData = data };
-            var packet2 = new Packet { ModuleIdentifier = moduleId2, SerializedData = data2 };
-            var packet3 = new Packet { ModuleIdentifier = newModuleId, SerializedData = newData };
+            var packet1 = new Packet {ModuleIdentifier = moduleId, SerializedData = data};
+            var packet2 = new Packet {ModuleIdentifier = moduleId2, SerializedData = data2};
+            var packet3 = new Packet {ModuleIdentifier = newModuleId, SerializedData = newData};
 
             var thread1 = Task.Run(() => { _queue.Enqueue(packet1); });
             var thread2 = Task.Run(() => { _queue.Enqueue(packet2); });

@@ -3,9 +3,9 @@
  * Created on: 12/11/2021
  */
 
+using System;
 using Networking;
 using NUnit.Framework;
-using System;
 using static Testing.Networking.NetworkingGlobals;
 using static Testing.Networking.NotificationEvents;
 
@@ -14,14 +14,14 @@ namespace Testing.Networking
     [TestFixture]
     public class ModuleTesting
     {
-
+        
         private readonly ISerializer _serializer = new Serializer();
         private static string RandomMessage => GetRandomString();
         private string _serverIp, _serverPort;
         private readonly FakeServer _server = new();
         private readonly FakeClientA _clientA = new();
         private readonly FakeClientB _clientB = new();
-
+        
         [OneTimeSetUp]
         public void Init_StartServerAndClients_ServerIsNotifiedAboutClients()
         {

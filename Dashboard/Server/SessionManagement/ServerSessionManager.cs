@@ -1,12 +1,14 @@
-﻿using Content;
-using Dashboard.Server.Summary;
-using Networking;
-using ScreenSharing;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Networking;
+using System.Diagnostics;
+using Dashboard.Server.Summary;
+using Content;
 using Whiteboard;
+using ScreenSharing;
 
 namespace Dashboard.Server.SessionManagement
 {
@@ -25,7 +27,7 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-
+            
             _ = new ServerBoardStateManager();
             _ = new ScreenShareServer();
             _contentServer = ContentServerFactory.GetInstance();
@@ -124,9 +126,9 @@ namespace Dashboard.Server.SessionManagement
                 // returning the summary
                 return new SummaryData(summary);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                Console.WriteLine("No messages received: " + e.Message);
+                Console.WriteLine("No messages received: "+e.Message);
                 return null;
             }
         }

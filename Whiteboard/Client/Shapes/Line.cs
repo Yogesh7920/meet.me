@@ -10,13 +10,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Whiteboard
 {
     /// <summary>
     /// Line Class.
     /// </summary>
-    public class Line : MainShape
+    public class Line: MainShape
     {
 
         /// <summary>

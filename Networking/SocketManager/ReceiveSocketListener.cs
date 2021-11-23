@@ -121,7 +121,7 @@ namespace Networking
         /// </summary>
         private void PushToQueue(string data, string moduleIdentifier)
         {
-            var packet = new Packet { ModuleIdentifier = moduleIdentifier, SerializedData = data };
+            var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = data};
             Trace.WriteLine("SERVER/CLIENT : " + data);
             _queue.Enqueue(packet);
         }

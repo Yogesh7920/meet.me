@@ -1,4 +1,11 @@
-﻿namespace Dashboard
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Dashboard.Server.Summary;
+
+namespace Dashboard
 {
     /// <summary>
     /// Class for sending data to the client side
@@ -19,9 +26,9 @@
             summaryData = summaryDataToSend;
         }
 
-        /// <summary>
-        /// Default constructor for serialization
-        /// </summary>
+       /// <summary>
+       /// Default constructor for serialization
+       /// </summary>
         public ServerToClientData()
         {
         }

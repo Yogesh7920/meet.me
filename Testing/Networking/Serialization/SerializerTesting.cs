@@ -1,8 +1,8 @@
-﻿using AutoFixture;
+﻿using System;
+using AutoFixture;
 using FluentAssertions;
 using Networking;
 using NUnit.Framework;
-using System;
 using Testing.Networking.Objects;
 
 namespace Testing.Networking

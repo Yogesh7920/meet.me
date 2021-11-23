@@ -9,6 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Whiteboard
 {
@@ -43,11 +46,11 @@ namespace Whiteboard
         /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
         /// <param name="points">List of points, if any.</param>
         /// <param name="angle">Angle of Rotation.</param>
-        public Ellipse(float height,
-                       float width,
-                       float strokeWidth,
-                       BoardColor strokeColor,
-                       BoardColor shapeFill,
+        public Ellipse(float height, 
+                       float width, 
+                       float strokeWidth, 
+                       BoardColor strokeColor, 
+                       BoardColor shapeFill, 
                        Coordinate start,
                        Coordinate center,
                        List<Coordinate> points,
@@ -70,7 +73,7 @@ namespace Whiteboard
         /// <param name="end">End of mouse drag.</param>
         /// <param name="prevEllipse">Previous ellipse object to modify.</param>
         /// <returns>Create/modified Ellipse object.</returns>
-        public override MainShape ShapeMaker([NotNull] Coordinate start, [NotNull] Coordinate end, MainShape prevEllipse = null)
+        public override MainShape ShapeMaker ([NotNull] Coordinate start, [NotNull] Coordinate end, MainShape prevEllipse = null)
         {
             // If previous shape to modify is not provided, a new shape is created.
             if (prevEllipse == null)

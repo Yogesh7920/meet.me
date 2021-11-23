@@ -1,9 +1,9 @@
-using Networking;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Networking;
+using NUnit.Framework;
 
 namespace Testing.Networking.SocketManagement
 {
@@ -66,7 +66,7 @@ namespace Testing.Networking.SocketManagement
         public void SinglePacketServerSendTesting()
         {
             var whiteBoardData = "hello ";
-            var whiteBoardPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
+            var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             _queueS.Enqueue(whiteBoardPacket);
 
             while (_queueR.IsEmpty())
@@ -85,7 +85,7 @@ namespace Testing.Networking.SocketManagement
         public void BigPacketServerSendTesting()
         {
             var whiteBoardData = NetworkingGlobals.GetRandomString(1500);
-            var whiteBoardPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
+            var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             _queueS.Enqueue(whiteBoardPacket);
 
             while (_queueR.IsEmpty())

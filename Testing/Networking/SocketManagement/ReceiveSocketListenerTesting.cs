@@ -1,10 +1,10 @@
-﻿using Networking;
-using NUnit.Framework;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Networking;
+using NUnit.Framework;
 
 namespace Testing.Networking.SocketManagement
 {
@@ -59,7 +59,7 @@ namespace Testing.Networking.SocketManagement
         public void SinglePacketReceiveTesting()
         {
             const string whiteBoardData = "hello ";
-            var whiteBoardPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
+            var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             var msg1 = GetMessage(whiteBoardPacket);
             var stream = _clientSocket.GetStream();
             stream.Write(Encoding.ASCII.GetBytes(msg1), 0, msg1.Length);
@@ -80,7 +80,7 @@ namespace Testing.Networking.SocketManagement
         public void BigPacketReceiveTesting()
         {
             var whiteBoardData = NetworkingGlobals.GetRandomString(4000);
-            var whiteBoardPacket = new Packet { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
+            var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             var message = GetMessage(whiteBoardPacket);
             var stream = _clientSocket.GetStream();
             stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
@@ -105,7 +105,7 @@ namespace Testing.Networking.SocketManagement
             {
                 var whiteBoardData = "packet" + i;
                 var whiteBoardPacket = new Packet
-                { ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData };
+                    {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
                 var msg = GetMessage(whiteBoardPacket);
                 var stream = _clientSocket.GetStream();
                 stream.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);

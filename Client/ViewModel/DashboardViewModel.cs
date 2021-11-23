@@ -1,12 +1,14 @@
-﻿using LiveCharts;
-using LiveCharts.Defaults;
-using LiveCharts.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LiveCharts;
+using LiveCharts.Defaults;
+using System.ComponentModel;
+using LiveCharts.Helpers;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Client.ViewModel
 {
