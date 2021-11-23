@@ -9,23 +9,20 @@ namespace Testing.Content
     {
         private ChatContextServer chatContextServer;
         private ContentDatabase database;
+        private Utils _utils;
 
         [SetUp]
         public void Setup()
         {
             database = new ContentDatabase();
             chatContextServer = new ChatContextServer(database);
+            _utils = new Utils();
         }
 
         [Test]
         public void NewMessageTest()
         {
-            MessageData message1 = new MessageData();
-            message1.Message = "Hello";
-            message1.Type = MessageType.Chat;
-            message1.SenderId = 1;
-            message1.ReplyThreadId = 0;
-            message1.Event = MessageEvent.NewMessage;
+            MessageData message1 = _utils.GenerateNewMessageData("Hello", SenderId: 1);
 
             ReceiveMessageData recv = chatContextServer.Receive(message1);
 
@@ -35,12 +32,7 @@ namespace Testing.Content
             Assert.AreEqual(message1.Event, recv.Event);
             Assert.IsFalse(recv.Starred);
 
-            MessageData message2 = new MessageData();
-            message2.Message = "Hello2";
-            message2.Type = MessageType.Chat;
-            message2.SenderId = 1;
-            message2.ReplyThreadId = message1.ReplyThreadId;
-            message2.Event = MessageEvent.NewMessage;
+            MessageData message2 = _utils.GenerateNewMessageData("Hello2", SenderId: 1, ReplyThreadId: message1.ReplyThreadId);
 
             recv = chatContextServer.Receive(message2);
 
@@ -52,12 +44,7 @@ namespace Testing.Content
             Assert.AreEqual(message2.ReplyThreadId, recv.ReplyThreadId);
             Assert.IsFalse(recv.Starred);
 
-            MessageData message3 = new MessageData();
-            message3.Message = "Hello3";
-            message3.Type = MessageType.Chat;
-            message3.SenderId = 1;
-            message3.ReplyThreadId = -1;
-            message3.Event = MessageEvent.NewMessage;
+            MessageData message3 = _utils.GenerateNewMessageData("Hello3", SenderId: 1);
 
             recv = chatContextServer.Receive(message3);
 
