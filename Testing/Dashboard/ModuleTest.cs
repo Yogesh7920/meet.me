@@ -227,6 +227,18 @@ namespace Testing.Dashboard
             Assert.IsNotEmpty(actualSavedSummary);
         }
 
+
+        [Test]
+        public void EndMeetingProcedure_MeetingEnds_SendEndMeetingEventToClients()
+        {
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            ClientToServerData sampleClientRequest = new("endMeet", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            string actualEvent = deserialisedReceivedData.eventType;
+            Assert.AreEqual("endMeet", actualEvent);
+        }
+
         [TestCase("This is sample summary")]
         [TestCase("")]
         [Test]
