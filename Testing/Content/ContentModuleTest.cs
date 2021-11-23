@@ -701,6 +701,7 @@ namespace Testing.Content
         ///<summary>
         /// Here we are testing SGetAllMessages and SSendAllMessages of server by sending it three new message
         /// starring first message, updating second message and keeping third same which will be replies in context of first message
+        /// This test will check new arrival message, broadcast, private sending, starring msg for chats
         /// </summary>
         public void SGetAllMessagesAndSendAllMessages_GettingAllMsgsFromServer_ShouldMatchSentMsgsToServer()
         {
@@ -711,7 +712,6 @@ namespace Testing.Content
             contentServer.Communicator = fakeCommunicator;
             MessageData receiveMsgData1 = util.GenerateNewMessageData("Hello, how are you?", SenderId: 1001, MessageId: -1, ReplyThreadId: -1);
             MessageData receiveMsgData2 = util.GenerateNewMessageData("I am fine, How aboid u?", SenderId: 1002, MessageId: -1, ReplyThreadId: -1);
-            string updatedMsg = "I am fine, How about u?";
             MessageData receiveMsgData3 = util.GenerateNewMessageData("I am fine", SenderId: 1003, MessageId: -1, ReplyThreadId: -1);
             receiveMsgData1.Event = MessageEvent.NewMessage;
             receiveMsgData2.Event = MessageEvent.NewMessage;
@@ -729,12 +729,12 @@ namespace Testing.Content
             TestMsgDataFieldsServer(msg2, receiveMsgData2);
             MessageData updateMsg2 = msg2;
             updateMsg2.Event = MessageEvent.Update;
-            updateMsg2.Message = updatedMsg;
+            updateMsg2.Message = "I am fine, How about u?";
             contentServer.Receive(serializer.Serialize(updateMsg2));
             MessageData updateReplyMsg2 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
             TestMsgDataFieldsServer(updateMsg2, msg2);
             Assert.AreEqual(!msg1.Starred, starReplyMsg1.Starred);
-            Assert.AreEqual(updateReplyMsg2.Message, updatedMsg);
+            Assert.AreEqual(updateReplyMsg2.Message, "I am fine, How about u?");
             receiveMsgData3.ReplyThreadId = msg1.ReplyThreadId;
             contentServer.Receive(serializer.Serialize(receiveMsgData3));
             MessageData msg3 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
@@ -755,6 +755,55 @@ namespace Testing.Content
             CompareChatContextList(contextList, listReceived);
         }
 
+        [Test]
+        ///<summary>
+        /// Here we are testing file related functionality of server, i.e storing new file message and handling donwload request
+        /// </summary>
+        public void ReceivingAndSendingFile_NewFileMessageAndDownloadRequest_ShouldReturnProperResponse()
+        {
+            ContentServer contentServer = ContentServerFactory.GetInstance() as ContentServer;
+            FakeCommunicator fakeClientCommunicator = new FakeCommunicator();
+            FakeCommunicator fakeServerCommunicator = new FakeCommunicator();
+            ISerializer serializer = new Serializer();
+            Utils util = new Utils();
+            contentServer.Communicator = fakeServerCommunicator;
+            int UserId = 1001;
+            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string FilePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            string SavePath = path[0] + "\\Testing\\Content\\Save_";
+            var Filedata = new SendFileData(FilePath);
+            SendMessageData SampleData = util.GenerateChatSendMsgData(FilePath, new int[] { }, type: MessageType.File);
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            IContentClient iContentClient = contentClient;
+            contentClient.Communicator = fakeClientCommunicator;
+            contentClient.UserId = UserId;
+            iContentClient.CSend(SampleData);
+            string sendSerializedMsg = fakeClientCommunicator.GetSentData();
+            MessageData sendNewFileData = serializer.Deserialize<MessageData>(sendSerializedMsg);
+            contentServer.Receive(sendSerializedMsg);
+            MessageData fileReplyMsg = GetMsgFromCommunicator(fakeServerCommunicator, serializer, true, null);
+            contentClient.OnReceive(fileReplyMsg);
+            iContentClient.CDownload(fileReplyMsg.MessageId, SavePath);
+            string downloadReqMsg = fakeClientCommunicator.GetSentData();
+            contentServer.Receive(downloadReqMsg);
+            List<int> rcvId = new List<int>();
+            rcvId.Add(UserId);
+            MessageData fileReturnedData = GetMsgFromCommunicator(fakeServerCommunicator, serializer, false, rcvId);
+            Assert.AreEqual(fileReturnedData.FileData.fileContent, sendNewFileData.FileData.fileContent);
+            Assert.AreEqual(fileReturnedData.Message, SavePath);
+            Assert.AreEqual(fileReturnedData.FileData.fileName, sendNewFileData.FileData.fileName);
+            Assert.AreEqual(fileReturnedData.MessageId, fileReplyMsg.MessageId);
+        }
+
+        /// <summary>
+        /// This function checks SSendAllMessage of server where it will deserialize string from communicator
+        /// will check if msg sent to valid user in private manner and will compare List of chatcontexts
+        /// </summary>
+        /// <param name="communicator"></param>
+        /// <param name="serializer"></param>
+        /// <param name="chats"></param>
+        /// <param name="userId"></param>
         public void TestSSendAllMessagesToClient(FakeCommunicator communicator, ISerializer serializer, List<ChatContext> chats, int userId)
         {
             string msg = communicator.GetSentData();
@@ -769,6 +818,11 @@ namespace Testing.Content
             CompareChatContextList(contexts, chats);
         }
 
+        /// <summary>
+        /// This function compared list of chat contexts
+        /// </summary>
+        /// <param name="l1"></param>
+        /// <param name="l2"></param>
         public void CompareChatContextList(List<ChatContext> l1, List<ChatContext> l2)
         {
             for (int i = 0; i < l1.Count; i++)
@@ -801,7 +855,7 @@ namespace Testing.Content
             MessageData messageData = serializer.Deserialize<MessageData>(receivedMsg);
             List<string> receiverIds = communicator.GetRcvIds();
             bool broadcastFlag = communicator.GetIsBroadcast();
-            if(isBroadcast)
+            if (isBroadcast)
             {
                 Assert.AreEqual(broadcastFlag, true);
                 Assert.AreEqual(receiverIds.Count, 0);
