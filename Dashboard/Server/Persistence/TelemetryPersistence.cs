@@ -85,9 +85,18 @@ namespace Dashboard.Server.Persistence
 
             ResponseEntity t3 = InsincereMembers_SaveUtil(sessionAnalyticsData.insincereMembers, sessionId);
 
+            List<string> l1 = new List<string>();
+            l1.Add(t1.FileName);
+            l1.Add(t2.FileName);
+            l1.Add(t3.FileName);
+
             ResponseEntity response = new ResponseEntity();
             response.IsSaved = t1.IsSaved & t2.IsSaved & t3.IsSaved;
             response.FileName = sessionId;
+            response.TelemetryAnalyticsFiles = l1;
+            
+            PersistenceFactory.lastSaveResponse = response;
+
             return response;
         }
 
@@ -293,6 +302,7 @@ namespace Dashboard.Server.Persistence
                 Trace.WriteLine("ServerData saved Succesfully!!");
                 response.IsSaved = true;
                 response.FileName = "GlobalServerData.xml";
+                PersistenceFactory.lastSaveResponse = response;
                 return response;
             }
             catch(Exception except)
