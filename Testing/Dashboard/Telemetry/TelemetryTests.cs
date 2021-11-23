@@ -113,7 +113,7 @@ namespace Testing.Dashboard
         public void UpdateServerData_Retreiving_RetrievingCorrectly()
         {
             // Arrange
-            ServerDataToSave serverData= _persistence.RetrieveAllSeverData();
+            ServerDataToSave serverData= RetrieveAllSeverData();
             Assert.IsNotNull(serverData);
         }
 
@@ -150,10 +150,9 @@ namespace Testing.Dashboard
             serverData.sessionCount++;
             serverData.allSessionsSummary.Add(session1);
             //Act
-            ResponseEntity response = _persistence.SaveServerData(serverData);
+            ResponseEntity response = SaveServerData(serverData);
             Assert.IsTrue(response.IsSaved);
         }
         private Telemetry _telemetry = new Telemetry();
-        private Persistence _persistence = new Persistence();
     }
 }
