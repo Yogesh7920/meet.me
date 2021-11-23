@@ -5,14 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dashboard.Server.Telemetry;
+using Dashboard.Server.Persistence;
+using Content;
 using Dashboard;
 
 namespace Testing.Dashboard
 {
-    [TestClass]
     public class Telemetry
     {
-        [TestMethod]
+        [Test]
         public void OnAnalyticsChanged_GetUserCountVsTimeStamp_UpdatingUserCount()
         {
             // Arrange
@@ -24,13 +25,13 @@ namespace Testing.Dashboard
             session2.AddUser(user1);
             session2.AddUser(user2);
             //Act
-            OnAnalyticsChanged(session1);
-            int userCount1 = UserCountAtEachTimeStamp[DateTime.Now];
+            _telemetry.OnAnalyticsChanged(session1);
+            int userCount1 = _telemetry.UserCountAtEachTimeStamp[DateTime.Now];
             bool check1;
             // total users in session1 is 1
             if(userCount1==1) check1=true;
-            OnAnlyticsChanged(session2);
-            int userCount2= UserCountAtEachTimeStamp[DateTime.Now];
+            _telemetry.OnAnlyticsChanged(session2);
+            int userCount2= _telemetry.UserCountAtEachTimeStamp[DateTime.Now];
             bool check2;
             // total users in session2 is 2.
             if(userCount2==2) check2=true;
@@ -39,6 +40,7 @@ namespace Testing.Dashboard
             
         }
 
+        [Test]
         public void OnAnalyticsChanged_GetInsincereMembers_UpdatingInsincereMembers()
         {
             // Arrange
@@ -50,13 +52,14 @@ namespace Testing.Dashboard
             session2.AddUser(user2);
             // user1 left the meeting in session2
             // Act
-            OnAnalyticsChanged(session1);
-            OnAnalyticsChanged(session2);
-            int elementAtZero = insincereMembers.ElementAt(0);
+            _telemetry.OnAnalyticsChanged(session1);
+            _telemetry.OnAnalyticsChanged(session2);
+            int elementAtZero = _telemetry.insincereMembers.ElementAt(0);
             //Assert
             Assert.AreEqual(elementAtZero,1);
         }
 
+        [Test]
         public void SaveAnalytics_GetUserVsChatCount_CorrectChatCountForAnyUser()
         {
             // Arrange
@@ -87,14 +90,14 @@ namespace Testing.Dashboard
             allMessages[1]=chat2;
 
             //Act
-            SaveAnalytics(allMessages);
-            int chatCountUser1= userIdChatCountDic[1];
+            _telemetry.SaveAnalytics(allMessages);
+            int chatCountUser1= _telemetry.userIdChatCountDic[1];
             bool check1=false;
             if(chatCountUser1==2)
             {
                 check1=true;
             }
-            int chatCountUser2= userIdChatCountDic[2];
+            int chatCountUser2= _telemetry.userIdChatCountDic[2];
             bool check2=false;
             if(chatCountUser2==1)
             {
@@ -105,6 +108,52 @@ namespace Testing.Dashboard
             Assert.isTrue(check1 && check2);
 
         }
-        
+
+        [Test]
+        public void UpdateServerData_Retreiving_RetrievingCorrectly()
+        {
+            // Arrange
+            ServerDataToSave serverData= _persistence.RetrieveAllSeverData();
+            Assert.IsNotNull(serverData);
+        }
+
+        [Test]
+        public void UpdateServerData_ServerData_UpdatingCorrectly()
+        {
+            //Arrange
+            ServerDataToSave serverData = new ServerDataToSave();
+            serverData.sessionCount=0;
+            serverData.allSessionsSummary=new List<SessionSummary>();
+            SessionSummary session1 = new SessionSummary();
+            session1.chatCount=100;
+            session1.userCount=30;
+            session1.score=3000;
+            //Act
+            serverData.sessionCount++;
+            serverData.allSessionsSummary.Add(session1);
+            //Assert
+            Assert.IsTrue(serverData.allSessionsSummary.Count==1);
+            
+        }
+
+        [Test]
+        public void UpdateServerData_SaveServerData_SavingCorrectly()
+        {
+            //Arrange
+            ServerDataToSave serverData = new ServerDataToSave();
+            serverData.sessionCount=0;
+            serverData.allSessionsSummary=new List<SessionSummary>();
+            SessionSummary session1 = new SessionSummary();
+            session1.chatCount=100;
+            session1.userCount=30;
+            session1.score=3000;
+            serverData.sessionCount++;
+            serverData.allSessionsSummary.Add(session1);
+            //Act
+            ResponseEntity response = _persistence.SaveServerData(serverData);
+            Assert.IsTrue(response.IsSaved);
+        }
+        private Telemetry _telemetry = new Telemetry();
+        private Persistence _persistence = new Persistence();
     }
 }

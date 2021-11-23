@@ -8,11 +8,20 @@ using Content;
 
 namespace Dashboard.Server.Telemetry
 {
-    public class TelemetryFactory
+    public static class TelemetryFactory
     {
-        ITelemetry GetTelemetryInstance()
+        static TelemetryFactory()
+        {
+            if(_telemetry == null)
+            {
+                _telemetry = new Telemetry();
+            }
+        }
+
+        public static ITelemetry GetTelemetryInstance()
         {
             return new Telemetry();
         }
+        private static ITelemetry _telemetry;
     }
 }
