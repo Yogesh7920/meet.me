@@ -62,6 +62,25 @@ namespace Content
         }
 
         /// <summary>
+        /// This function convets MessageData to ReceiveMessageData for chatContexts
+        /// </summary>
+        /// <param name="msgData"></param>
+        /// <returns></returns>
+        public MessageData ReceiveMessageDataToMessageData(ReceiveMessageData msgData)
+        {
+            var msg = new MessageData();
+            msg.Event = msgData.Event;
+            msg.Message = msgData.Message;
+            msg.MessageId = msgData.MessageId;
+            msg.ReceiverIds = msgData.ReceiverIds;
+            msg.SenderId = msgData.SenderId;
+            msg.ReplyThreadId = msgData.ReplyThreadId;
+            msg.Starred = msgData.Starred;
+            msg.Type = msgData.Type;
+            return msg;
+        }
+
+        /// <summary>
         /// Receives data from ContentServerNotificationHandler and processes it accordingly
         /// </summary>
         /// <param name="data"></param>
@@ -88,7 +107,7 @@ namespace Content
                 {
                     case MessageType.Chat:
                         Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
-                        receiveMessageData = (MessageData)_chatContextServer.Receive(messageData);
+                        receiveMessageData = ReceiveMessageDataToMessageData(_chatContextServer.Receive(messageData));
                         Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
                         break;
 

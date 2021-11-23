@@ -655,19 +655,19 @@ namespace Testing.Content
         [Test]
         public void CGetThread_InvalidThreadIdGiven_ShouldThrowException()
         {
-            Utils _util = new Utils();
-            ContentClient _contentClient = ContentClientFactory.GetInstance() as ContentClient;
-            IContentClient _iContentClient = _contentClient;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeListener = _fakeListener;
-            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
-            INotificationHandler _notificationHandler = new ContentClientNotificationHandler(_contentClient);
-            ISerializer _serializer = new Serializer();
+            Utils util = new Utils();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            IContentClient iContentClient = contentClient;
+            FakeContentListener fakeListener = new FakeContentListener();
+            IContentListener iFakeListener = fakeListener;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            INotificationHandler notificationHandler = new ContentClientNotificationHandler(contentClient);
+            ISerializer serializer = new Serializer();
             // Subscribing to communicator
-            _fakeCommunicator.Subscribe("Content", _notificationHandler);
+            fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
-            _iContentClient.CSubscribe(_iFakeListener);
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => _iContentClient.CGetThread(2));
+            iContentClient.CSubscribe(iFakeListener);
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CGetThread(2));
             Assert.AreEqual("Thread with requested thread ID does not exist", ex.Message);
         }
 
@@ -698,9 +698,127 @@ namespace Testing.Content
         }
 
         [Test]
-        public void ReceiveNewMsgServer_ReceivingRequestFromClient_ProperReplyShouldSend()
+        ///<summary>
+        /// Here we are testing SGetAllMessages and SSendAllMessages of server by sending it three new message
+        /// starring first message, updating second message and keeping third same which will be replies in context of first message
+        /// </summary>
+        public void SGetAllMessagesAndSendAllMessages_GettingAllMsgsFromServer_ShouldMatchSentMsgsToServer()
         {
+            ContentServer contentServer = ContentServerFactory.GetInstance() as ContentServer;
+            FakeCommunicator fakeCommunicator = new FakeCommunicator();
+            ISerializer serializer = new Serializer();
+            Utils util = new Utils();
+            contentServer.Communicator = fakeCommunicator;
+            MessageData receiveMsgData1 = util.GenerateNewMessageData("Hello, how are you?", SenderId: 1001, MessageId: -1, ReplyThreadId: -1);
+            MessageData receiveMsgData2 = util.GenerateNewMessageData("I am fine, How aboid u?", SenderId: 1002, MessageId: -1, ReplyThreadId: -1);
+            string updatedMsg = "I am fine, How about u?";
+            MessageData receiveMsgData3 = util.GenerateNewMessageData("I am fine", SenderId: 1003, MessageId: -1, ReplyThreadId: -1);
+            receiveMsgData1.Event = MessageEvent.NewMessage;
+            receiveMsgData2.Event = MessageEvent.NewMessage;
+            receiveMsgData3.Event = MessageEvent.NewMessage;
+            contentServer.Receive(serializer.Serialize(receiveMsgData1));
+            MessageData msg1 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
+            TestMsgDataFieldsServer(msg1, receiveMsgData1);
+            MessageData starMsg1 = msg1;
+            starMsg1.Event = MessageEvent.Star;
+            contentServer.Receive(serializer.Serialize(starMsg1));
+            MessageData starReplyMsg1 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
+            TestMsgDataFieldsServer(msg1, starReplyMsg1);
+            contentServer.Receive(serializer.Serialize(receiveMsgData2));
+            MessageData msg2 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
+            TestMsgDataFieldsServer(msg2, receiveMsgData2);
+            MessageData updateMsg2 = msg2;
+            updateMsg2.Event = MessageEvent.Update;
+            updateMsg2.Message = updatedMsg;
+            contentServer.Receive(serializer.Serialize(updateMsg2));
+            MessageData updateReplyMsg2 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
+            TestMsgDataFieldsServer(updateMsg2, msg2);
+            Assert.AreEqual(!msg1.Starred, starReplyMsg1.Starred);
+            Assert.AreEqual(updateReplyMsg2.Message, updatedMsg);
+            receiveMsgData3.ReplyThreadId = msg1.ReplyThreadId;
+            contentServer.Receive(serializer.Serialize(receiveMsgData3));
+            MessageData msg3 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
+            TestMsgDataFieldsServer(msg3, receiveMsgData3);
+            List<ChatContext> contextList = new List<ChatContext>();
+            ChatContext c1 = new ChatContext();
+            c1.ThreadId = msg1.ReplyThreadId;
+            c1.MsgList.Add(util.MessageDataToReceiveMessageData(starReplyMsg1));
+            c1.MsgList.Add(util.MessageDataToReceiveMessageData(msg3));
+            ChatContext c2 = new ChatContext();
+            c2.ThreadId = msg2.ReplyThreadId;
+            c2.MsgList.Add(util.MessageDataToReceiveMessageData(updateReplyMsg2));
+            contextList.Add(c1);
+            contextList.Add(c2);
+            List<ChatContext> listReceived = contentServer.SGetAllMessages();
+            contentServer.SSendAllMessagesToClient(1003);
+            TestSSendAllMessagesToClient(fakeCommunicator, serializer, contextList, 1003);
+            CompareChatContextList(contextList, listReceived);
+        }
 
+        public void TestSSendAllMessagesToClient(FakeCommunicator communicator, ISerializer serializer, List<ChatContext> chats, int userId)
+        {
+            string msg = communicator.GetSentData();
+            List<string> rcvIds = communicator.GetRcvIds();
+            bool broadcastFlag = communicator.GetIsBroadcast();
+            // Checking for private send
+            Console.WriteLine("ssend");
+            Assert.AreEqual(1, rcvIds.Count);
+            Assert.AreEqual(true, rcvIds.Contains(userId.ToString()));
+            Assert.AreEqual(broadcastFlag, false);
+            List<ChatContext> contexts = serializer.Deserialize<List<ChatContext>>(msg);
+            CompareChatContextList(contexts, chats);
+        }
+
+        public void CompareChatContextList(List<ChatContext> l1, List<ChatContext> l2)
+        {
+            for (int i = 0; i < l1.Count; i++)
+            {
+                CompareChatContext(l1[i], l2[i]);
+            }
+        }
+
+        /// <summary>
+        /// This function compares message, senderID and type fields of two given message datas
+        /// </summary>
+        public void TestMsgDataFieldsServer(MessageData m1, MessageData m2)
+        {
+            Assert.AreEqual(m1.Message, m2.Message);
+            Assert.AreEqual(m1.SenderId, m2.SenderId);
+            Assert.AreEqual(m1.Type, m2.Type);
+        }
+
+        /// <summary>
+        /// This function fetched msg string sent over fake communicator and deserialize it into message object
+        /// It also checks whether data sent was braodcasted and who are the receivers
+        /// </summary>
+        public MessageData GetMsgFromCommunicator(FakeCommunicator communicator, ISerializer serializer, bool isBroadcast, List<int> rcvIds)
+        {
+            if(rcvIds == null)
+            {
+                rcvIds = new List<int>();
+            }
+            string receivedMsg = communicator.GetSentData();
+            MessageData messageData = serializer.Deserialize<MessageData>(receivedMsg);
+            List<string> receiverIds = communicator.GetRcvIds();
+            bool broadcastFlag = communicator.GetIsBroadcast();
+            if(isBroadcast)
+            {
+                Assert.AreEqual(broadcastFlag, true);
+                Assert.AreEqual(receiverIds.Count, 0);
+            }
+            else
+            {
+                Assert.AreEqual(broadcastFlag, false);
+                Assert.AreEqual(receiverIds.Count, rcvIds.Count);
+                foreach(int i in rcvIds)
+                {
+                    if (!receiverIds.Contains(i.ToString()))
+                    {
+                        Assert.Fail();
+                    }
+                }
+            }
+            return messageData;
         }
 
         public void CompareReceiveMessageData(ReceiveMessageData m1, ReceiveMessageData m2)

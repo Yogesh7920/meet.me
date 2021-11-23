@@ -52,6 +52,25 @@ namespace Content
         }
 
         /// <summary>
+        /// This function convets MessageData to ReceiveMessageData for chatContexts
+        /// </summary>
+        /// <param name="msgData"></param>
+        /// <returns></returns>
+        public ReceiveMessageData MessageDataToReceiveMessageData(MessageData msgData)
+        {
+            var msg = new ReceiveMessageData();
+            msg.Event = msgData.Event;
+            msg.Message = msgData.Message;
+            msg.MessageId = msgData.MessageId;
+            msg.ReceiverIds = msgData.ReceiverIds;
+            msg.SenderId = msgData.SenderId;
+            msg.ReplyThreadId = msgData.ReplyThreadId;
+            msg.Starred = msgData.Starred;
+            msg.Type = msgData.Type;
+            return msg;
+        }
+
+        /// <summary>
         /// Stores a message in _chatContexts, if a message is part of already existing thread appends the message to it
         /// else creates a new thread and appends the message to the new thread.
         /// </summary>
@@ -64,7 +83,9 @@ namespace Content
             {
                 int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
                 ChatContext chatContext = _chatContexts[threadIndex];
-                chatContext.MsgList.Add(messageData);
+                ReceiveMessageData rcvMsgData = new ReceiveMessageData();
+                rcvMsgData = MessageDataToReceiveMessageData(messageData);
+                chatContext.MsgList.Add(rcvMsgData);
                 chatContext.NumOfMessages++;
                 _messageMap[messageData.MessageId] = chatContext.NumOfMessages - 1;
             }
@@ -78,13 +99,14 @@ namespace Content
                     ThreadId = IdGenerator.getChatContextId()
                 };
                 messageData.ReplyThreadId = chatContext.ThreadId;
-                chatContext.MsgList.Add(messageData);
+                ReceiveMessageData rcvMsgData = new ReceiveMessageData();
+                rcvMsgData = MessageDataToReceiveMessageData(messageData);
+                chatContext.MsgList.Add(rcvMsgData);
 
                 _messageMap[messageData.MessageId] = 0;
                 _chatContexts.Add(chatContext);
                 _chatContextsMap[chatContext.ThreadId] = _chatContexts.Count - 1;
             }
-
             return messageData;
         }
 
