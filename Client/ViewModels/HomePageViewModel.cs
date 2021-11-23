@@ -13,7 +13,7 @@ using Client;
 namespace Client.ViewModels
 {
 
-    class HomePageViewModel : ISessionNotifications
+    class HomePageViewModel : IClientSessionNotifications
     {
         private IUXClientSessionManager _model;
 
@@ -27,7 +27,7 @@ namespace Client.ViewModels
          //   _model.SubscribeSession(this, identifier);
         }
 
-        public void OnSessionChanged(SessionData session)
+        public void OnClientSessionChanged(SessionData session)
         {
 
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
