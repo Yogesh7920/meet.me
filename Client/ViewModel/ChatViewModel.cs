@@ -108,13 +108,13 @@ namespace Client.ViewModel
 
         public void OnAllMessages(List<ChatContext> allMessages)
         {
-            foreach (ChatContext msgLst in allMessages)
-            {
-                foreach(ReceiveMessageData message in msgLst.MsgList)
-                {
+            //foreach (ChatContext msgLst in allMessages)
+            //{
+            //    foreach(ReceiveMessageData message in msgLst.MsgList)
+            //    {
 
-                }
-            }
+            //    }
+            //}
             throw new NotImplementedException();
         }
 
