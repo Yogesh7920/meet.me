@@ -18,7 +18,7 @@ namespace Dashboard.Server.Telemetry
 
         public static Telemetry GetTelemetryInstance()
         {
-            return new Telemetry();
+            return _telemetry;
         }
         private static Telemetry _telemetry;
     }

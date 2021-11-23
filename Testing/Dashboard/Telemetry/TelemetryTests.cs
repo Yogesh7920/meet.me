@@ -27,14 +27,14 @@ namespace Testing.Dashboard.Telemetry
             DateTime currTime= new DateTime(2021,11,23,1,0,0);
             Console.WriteLine("Inside test time1= ");
             Console.WriteLine(currTime);
-            _telemetry.OnAnalyticsChanged(session1,currTime);
-            int userCount1 = _telemetry.userCountAtEachTimeStamp[currTime];
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1,currTime);
+            int userCount1 = TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[currTime];
             bool check1=false;
             // total users in session1 is 1
             if(userCount1==1) check1=true;
             DateTime time2= new DateTime(2021,11,23,1,30,0);
-            _telemetry.OnAnalyticsChanged(session2, time2);
-            int userCount2= _telemetry.userCountAtEachTimeStamp[time2];
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2, time2);
+            int userCount2= TelemetryFactory.GetTelemetryInstance().userCountAtEachTimeStamp[time2];
             bool check2=false;
             // total users in session2 is 2.
             if(userCount2==2) check2=true;
@@ -57,9 +57,9 @@ namespace Testing.Dashboard.Telemetry
             // Act
             DateTime time1= new DateTime(2021,11,23,1,0,0);
             DateTime time2= new DateTime(2021,11,23,1,15,0);
-            _telemetry.OnAnalyticsChanged(session1,time1);
-            _telemetry.OnAnalyticsChanged(session2,time2);
-            int elementAtZero = _telemetry.insincereMembers[0];
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session1,time1);
+            TelemetryFactory.GetTelemetryInstance().OnAnalyticsChanged(session2,time2);
+            int elementAtZero = TelemetryFactory.GetTelemetryInstance().insincereMembers[0];
             //Assert
             Assert.IsTrue(elementAtZero==1);
         }
@@ -95,14 +95,14 @@ namespace Testing.Dashboard.Telemetry
             allMessages[1]=chat2;
 
             //Act
-            _telemetry.SaveAnalytics(allMessages);
-            int chatCountUser1= _telemetry.userIdChatCountDic[1];
+            TelemetryFactory.GetTelemetryInstance().SaveAnalytics(allMessages);
+            int chatCountUser1= TelemetryFactory.GetTelemetryInstance().userIdChatCountDic[1];
             bool check1=false;
             if(chatCountUser1==2)
             {
                 check1=true;
             }
-            int chatCountUser2=_telemetry. userIdChatCountDic[2];
+            int chatCountUser2=TelemetryFactory.GetTelemetryInstance(). userIdChatCountDic[2];
             bool check2=false;
             if(chatCountUser2==1)
             {
@@ -158,7 +158,7 @@ namespace Testing.Dashboard.Telemetry
             ResponseEntity response = _persistence.SaveServerData(serverData);
             Assert.IsTrue(response.IsSaved);
         }
-        private readonly Telemetry _telemetry = TelemetryFactory.GetTelemetryInstance();
-        private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
+        // private static Telemetry _telemetry = TelemetryFactory.GetTelemetryInstance();
+        private readonly TelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
     }
 }
