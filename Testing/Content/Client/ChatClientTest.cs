@@ -69,6 +69,23 @@ namespace Testing.Content
             }
         }
 		[Test]
+		public void Test_ChatNewMessage_EmptyString()
+		{
+			Utils _util = new Utils();
+            int UserId = 1001;
+            SendMessageData SampleData = _util.GenerateChatSendMsgData("", new int[] { 1002 }, type: MessageType.Chat);
+            ISerializer _serializer = new Serializer();
+           
+			ChatClient _contentChat = new ChatClient(_util.GetFakeCommunicator());
+            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
+            _contentChat.UserId = UserId;
+            _contentChat.Communicator = _fakeCommunicator;
+
+            
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _contentChat.ChatNewMessage(SampleData));
+            Assert.AreEqual("Empty Message String", ex.Message);
+		}
+		[Test]
 		public void Test_ChatUpdate()
 		{
 			Utils _util = new Utils();

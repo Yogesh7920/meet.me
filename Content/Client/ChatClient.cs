@@ -46,11 +46,17 @@ namespace Content
 
         public void ChatNewMessage(SendMessageData toserver)
         {
-            var tosend = SendToMessage(toserver, MessageEvent.NewMessage);
-            tosend.MessageId = -1;
-            var xml = _serializer.Serialize(tosend);
-			Trace.WriteLine("[ChatClient] Marking Event of chat as NewMessage and sending to server");
-            _communicator.Send(xml, _moduleIdentifier);
+			if(toserver.Message != null){
+				var tosend = SendToMessage(toserver, MessageEvent.NewMessage);
+				tosend.MessageId = -1;
+				var xml = _serializer.Serialize(tosend);
+				Trace.WriteLine("[ChatClient] Marking Event of chat as NewMessage and sending to server");
+				_communicator.Send(xml, _moduleIdentifier);
+			}
+			else
+			{
+				throw new ArgumentException("Empty Message String");
+			}
         }
 
         public void ChatUpdate(int messageId, string newMessage)
