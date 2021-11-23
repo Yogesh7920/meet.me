@@ -33,7 +33,7 @@ and follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Inst
 |                                 | Rajeev Goyal               |                                |
 
 
-| Screen Share & Whiteboard Module (6+1) | UX Module (8+1)              |
+| Screen Share & Whiteboard Module (5+1) | UX Module (8+1)              |
 |----------------------------------------|------------------------------|
 | Manas Sharma (Team Lead)               | Raswanth Murugan (Team Lead) |
 | Ashish Kumar Gupta                     | Irene Casmir                 |
