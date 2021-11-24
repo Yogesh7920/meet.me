@@ -15,8 +15,8 @@ namespace Testing.Content
         [Test]
         public void GetInstance_MustReturnSingletonInstance()
         {
-            IContentClient ref1 = ContentClientFactory.getInstance();
-            IContentClient ref2 = ContentClientFactory.getInstance();
+            IContentClient ref1 = ContentClientFactory.GetInstance();
+            IContentClient ref2 = ContentClientFactory.GetInstance();
 
             Assert.That(ReferenceEquals(ref1, ref2));
         }
@@ -30,12 +30,12 @@ namespace Testing.Content
             // make two separate threads and run (almost) simultaneously and check if the same reference is returned
             Thread process1 = new Thread(() =>
             {
-                ref1 = ContentClientFactory.getInstance();
+                ref1 = ContentClientFactory.GetInstance();
             });
 
             Thread process2 = new Thread(() =>
             {
-                ref2 = ContentClientFactory.getInstance();
+                ref2 = ContentClientFactory.GetInstance();
             });
 
             process1.Start();
@@ -50,8 +50,8 @@ namespace Testing.Content
         [Test]
         public void SetUser_MustSetUserIdAcrossAllReturnedInstances()
         {
-            IContentClient ref1 = ContentClientFactory.getInstance();
-            IContentClient ref2 = ContentClientFactory.getInstance();
+            IContentClient ref1 = ContentClientFactory.GetInstance();
+            IContentClient ref2 = ContentClientFactory.GetInstance();
 
             Assert.That(ReferenceEquals(ref1, ref2));
 

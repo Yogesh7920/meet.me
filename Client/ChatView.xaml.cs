@@ -27,17 +27,17 @@ namespace Client
             this.DataContext = viewModel;
 
             allmessages = new ObservableCollection<Message>();
-            allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
-            allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
-            allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
-            allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
+            //allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
+            //allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
+            //allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
+            //allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
             this.myChat.ItemsSource = allmessages;
         }
         private void Listner(object sender, PropertyChangedEventArgs e)
         {
             string propertyName = e.PropertyName;
             ChatViewModel viewModel = this.DataContext as ChatViewModel;
-            if (propertyName == "ReceivedFile")
+            if (propertyName == "ReceivedMsg")
             {
                 allmessages.Add(viewModel.ReceivedMsg);
             }
