@@ -208,7 +208,7 @@ namespace Testing.Content
             contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
-            Assert.AreEqual("Null Message String", ex.Message);
+            Assert.AreEqual("Invalid Message String", ex.Message);
         }
 
         /// <summary>
@@ -298,8 +298,10 @@ namespace Testing.Content
             SendMessageData sampleData = util.GenerateChatSendMsgData(filePath, new int[] { }, type: MessageType.File);
             contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
-            FileNotFoundException ex = Assert.Throws<FileNotFoundException>(() => iContentClient.CSend(sampleData));
-            Assert.AreEqual("File " + filePath + " not found", ex.Message);
+            FileNotFoundException ex1 = Assert.Throws<FileNotFoundException>(() => new SendFileData(filePath));
+            Assert.AreEqual(ex1.Message.Contains(" not found"), true);
+            FileNotFoundException ex2 = Assert.Throws<FileNotFoundException>(() => iContentClient.CSend(sampleData));
+            Assert.AreEqual("File " + filePath + " not found", ex2.Message);
         }
 
         /// <summary>
@@ -756,7 +758,7 @@ namespace Testing.Content
             fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CGetThread(2));
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CGetThread(101));
             Assert.AreEqual("Thread with requested thread ID does not exist", ex.Message);
         }
 
