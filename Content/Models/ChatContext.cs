@@ -79,6 +79,9 @@ namespace Content
                 throw new ArgumentException("Invalid message string");
 
             int index = messageIds[messageId];
+            if (MsgList[index].Type != MessageType.Chat)
+                throw new ArgumentException("Message requested for update is not chat");
+            
             MsgList[index].Message = newMessage;
         }
 
