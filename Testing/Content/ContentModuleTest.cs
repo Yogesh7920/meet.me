@@ -331,6 +331,7 @@ namespace Testing.Content
             IContentClient iContentClient = contentClient;
             MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
             SampleMsgData.MessageId = msgId;
+            SampleMsgData.ReplyThreadId = 1;
             fakeCommunicator.Notify(serializer.Serialize(SampleMsgData));
             System.Threading.Thread.Sleep(10);
             iContentClient.CMarkStar(msgId);
@@ -369,6 +370,7 @@ namespace Testing.Content
             MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
             SampleMsgData.MessageId = msgId;
             SampleMsgData.SenderId = userId;
+            SampleMsgData.ReplyThreadId = 1;
             fakeCommunicator.Notify(serializer.Serialize(SampleMsgData));
             System.Threading.Thread.Sleep(10);
             iContentClient.CUpdateChat(msgId, updateChat);
@@ -435,7 +437,7 @@ namespace Testing.Content
             _fakeCommunicator.Notify(_serializer.Serialize(DataToSerialize));
             System.Threading.Thread.Sleep(10);
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _iContentClient.CDownload(MsgId, SavePath));
-            Assert.AreEqual("Message requested for download is not a file type message", ex.Message);
+            Assert.That(ex.Message.IndexOf("not a file", StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         [Test]
@@ -448,7 +450,7 @@ namespace Testing.Content
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string FilePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
             var Filedata = new SendFileData(FilePath);
-            MessageData SampleMsgDataSend = _util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
+            MessageData SampleMsgDataSend = _util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File, replyId: 1);
             SampleMsgDataSend.MessageId = MsgId;
             SampleMsgDataSend.SenderId = UserId;
             string SavePath = CurrentDirectory + "\\SavedTestFile.pdf";
@@ -549,7 +551,7 @@ namespace Testing.Content
             _fakeCommunicator.Subscribe("Content", _notificationHandler);
             // Subscribing to content client
             _iContentClient.CSubscribe(_iFakeListener);
-            MessageData DataToSerialize = _util.GenerateNewMessageData("Hello");
+            MessageData DataToSerialize = _util.GenerateNewMessageData("Hello", ReplyThreadId: 1);
             _fakeCommunicator.Notify(_serializer.Serialize(DataToSerialize));
             System.Threading.Thread.Sleep(10);
             // Fetching listened data from listener
@@ -572,8 +574,8 @@ namespace Testing.Content
             _fakeCommunicator.Subscribe("Content", _notificationHandler);
             // Subscribing to content client
             _iContentClient.CSubscribe(_iFakeListener);
-            MessageData DataToSerialize1 = _util.GenerateNewMessageData("Hello");
-            MessageData DataToSerialize2 = _util.GenerateNewMessageData("Hi");
+            MessageData DataToSerialize1 = _util.GenerateNewMessageData("Hello", ReplyThreadId: 1);
+            MessageData DataToSerialize2 = _util.GenerateNewMessageData("Hi", ReplyThreadId: 1);
             _fakeCommunicator.Notify(_serializer.Serialize(DataToSerialize1));
             System.Threading.Thread.Sleep(10);
             // Msg1
