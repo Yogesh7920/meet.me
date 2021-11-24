@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿/// <author>Sameer Dhiman</author>
+/// <created>18/10/2021</created>
+/// <summary>
+///     This files handles storing and fecthing files and chats to and from memory
+/// </summary>
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Testing")]
@@ -44,6 +49,7 @@ namespace Content
         /// <returns>Returns the stored file</returns>
         public MessageData GetFiles(int messageId)
         {
+            // If requested messageId is not in the map return null
             if (!_files.ContainsKey(messageId))
             {
                 return null;
@@ -60,6 +66,7 @@ namespace Content
         public MessageData StoreMessage(MessageData messageData)
         {
             messageData.MessageId = IdGenerator.GetMessageId();
+            // If message is a part of already existing chatContext
             if (_chatContextsMap.ContainsKey(messageData.ReplyThreadId))
             {
                 int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
@@ -69,6 +76,7 @@ namespace Content
                 chatContext.NumOfMessages++;
                 _messageMap[messageData.MessageId] = chatContext.NumOfMessages - 1;
             }
+            // else create a new chatContext and add the message to it
             else
             {
                 ChatContext chatContext = new()
@@ -106,13 +114,16 @@ namespace Content
         /// <returns>Returns the requested message</returns>
         public ReceiveMessageData GetMessage(int replyThreadId, int messageId)
         {
+            // If given ChatContext or Message doesn't exists return null
             if (!(_chatContextsMap.ContainsKey(replyThreadId) && _messageMap.ContainsKey(messageId)))
             {
                 return null;
             }
+
             int threadIndex = _chatContextsMap[replyThreadId];
             int messageIndex = _messageMap[messageId];
 
+            // If given ChatContext doesn't contain the message return null
             if (_chatContexts[threadIndex].MsgList.Count < messageIndex + 1)
             {
                 return null;

@@ -1,4 +1,10 @@
-﻿using Networking;
+﻿/// <author>Sameer Dhiman</author>
+/// <created>18/10/2021</created>
+/// <summary>
+///     This file handles all the messages that come to server (files and chats)
+///     and passes them to their respective classes
+/// </summary>
+using Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -70,6 +76,7 @@ namespace Content
         public void Receive(string data)
         {
             MessageData messageData;
+            // Try deserializing the data if error then do nothing and return.
             try
             {
                 messageData = _serializer.Deserialize<MessageData>(data);
@@ -82,8 +89,8 @@ namespace Content
             MessageData receiveMessageData;
 
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
-            //Debug.Assert(messageData != null, "[ContentServer] Received null from Deserializer");
 
+            // lock to prevent multiple threads from modifying the messages at once.
             lock (_lock)
             {
                 switch (messageData.Type)
@@ -91,37 +98,39 @@ namespace Content
                     case MessageType.Chat:
                         Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
                         receiveMessageData = _chatContextServer.Receive(messageData);
-                        //Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
                         break;
 
                     case MessageType.File:
                         Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
                         receiveMessageData = _fileServer.Receive(messageData);
-                        //Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by FileServer");
                         break;
 
                     default:
-                        Debug.Assert(false, "[ContentServer] Unknown Message Type");
+                        Trace.WriteLine("[ContentServer] Unknown Message Type");
                         return;
                 }
             }
 
+            // If this is null then something went wrong, probably message was not found.
             if (receiveMessageData == null)
             {
                 Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
                 return;
             }
-            if (messageData.Event != MessageEvent.Download)
+
+            // If Event is Download then send the file to client
+            if (messageData.Event == MessageEvent.Download)
+            {
+                Trace.WriteLine("[ContentServer] Sending File to client");
+                SendFile(receiveMessageData);
+            }
+            // Else send the message to all the receivers and notify the subscribers
+            else
             {
                 Trace.WriteLine("[ContentServer] Notifying subscribers");
                 Notify(receiveMessageData);
                 Trace.WriteLine("[ContentServer] Sending message to clients");
                 Send(receiveMessageData);
-            }
-            else
-            {
-                Trace.WriteLine("[ContentServer] Sending File to client");
-                SendFile(receiveMessageData);
             }
 
             Trace.WriteLine("[ContentServer] Message sent");
@@ -134,16 +143,20 @@ namespace Content
         private void Send(MessageData messageData)
         {
             string message = _serializer.Serialize(messageData);
+
+            // If length of ReceiverIds is 0 that means its a broadcast.
             if (messageData.ReceiverIds.Length == 0)
             {
                 _communicator.Send(message, "Content");
             }
+            // Else send the message to the receivers in ReceiversIds.
             else
             {
                 foreach (int userId in messageData.ReceiverIds)
                 {
                     _communicator.Send(message, "Content", userId.ToString());
                 }
+                // Sending the message back to the sender.
                 _communicator.Send(message, "Content", messageData.SenderId.ToString());
             }
         }

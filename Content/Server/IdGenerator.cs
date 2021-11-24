@@ -1,4 +1,9 @@
-﻿namespace Content
+﻿/// <author>Sameer Dhiman</author>
+/// <created>12/11/2021</created>
+/// <summary>
+///     This file generates unqiue ids for message and ChatContexts
+/// </summary>
+namespace Content
 {
     internal class IdGenerator
     {
