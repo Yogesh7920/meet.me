@@ -6,15 +6,29 @@ using System;
 
 namespace Testing.Content
 {
-    internal class FakeContentListener : IContentListener
+    public class FakeContentListener : IContentListener
     {
+        private ReceiveMessageData _rcvMsgData;
+        private List<ChatContext> _chatContextList;
+
+        public FakeContentListener()
+        {
+            _rcvMsgData = new ReceiveMessageData();
+            _chatContextList = new List<ChatContext>();
+        }
+
         /// <summary>
         ///     Handler for messages received by the Content module.
         /// </summary>
         /// <param name="messageData">Received message</param>
         public void OnMessage(ReceiveMessageData messageData)
         {
-            Trace.WriteLine("[Fake listener]");
+            _rcvMsgData = messageData;
+        }
+
+        public ReceiveMessageData GetOnMessageData()
+        {
+            return _rcvMsgData;
         }
 
         /// <summary>
@@ -26,7 +40,12 @@ namespace Testing.Content
         /// <param name="allMessages">list of Thread objects containing all messages</param>
         public void OnAllMessages(List<ChatContext> allMessages)
         {
-            Trace.WriteLine("[Fake listener]");
+            _chatContextList = allMessages;
+        }
+
+        public List<ChatContext> GetOnAllMessagesData()
+        {
+            return _chatContextList;
         }
     }
 }

@@ -21,36 +21,24 @@ namespace Content
         public void OnDataReceived(string data)
         {
             Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
-            var deserialized = _serializer.Deserialize<object>(data);
+            string deserializedType = _serializer.GetObjectType(data, "Content");
 
-            if (deserialized is MessageData)
+            if (string.Equals(deserializedType,"Content.MessageData"))
             {
-                var receivedMessage = deserialized as MessageData;
+                MessageData receivedMessage = _serializer.Deserialize<MessageData>(data);
                 _contentHandler.OnReceive(receivedMessage);
             }
 
-            else if (deserialized is List<ChatContext>)
+            else if (string.Equals(deserializedType, "Content.ArrayOfChatContext"))
             {
-                var allMessages = deserialized as List<ChatContext>;
+                List<ChatContext> allMessages = _serializer.Deserialize<List<ChatContext>>(data);
                 _contentHandler.Notify(allMessages);
             }
 
             else
             {
-                throw new ArgumentException("Deserialized object of unknown type");
+                throw new ArgumentException($"Deserialized object of unknown type: {deserializedType}");
             }
-        }
-
-        /// <inheritdoc />
-        public void OnClientJoined<T>(T socketObject)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void OnClientLeft(string clientId)
-        {
-            throw new NotImplementedException();
         }
     }
 }

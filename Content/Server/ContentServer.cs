@@ -1,4 +1,5 @@
 ﻿using Networking;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -6,13 +7,14 @@ namespace Content
 {
     internal class ContentServer : IContentServer
     {
-        private List<IContentListener> _subscribers;
-        private ICommunicator _communicator;
-        private INotificationHandler _notificationHandler;
-        private ContentDatabase _contentDatabase;
-        private ISerializer _serializer;
-        private FileServer _fileServer;
-        private ChatContextServer _chatContextServer;
+        private readonly List<IContentListener> _subscribers;
+        private readonly ICommunicator _communicator;
+        private readonly INotificationHandler _notificationHandler;
+        private readonly ContentDatabase _contentDatabase;
+        private readonly ISerializer _serializer;
+        private readonly FileServer _fileServer;
+        private readonly ChatContextServer _chatContextServer;
+        private static readonly object _lock = new();
 
         public ContentServer()
         {
@@ -35,41 +37,66 @@ namespace Content
         /// <inheritdoc />
         public List<ChatContext> SGetAllMessages()
         {
-            return _chatContextServer.GetAllMessages();
+            lock (_lock)
+            {
+                return _chatContextServer.GetAllMessages();
+            }
         }
 
         /// <inheritdoc />
         public void SSendAllMessagesToClient(int userId)
         {
-            var allMessagesSerialized = _serializer.Serialize(_chatContextServer.GetAllMessages());
+            string allMessagesSerialized = _serializer.Serialize(SGetAllMessages());
             _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
 
+        /// <summary>
+        /// Receives data from ContentServerNotificationHandler and processes it accordingly
+        /// </summary>
+        /// <param name="data"></param>
         public void Receive(string data)
         {
-            var messageData = _serializer.Deserialize<MessageData>(data);
+            MessageData messageData;
+            try
+            {
+                messageData = _serializer.Deserialize<MessageData>(data);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentServer] Exception occured while deserialsing data. Exception: {e}");
+                return;
+            }
             MessageData receiveMessageData;
 
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
             Debug.Assert(messageData != null, "[ContentServer] Received null from Deserializer");
 
-            switch (messageData.Type)
+            lock (_lock)
             {
-                case MessageType.Chat:
-                    Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
-                    receiveMessageData = (MessageData)_chatContextServer.Receive(messageData);
-                    Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
-                    break;
+                switch (messageData.Type)
+                {
+                    case MessageType.Chat:
+                        Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
+                        receiveMessageData = (MessageData)_chatContextServer.Receive(messageData);
+                        Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
+                        break;
 
-                case MessageType.File:
-                    Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
-                    receiveMessageData = _fileServer.Receive(messageData);
-                    Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by FileServer");
-                    break;
+                    case MessageType.File:
+                        Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
+                        receiveMessageData = _fileServer.Receive(messageData);
+                        Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by FileServer");
+                        break;
 
-                default:
-                    Debug.Assert(false, "[ContentServer] Unknown Message Type");
-                    return;
+                    default:
+                        Debug.Assert(false, "[ContentServer] Unknown Message Type");
+                        return;
+                }
+            }
+
+            if (receiveMessageData == null)
+            {
+                Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
+                return;
             }
 
             if (messageData.Event != MessageEvent.Download)
@@ -81,9 +108,6 @@ namespace Content
             }
             else
             {
-                Trace.WriteLine("[ContentServer] Event is Download");
-                // store file path on which the file will be downloaded on the client's system
-                receiveMessageData.Message = messageData.Message;
                 Trace.WriteLine("[ContentServer] Sending File to client");
                 SendFile(receiveMessageData);
             }
@@ -91,6 +115,10 @@ namespace Content
             Trace.WriteLine("[ContentServer] Message sent");
         }
 
+        /// <summary>
+        /// Sends the message to clients.
+        /// </summary>
+        /// <param name="messageData"></param>
         private void Send(MessageData messageData)
         {
             string message = _serializer.Serialize(messageData);
@@ -100,7 +128,7 @@ namespace Content
             }
             else
             {
-                foreach (var userId in messageData.ReceiverIds)
+                foreach (int userId in messageData.ReceiverIds)
                 {
                     _communicator.Send(message, "Content", userId.ToString());
                 }
@@ -108,15 +136,26 @@ namespace Content
             }
         }
 
+        /// <summary>
+        /// Sends the file back to the requester.
+        /// </summary>
+        /// <param name="messageData"></param>
         private void SendFile(MessageData messageData)
         {
-            var message = _serializer.Serialize(messageData);
+            string message = _serializer.Serialize(messageData);
             _communicator.Send(message, "Content", messageData.SenderId.ToString());
         }
 
+        /// <summary>
+        /// Notifies all the subscribed modules.
+        /// </summary>
+        /// <param name="receiveMessageData"></param>
         private void Notify(ReceiveMessageData receiveMessageData)
         {
-            foreach (var subscriber in _subscribers) subscriber.OnMessage(receiveMessageData);
+            foreach (IContentListener subscriber in _subscribers)
+            {
+                subscriber.OnMessage(receiveMessageData);
+            }
         }
     }
 }

@@ -1,11 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net5.0-windows</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Content\Content.csproj"/>
+      <PackageReference Include="ScottPlot" Version="4.1.27" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Content\Content.csproj" />
+        <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
+        <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
     </ItemGroup>
 
 </Project>

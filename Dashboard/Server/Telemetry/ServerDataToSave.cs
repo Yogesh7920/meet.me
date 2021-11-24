@@ -1,16 +1,20 @@
 using System.Collections.Generic;
 
-namespace Dashboard
+namespace Dashboard.Server.Telemetry
 {
+    /// <summary>
+    /// The server data that would be stored in Persistance
+    /// </summary>
     public class ServerDataToSave
     {
-        /// Dictionary with SessionData as key and total chat count as value
-        private Dictionary<int, int> ChatCountForEachSession;
+        ///<summary>
+        ///     the total number of sessions
+        ///</summary>
+        public int sessionCount;
 
-        /// Dictionary with SessionData as key and its score(ChatCount * No. of users) as value
-        private Dictionary<int, int> ScoreOfEachSession;
-
-        /// Dictionary with SessionData as key and  total user count as value
-        private Dictionary<int, int> UserCountForEachSession;
+        /// <summary>
+        ///     List of SessionSummary that is summary of each session
+        /// </summary>
+        public List<SessionSummary> allSessionsSummary;
     }
 }

@@ -12,9 +12,19 @@ namespace Content
 
         public long fileSize;
 
+        public SendFileData()
+        {
+            fileContent = new byte[0];
+            fileName = "";
+            fileSize = 0;
+        }
+
         public SendFileData(string filepath)
         {
-            if (!File.Exists(filepath)) throw new FileNotFoundException("File {0} not found", filepath);
+            if (!File.Exists(filepath))
+            {
+                throw new FileNotFoundException("File {0} not found", filepath);
+            }
 
             fileName = Path.GetFileName(filepath);
             fileContent = File.ReadAllBytes(filepath);
