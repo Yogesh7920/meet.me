@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿/// <author>Sameer Dhiman</author>
+/// <created>5/11/2021</created>
+/// <summary>
+///     This file handles all the chat messages
+/// </summary>
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Content
@@ -46,11 +51,13 @@ namespace Content
                     return null;
             }
 
+            // If this is null that means message was not found, return null
             if (receiveMessageData == null)
             {
                 return null;
             }
 
+            // Else create a MessageData object from ReceiveMessageData and return that
             return new MessageData(receiveMessageData);
         }
 
@@ -72,12 +79,14 @@ namespace Content
         {
             ReceiveMessageData message = _contentDatabase.GetMessage(replyThreadId, messageId);
 
+            // If ContentDatabase returns null that means the message doesn't exists, return null
             if (message == null)
             {
                 Trace.WriteLine($"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
                 return null;
             }
 
+            // Star the message and return the starred message
             message.Starred = !message.Starred;
             message.Event = MessageEvent.Star;
             return message;
@@ -92,12 +101,14 @@ namespace Content
         {
             ReceiveMessageData message = _contentDatabase.GetMessage(replyThreadId, messageId);
 
+            // If ContentDatabase returns null that means the message doesn't exists, return null
             if (message == null)
             {
                 Trace.WriteLine($"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
                 return null;
             }
 
+            // Update the message and return the updated message
             message.Message = msgString;
             message.Event = MessageEvent.Update;
             return message;
