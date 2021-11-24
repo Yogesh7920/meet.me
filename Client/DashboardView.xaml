@@ -195,12 +195,12 @@
                         </Grid.OpacityMask>
                         <Border x:Name="BorderG2" CornerRadius="15" Background="#FF340051"/>
 
-                        <lvc:CartesianChart>
+                        <lvc:CartesianChart Zoom="X" Pan="X"> 
                             <lvc:CartesianChart.Series>
                                 <lvc:LineSeries Title="Users vs Time" Values="{Binding usersCountList}"/>
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Time" Labels="{Binding timestampList}">
+                                <lvc:Axis Title="Time" Labels="{Binding timestampList}" MinValue="0">
                                     <!--<lvc:Axis.Separator>
                                         <lvc:Separator Step="1"/>
                                     </lvc:Axis.Separator>-->
@@ -269,15 +269,16 @@
                             </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>-->
 
-                        <lvc:CartesianChart>
+                        <lvc:CartesianChart Zoom="X" Pan="X">
                             <lvc:CartesianChart.Series>
                                 <lvc:ColumnSeries Title="Users vs Sent Messages" Values="{Binding messagesCountList}"/>
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Users" Labels="{Binding usersList}">
-                                    <!--<lvc:Axis.Separator>
-                                        <lvc:Separator Step="1"/>
-                                    </lvc:Axis.Separator>-->
+                                <lvc:Axis Title="Users" Labels="{Binding usersList}" 
+                                          MinValue="0" MaxValue="{Binding participantsCount}">
+                                    <lvc:Axis.Separator>
+                                        <lvc:Separator Step="2"/>
+                                    </lvc:Axis.Separator>
                                 </lvc:Axis>
                             </lvc:CartesianChart.AxisX>
                             <lvc:CartesianChart.AxisY>
@@ -417,6 +418,7 @@
             <TextBlock Text="Meet.me Dashboard" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" 
                        FontWeight="Bold" FontFamily="Champagne &amp; Limousines"  FontSize="18" Foreground="White"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0">
+                
                 <!--Refresh button-->
                 <Button x:Name="RefreshButton" Click="OnRefreshButtonClick"
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
@@ -441,7 +443,7 @@
                 <!--Restore button -->
                 <Button x:Name="RestoreButton" Click="OnRestoreButtonClick" 
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
-                        ToolTip="Maximize" ToolTipService.ShowDuration="3000" Visibility="Collapsed">
+                        ToolTip="Restore" ToolTipService.ShowDuration="3000" Visibility="Collapsed">
                     <materialDesign:PackIcon Kind="WindowRestore"/>
                 </Button>
 
@@ -451,7 +453,6 @@
                         ToolTip="Close" ToolTipService.ShowDuration="3000">
                     <materialDesign:PackIcon Kind="Close"/>
                 </Button>
-
 
             </StackPanel>
         </Grid>

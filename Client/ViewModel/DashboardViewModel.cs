@@ -25,8 +25,6 @@ namespace Client.ViewModel
 
         private IUXClientSessionManager _clientSM;
 
-
-
         /// <summary>
         /// The summary of discussion done in the meeting so far
         /// </summary>
@@ -183,7 +181,6 @@ namespace Client.ViewModel
             // Populating with random values for the time being
             Random r = new();
             int i = 5;
-
             this.usersCountList.Add(new ObservableValue(r.Next(5, 15)));
             this.timestampList.Add(new ObservableValue(i++));
 
@@ -195,6 +192,9 @@ namespace Client.ViewModel
             this.participantsCount += 1;
             this.messagesCount += 2;
             this.engagementRate = CalculateEngagementRate();
+
+            _clientSM.SummaryCreated += (latestSummary) => OnSummaryChange(latestSummary);
+
         }
 
         /// <summary>

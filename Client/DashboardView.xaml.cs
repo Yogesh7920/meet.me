@@ -8,9 +8,6 @@ namespace Client
     /// <summary>
     /// Interaction logic for DashboardView.xaml
     /// </summary>
-    /// <summary>
-    /// Interaction logic for DashboardView.xaml
-    /// </summary>
     public partial class DashboardView : Window
     {
         public DashboardViewModel DashboardVM { get; set; }
@@ -18,37 +15,38 @@ namespace Client
         public DashboardView()
         {
             InitializeComponent();
-            //DashboardViewModel DashboardVM = new DashboardViewModel();
-            DashboardVM = new DashboardViewModel();
-            DataContext = DashboardVM;
+            this.DashboardVM = new DashboardViewModel();
+            this.DataContext = DashboardVM;
         }
 
         /// <summary>
-        /// Closes the dashboard window when the user clicks on the Close button
+        /// Copies the summary text to the clipboard 
+        /// which can be used further for any purpose.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
+        private void CopyToClipboard(object sender, RoutedEventArgs e)
         {
-           this.Close();
+            Clipboard.SetText(ChatSummary.Text);
         }
 
         /// <summary>
-        /// Refreshes the dashboard window by invoking UpdateVM method of DashboardViewModel
-        /// when the user clicks on the refresh button
+        /// Refreshes the dashboard window  with latest analytics
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void OnRefreshButtonClick(object sender, RoutedEventArgs e)
-        {
-            this.DashboardVM.UpdateVM();
-        }
+            {
+                this.DashboardVM.UpdateVM();
+            }
 
+        /// <summary>
+        /// Window Minimize Functionality
+        /// </summary>
         private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
         }
 
+        /// <summary>
+        /// Window Maximize Functionality
+        /// </summary>
         private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Maximized;
@@ -56,6 +54,9 @@ namespace Client
             RestoreButton.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Window Restore Functionality
+        /// </summary>
         private void OnRestoreButtonClick(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Normal;
@@ -64,24 +65,21 @@ namespace Client
         }
 
         /// <summary>
-        /// To drag the window from titlebar
+        /// Window Close Functionality
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        /// <summary>
+        /// Window Drag Functionality
+        /// </summary>
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
         }
 
-        /// <summary>
-        /// Copies the summary text to the clipboard 
-        /// which can be used further for any purpose.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CopyToClipboard(object sender, RoutedEventArgs e)
-        {
-            Clipboard.SetText(ChatSummary.Text);
-        }
     }
+
 }
