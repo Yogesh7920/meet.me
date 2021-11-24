@@ -1,4 +1,9 @@
-﻿using Networking;
+﻿/// <author>Sameer Dhiman</author>
+/// <created>16/10/2021</created>
+/// <summary>
+///     This file handles the notifications from Network Module
+/// </summary>
+using Networking;
 
 namespace Content
 {
