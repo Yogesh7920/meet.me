@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/22/2021
 **/
 
 using System;
@@ -49,7 +49,9 @@ namespace Whiteboard
         /// </summary>
         public int CheckPointNumber;
 
-        // Operation performed on the state.
+        /// <summary>
+        /// Operation to be performed on the state.
+        /// </summary>
         public Operation OperationType;
 
         /// <summary>
@@ -74,7 +76,6 @@ namespace Whiteboard
             {
                 Color = Color.FromArgb(255, Convert.ToByte(s.ShapeFill.R), Convert.ToByte(s.ShapeFill.G), Convert.ToByte(s.ShapeFill.B))
             };
-
             // setting paramaters based on shape
             if (s.ShapeIdentifier == ShapeType.ELLIPSE)
             {
@@ -99,14 +100,27 @@ namespace Whiteboard
             }
             else if (s.ShapeIdentifier == ShapeType.LINE)
             {
+                Coordinate dir = s.Center - s.Start;
+                float deltaH = s.Height;
+                float deltaW = s.Width;
+
+                if (dir.R < 0)
+                {
+                    deltaH *= -1;
+                }
+                if (dir.C < 0)
+                {
+                    deltaW *= -1;
+                }
+
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
-                    X1 = s.Start.R,
-                    Y1 = s.Start.C,
-                    X2 = s.Start.R + s.Height,
-                    Y2 = s.Start.R + s.Width
+                    Y1 = s.Start.R,
+                    X1 = s.Start.C,
+                    Y2 = s.Start.R + deltaH,
+                    X2 = s.Start.C + deltaW
                 };
-                
+
                 WindowsShape = LineUXElement;
             }
             else
@@ -133,6 +147,10 @@ namespace Whiteboard
             if (shapeId != null)
             {
                 WindowsShape.Uid = shapeId;
+            }
+            else
+            {
+                WindowsShape.Uid = Guid.NewGuid().ToString();
             }
             
         }

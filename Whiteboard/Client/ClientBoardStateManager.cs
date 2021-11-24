@@ -390,7 +390,7 @@ namespace Whiteboard
                     }
 
                     // Send the update to server
-                    _clientBoardCommunicator.Send(new(new List<BoardShape> { boardShape }, Operation.CREATE, _currentUserId, currentCheckpointState: _currentCheckpointState));
+                    //_clientBoardCommunicator.Send(new(new List<BoardShape> { boardShape }, Operation.CREATE, _currentUserId, currentCheckpointState: _currentCheckpointState));
                     return true;
                 }
                 else if (boardShape.RecentOperation == Operation.MODIFY)
@@ -418,7 +418,7 @@ namespace Whiteboard
                     }
 
                     // Send the update to server
-                    _clientBoardCommunicator.Send(new(new List<BoardShape> { boardShape }, Operation.MODIFY, _currentUserId, currentCheckpointState: _currentCheckpointState));
+                    //_clientBoardCommunicator.Send(new(new List<BoardShape> { boardShape }, Operation.MODIFY, _currentUserId, currentCheckpointState: _currentCheckpointState));
                     GC.Collect();
                     return true;
                 }
