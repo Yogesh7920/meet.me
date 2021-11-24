@@ -7,13 +7,13 @@ namespace Content
 {
     internal class ContentServer : IContentServer
     {
-        private readonly List<IContentListener> _subscribers;
+        private List<IContentListener> _subscribers;
         private ICommunicator _communicator;
         private readonly INotificationHandler _notificationHandler;
-        private readonly ContentDatabase _contentDatabase;
-        private readonly ISerializer _serializer;
-        private readonly FileServer _fileServer;
-        private readonly ChatContextServer _chatContextServer;
+        private ContentDatabase _contentDatabase;
+        private ISerializer _serializer;
+        private FileServer _fileServer;
+        private ChatContextServer _chatContextServer;
         private static readonly object _lock = new();
 
         public ContentServer()
@@ -28,8 +28,10 @@ namespace Content
             _communicator.Subscribe("Content", _notificationHandler);
         }
 
-        // getter and setter for communicator
-        public ICommunicator Communicator
+        /// <summary>
+        /// Get and Set Communicator, Meant to be only used for testing
+        /// </summary>
+        internal ICommunicator Communicator
         {
             get => _communicator;
             set
@@ -80,7 +82,7 @@ namespace Content
             MessageData receiveMessageData;
 
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
-            Debug.Assert(messageData != null, "[ContentServer] Received null from Deserializer");
+            //Debug.Assert(messageData != null, "[ContentServer] Received null from Deserializer");
 
             lock (_lock)
             {
@@ -89,13 +91,13 @@ namespace Content
                     case MessageType.Chat:
                         Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
                         receiveMessageData = _chatContextServer.Receive(messageData);
-                        Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
+                        //Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
                         break;
 
                     case MessageType.File:
                         Trace.WriteLine("[ContentServer] MessageType is File, Calling FileServer.Receive()");
                         receiveMessageData = _fileServer.Receive(messageData);
-                        Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by FileServer");
+                        //Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by FileServer");
                         break;
 
                     default:
@@ -166,6 +168,18 @@ namespace Content
             {
                 subscriber.OnMessage(receiveMessageData);
             }
+        }
+
+        /// <summary>
+        /// Resets the ContentServer, Meant to be used only for Testing
+        /// </summary>
+        internal void Reset()
+        {
+            _subscribers = new List<IContentListener>();
+            _contentDatabase = new ContentDatabase();
+            _fileServer = new FileServer(_contentDatabase);
+            _chatContextServer = new ChatContextServer(_contentDatabase);
+            _serializer = new Serializer();
         }
     }
 }
