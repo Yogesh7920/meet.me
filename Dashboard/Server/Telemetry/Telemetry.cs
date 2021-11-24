@@ -8,12 +8,13 @@ namespace Dashboard.Server.Telemetry{
     ///<summary>
     /// All analytics are done in this class
     ///</summary>
+    
     public class Telemetry: ITelemetry
     {
-        // public void Telemetry
-        // {
-        //     _sessionmanager.subscribe();
-        // }
+        public void Telemetry()
+        {
+            _sm.Subscribe( this );
+        }
         /// <summary>
         ///     constructs a dictionary with DateTime as key and int as value
         ///     which indicates UserCount at corresponding DateTime 
@@ -166,6 +167,7 @@ namespace Dashboard.Server.Telemetry{
         public List<int> insincereMembers= new List<int>();
         private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
         private int thresholdTime = 30;
-        // private ITelemetrySessionManager _sm = new ITelemetrySessionManager();
+        
+        private ITelemetrySessionManager _sm = SessionManagerFactory.GetServerSessionManager();
     }
 }
