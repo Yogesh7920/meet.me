@@ -38,6 +38,44 @@ namespace Testing.Whiteboard
         }
 
         /// <summary>
+        /// Test cases for creation of shapes from previous shapes
+        /// </summary>
+        public static IEnumerable<TestCaseData> ShapeMaker_PreviousLine_ReturnsModifiedPreviousShape_TestCases
+        {
+            get
+            {
+                Coordinate start = new(2, 2);
+                Coordinate stopDrag = new(2, 4);
+                float expectedWidth = GetDiff(stopDrag, start);
+                Coordinate center = GetCenter(start, stopDrag);
+                yield return new TestCaseData(expectedWidth, center, stopDrag, 0).SetArgDisplayNames("RightDrag");
+                stopDrag = new Coordinate(4, 0);
+                expectedWidth = GetDiff(stopDrag, start);
+                center = GetCenter(start, stopDrag);
+                yield return new TestCaseData(expectedWidth, center, stopDrag, (float)(3 * Math.PI/4)).SetArgDisplayNames("TopLeftDrag");
+                stopDrag = new Coordinate(0, 0);
+                expectedWidth = GetDiff(stopDrag, start);
+                center = GetCenter(start, stopDrag);
+                yield return new TestCaseData(expectedWidth, center, stopDrag, (float)(-3 * Math.PI / 4)).SetArgDisplayNames("BottomLeft");
+                stopDrag = new Coordinate(0, 4);
+                expectedWidth = GetDiff(stopDrag, start);
+                center = GetCenter(start, stopDrag);
+                yield return new TestCaseData(expectedWidth, center, stopDrag, (float)(-Math.PI / 4)).SetArgDisplayNames("BottomRight");
+            }
+        }
+
+        public static float GetDiff(Coordinate a, Coordinate b)
+        {
+            Coordinate delta = b - a;
+            return (float)Math.Sqrt(Math.Pow(delta.R, 2) + Math.Pow(delta.C, 2));
+        }
+
+        public static Coordinate GetCenter(Coordinate a, Coordinate b)
+        {
+            return (a + b) / 2;
+        }
+
+        /// <summary>
         /// Test Cases for Rotation when originally the shape is in first quadrant.
         /// </summary>
         public static IEnumerable<TestCaseData> Rotate_Quad1_TestCases

@@ -51,11 +51,11 @@ namespace Whiteboard
         /// <summary>
         /// Minimum Allowed Height of a shape.
         /// </summary>
-        public const float MIN_HEIGHT = (float)0.5;
+        public const float MIN_HEIGHT = (float)0.1;
 
         /// <summary>
         /// Maximum Allowed Width for a shape.
         /// </summary>
-        public const float MIN_WIDTH = (float)0.5;
+        public const float MIN_WIDTH = (float)0.1;
     }
 }

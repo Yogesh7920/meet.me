@@ -176,8 +176,9 @@ namespace Testing.Whiteboard
         {
             // Setting the return value of stateManager when GetShape with id is called for the shape to be modified.
             string uid = "123";
+            float angleOfRotation = (float)(Math.PI / 2);
             // Testing with a line and translate function
-            MainShape mainShape = new Line(2, 2, new(1, 1), new(2, 2));
+            MainShape mainShape = new Line(angleOfRotation, 2, new(1, 1), new(2, 2));
             BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.CREATE);
             _mockStateManager.Setup(m => m.GetBoardShape(It.IsAny<string>())).Returns(shape);
             _handler.SetLastDrawn(null);
@@ -189,21 +190,20 @@ namespace Testing.Whiteboard
 
             //Verifying the UXShape received
             // The UXobject at list position 1 should be the one to be deleted
-            CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.LINE, new(2, 2), 0);
+            CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.LINE, new(2, 2), angleOfRotation);
             Assert.IsNotNull(operations[0].WindowsShape.Uid);
             Assert.AreEqual(uid, operations[0].WindowsShape.Uid);
 
 
             // The UXObject at list position 2 should be the one to be created.
-            CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.LINE, new(3, 3), 0);
+            CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.LINE, new(3, 3), angleOfRotation);
             Assert.AreEqual(uid, operations[1].WindowsShape.Uid);
 
             System.Windows.Shapes.Line operationLine = (System.Windows.Shapes.Line) operations[1].WindowsShape;
             Assert.AreEqual(2, operationLine.X1);
-            Assert.AreEqual(2, operationLine.Y1);
+            Assert.AreEqual(3, operationLine.Y1);
             Assert.AreEqual(4, operationLine.X2);
-            Assert.AreEqual(4, operationLine.Y2);
-            Assert.IsTrue(operations[1].TranslationCoordinate.Equals(new(3, 3)));
+            Assert.AreEqual(3, operationLine.Y2);
 
             // checking the _lastDrawn Object has correct details
             BoardShape lastDrawn = _handler.GetLastDrawn();

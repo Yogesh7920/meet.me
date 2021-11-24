@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 11/22/2021
+ * Date Modified: 11/23/2021
 **/
 
 using System;
@@ -101,24 +101,13 @@ namespace Whiteboard
             else if (s.ShapeIdentifier == ShapeType.LINE)
             {
                 Coordinate dir = s.Center - s.Start;
-                float deltaH = s.Height;
-                float deltaW = s.Width;
-
-                if (dir.R < 0)
-                {
-                    deltaH *= -1;
-                }
-                if (dir.C < 0)
-                {
-                    deltaW *= -1;
-                }
 
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
-                    X1 = s.Start.R,
-                    Y1 = s.Start.C,
-                    X2 = s.Start.R + deltaH,
-                    Y2 = s.Start.C + deltaW
+                    Y1 = s.Center.R,
+                    X1 = s.Center.C - (s.Width / 2),
+                    Y2 = s.Center.R,
+                    X2 = s.Center.C + (s.Width / 2)
                 };
 
                 WindowsShape = LineUXElement;

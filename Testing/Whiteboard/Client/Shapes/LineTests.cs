@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Whiteboard;
 
-namespace Testing.Whiteboard.Client.Shapes
+namespace Testing.Whiteboard
 {
     [TestFixture]
     class LineTests
@@ -58,38 +58,37 @@ namespace Testing.Whiteboard.Client.Shapes
         public void ShapeMaker_NewShape_ReturnsNewShape()
         {
             // creation of ellipse from stratch.
-            MainShape newEllipse = _line.ShapeMaker(new Coordinate(1, 1), new Coordinate(-3, -5), null);
+            MainShape newLine = _line.ShapeMaker(new Coordinate(-1, 2), new Coordinate(1, 0), null);
 
             // verify if it is the expected ellipse
-            float expectedHeight = 4;
-            float expectedWidth = 6;
-            Comparators.Compare(newEllipse, new Coordinate(1, 1), new Coordinate(-1, -2), expectedHeight,
-                                expectedWidth, 1, new BoardColor(0, 0, 0), new BoardColor(255, 255, 255), 0);
+            float expectedWidth = (float)Math.Sqrt(8);
+            Comparators.Compare(newLine, new (-1, 2), new(0, 1), 0,
+                                expectedWidth, 1, new(0, 0, 0), new(255, 255, 255), (float)(3 * Math.PI/4));
         }
 
-        [Test, TestCaseSource(typeof(TestIterators), "ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape_TestCases")]
-        public void ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape(float expectedWidth, float expectedHeight,
-                                                                          Coordinate expectedCenter, Coordinate stopDrag)
+        [Test, TestCaseSource(typeof(TestIterators), "ShapeMaker_PreviousLine_ReturnsModifiedPreviousShape_TestCases")]
+        public void ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape(float expectedWidth, Coordinate expectedCenter,
+                                                                          Coordinate stopDrag, float expectedAngle)
         {
             // setting parameters for ellipse.
-            float height = 2;
-            float width = 2;
+            float height = 0;
+            float width = (float)Math.Sqrt(8);
             float strokeWidth = 1;
             BoardColor strokeColor = new (34, 5, 6);
             BoardColor fillColor = new (34, 5, 64);
-            Coordinate start = new (3, 4);
-            Coordinate center = new (4, 5);
-            float angleOfRotation = 0;
+            Coordinate start = new(2, 2);
+            Coordinate center = new (3, 3);
+            float angleOfRotation = (float)Math.PI/4;
 
             // creating a ellipse to be modified by shapeMaker.
             MainShape previousMainShape = new Line(height, width, strokeWidth, strokeColor.Clone(),
                                                    fillColor.Clone(), start.Clone(), center.Clone(), null, angleOfRotation);
-            MainShape modification1 = _line.ShapeMaker(new Coordinate(5, 6), stopDrag, previousMainShape);
+            MainShape modification1 = _line.ShapeMaker(new Coordinate(4, 4), stopDrag, previousMainShape);
 
             // Modified shape verification
             Assert.That(ReferenceEquals(previousMainShape, modification1));
-            Comparators.Compare(modification1, start, expectedCenter, expectedHeight, expectedWidth, strokeWidth, strokeColor,
-                                fillColor, angleOfRotation);
+            Comparators.Compare(modification1, start, expectedCenter, 0, expectedWidth, strokeWidth, strokeColor,
+                                fillColor, expectedAngle);
         }
     }
 }

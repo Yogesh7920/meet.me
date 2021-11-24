@@ -1,9 +1,9 @@
-﻿/**
+﻿/*
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
  * Date Modified: 11/23/2021
-**/
+*/
 
 using NUnit.Framework;
 using System;
@@ -34,7 +34,9 @@ namespace Testing.Whiteboard
             Assert.AreEqual(strokeWidth, newMainShape.StrokeWidth);
             Assert.IsTrue(newMainShape.StrokeColor.Equals(strokeColor));
             Assert.IsTrue(newMainShape.ShapeFill.Equals(shapeFill));
-            Assert.AreEqual(angleOfRotation, newMainShape.AngleOfRotation);
+
+            CompareFloats(angleOfRotation, newMainShape.AngleOfRotation);
+            //Assert.AreEqual(angleOfRotation, newMainShape.AngleOfRotation);
         }
 
         public static void CompareFloats(float a, float b)
