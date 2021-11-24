@@ -290,7 +290,7 @@ namespace Dashboard.Client.SessionManagement
             Debug.Assert(recievedSessionData.users != null);
 
             // if there was no change in the data then nothing needs to be done
-            if (recievedSessionData.users.Equals(_clientSessionData.users))
+            if (recievedSessionData!= null && _clientSessionData != null && recievedSessionData.users.Equals(_clientSessionData.users))
                 return;
 
             // a null _user denotes that the user is new and has not be set because all 
@@ -315,6 +315,7 @@ namespace Dashboard.Client.SessionManagement
             lock(this)
             {
                 _clientSessionData = (SessionData)recievedSessionData;
+                Console.WriteLine(recievedSessionData.users[0]);
             }
             NotifyUXSession();
         }
