@@ -131,18 +131,18 @@ namespace Testing.Content
         public void CSend_ChatSendingMsgWithNewline_SerializedStringShouldMatchInputMsg()
         {
             Utils util = new Utils();
-            int UserId = 1001;
-            SendMessageData SampleData = util.GenerateChatSendMsgData("Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
+            MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
 
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            contentClient.UserId = UserId;
+            contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
 
-            iContentClient.CSend(SampleData);
+            iContentClient.CSend(sampleData);
 
             var sendSerializedMsg = fakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
@@ -150,14 +150,14 @@ namespace Testing.Content
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized as MessageData;
-                Assert.AreEqual(receivedMessage.Message, SampleMsgData.Message);
+                Assert.AreEqual(receivedMessage.Message, sampleMsgData.Message);
                 Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
-                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
-                Assert.AreEqual(receivedMessage.FileData, SampleMsgData.FileData);
-                Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
-                Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
-                Assert.AreEqual(receivedMessage.SenderId, UserId);
-                Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
+                Assert.AreEqual(receivedMessage.Type, sampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.FileData, sampleMsgData.FileData);
+                Assert.AreEqual(receivedMessage.Starred, sampleMsgData.Starred);
+                Assert.AreEqual(receivedMessage.ReplyThreadId, sampleMsgData.ReplyThreadId);
+                Assert.AreEqual(receivedMessage.SenderId, userId);
+                Assert.AreEqual(receivedMessage.ReceiverIds.Length, sampleMsgData.ReceiverIds.Length);
             }
             else
             {
@@ -169,18 +169,15 @@ namespace Testing.Content
         public void CSend_ChatSendingMsgWithNullString_SerializedStringShouldMatchInputMsg()
         {
             Utils util = new Utils();
-            int UserId = 1001;
-            SendMessageData SampleData = util.GenerateChatSendMsgData(null, new int[] { 1002 }, type: MessageType.Chat);
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, null, new int[] { 1002 }, type: MessageType.Chat);
-
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData(null, new int[] { 1002 }, type: MessageType.Chat);
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            contentClient.UserId = UserId;
+            contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
-
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(SampleData));
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
             Assert.AreEqual("Null Message String", ex.Message);
         }
 
@@ -188,18 +185,18 @@ namespace Testing.Content
         public void CSend_ChatSendingHiMsgWithBroadcast_SerializedStringShouldMatchInputMsg()
         {
             Utils util = new Utils();
-            int UserId = 1001;
-            SendMessageData SampleData = util.GenerateChatSendMsgData("Hello, How are you?\n I am fine", new int[] { }, type: MessageType.Chat);
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { }, type: MessageType.Chat);
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?\n I am fine", new int[] { }, type: MessageType.Chat);
+            MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { }, type: MessageType.Chat);
 
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            contentClient.UserId = UserId;
+            contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
 
-            iContentClient.CSend(SampleData);
+            iContentClient.CSend(sampleData);
 
             var sendSerializedMsg = fakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
@@ -207,14 +204,14 @@ namespace Testing.Content
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized as MessageData;
-                Assert.AreEqual(receivedMessage.Message, SampleMsgData.Message);
+                Assert.AreEqual(receivedMessage.Message, sampleMsgData.Message);
                 Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
-                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
-                Assert.AreEqual(receivedMessage.FileData, SampleMsgData.FileData);
-                Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
-                Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
-                Assert.AreEqual(receivedMessage.SenderId, UserId);
-                Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
+                Assert.AreEqual(receivedMessage.Type, sampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.FileData, sampleMsgData.FileData);
+                Assert.AreEqual(receivedMessage.Starred, sampleMsgData.Starred);
+                Assert.AreEqual(receivedMessage.ReplyThreadId, sampleMsgData.ReplyThreadId);
+                Assert.AreEqual(receivedMessage.SenderId, userId);
+                Assert.AreEqual(receivedMessage.ReceiverIds.Length, sampleMsgData.ReceiverIds.Length);
             }
             else
             {
@@ -226,38 +223,38 @@ namespace Testing.Content
         public void CSend_FileSendingValidFilePathToServer_SerializedStringShouldMatchFileData()
         {
             Utils util = new Utils();
-            int UserId = 1001;
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string FilePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
-            var Filedata = new SendFileData(FilePath);
-            SendMessageData SampleData = util.GenerateChatSendMsgData(FilePath, new int[] { }, type: MessageType.File);
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
+            int userId = 1001;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var filedata = new SendFileData(filePath);
+            SendMessageData sampleData = util.GenerateChatSendMsgData(filePath, new int[] { }, type: MessageType.File);
+            MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File);
 
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            contentClient.UserId = UserId;
+            contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
-            iContentClient.CSend(SampleData);
+            iContentClient.CSend(sampleData);
             var sendSerializedMsg = fakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
 
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized as MessageData;
-                Assert.AreEqual(receivedMessage.Message, Filedata.fileName);
+                Assert.AreEqual(receivedMessage.Message, filedata.fileName);
                 Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
-                Assert.AreEqual(receivedMessage.Type, SampleMsgData.Type);
-                Assert.AreEqual(receivedMessage.FileData.fileContent, Filedata.fileContent);
-                Assert.AreEqual(receivedMessage.FileData.fileSize, Filedata.fileSize);
-                Assert.AreEqual(receivedMessage.FileData.fileName, Filedata.fileName);
-                Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
-                Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
-                Assert.AreEqual(receivedMessage.SenderId, UserId);
+                Assert.AreEqual(receivedMessage.Type, sampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.FileData.fileContent, filedata.fileContent);
+                Assert.AreEqual(receivedMessage.FileData.fileSize, filedata.fileSize);
+                Assert.AreEqual(receivedMessage.FileData.fileName, filedata.fileName);
+                Assert.AreEqual(receivedMessage.Starred, sampleMsgData.Starred);
+                Assert.AreEqual(receivedMessage.ReplyThreadId, sampleMsgData.ReplyThreadId);
+                Assert.AreEqual(receivedMessage.SenderId, userId);
                 Assert.AreEqual(receivedMessage.MessageId, -1);
-                Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
+                Assert.AreEqual(receivedMessage.ReceiverIds.Length, sampleMsgData.ReceiverIds.Length);
             }
             else
             {
@@ -269,52 +266,19 @@ namespace Testing.Content
         public void CSend_InValidFilePath_ShouldThrowFileNotFoundException()
         {
             Utils util = new Utils();
-            int UserId = 1001;
-            string CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string FilePath = ".\\InvalidFile.pdf";
-            SendMessageData SampleData = util.GenerateChatSendMsgData(FilePath, new int[] { }, type: MessageType.File);
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
-
+            int userId = 1001;
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string filePath = ".\\InvalidFile.pdf";
+            SendMessageData sampleData = util.GenerateChatSendMsgData(filePath, new int[] { }, type: MessageType.File);
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            contentClient.UserId = UserId;
+            contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
-
-            FileNotFoundException ex = Assert.Throws<FileNotFoundException>(() => iContentClient.CSend(SampleData));
-            Assert.AreEqual("File " + FilePath + " not found", ex.Message);
+            FileNotFoundException ex = Assert.Throws<FileNotFoundException>(() => iContentClient.CSend(sampleData));
+            Assert.AreEqual("File " + filePath + " not found", ex.Message);
         }
-
-
-        /*
-            Utils util = new Utils();
-            int UserId = 1001;
-            int MsgId = 11;
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string FilePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
-            var Filedata = new SendFileData(FilePath);
-            MessageData SampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
-            SampleMsgDataSend.MessageId = MsgId;
-            SampleMsgDataSend.SenderId = UserId;
-            string SavePath = CurrentDirectory + "\\SavedTestFile.pdf";
-            MessageData SampleMsgDataDownload = util.GenerateChatMessageData(MessageEvent.Download, SavePath, new int[] { }, type: MessageType.File);
-            SampleMsgDataDownload.MessageId = MsgId;
-            SampleMsgDataDownload.SenderId = UserId;
-            ISerializer serializer = new Serializer();
-            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
-            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            contentClient.UserId = UserId;
-            contentClient.Communicator = fakeCommunicator;
-            IContentClient iContentClient = contentClient;
-            fakeCommunicator.Notify(serializer.Serialize(SampleMsgDataSend));
-            System.Threading.Thread.Sleep(10);
-            iContentClient.CDownload(MsgId, SavePath);
-            System.Threading.Thread.Sleep(10);
-            var sendSerializedMsg = fakeCommunicator.GetSentData();
-            var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
-        */
 
         [Test]
         public void CMarkStar_ClientShouldSendProperRequestToServer_SerializedStrMustHaveProperMarkstarReq()
@@ -322,22 +286,19 @@ namespace Testing.Content
             Utils util = new Utils();
             int userId = 1001;
             int msgId = 13;
-            MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.Star, "", new int[] { }, type: MessageType.Chat);
-
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
             contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
-            SampleMsgData.MessageId = msgId;
-            fakeCommunicator.Notify(serializer.Serialize(SampleMsgData));
+            MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
+            sampleMsgData.MessageId = msgId;
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgData));
             System.Threading.Thread.Sleep(10);
             iContentClient.CMarkStar(msgId);
             var sendSerializedMsg = fakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
-
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized as MessageData;
@@ -359,24 +320,20 @@ namespace Testing.Content
             int userId = 1001;
             int msgId = 12;
             string updateChat = "Hi, This is updated msg.";
-            MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.Update, updateChat , new int[] { }, type: MessageType.Chat);
-
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
             contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
-            SampleMsgData.MessageId = msgId;
-            SampleMsgData.SenderId = userId;
-            fakeCommunicator.Notify(serializer.Serialize(SampleMsgData));
+            MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
+            sampleMsgData.MessageId = msgId;
+            sampleMsgData.SenderId = userId;
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgData));
             System.Threading.Thread.Sleep(10);
             iContentClient.CUpdateChat(msgId, updateChat);
-
             var sendSerializedMsg = fakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
-
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized as MessageData;
@@ -396,46 +353,42 @@ namespace Testing.Content
         public void CDownload_SendingDownloadReqToServerWithInvalidMsgId_ShouldThrowArgumentException()
         {
             Utils util = new Utils();
-            int UserId = 1001;
-            int MsgId = 100;
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
-            string SavePath = CurrentDirectory + "\\SavedTestFile.pdf";
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.Download, SavePath, new int[] { }, type: MessageType.File);
-
+            int userId = 1001;
+            int msgId = 100;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string savePath = currentDirectory + "\\SavedTestFile.pdf";
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            contentClient.UserId = UserId;
+            contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
-
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CDownload(MsgId, SavePath));
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CDownload(msgId, savePath));
             Assert.AreEqual("Message with given message ID not found", ex.Message);
         }
 
-        // CDownload valid file remaining, not file download remaining
         [Test]
         public void CDownload_NonFileType_ShouldThrowArgumentException()
         {
-            int MsgId = 10;
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
-            string SavePath = CurrentDirectory + "\\SavedTestFile.pdf";
+            int msgId = 10;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string savePath = currentDirectory + "\\SavedTestFile.pdf";
             Utils util = new Utils();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient iContentClient = contentClient;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeListener = _fakeListener;
+            FakeContentListener fakeListener = new FakeContentListener();
+            IContentListener iFakeListener = fakeListener;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            INotificationHandler _notificationHandler = new ContentClientNotificationHandler(contentClient);
+            INotificationHandler notificationHandler = new ContentClientNotificationHandler(contentClient);
             ISerializer serializer = new Serializer();
             // Subscribing to communicator
-            fakeCommunicator.Subscribe("Content", _notificationHandler);
+            fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
-            iContentClient.CSubscribe(_iFakeListener);
-            MessageData DataToSerialize = util.GenerateNewMessageData("Hello", ReplyThreadId: 10, MessageId: MsgId);
-            fakeCommunicator.Notify(serializer.Serialize(DataToSerialize));
+            iContentClient.CSubscribe(iFakeListener);
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", ReplyThreadId: 10, MessageId: msgId);
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
             System.Threading.Thread.Sleep(10);
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CDownload(MsgId, SavePath));
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CDownload(msgId, savePath));
             Assert.AreEqual("Message requested for download is not a file type message", ex.Message);
         }
 
@@ -443,40 +396,38 @@ namespace Testing.Content
         public void CDownload_ValidFileMsgExistInDataBase_ShouldSendProperReqToServer()
         {
             Utils util = new Utils();
-            int UserId = 1001;
-            int MsgId = 11;
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string FilePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
-            var Filedata = new SendFileData(FilePath);
-            MessageData SampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
-            SampleMsgDataSend.MessageId = MsgId;
-            SampleMsgDataSend.SenderId = UserId;
-            string SavePath = CurrentDirectory + "\\SavedTestFile.pdf";
-            MessageData SampleMsgDataDownload = util.GenerateChatMessageData(MessageEvent.Download, SavePath, new int[] { }, type: MessageType.File);
-            SampleMsgDataDownload.MessageId = MsgId;
-            SampleMsgDataDownload.SenderId = UserId;
+            int userId = 1001;
+            int msgId = 11;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File);
+            sampleMsgDataSend.MessageId = msgId;
+            sampleMsgDataSend.SenderId = userId;
+            string savePath = currentDirectory + "\\SavedTestFile.pdf";
+            MessageData sampleMsgDataDownload = util.GenerateChatMessageData(MessageEvent.Download, savePath, new int[] { }, type: MessageType.File);
+            sampleMsgDataDownload.MessageId = msgId;
+            sampleMsgDataDownload.SenderId = userId;
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            contentClient.UserId = UserId;
+            contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             IContentClient iContentClient = contentClient;
-            fakeCommunicator.Notify(serializer.Serialize(SampleMsgDataSend));
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
             System.Threading.Thread.Sleep(10);
-            iContentClient.CDownload(MsgId, SavePath);
+            iContentClient.CDownload(msgId, savePath);
             System.Threading.Thread.Sleep(10);
             var sendSerializedMsg = fakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
-
             if (deserialized is MessageData)
             {
                 var receivedMessage = deserialized;
-                Assert.AreEqual(receivedMessage.Message, SampleMsgDataDownload.Message);
+                Assert.AreEqual(receivedMessage.Message, sampleMsgDataDownload.Message);
                 Assert.AreEqual(receivedMessage.Event, MessageEvent.Download);
-                Assert.AreEqual(receivedMessage.Type, SampleMsgDataDownload.Type);
-                Assert.AreEqual(receivedMessage.SenderId, UserId);
-                Assert.AreEqual(receivedMessage.MessageId, MsgId);
+                Assert.AreEqual(receivedMessage.Type, sampleMsgDataDownload.Type);
+                Assert.AreEqual(receivedMessage.SenderId, userId);
+                Assert.AreEqual(receivedMessage.MessageId, msgId);
                 Assert.AreEqual(receivedMessage.FileData, null);
             }
             else
@@ -491,21 +442,21 @@ namespace Testing.Content
             Utils util = new Utils();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient iContentClient = contentClient;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeListener = _fakeListener;
+            FakeContentListener fakeListener = new FakeContentListener();
+            IContentListener iFakeListener = fakeListener;
             // Subscribing to content client
-            iContentClient.CSubscribe(_iFakeListener);
+            iContentClient.CSubscribe(iFakeListener);
             // Building receiveMessageData to notify to subscribers
-            ReceiveMessageData _receivedData = new ReceiveMessageData();
+            ReceiveMessageData receivedData = new ReceiveMessageData();
             string Msg = "hello";  // data will have msg hello
-            _receivedData.Message = Msg;
-            _receivedData.MessageId = 2;
+            receivedData.Message = Msg;
+            receivedData.MessageId = 2;
             // Notifying to subscribers
-            contentClient.Notify(_receivedData);
+            contentClient.Notify(receivedData);
             System.Threading.Thread.Sleep(50);
             // Fetching listened data from listener
-            ReceiveMessageData _listenedData = _fakeListener.GetOnMessageData();
-            Assert.AreEqual(_listenedData.Message, Msg);
+            ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
+            Assert.AreEqual(listenedData.Message, Msg);
         }
 
         [Test]
@@ -522,17 +473,17 @@ namespace Testing.Content
             iContentClient.CSubscribe(_iFakeListener1);
             iContentClient.CSubscribe(_iFakeListener2);
             // Building receiveMessageData to notify to subscribers
-            ReceiveMessageData _receivedData = new ReceiveMessageData();
+            ReceiveMessageData receivedData = new ReceiveMessageData();
             string Msg = "hello";  // data will have msg hello
-            _receivedData.Message = Msg;
+            receivedData.Message = Msg;
             // Notifying to subscribers
-            contentClient.Notify(_receivedData);
+            contentClient.Notify(receivedData);
             System.Threading.Thread.Sleep(50);
             // Fetching listened data from listener
-            ReceiveMessageData _listenedData1 = _fakeListener1.GetOnMessageData();
-            ReceiveMessageData _listenedData2 = _fakeListener2.GetOnMessageData();
-            Assert.AreEqual(_listenedData1.Message, Msg);
-            Assert.AreEqual(_listenedData2.Message, Msg);
+            ReceiveMessageData listenedData1 = _fakeListener1.GetOnMessageData();
+            ReceiveMessageData listenedData2 = _fakeListener2.GetOnMessageData();
+            Assert.AreEqual(listenedData1.Message, Msg);
+            Assert.AreEqual(listenedData2.Message, Msg);
         }
 
         [Test]
@@ -541,21 +492,21 @@ namespace Testing.Content
             Utils util = new Utils();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient iContentClient = contentClient;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeListener = _fakeListener;
+            FakeContentListener fakeListener = new FakeContentListener();
+            IContentListener iFakeListener = fakeListener;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            INotificationHandler _notificationHandler = new ContentClientNotificationHandler(contentClient);
+            INotificationHandler notificationHandler = new ContentClientNotificationHandler(contentClient);
             ISerializer serializer = new Serializer();
             // Subscribing to communicator
-            fakeCommunicator.Subscribe("Content", _notificationHandler);
+            fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
-            iContentClient.CSubscribe(_iFakeListener);
-            MessageData DataToSerialize = util.GenerateNewMessageData("Hello");
-            fakeCommunicator.Notify(serializer.Serialize(DataToSerialize));
+            iContentClient.CSubscribe(iFakeListener);
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello");
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
             System.Threading.Thread.Sleep(10);
             // Fetching listened data from listener
-            ReceiveMessageData _listenedData = _fakeListener.GetOnMessageData();
-            Assert.AreEqual(_listenedData.Message, DataToSerialize.Message);
+            ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
+            Assert.AreEqual(listenedData.Message, dataToSerialize.Message);
         }
 
         [Test]
@@ -564,27 +515,27 @@ namespace Testing.Content
             Utils util = new Utils();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient iContentClient = contentClient;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeListener = _fakeListener;
+            FakeContentListener fakeListener = new FakeContentListener();
+            IContentListener iFakeListener = fakeListener;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            INotificationHandler _notificationHandler = new ContentClientNotificationHandler(contentClient);
+            INotificationHandler notificationHandler = new ContentClientNotificationHandler(contentClient);
             ISerializer serializer = new Serializer();
             // Subscribing to communicator
-            fakeCommunicator.Subscribe("Content", _notificationHandler);
+            fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
-            iContentClient.CSubscribe(_iFakeListener);
-            MessageData DataToSerialize1 = util.GenerateNewMessageData("Hello");
-            MessageData DataToSerialize2 = util.GenerateNewMessageData("Hi");
-            fakeCommunicator.Notify(serializer.Serialize(DataToSerialize1));
+            iContentClient.CSubscribe(iFakeListener);
+            MessageData dataToSerialize1 = util.GenerateNewMessageData("Hello");
+            MessageData dataToSerialize2 = util.GenerateNewMessageData("Hi");
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize1));
             System.Threading.Thread.Sleep(10);
             // Msg1
-            ReceiveMessageData _listenedData1 = _fakeListener.GetOnMessageData();
-            Assert.AreEqual(_listenedData1.Message, DataToSerialize1.Message);
-            fakeCommunicator.Notify(serializer.Serialize(DataToSerialize2));
+            ReceiveMessageData listenedData1 = fakeListener.GetOnMessageData();
+            Assert.AreEqual(listenedData1.Message, dataToSerialize1.Message);
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize2));
             System.Threading.Thread.Sleep(10);
             // Msg2
-            ReceiveMessageData _listenedData2 = _fakeListener.GetOnMessageData();
-            Assert.AreEqual(_listenedData2.Message, DataToSerialize2.Message);
+            ReceiveMessageData listenedData2 = fakeListener.GetOnMessageData();
+            Assert.AreEqual(listenedData2.Message, dataToSerialize2.Message);
         }
 
         [Test]
@@ -592,30 +543,28 @@ namespace Testing.Content
         {            
             Utils util = new Utils();
             int UserId = 1001;
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string FilePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
-            string SavePath = path[0] + "\\Testing\\Content\\Save_";
-            var Filedata = new SendFileData(FilePath);
-            SendMessageData SampleData = util.GenerateChatSendMsgData(FilePath, new int[] { }, type: MessageType.File);
-            MessageData SampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, FilePath, new int[] { }, type: MessageType.File);
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            string savePath = path[0] + "\\Testing\\Content\\Save_";
+            SendMessageData sampleData = util.GenerateChatSendMsgData(filePath, new int[] { }, type: MessageType.File);
             ISerializer serializer = new Serializer();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            INotificationHandler _notificationHandler = new ContentClientNotificationHandler(contentClient);
+            INotificationHandler notificationHandler = new ContentClientNotificationHandler(contentClient);
             contentClient.Communicator = fakeCommunicator;
             contentClient.UserId = UserId;
             IContentClient iContentClient = contentClient;
-            iContentClient.CSend(SampleData);
+            iContentClient.CSend(sampleData);
             string sendSerializedMsg = fakeCommunicator.GetSentData();
             MessageData deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
-            deserialized.Message = SavePath;
+            deserialized.Message = savePath;
             deserialized.Event = MessageEvent.Download;
             fakeCommunicator.Notify(serializer.Serialize(deserialized));
             System.Threading.Thread.Sleep(50);
-            if (File.Exists(SavePath+deserialized.FileData.fileName))
+            if (File.Exists(savePath+deserialized.FileData.fileName))
             {
-                File.Delete(SavePath + deserialized.FileData.fileName);
+                File.Delete(savePath + deserialized.FileData.fileName);
                 Assert.Pass();
             }
             else
@@ -630,36 +579,36 @@ namespace Testing.Content
             Utils util = new Utils();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient iContentClient = contentClient;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeListener = _fakeListener;
+            FakeContentListener fakeListener = new FakeContentListener();
+            IContentListener iFakeListener = fakeListener;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            INotificationHandler _notificationHandler = new ContentClientNotificationHandler(contentClient);
+            INotificationHandler notificationHandler = new ContentClientNotificationHandler(contentClient);
             ISerializer serializer = new Serializer();
             // Subscribing to communicator
-            fakeCommunicator.Subscribe("Content", _notificationHandler);
+            fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
-            iContentClient.CSubscribe(_iFakeListener);
-            ReceiveMessageData DataToSerialize1 = util.GenerateNewReceiveMessageData("Hello", MessageId: 1, ReplyThreadId: 1);
-            ReceiveMessageData DataToSerialize2 = util.GenerateNewReceiveMessageData("Hi", MessageId: 2, ReplyThreadId: 2);
-            ReceiveMessageData DataToSerialize3 = util.GenerateNewReceiveMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 1);
-            ChatContext ChatList1 = new ChatContext();
-            ChatList1.ThreadId = 1;
-            ChatList1.MsgList.Add(DataToSerialize1);
-            ChatList1.MsgList.Add(DataToSerialize3);
-            ChatContext ChatList2 = new ChatContext();
-            ChatList2.MsgList.Add(DataToSerialize2);
-            ChatList2.ThreadId = 2;
-            List<ChatContext> ListCContext = new List<ChatContext>();
-            ListCContext.Add(ChatList1);
-            ListCContext.Add(ChatList2);
-            string SerializedStr = serializer.Serialize(ListCContext);
+            iContentClient.CSubscribe(iFakeListener);
+            ReceiveMessageData dataToSerialize1 = util.GenerateNewReceiveMessageData("Hello", MessageId: 1, ReplyThreadId: 1);
+            ReceiveMessageData dataToSerialize2 = util.GenerateNewReceiveMessageData("Hi", MessageId: 2, ReplyThreadId: 2);
+            ReceiveMessageData dataToSerialize3 = util.GenerateNewReceiveMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 1);
+            ChatContext chatList1 = new ChatContext();
+            chatList1.ThreadId = 1;
+            chatList1.MsgList.Add(dataToSerialize1);
+            chatList1.MsgList.Add(dataToSerialize3);
+            ChatContext chatList2 = new ChatContext();
+            chatList2.MsgList.Add(dataToSerialize2);
+            chatList2.ThreadId = 2;
+            List<ChatContext> listCContext = new List<ChatContext>();
+            listCContext.Add(chatList1);
+            listCContext.Add(chatList2);
+            string SerializedStr = serializer.Serialize(listCContext);
             fakeCommunicator.Notify(SerializedStr);
             
             System.Threading.Thread.Sleep(10);
-            List<ChatContext> _listenedData = _fakeListener.GetOnAllMessagesData();
-            for(int i=0; i<_listenedData.Count; i++)
+            List<ChatContext> listenedData = fakeListener.GetOnAllMessagesData();
+            for(int i=0; i<listenedData.Count; i++)
             {
-                CompareChatContext(_listenedData[i], ListCContext[i]);
+                CompareChatContext(listenedData[i], listCContext[i]);
             }
         }
 
@@ -669,32 +618,32 @@ namespace Testing.Content
             Utils util = new Utils();
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient iContentClient = contentClient;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeListener = _fakeListener;
+            FakeContentListener fakeListener = new FakeContentListener();
+            IContentListener iFakeListener = fakeListener;
             FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
-            INotificationHandler _notificationHandler = new ContentClientNotificationHandler(contentClient);
+            INotificationHandler notificationHandler = new ContentClientNotificationHandler(contentClient);
             ISerializer serializer = new Serializer();
             // Subscribing to communicator
-            fakeCommunicator.Subscribe("Content", _notificationHandler);
+            fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
-            iContentClient.CSubscribe(_iFakeListener);
-            MessageData DataToSerialize1 = util.GenerateNewMessageData("Hello", MessageId: 1, ReplyThreadId: 11);
-            MessageData DataToSerialize2 = util.GenerateNewMessageData("Hi", MessageId: 2, ReplyThreadId: 12);
-            MessageData DataToSerialize3 = util.GenerateNewMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 11);
-            ChatContext ChatList1 = new ChatContext();
-            ChatList1.ThreadId = 11;
-            ChatList1.MsgList.Add(DataToSerialize1);
-            ChatList1.MsgList.Add(DataToSerialize3);
-            ChatContext ChatList2 = new ChatContext();
-            ChatList2.MsgList.Add(DataToSerialize2);
-            ChatList2.ThreadId = 12;
-            fakeCommunicator.Notify(serializer.Serialize(DataToSerialize1));
-            fakeCommunicator.Notify(serializer.Serialize(DataToSerialize2));
-            fakeCommunicator.Notify(serializer.Serialize(DataToSerialize3));
-            ChatContext ChatsOnContext1 = iContentClient.CGetThread(11);
-            CompareChatContext(ChatList1, ChatsOnContext1);
-            ChatContext ChatsOnContext2 = iContentClient.CGetThread(12);
-            CompareChatContext(ChatList2, ChatsOnContext2);
+            iContentClient.CSubscribe(iFakeListener);
+            MessageData dataToSerialize1 = util.GenerateNewMessageData("Hello", MessageId: 1, ReplyThreadId: 11);
+            MessageData dataToSerialize2 = util.GenerateNewMessageData("Hi", MessageId: 2, ReplyThreadId: 12);
+            MessageData dataToSerialize3 = util.GenerateNewMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 11);
+            ChatContext chatList1 = new ChatContext();
+            chatList1.ThreadId = 11;
+            chatList1.MsgList.Add(dataToSerialize1);
+            chatList1.MsgList.Add(dataToSerialize3);
+            ChatContext chatList2 = new ChatContext();
+            chatList2.MsgList.Add(dataToSerialize2);
+            chatList2.ThreadId = 12;
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize1));
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize2));
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize3));
+            ChatContext chatsOnContext1 = iContentClient.CGetThread(11);
+            CompareChatContext(chatList1, chatsOnContext1);
+            ChatContext chatsOnContext2 = iContentClient.CGetThread(12);
+            CompareChatContext(chatList2, chatsOnContext2);
         }
 
         [Test]
@@ -789,17 +738,17 @@ namespace Testing.Content
             Utils util = new Utils();
             contentServer.Communicator = fakeServerCommunicator;
             int UserId = 1001;
-            string CurrentDirectory = Directory.GetCurrentDirectory() as string;
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string FilePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
-            string SavePath = path[0] + "\\Testing\\Content\\Save_";
-            var Filedata = new SendFileData(FilePath);
-            SendMessageData SampleData = util.GenerateChatSendMsgData(FilePath, new int[] { }, type: MessageType.File);
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            string savePath = path[0] + "\\Testing\\Content\\Save_";
+            var Filedata = new SendFileData(filePath);
+            SendMessageData sampleData = util.GenerateChatSendMsgData(filePath, new int[] { }, type: MessageType.File);
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             IContentClient iContentClient = contentClient;
             contentClient.Communicator = fakeClientCommunicator;
             contentClient.UserId = UserId;
-            iContentClient.CSend(SampleData);
+            iContentClient.CSend(sampleData);
             string sendSerializedMsg = fakeClientCommunicator.GetSentData();
             MessageData sendNewFileData = serializer.Deserialize<MessageData>(sendSerializedMsg);
             contentServer.Receive(sendSerializedMsg);
@@ -809,21 +758,21 @@ namespace Testing.Content
             c1.MsgList.Add(util.MessageDataToReceiveMessageData(fileReplyMsg));
             chatList.Add(c1);
             contentClient.OnReceive(fileReplyMsg);
-            iContentClient.CDownload(fileReplyMsg.MessageId, SavePath);
+            iContentClient.CDownload(fileReplyMsg.MessageId, savePath);
             string downloadReqMsg = fakeClientCommunicator.GetSentData();
             contentServer.Receive(downloadReqMsg);
             List<int> rcvId = new List<int>();
             rcvId.Add(UserId);
             MessageData fileReturnedData = GetMsgFromCommunicator(fakeServerCommunicator, serializer, false, rcvId);
             Assert.AreEqual(fileReturnedData.FileData.fileContent, sendNewFileData.FileData.fileContent);
-            Assert.AreEqual(fileReturnedData.Message, SavePath);
+            Assert.AreEqual(fileReturnedData.Message, savePath);
             Assert.AreEqual(fileReturnedData.FileData.fileName, sendNewFileData.FileData.fileName);
             Assert.AreEqual(fileReturnedData.MessageId, fileReplyMsg.MessageId);
             contentClient.OnReceive(fileReturnedData);
             System.Threading.Thread.Sleep(50);
-            if (File.Exists(SavePath + fileReturnedData.FileData.fileName))
+            if (File.Exists(savePath + fileReturnedData.FileData.fileName))
             {
-                File.Delete(SavePath + fileReturnedData.FileData.fileName);
+                File.Delete(savePath + fileReturnedData.FileData.fileName);
                 Assert.Pass();
             }
             else
@@ -836,27 +785,27 @@ namespace Testing.Content
         public void SSubscribe_SubcribingToContentServer_SubscriberShouldGetMsgOnNotify()
         {
             Utils util = new Utils();
-            ContentServer _contentServer = ContentServerFactory.GetInstance() as ContentServer;
-            IContentServer _iContentServer = _contentServer;
-            FakeContentListener _fakeListener = new FakeContentListener();
-            IContentListener _iFakeServerListener = _fakeListener;
+            ContentServer contentServer = ContentServerFactory.GetInstance() as ContentServer;
+            IContentServer iContentServer = contentServer;
+            FakeContentListener fakeListener = new FakeContentListener();
+            IContentListener iFakeServerListener = fakeListener;
             ISerializer serializer = new Serializer();
             // Subscribing to content client
-            _iContentServer.SSubscribe(_iFakeServerListener);
+            iContentServer.SSubscribe(iFakeServerListener);
             // Building receiveMessageData to notify to subscribers
-            MessageData _receivedData = new MessageData();
-            string Msg = "hello";  // data will have msg hello
-            _receivedData.Message = Msg;
-            _receivedData.ReplyThreadId = -1;
-            _receivedData.Type = MessageType.Chat;
-            _receivedData.Event = MessageEvent.NewMessage;
-            _receivedData.ReceiverIds = new int[0];
+            MessageData receivedData = new MessageData();
+            string msg = "hello";  // data will have m hello
+            receivedData.Message = msg;
+            receivedData.ReplyThreadId = -1;
+            receivedData.Type = MessageType.Chat;
+            receivedData.Event = MessageEvent.NewMessage;
+            receivedData.ReceiverIds = new int[0];
             // Notifying to subscribers
-            _contentServer.Receive(serializer.Serialize(_receivedData));
+            contentServer.Receive(serializer.Serialize(receivedData));
             System.Threading.Thread.Sleep(50);
             // Fetching listened data from listener
-            ReceiveMessageData _listenedData = _fakeListener.GetOnMessageData();
-            Assert.AreEqual(_listenedData.Message, Msg);
+            ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
+            Assert.AreEqual(listenedData.Message, msg);
         }
 
         /// <summary>
@@ -925,6 +874,11 @@ namespace Testing.Content
             return messageData;
         }
 
+        /// <summary>
+        /// This function compares receiveMsgData
+        /// </summary>
+        /// <param name="m1"></param>
+        /// <param name="m2"></param>
         public void CompareReceiveMessageData(ReceiveMessageData m1, ReceiveMessageData m2)
         {
             Assert.AreEqual(m1.Message, m2.Message);
@@ -936,6 +890,11 @@ namespace Testing.Content
             Assert.AreEqual(m1.Event, m2.Event);
         }
 
+        /// <summary>
+        /// This function compares chat contexts
+        /// </summary>
+        /// <param name="c1"></param>
+        /// <param name="c2"></param>
         public void CompareChatContext(ChatContext c1, ChatContext c2)
         {
             Assert.AreEqual(c1.ThreadId, c2.ThreadId);
