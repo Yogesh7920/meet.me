@@ -46,7 +46,7 @@ namespace Content
 
         public void ChatNewMessage(SendMessageData toserver)
         {
-			if(toserver.Message != null && toserver.Message != ""){
+			if(toserver.Message != null){
 				var tosend = SendToMessage(toserver, MessageEvent.NewMessage);
 				tosend.MessageId = -1;
 				var xml = _serializer.Serialize(tosend);
@@ -55,7 +55,7 @@ namespace Content
 			}
 			else
 			{
-				throw new ArgumentException("Invalid Message String");
+				throw new ArgumentException("Null Message String");
 			}
         }
 
