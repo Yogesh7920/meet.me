@@ -1,8 +1,8 @@
-using NUnit.Framework;
 using Content;
 using Networking;
-using System.IO;
+using NUnit.Framework;
 using System;
+using System.IO;
 
 namespace Testing.Content
 {

@@ -1,9 +1,9 @@
-using NUnit.Framework;
 using Content;
 using Networking;
-using System.IO;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Testing.Content
 {
@@ -149,11 +149,13 @@ namespace Testing.Content
         [Test]
         public void Receive_StarringAMessage_ShouldStarTheMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
-            MessageData starMessage = new MessageData();
-            starMessage.MessageId = 0;
-            starMessage.ReplyThreadId = 0;
-            starMessage.Event = MessageEvent.Star;
-            starMessage.Type = MessageType.Chat;
+            MessageData starMessage = new MessageData
+            {
+                MessageId = 0,
+                ReplyThreadId = 0,
+                Event = MessageEvent.Star,
+                Type = MessageType.Chat
+            };
 
             string serializedStarMessage = serializer.Serialize(starMessage);
 
@@ -184,12 +186,14 @@ namespace Testing.Content
         [Test]
         public void Receive_UpdatingAMessage_ShouldUpdateTheMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
-            MessageData updateMessage = new MessageData();
-            updateMessage.MessageId = 0;
-            updateMessage.ReplyThreadId = 0;
-            updateMessage.Event = MessageEvent.Update;
-            updateMessage.Type = MessageType.Chat;
-            updateMessage.Message = "Hello World!";
+            MessageData updateMessage = new MessageData
+            {
+                MessageId = 0,
+                ReplyThreadId = 0,
+                Event = MessageEvent.Update,
+                Type = MessageType.Chat,
+                Message = "Hello World!"
+            };
 
             string serializedUpdateMessage = serializer.Serialize(updateMessage);
 
@@ -226,13 +230,15 @@ namespace Testing.Content
 
             SendFileData file = new SendFileData(pathA);
 
-            MessageData fileDownloadMessage = new MessageData();
-            fileDownloadMessage.Message = "a.pdf";
-            fileDownloadMessage.MessageId = 1;
-            fileDownloadMessage.ReplyThreadId = 1;
-            fileDownloadMessage.Type = MessageType.File;
-            fileDownloadMessage.Event = MessageEvent.Download;
-            fileDownloadMessage.SenderId = 10;
+            MessageData fileDownloadMessage = new MessageData
+            {
+                Message = "a.pdf",
+                MessageId = 1,
+                ReplyThreadId = 1,
+                Type = MessageType.File,
+                Event = MessageEvent.Download,
+                SenderId = 10
+            };
 
             string serializedFileDownloadMessage = serializer.Serialize(fileDownloadMessage);
 
@@ -304,11 +310,13 @@ namespace Testing.Content
             ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
-            MessageData eventMessage = new MessageData();
-            eventMessage.MessageId = 0;
-            eventMessage.ReplyThreadId = 0;
-            eventMessage.Event = MessageEvent.Download;
-            eventMessage.Type = MessageType.Chat;
+            MessageData eventMessage = new MessageData
+            {
+                MessageId = 0,
+                ReplyThreadId = 0,
+                Event = MessageEvent.Download,
+                Type = MessageType.Chat
+            };
 
             string serializedStarMessage = serializer.Serialize(eventMessage);
 
@@ -324,11 +332,13 @@ namespace Testing.Content
             ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
-            MessageData eventMessage = new MessageData();
-            eventMessage.MessageId = 1;
-            eventMessage.ReplyThreadId = 1;
-            eventMessage.Event = MessageEvent.Star;
-            eventMessage.Type = MessageType.File;
+            MessageData eventMessage = new MessageData
+            {
+                MessageId = 1,
+                ReplyThreadId = 1,
+                Event = MessageEvent.Star,
+                Type = MessageType.File
+            };
 
             string serializedStarMessage = serializer.Serialize(eventMessage);
 
@@ -337,11 +347,13 @@ namespace Testing.Content
             Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
 
-            eventMessage = new MessageData();
-            eventMessage.MessageId = 1;
-            eventMessage.ReplyThreadId = 1;
-            eventMessage.Event = MessageEvent.Update;
-            eventMessage.Type = MessageType.File;
+            eventMessage = new MessageData
+            {
+                MessageId = 1,
+                ReplyThreadId = 1,
+                Event = MessageEvent.Update,
+                Type = MessageType.File
+            };
 
             serializedStarMessage = serializer.Serialize(eventMessage);
 
@@ -357,11 +369,13 @@ namespace Testing.Content
             ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
-            MessageData starMessage = new MessageData();
-            starMessage.MessageId = 10;
-            starMessage.ReplyThreadId = 10;
-            starMessage.Event = MessageEvent.Star;
-            starMessage.Type = MessageType.Chat;
+            MessageData starMessage = new MessageData
+            {
+                MessageId = 10,
+                ReplyThreadId = 10,
+                Event = MessageEvent.Star,
+                Type = MessageType.Chat
+            };
 
             string serializedStarMessage = serializer.Serialize(starMessage);
 
@@ -377,12 +391,14 @@ namespace Testing.Content
             ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
-            MessageData updateMessage = new MessageData();
-            updateMessage.MessageId = 10;
-            updateMessage.ReplyThreadId = 10;
-            updateMessage.Event = MessageEvent.Update;
-            updateMessage.Type = MessageType.Chat;
-            updateMessage.Message = "Hello There!";
+            MessageData updateMessage = new MessageData
+            {
+                MessageId = 10,
+                ReplyThreadId = 10,
+                Event = MessageEvent.Update,
+                Type = MessageType.Chat,
+                Message = "Hello There!"
+            };
 
             string serializedStarMessage = serializer.Serialize(updateMessage);
 

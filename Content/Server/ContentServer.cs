@@ -9,7 +9,7 @@ namespace Content
     {
         private List<IContentListener> _subscribers;
         private ICommunicator _communicator;
-        private INotificationHandler _notificationHandler;
+        private readonly INotificationHandler _notificationHandler;
         private ContentDatabase _contentDatabase;
         private ISerializer _serializer;
         private FileServer _fileServer;
