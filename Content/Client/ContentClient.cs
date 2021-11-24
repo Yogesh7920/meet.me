@@ -16,9 +16,8 @@ namespace Content
         private List<ChatContext> _allMessages;
         // a map from thread (thread id) to index of that thread in _allMessages
         private Dictionary<int, int> _contextMap;
-        // a set of message ids of all messages received until now
-        // useful for fast checking of duplicates
-        private HashSet<int> _messageIdSet;
+        // a map from message ids to their thread id
+        private Dictionary<int, int> _messageIdMap;
 
         private ICommunicator _communicator;
 
@@ -39,7 +38,7 @@ namespace Content
             _subscribers = new List<IContentListener>();
             _allMessages = new List<ChatContext>();
             _contextMap = new Dictionary<int, int>();
-            _messageIdSet = new HashSet<int>();
+            _messageIdMap = new Dictionary<int, int>();
 
             // add message handler functions for each event
             _messageHandlers = new Dictionary<MessageEvent, Action<MessageData>>();
@@ -278,18 +277,18 @@ namespace Content
             ReceiveMessageData receivedMessage = message;
 
             // check if message id isn't a duplicate
-            if (_messageIdSet.Contains(receivedMessage.MessageId))
+            if (_messageIdMap.ContainsKey(receivedMessage.MessageId))
                 throw new ArgumentException("New message has duplicate message id which matches a previous message");
 
-            // add message id to the set of message ids
-            _messageIdSet.Add(receivedMessage.MessageId);
-
-            // add the message to the correct ChatContext in allMessages
             var key = receivedMessage.ReplyThreadId;
 
             if (key == -1)
                 throw new ArgumentException("Reply thread id of received message cannot be -1");
 
+            // add message id to the set of message ids
+            _messageIdMap.Add(receivedMessage.MessageId, key);
+
+            // add the message to the correct ChatContext in allMessages
             // use locks because the list of chat contexts may be shared across multiple threads
             lock (_lock)
             {
@@ -320,20 +319,20 @@ namespace Content
             if (message.FileData != null) message.FileData = null;
 
             ReceiveMessageData receivedMessage = message;
+            int messageId = receivedMessage.MessageId;
 
             // make sure message being updated exists
-            if (!_messageIdSet.Contains(receivedMessage.MessageId))
+            if (!_messageIdMap.ContainsKey(messageId))
                 throw new ArgumentException("Failed to update because message with given message id doesn't exist");
 
             // update the message in _allMessages
-            var key = receivedMessage.ReplyThreadId;
+            var key = _messageIdMap[messageId];
             if (_contextMap.ContainsKey(key))
             {
                 var index = _contextMap[key];
                 // again, use locks to ensure thread-safe updation
                 lock (_lock)
                 {
-                    int messageId = receivedMessage.MessageId;
                     string newMessage = receivedMessage.Message;
                     _allMessages[index].UpdateMessage(messageId, newMessage);
                 }
@@ -351,8 +350,12 @@ namespace Content
         private void StarMessageHandler(MessageData message)
         {
             Trace.WriteLine("[ContentClient] Received message star event from server");
-            var contextId = message.ReplyThreadId;
             var messageId = message.MessageId;
+
+            if (!_messageIdMap.ContainsKey(messageId))
+                throw new ArgumentException("Message with given message id doesn't exist");
+
+            var contextId = _messageIdMap[messageId];
 
             if (_contextMap.ContainsKey(contextId))
             {
@@ -466,7 +469,7 @@ namespace Content
             {
                 _allMessages = new List<ChatContext>();
                 _contextMap = new Dictionary<int, int>();
-                _messageIdSet = new HashSet<int>();
+                _messageIdMap = new Dictionary<int, int>();
             }
         }
     }
