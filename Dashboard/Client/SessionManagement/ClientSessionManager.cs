@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,10 +34,10 @@ namespace Dashboard.Client.SessionManagement
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
-
             _contentClient = ContentClientFactory.GetInstance();
             clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
+
 
             if (_clients == null)
             {
@@ -318,13 +318,14 @@ namespace Dashboard.Client.SessionManagement
         private SessionData _clientSessionData;
         private readonly string moduleIdentifier;
         private readonly List<IClientSessionNotifications> _clients;
-        
+
         private string _chatSummary;
         private IContentClient _contentClient;
         private readonly ISerializer _serializer;
         private readonly ICommunicator _communicator;
-        
+
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
+        private IClientBoardStateManager clientBoardStateManager;
     }
 }
