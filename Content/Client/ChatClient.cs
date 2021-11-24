@@ -16,7 +16,6 @@ namespace Content
         private ICommunicator _communicator;
         public ICommunicator Communicator
         {
-            get => _communicator;
             set => _communicator = value;
         }
 
@@ -98,8 +97,6 @@ namespace Content
 			{
 				throw new ArgumentException("Invalid Message String");
 			}
-
-			
         }
 		/// <summary>
 		/// This function simply takes a message Id and send it in the form of a MessageData to the Content Server 

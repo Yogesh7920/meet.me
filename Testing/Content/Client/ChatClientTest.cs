@@ -159,11 +159,52 @@ namespace Testing.Content
                 Assert.Fail();
             }
 		}
-
-		/// <summary>
-		/// This Test checks the ChatStar function of the ChatClient.
+        /// <summary>
+		/// This Test checks the ChatNewMessage function of the ChatClient in case of an Empty String.
 		/// </summary>
 		[Test]
+        public void Test_ChatUpdate_EmptyString()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData("", new int[] { 1002 }, type: MessageType.Chat);
+
+            ChatClient contentChat = new ChatClient(util.GetFakeCommunicator());
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentChat.UserId = userId;
+            contentChat.Communicator = fakeCommunicator;
+
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => contentChat.ChatUpdate(11,""));
+            bool contains = ex.Message.IndexOf("Invalid Message", StringComparison.OrdinalIgnoreCase) >= 0;
+            Assert.That(contains);
+        }
+        /// <summary>
+        /// This Test checks the ChatNewMessage function of the ChatClient in case of an Null String.
+        /// </summary>
+        [Test]
+        public void Test_ChatUpdate_NullString()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData(null, new int[] { 1002 }, type: MessageType.Chat);
+
+
+            ChatClient contentChat = new ChatClient(util.GetFakeCommunicator());
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentChat.UserId = userId;
+            contentChat.Communicator = fakeCommunicator;
+
+
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => contentChat.ChatUpdate(11, null));
+            bool contains = ex.Message.IndexOf("Invalid Message", StringComparison.OrdinalIgnoreCase) >= 0;
+            Assert.That(contains);
+        }
+
+        /// <summary>
+        /// This Test checks the ChatStar function of the ChatClient.
+        /// </summary>
+        [Test]
 		public void Test_Star()
 		{
 			Utils util = new Utils();

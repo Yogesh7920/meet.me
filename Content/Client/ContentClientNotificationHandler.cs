@@ -7,14 +7,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Networking;
+using System.Runtime.CompilerServices;
 
 namespace Content
 {
     public class ContentClientNotificationHandler : INotificationHandler
     {
         private readonly ContentClient _contentHandler;
-
         private readonly ISerializer _serializer;
+        protected MessageData _receivedMessage;
+        protected List<ChatContext> _allMessages;
 
         public ContentClientNotificationHandler(IContentClient contentHandler)
         {
@@ -34,14 +36,14 @@ namespace Content
 
             if (string.Equals(deserializedType,"Content.MessageData"))
             {
-                MessageData receivedMessage = _serializer.Deserialize<MessageData>(data);
-                _contentHandler.OnReceive(receivedMessage);
+                _receivedMessage = _serializer.Deserialize<MessageData>(data);
+                _contentHandler.OnReceive(_receivedMessage);
             }
 
             else if (string.Equals(deserializedType, "Content.ArrayOfChatContext"))
             {
-                List<ChatContext> allMessages = _serializer.Deserialize<List<ChatContext>>(data);
-                _contentHandler.Notify(allMessages);
+                _allMessages = _serializer.Deserialize<List<ChatContext>>(data);
+                _contentHandler.Notify(_allMessages);
             }
 
             else
