@@ -31,14 +31,13 @@ namespace Dashboard.Client.SessionManagement
         {
             TraceManager session = new();
             moduleIdentifier = "Dashboard";
-
-            IClientBoardStateManager clientBoardStateManager = ClientBoardStateManager.Instance;
-            clientBoardStateManager.Start();
-
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
+
             _contentClient = ContentClientFactory.GetInstance();
+            clientBoardStateManager = ClientBoardStateManager.Instance;
+            clientBoardStateManager.Start();
 
             if (_clients == null)
             {
@@ -294,7 +293,6 @@ namespace Dashboard.Client.SessionManagement
             if (_user == null)
             {
                 _user = user;
-                
                 clientBoardStateManager.SetUser(user.userID.ToString());
                 ContentClientFactory.SetUser(user.userID);
             }

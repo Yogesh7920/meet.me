@@ -27,8 +27,6 @@ namespace Dashboard
             sessionData = sessionDataToSend;
             summaryData = summaryDataToSend;
             //sessionAnalytics = sessionAnalyticsToSend;
-
-            // Temporary code to avoid serialisation errors
             temp = abc;
 
         }
