@@ -130,13 +130,13 @@ namespace Testing.Dashboard
             sData.users.RemoveAt(dataSize - 1);
 
             // When the old user joins the first time, it would recieve complete session object
-            ServerToClientData serverToClientData = new("addClient", sData, null, sData.users[dataSize - 2]); ; ;
+            ServerToClientData serverToClientData = new("addClient", sData, null, null, sData.users[dataSize - 2]); ; ;
             clientSessionManagerA.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientData));
             oldUX.gotNotified = false;
 
             // Following are recieved when new user joins for old and new users
             sData.AddUser(newUser);
-            ServerToClientData serverToClientDataNew = new("addClient", sData, null, sData.users[dataSize - 1]);
+            ServerToClientData serverToClientDataNew = new("addClient", sData, null, null, sData.users[dataSize - 1]);
             string serialisedDataNew = _serializer.Serialize(serverToClientDataNew);
             //Console.WriteLine("MT: " + serialisedDataNew);
             clientSessionManagerB.OnDataReceived(serialisedDataNew);
@@ -209,7 +209,7 @@ namespace Testing.Dashboard
         [Test]
         public void EndMeet_RecievedEndMeetingEventClientSide_SendsEndMeetingEventToUX()
         {
-            ServerToClientData endMeetingMessage = new("endMeet", null, null, null);
+            ServerToClientData endMeetingMessage = new("endMeet", null, null, null, null);
             clientSessionManagerB.OnDataReceived(_serializer.Serialize<ServerToClientData>(endMeetingMessage));
             Assert.IsTrue(newUX.meetingEndEvent);
         }
@@ -224,7 +224,7 @@ namespace Testing.Dashboard
             AddUserClientSide(user.username, user.userID);
             string recievedSummary = null;
             SummaryData summaryData = new(testSummary);
-            ServerToClientData testData = new("getSummary", null, summaryData, user);
+            ServerToClientData testData = new("getSummary", null, summaryData, null, user);
             clientSessionManagerB.GetSummary();
             clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
             recievedSummary = newUX.summary;
@@ -295,15 +295,13 @@ namespace Testing.Dashboard
         //    Assert.AreEqual(testSummary, recievedSummary);
         //}
 
-
-
         private void AddUserClientSide(string username, int userId, string ip = "192.168.1.1", string port = "8080")
         {
             UserData userData = new(username, userId);
             IUXClientSessionManager _uxSessionManager = clientSessionManagerB;
             INotificationHandler _networkSessionManager = clientSessionManagerB;
             // Creating the user who joined
-            ServerToClientData serverToClientData = new("removeClient",null, null, userData);
+            ServerToClientData serverToClientData = new("removeClient",null, null, null, userData);
             string serialisedServerData = _serializer.Serialize(serverToClientData);
 
             // Adding the client to client first
