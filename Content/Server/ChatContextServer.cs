@@ -21,8 +21,9 @@ namespace Content
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new message</returns>
-        public ReceiveMessageData Receive(MessageData messageData)
+        public MessageData Receive(MessageData messageData)
         {
+            ReceiveMessageData receiveMessageData;
             Trace.WriteLine("[ContentServer] Received message from ContentServer");
             switch (messageData.Event)
             {
@@ -32,16 +33,25 @@ namespace Content
 
                 case MessageEvent.Star:
                     Trace.WriteLine("[ChatContextServer] Event is Star, Starring message in existing Thread");
-                    return StarMessage(messageData.ReplyThreadId, messageData.MessageId);
+                    receiveMessageData = StarMessage(messageData.ReplyThreadId, messageData.MessageId);
+                    break;
 
                 case MessageEvent.Update:
                     Trace.WriteLine("[ChatContextServer] Event is Update, Updating message in existing Thread");
-                    return UpdateMessage(messageData.ReplyThreadId, messageData.MessageId, messageData.Message);
+                    receiveMessageData = UpdateMessage(messageData.ReplyThreadId, messageData.MessageId, messageData.Message);
+                    break;
 
                 default:
                     Trace.WriteLine($"Uknown Event {messageData.Event} for chat type.");
                     return null;
             }
+
+            if (receiveMessageData == null)
+            {
+                return null;
+            }
+
+            return new MessageData(receiveMessageData);
         }
 
         /// <summary>

@@ -88,13 +88,7 @@ namespace Content
                 {
                     case MessageType.Chat:
                         Trace.WriteLine("[ContentServer] MessageType is Chat, Calling ChatServer.Receive()");
-                        ReceiveMessageData receivedMessage = _chatContextServer.Receive(messageData);
-                        if (receivedMessage == null)
-                        {
-                            Trace.WriteLine("[ContentServer] Something went wrong while handling the message.");
-                            return;
-                        }
-                        receiveMessageData = new MessageData(receivedMessage);
+                        receiveMessageData = _chatContextServer.Receive(messageData);
                         Debug.Assert(receiveMessageData != null, "[ContentServer] null returned by ChatServer");
                         break;
 

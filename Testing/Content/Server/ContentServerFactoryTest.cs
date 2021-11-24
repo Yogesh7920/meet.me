@@ -1,5 +1,6 @@
-using NUnit.Framework;
 using Content;
+using NUnit.Framework;
+using System.Threading;
 
 namespace Testing.Content
 {
@@ -14,9 +15,38 @@ namespace Testing.Content
         }
 
         [Test]
-        public void GetInstanceTest()
+        public void GetInstance_MustReturnSingletonInstance()
         {
-            Assert.AreEqual(contentServer, ContentServerFactory.GetInstance());
+            IContentServer ref1 = ContentServerFactory.GetInstance();
+            IContentServer ref2 = ContentServerFactory.GetInstance();
+
+            Assert.That(ReferenceEquals(ref1, ref2));
+        }
+
+        [Test]
+        public void GetInstance_MustReturnSingletonInstanceMultithreaded()
+        {
+            IContentServer ref1 = null;
+            IContentServer ref2 = null;
+
+            // make two separate threads and run (almost) simultaneously and check if the same reference is returned
+            Thread process1 = new Thread(() =>
+            {
+                ref1 = ContentServerFactory.GetInstance();
+            });
+
+            Thread process2 = new Thread(() =>
+            {
+                ref2 = ContentServerFactory.GetInstance();
+            });
+
+            process1.Start();
+            process2.Start();
+
+            process1.Join();
+            process2.Join();
+
+            Assert.That(ReferenceEquals(ref1, ref2));
         }
     }
 }
