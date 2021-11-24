@@ -127,6 +127,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// This test will check CSend method by sending msg with newline to check whether it support escape sequences
+        /// Msg sent to communicator should have same msg with msg given to csend
+        /// </summary>
         [Test]
         public void CSend_ChatSendingMsgWithNewline_SerializedStringShouldMatchInputMsg()
         {
@@ -165,6 +169,9 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// Sending null msg in CSend method, which is invalid, exception will be thrown
+        /// </summary>
         [Test]
         public void CSend_ChatSendingMsgWithNullString_SerializedStringShouldMatchInputMsg()
         {
@@ -181,6 +188,10 @@ namespace Testing.Content
             Assert.AreEqual("Null Message String", ex.Message);
         }
 
+        /// <summary>
+        /// Sending msg for broadcast, receiver ID list will be empty indicating broadcast, msg should match with one send over
+        /// fake communicator
+        /// </summary>
         [Test]
         public void CSend_ChatSendingHiMsgWithBroadcast_SerializedStringShouldMatchInputMsg()
         {
@@ -219,6 +230,9 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// sending file using CSend, sent msg should have all info about file sent
+        /// </summary>
         [Test]
         public void CSend_FileSendingValidFilePathToServer_SerializedStringShouldMatchFileData()
         {
@@ -280,6 +294,10 @@ namespace Testing.Content
             Assert.AreEqual("File " + filePath + " not found", ex.Message);
         }
 
+        /// <summary>
+        /// marking star msg already exist in memory, first sending msg using CSend and then caling CMarkstar over it
+        /// msg received from fake communicator should have same msgID and star event
+        /// </summary>
         [Test]
         public void CMarkStar_ClientShouldSendProperRequestToServer_SerializedStrMustHaveProperMarkstarReq()
         {
@@ -313,6 +331,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// updating msg already exist in memory, first sending msg using CSend and then caling CUpdate over it
+        /// msg received from fake communicator should have same msgID, updated msg and update event
+        /// </summary>
         [Test]
         public void CUpdate_ClientShouldSendProperRequestToServer_SerializedStrMustHaveProperUpdateReq()
         {
@@ -349,6 +371,9 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// We are sending invalid msg id in CDownload which will throw exception
+        /// </summary>
         [Test]
         public void CDownload_SendingDownloadReqToServerWithInvalidMsgId_ShouldThrowArgumentException()
         {
@@ -367,6 +392,9 @@ namespace Testing.Content
             Assert.AreEqual("Message with given message ID not found", ex.Message);
         }
 
+        /// <summary>
+        /// We will send msgId which will have chat type hence should throw exception
+        /// </summary>
         [Test]
         public void CDownload_NonFileType_ShouldThrowArgumentException()
         {
@@ -392,6 +420,10 @@ namespace Testing.Content
             Assert.AreEqual("Message requested for download is not a file type message", ex.Message);
         }
 
+        /// <summary>
+        /// we will send download request to server with valid msgId of file type over fake communicator and will fetch msg from there
+        /// and compare field to see if valid request sent.
+        /// </summary>
         [Test]
         public void CDownload_ValidFileMsgExistInDataBase_ShouldSendProperReqToServer()
         {
@@ -436,6 +468,9 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// This test will check whether contentClient handles subscription, by checking whether subscriber receive msg
+        /// </summary>
         [Test]
         public void CSubscribe_SubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
         {
@@ -459,6 +494,9 @@ namespace Testing.Content
             Assert.AreEqual(listenedData.Message, Msg);
         }
 
+        /// <summary>
+        /// This test will check whether contentClient handles multiple subscription, by checking whether all subscriber receive msg
+        /// </summary>
         [Test]
         public void CSubscribe_MultipleSubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
         {
@@ -486,6 +524,9 @@ namespace Testing.Content
             Assert.AreEqual(listenedData2.Message, Msg);
         }
 
+        /// <summary>
+        /// This test will check INotification handler for content client and IListener which will be used by UX in case of single msg arrival from server
+        /// </summary>
         [Test]
         public void OnDataReceived_NewMessage_SameMsgShouldReceivedToSubscriber()
         {
@@ -509,6 +550,9 @@ namespace Testing.Content
             Assert.AreEqual(listenedData.Message, dataToSerialize.Message);
         }
 
+        /// <summary>
+        /// This test will check INotification handler for content client and IListener which will be used by UX in case of multiple msg arrival from server
+        /// </summary>
         [Test]
         public void OnDataReceived_MultipleNewMessage_SameMsgShouldReceivedToSubscriber()
         {
@@ -573,6 +617,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// sending list of chat context to onDataReceived of INotificationHandler, will compare built chat context list with 
+        /// chat context list we got by subsribing contentClient using fakeListener
+        /// </summary>
         [Test]
         public void OnDataReceived_ListChatContext_SameChatContextsShouldReceivedToSubscriber()
         {
@@ -612,6 +660,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// getting messages on particular chat context thread, we will first store msg on memory of content client using OnDataReceived of fakeCommunicator
+        /// and also building chat context and will compare returned chat context using CGetThread with built one.
+        /// </summary>
         [Test]
         public void CGetThread_ReturnsChatContextOfGivenThreadIDMultipleThreads_ShouldMatchWithConstructedChatContext()
         {
@@ -646,6 +698,9 @@ namespace Testing.Content
             CompareChatContext(chatList2, chatsOnContext2);
         }
 
+        /// <summary>
+        /// invalid thread i.e thread id does not exist, should throw exception
+        /// </summary>
         [Test]
         public void CGetThread_InvalidThreadIdGiven_ShouldThrowException()
         {
@@ -719,10 +774,9 @@ namespace Testing.Content
             c2.MsgList.Add(util.MessageDataToReceiveMessageData(updateReplyMsg2));
             chatList.Add(c1);
             chatList.Add(c2);
-            List<ChatContext> listReceived = contentServer.SGetAllMessages();
             contentServer.SSendAllMessagesToClient(1003);
             TestSSendAllMessagesToClient(fakeCommunicator, serializer, chatList, 1003);
-            CompareChatContextList(chatList, listReceived);
+            CompareChatContextList(chatList, contentServer.SGetAllMessages());
         }
 
         [Test]
@@ -781,6 +835,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// subscribing to server using SSubscribe method given by IContentServer, subscriber should get proper msg on calling 
+        ///  notify, which will be triggered when server will call Receive
+        /// </summary>
         [Test]
         public void SSubscribe_SubcribingToContentServer_SubscriberShouldGetMsgOnNotify()
         {
@@ -918,6 +976,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// This will keep track of all contexts created over server for testing purpose when we will call
+        /// SGetAllMessages and SSendAllMessagesToClient
+        /// </summary>
         List<ChatContext> chatList = new List<ChatContext>();
     }
 }
