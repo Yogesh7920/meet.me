@@ -120,24 +120,24 @@ namespace Testing.Dashboard.SessionManagement
             Assert.AreEqual(false, clientAdded);
         }
 
-        //[Test]
-        //[TestCase("192.168.1.1", 8080, "Jake")]
-        //[TestCase("192.168.1.1", 8080, "Lake")]
-        //[TestCase("192.168.1.1", 8080, "Bake")]
-        //public void ClientArrivalProcedure_ClientArrives_BroadcastsNewUser(string ipAddress, int port, string username)
-        //{
-        //    Console.WriteLine("Session Before\n\t" + _clientSessionManager._clientSessionData);
-        //    bool clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
+        [Test]
+        [TestCase("192.168.1.1", 8080, "Jake")]
+        [TestCase("192.168.1.1", 8080, "Lake")]
+        [TestCase("192.168.1.1", 8080, "Bake")]
+        public void ClientArrivalProcedure_ClientArrives_BroadcastsNewUser(string ipAddress, int port, string username)
+        {
+            Console.WriteLine("Session Before\n\t" + _clientSessionManager.GetSessionData().ToString());
+            bool clientAdded = _clientSessionManager.AddClient(ipAddress, port, username);
 
-        //    _serverSessionManager.OnClientJoined<TcpClient>(null);
-        //    _serverSessionManager.OnDataReceived(_communicatorTest.transferredData);
-        //    _clientSessionManager.OnDataReceived(_communicatorTest.transferredData);
+            _serverSessionManager.OnClientJoined<TcpClient>(null);
+            _serverSessionManager.OnDataReceived(_communicatorTest.transferredData);
+            _clientSessionManager.OnDataReceived(_communicatorTest.transferredData);
 
-        //    Console.WriteLine("Session After\n\t" + _clientSessionManager._clientSessionData);
-        //    //UserData updatedUser = _clientSessionManager.GetUser();
-        //    //Assert.AreEqual(updatedUser.username, username);
-        //    //Assert.NotNull(updatedUser.userID);
-        //}
+            Console.WriteLine("Session After\n\t" + _clientSessionManager.GetSessionData().ToString());
+            //UserData updatedUser = _clientSessionManager.GetUser();
+            //Assert.AreEqual(updatedUser.username, username);
+            //Assert.NotNull(updatedUser.userID);
+        }
 
         [Test]
         [TestCase("Jake")]
