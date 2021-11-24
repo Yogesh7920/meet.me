@@ -1,3 +1,10 @@
+/// <author>Sahil J. Chaudhari</author>
+/// <created>20/11/2021</created>
+/// <modified>24/11/2021</modified>
+/// <summary>
+/// This file contains all required methods and tests for module testing
+/// </summary>
+
 using Content;
 using Networking;
 using NUnit.Framework;
@@ -10,12 +17,6 @@ namespace Testing.Content
     [TestFixture]
     public class ContentModuleTesting
     {
-        [SetUp]
-        public void SetUp()
-        {
-            
-        }
-
         /// <summary>
         /// Checking singleton pattern of content client factory
         /// Both get instances should be same
@@ -617,6 +618,10 @@ namespace Testing.Content
                 File.Delete(SavePath + deserialized.FileData.fileName);
                 Assert.Pass();
             }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Test]
@@ -728,9 +733,6 @@ namespace Testing.Content
             MessageData receiveMsgData1 = util.GenerateNewMessageData("Hello, how are you?", SenderId: 1001, MessageId: -1, ReplyThreadId: -1);
             MessageData receiveMsgData2 = util.GenerateNewMessageData("I am fine, How aboid u?", SenderId: 1002, MessageId: -1, ReplyThreadId: -1);
             MessageData receiveMsgData3 = util.GenerateNewMessageData("I am fine", SenderId: 1003, MessageId: -1, ReplyThreadId: -1);
-            receiveMsgData1.Event = MessageEvent.NewMessage;
-            receiveMsgData2.Event = MessageEvent.NewMessage;
-            receiveMsgData3.Event = MessageEvent.NewMessage;
             contentServer.Receive(serializer.Serialize(receiveMsgData1));
             MessageData msg1 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
             contentClient.OnReceive(msg1);
@@ -889,20 +891,6 @@ namespace Testing.Content
         }
 
         /// <summary>
-        /// This function compared list of chat contexts
-        /// </summary>
-        /// <param name="l1"></param>
-        /// <param name="l2"></param>
-        public void CompareChatContextList(List<ChatContext> l1, List<ChatContext> l2)
-        {
-            for (int i = 0; i < l1.Count; i++)
-            {
-                CompareChatContext(l1[i], l2[i]);
-            }
-        }
-
-
-        /// <summary>
         /// This function fetched msg string sent over fake communicator and deserialize it into message object
         /// It also checks whether data sent was braodcasted and who are the receivers
         /// </summary>
@@ -955,6 +943,19 @@ namespace Testing.Content
             for (int i = 0; i < c1.MsgList.Count; i++)
             {
                 CompareReceiveMessageData(c1.MsgList[i], c2.MsgList[i]);
+            }
+        }
+
+        /// <summary>
+        /// This function compared list of chat contexts
+        /// </summary>
+        /// <param name="l1"></param>
+        /// <param name="l2"></param>
+        public void CompareChatContextList(List<ChatContext> l1, List<ChatContext> l2)
+        {
+            for (int i = 0; i < l1.Count; i++)
+            {
+                CompareChatContext(l1[i], l2[i]);
             }
         }
 

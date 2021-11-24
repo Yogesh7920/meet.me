@@ -1,4 +1,11 @@
-﻿using System.Collections.Generic;
+﻿/// <author>Sahil J. Chaudhari</author>
+/// <created>20/11/2021</created>
+/// <modified>24/11/2021</modified>
+/// <summary>
+/// This file contains Fake communicator which will mimic network's ICommunicator for testing purpose 
+/// </summary>
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using Networking;
 using Content;
