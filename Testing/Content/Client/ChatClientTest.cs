@@ -1,3 +1,8 @@
+/// <author>Vishesh Munjal</author>
+/// <created>20/11/2021</created>
+/// <summary>
+/// This file contains Test for chatClient
+/// </summary>
 using NUnit.Framework;
 using Content;
 using FluentAssertions;
@@ -16,7 +21,9 @@ namespace Testing.Content
         {
 			
 		}
-
+		/// <summary>
+		/// This Test checks the conversion function SendToMessage of the ChatClient 
+		/// </summary>
         [Test]
         public void Test_Converting_SendMessageObject_To_MessageData()
         {
@@ -33,7 +40,9 @@ namespace Testing.Content
 			Assert.AreEqual(x.ReplyThreadId, sampleData.ReplyThreadId);
 			Assert.AreEqual(x.ReceiverIds.Length, sampleData.ReceiverIds.Length);
         }
-
+		/// <summary>
+		/// This Test checks the ChatNewMessage  of the ChatClient by using a Message "Apple" 
+		/// </summary>
 		[Test]
 		public void Test_ChatNewMessage()
 		{
@@ -71,6 +80,9 @@ namespace Testing.Content
                 Assert.Fail();
             }
         }
+		/// <summary>
+		/// This Test checks the ChatNewMessage function of the ChatClient in case of an Empty String.
+		/// </summary>
 		[Test]
 		public void Test_ChatNewMessage_EmptyString()
 		{
@@ -88,6 +100,9 @@ namespace Testing.Content
 			bool contains = ex.Message.IndexOf("Invalid Message", StringComparison.OrdinalIgnoreCase) >= 0;
             Assert.That(contains);
 		}
+		/// <summary>
+		/// This Test checks the ChatNewMessage function of the ChatClient in case of an Null String.
+		/// </summary>
 		[Test]
 		public void Test_ChatNewMessage_NullString()
 		{
@@ -106,6 +121,9 @@ namespace Testing.Content
 			bool contains = ex.Message.IndexOf("Invalid Message", StringComparison.OrdinalIgnoreCase) >= 0;
             Assert.That(contains);
 		}
+		/// <summary>
+		/// This Test checks the ChatUpdate function of the ChatClient using a chat and updating it.
+		/// </summary>
 		[Test]
 		public void Test_ChatUpdate()
 		{
@@ -141,6 +159,10 @@ namespace Testing.Content
                 Assert.Fail();
             }
 		}
+
+		/// <summary>
+		/// This Test checks the ChatStar function of the ChatClient.
+		/// </summary>
 		[Test]
 		public void Test_Star()
 		{

@@ -1,5 +1,9 @@
 /// <author>Vishesh Munjal</author>
 /// <created>1/11/2021</created>
+/// <summary>
+/// This file is the ChatClient of the Sending part of the Client to Content server and handles chat operation
+/// such as newMessage, Update, and star etc.
+/// </summary>
 using System;
 using Networking;
 using System.Collections.Generic;
@@ -25,6 +29,9 @@ namespace Content
             _communicator = communicator;
             _serializer = new Serializer();
         }
+		/// <summary>
+		/// This simply checks the validity of the message.
+		/// </summary>
 		private bool MessageIsvalid(string message)
 		{
 			if(message == null || message == "")
@@ -34,7 +41,9 @@ namespace Content
 		}
 
         public int UserId { get; set; }
-
+		/// <summary>
+		/// This function is the conversion from the SendMessageData to the MessageData object 
+		/// </summary>
         public MessageData SendToMessage(SendMessageData toconvert, MessageEvent ChatEvent)
         {
             var Converted = new MessageData();
@@ -50,7 +59,10 @@ namespace Content
 			Trace.WriteLine("[ChatClient Converting SendMessageData object to a MessageData object");
             return Converted;
         }
-
+		/// <summary>
+		/// This function gets the SendMessageData from the ContentClient and calls the SendToMessage function
+		/// to convert to MessageData, then sets the event, Serialize and sends to Content server via Networking.
+		/// </summary>
         public void ChatNewMessage(SendMessageData toserver)
         {
 			if(MessageIsvalid(toserver.Message)){
@@ -65,7 +77,10 @@ namespace Content
 				throw new ArgumentException("Invalid Message String");
 			}
         }
-
+		/// <summary>
+		/// This function gets the messageId and new message to change.
+		/// Then creates a MessageData, then sets the event, Serialize, change the message and sends to Content server via Networking.
+		/// </summary>
         public void ChatUpdate(int messageId, string newMessage)
         {
 			if(MessageIsvalid(newMessage)){
@@ -86,7 +101,10 @@ namespace Content
 
 			
         }
-
+		/// <summary>
+		/// This function simply takes a message Id and send it in the form of a MessageData to the Content Server 
+		/// where in the message is marked Star.
+		/// </summary>
         public void ChatStar(int messageId)
         {
             var toSend = new MessageData();

@@ -1,3 +1,8 @@
+/// <author>Vishesh Munjal</author>
+/// <created>24/11/2021</created>
+/// <summary>
+/// This file contains the test for the notification handler of contentclient.
+/// </summary>
 using NUnit.Framework;
 using Content;
 using FluentAssertions;
@@ -14,7 +19,10 @@ namespace Testing.Content
         public void Setup()
         {
         }
-
+		/// <summary>
+		/// This Checks the Exception of notification handler in the case that the Serialized object received was
+		/// of not the desired type.
+		/// </summary>
         [Test]
         public void Testing_OnReceiveData_Exception()
         {

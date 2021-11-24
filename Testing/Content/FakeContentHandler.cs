@@ -1,3 +1,8 @@
+/// <author>Vishesh Munjal</author>
+/// <created>24/11/2021</created>
+/// <summary>
+/// This file mimics the function of a ContentHandler in the Content in order to test its functions
+/// </summary>
 using Content;
 using System.Collections.Generic;
 
