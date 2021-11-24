@@ -58,6 +58,7 @@ namespace Client
         private float penThickness = 5;
         private float eraserThickness = 5;
 
+        bool rotation = false; 
         public WhiteBoardView()
         {
             InitializeComponent();
@@ -71,6 +72,7 @@ namespace Client
             mouseDownFlag = 0;
             mouseLeftBtnMoveFlag = 0;
             mouseDownSh = null;
+            rotation = false; 
             viewModel.start = new Point { X = 0, Y = 0 };
             viewModel.end = new Point { X = 0, Y = 0 };
             return;
@@ -369,10 +371,16 @@ namespace Client
                                     //sets the end point for usage in both TranslateShape/RotateShape when left mouse button is release
                                     this.viewModel.end = e.GetPosition(MyCanvas);
 
-                                    if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                                    if (rotation == true)
                                     {
                                         this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                        rotation = false; 
                                     }
+                                    /*else if (Keyboard.IsKeyUp(Key.LeftAlt) && rotation == true)
+                                    {
+                                        this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                        rotation = false;
+                                    }*/
                                     else
                                     {
                                         this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
@@ -500,11 +508,18 @@ namespace Client
                                 this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
                                 //Resetting the value of 'start' to perform the next Move functions
                                 this.viewModel.start = e.GetPosition(MyCanvas);
-                            }
-                            /*else if (Keyboard.IsKeyUp(Key.LeftAlt) || Keyboard.IsKeyUp(Key.RightAlt))
+
+                                rotation = true;
+
+                            }else if(rotation == true)
                             {
-                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
-                            }*/
+                                //if (e.OriginalSource is Shape)                                   
+                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                //Resetting the value of 'start' to perform the next Move functions
+                                this.viewModel.start = e.GetPosition(MyCanvas);
+
+                                //rotation = true;
+                            }
                             else
                             {
                                 this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
