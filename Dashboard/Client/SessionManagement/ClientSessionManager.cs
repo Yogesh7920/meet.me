@@ -328,5 +328,6 @@ namespace Dashboard.Client.SessionManagement
         
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
+        private IClientBoardStateManager clientBoardStateManager;
     }
 }
