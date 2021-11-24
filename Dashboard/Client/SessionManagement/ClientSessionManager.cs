@@ -15,6 +15,7 @@ namespace Dashboard.Client.SessionManagement
     using System.Diagnostics;
 
     public delegate void NotifyEndMeet();
+    public delegate SessionAnalytics NotifyAnalyticsCreated(SessionAnalytics analytics);
     public delegate void NotifySummaryCreated(string summary);
 
     /// <summary>
@@ -232,7 +233,7 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="eventName"> The type of the event. </param>
         /// <param name="username"> The username of the user who requested</param>
         /// <param name="userID"> The user ID of the user, if the user has not yet beend created then the default value is -1. </param>
-        public void SendDataToServer(string eventName, string username, int userID = -1)
+        private void SendDataToServer(string eventName, string username, int userID = -1)
         {
             ClientToServerData clientToServerData;
             lock(this)
@@ -258,16 +259,19 @@ namespace Dashboard.Client.SessionManagement
         /// Used to set/change the users list for testing and deubgging purposes.
         /// </summary>
         /// <param name="users">The list of UserData object that the sessionData will be asssignet to.</param>
-        public void SetSession(List<UserData> users)
+        public void SetSessionUsers(List<UserData> users)
         {
             _clientSessionData.users = users;
         }
 
-        //private void UpdateAnalytics(ServerToClientData receivedData)
-        //{
-        //    sessionanalytics receivedanalytics = receiveddata.sessionanalytics;
-        //    userdata receiveduser = receiveddata.getuser();
-        //}
+        private void UpdateAnalytics(ServerToClientData receivedData)
+        {
+            SessionAnalytics receivedAnalytics = new();
+            //receivedData.sessionAnalytics;
+            //string receivedAnalytics = receivedData.sessionAnalytics;;
+            UserData receiveduser = receivedData.GetUser();
+            AnalyticsCreated?.Invoke(receivedAnalytics);
+        }
 
         /// <summary>
         /// Used to subcribe for any changes in the 
@@ -371,6 +375,7 @@ namespace Dashboard.Client.SessionManagement
 
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
+        public event NotifyAnalyticsCreated AnalyticsCreated;
         private IClientBoardStateManager clientBoardStateManager;
     }
 }
