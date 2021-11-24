@@ -62,9 +62,9 @@ namespace Whiteboard
         /// <param name="b">Blue component.</param>
         public BoardColor(int r, int g, int b)
         {
-            _r = r;
-            _g = g;
-            _b = b;
+            R = r;
+            G = g;
+            B = b;
         }
 
         /// <summary>
