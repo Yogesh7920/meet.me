@@ -98,6 +98,38 @@ namespace Testing.Content
             Assert.AreEqual("Invalid MessageType field. Must be one of MessageType.Chat or MessageType.File", ex.Message);
         }
 
+        /*
+         // ensure receiver ids isn't null
+            if (toSend.ReceiverIds is null)
+                throw new ArgumentException("List of receiver ids given is null");
+
+            // if the message is part of a thread, ensure thread exists
+            if (toSend.ReplyThreadId != -1)
+                if (!_contextMap.ContainsKey(toSend.ReplyThreadId))
+                    throw new ArgumentException($"Thread with given thread id ({toSend.ReplyThreadId}) doesn't exist");
+         */
+
+        [Test]
+        public void CSend_ReplyThreadIdDoesNotExist_ShouldThrowException()
+        {
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] { 1002 }, replyId: 101);
+            contentClient.UserId = userId;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
+            Assert.AreEqual(ex.Message.Contains("Thread with given thread id"), true);
+        }
+
+        [Test]
+        public void CSend_ReceiverIdNull_ShouldThrowException()
+        {
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?");
+            sampleData.ReceiverIds = null;
+            contentClient.UserId = userId;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
+            Assert.AreEqual(ex.Message.Contains("ids given is null"), true);
+        }
+
         /// <summary>
         /// This test will send simple message using CSend method, we will check whether client is sending proper request to server
         /// by fetching msg from communicator, deserialize it and compare fields of Messagedata, same approach for following tests.
@@ -439,6 +471,22 @@ namespace Testing.Content
         }
 
         /// <summary>
+        /// Savepath doesnot exist
+        /// </summary>
+        [Test]
+        public void CDownload_InvalidSavePath_ShouldThrowArgumentException()
+        {
+            int userId = 1001;
+            int msgId = 100;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string savePath = currentDirectory + "\\doesNotExist\\SavedTestFile.pdf";
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CDownload(msgId, savePath));
+            Assert.AreEqual("Given file path is not writable", ex.Message);
+        }
+
+        /// <summary>
         /// We will send msgId which will have chat type hence should throw exception
         /// </summary>
         [Test]
@@ -547,6 +595,19 @@ namespace Testing.Content
             ReceiveMessageData listenedData2 = _fakeListener2.GetOnMessageData();
             Assert.AreEqual(listenedData1.Message, Msg);
             Assert.AreEqual(listenedData2.Message, Msg);
+        }
+
+        /// <summary>
+        /// listening unsupported datatype by content, should throw exception
+        /// </summary>
+        [Test]
+        public void OnDataReceived_UnSupportedObject_ShouldThrowException()
+        {
+            // Subscribing to communicator
+            fakeCommunicator.Subscribe("Content", notificationHandler);
+            List<int> dataToSerialize = new List<int>();
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => fakeCommunicator.Notify(serializer.Serialize(dataToSerialize)));
+            Assert.AreEqual(ex.Message.Contains("Deserialized object of unknown type"), true);
         }
 
         /// <summary>
