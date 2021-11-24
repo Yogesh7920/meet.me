@@ -44,6 +44,25 @@ namespace Client
             this.DashboardVM.UpdateVM();
         }
 
+        private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Maximized;
+            MaximizeButton.Visibility = Visibility.Collapsed;
+            RestoreButton.Visibility = Visibility.Visible;
+        }
+
+        private void OnRestoreButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Normal;
+            RestoreButton.Visibility = Visibility.Collapsed;
+            MaximizeButton.Visibility = Visibility.Visible;
+        }
+
         /// <summary>
         /// To drag the window from titlebar
         /// </summary>
