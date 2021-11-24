@@ -83,7 +83,7 @@ namespace Content
             get => _allMessages;
         }
 
-        public void setAllMessages(List<ChatContext> allMessages)
+        private void setAllMessages(List<ChatContext> allMessages)
         {
             lock (_lock)
             {
@@ -237,41 +237,6 @@ namespace Content
             throw new ArgumentException("Thread with requested thread ID does not exist");
         }
 
-        /// <summary>
-        ///     Notify all subscribers of received message
-        /// </summary>
-        /// <param name="message">The message object to call OnMessage function of subscribers with</param>
-        public void Notify(ReceiveMessageData message)
-        {
-            if (message is null)
-                throw new ArgumentException("Null message in argument");
-
-            Trace.WriteLine("[ContentClient] Notifying subscribers of new received message");
-            foreach (var subscriber in _subscribers)
-            {
-                _ = Task.Run(() => { subscriber.OnMessage(message); });
-            }
-        }
-
-        /// <summary>
-        ///     Notify all subscribers of received entire message history
-        /// </summary>
-        /// <param name="allMessages">The entire message history to call OnAllMessages function of subscribers with</param>
-        public void Notify(List<ChatContext> allMessages)
-        {
-            if (allMessages is null)
-                throw new ArgumentException("Null message in argument");
-            
-            // since the received message history is from the server and thus more definitive,
-            // replace the current message history with it
-            setAllMessages(allMessages);
-
-            Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared in the meeting until now");
-            foreach (var subscriber in _subscribers)
-            {
-                _ = Task.Run(() => { subscriber.OnAllMessages(allMessages); });
-            }
-        }
 
         // handler functions
 
@@ -288,7 +253,18 @@ namespace Content
             _messageHandlers[message.Event](message);
         }
 
-        public void NewMessageHandler(MessageData message)
+        public void OnReceive(List<ChatContext> allMessages)
+        {
+            if (allMessages is null)
+                throw new ArgumentException("Null message in argument");
+
+            // since the received message history is from the server and thus more definitive,
+            // replace the current message history with it
+            setAllMessages(allMessages);
+            Notify(allMessages);
+        }
+
+        private void NewMessageHandler(MessageData message)
         {
             Trace.WriteLine("[ContentClient] Received new message from server");
             // in case there is any file data associated with the message (there shouldn't be)
@@ -331,7 +307,7 @@ namespace Content
             Notify(receivedMessage);
         }
 
-        public void UpdateMessageHandler(MessageData message)
+        private void UpdateMessageHandler(MessageData message)
         {
             Trace.WriteLine("[ContentClient] Received message update from server");
             if (message.FileData != null) message.FileData = null;
@@ -371,7 +347,7 @@ namespace Content
             Notify(receivedMessage);
         }
 
-        public void StarMessageHandler(MessageData message)
+        private void StarMessageHandler(MessageData message)
         {
             Trace.WriteLine("[ContentClient] Received message star event from server");
             var contextId = message.ReplyThreadId;
@@ -406,7 +382,7 @@ namespace Content
             Notify(message);
         }
 
-        public void DownloadMessageHandler(MessageData message)
+        private void DownloadMessageHandler(MessageData message)
         {
             Trace.WriteLine("[ContentClient] Received requested file from server");
             var savedirpath = message.Message;
@@ -418,6 +394,38 @@ namespace Content
 
 
         // helper methods
+
+        /// <summary>
+        ///     Notify all subscribers of received message
+        /// </summary>
+        /// <param name="message">The message object to call OnMessage function of subscribers with</param>
+        private void Notify(ReceiveMessageData message)
+        {
+            if (message is null)
+                throw new ArgumentException("Null message in argument");
+
+            Trace.WriteLine("[ContentClient] Notifying subscribers of new received message");
+            foreach (var subscriber in _subscribers)
+            {
+                _ = Task.Run(() => { subscriber.OnMessage(message); });
+            }
+        }
+
+        /// <summary>
+        ///     Notify all subscribers of received entire message history
+        /// </summary>
+        /// <param name="allMessages">The entire message history to call OnAllMessages function of subscribers with</param>
+        private void Notify(List<ChatContext> allMessages)
+        {
+            if (allMessages is null)
+                throw new ArgumentException("Null message in argument");
+
+            Trace.WriteLine("[ContentClient] Notifying subscribers of all messages shared in the meeting until now");
+            foreach (var subscriber in _subscribers)
+            {
+                _ = Task.Run(() => { subscriber.OnAllMessages(allMessages); });
+            }
+        }
 
         /// <summary>
         /// Helper function that retrieves a message from inbox using message id
