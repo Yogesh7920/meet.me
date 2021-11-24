@@ -70,6 +70,8 @@ namespace Testing.Content
 
             MessageData file = new MessageData
             {
+                Message = "Test_File.pdf",
+                SenderId = 1,
                 MessageId = recv.MessageId,
                 Type = MessageType.File,
                 Event = MessageEvent.Download
@@ -81,7 +83,7 @@ namespace Testing.Content
             Assert.AreEqual(file1.MessageId, recv.MessageId);
             Assert.AreEqual(file1.Type, recv.Type);
             Assert.AreEqual(file1.SenderId, recv.SenderId);
-            Assert.AreEqual(file1.Event, recv.Event);
+            Assert.AreEqual(MessageEvent.Download, recv.Event);
             Assert.AreEqual(file1.FileData.fileSize, recv.FileData.fileSize);
             Assert.AreEqual(file1.FileData.fileName, recv.FileData.fileName);
             Assert.AreEqual(file1.FileData.fileContent, recv.FileData.fileContent);
