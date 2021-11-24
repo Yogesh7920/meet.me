@@ -65,10 +65,13 @@ namespace Content
                 return null;
             }
 
+            MessageData downloadMessageData = receiveMessageData.Clone();
+
             // store file path on which the file will be downloaded on the client's system
-            receiveMessageData.Message = messageData.Message;
-            receiveMessageData.Event = MessageEvent.Download;
-            return receiveMessageData;
+            downloadMessageData.Message = messageData.Message;
+            downloadMessageData.Event = MessageEvent.Download;
+            downloadMessageData.SenderId = messageData.SenderId;
+            return downloadMessageData;
         }
     }
 }
