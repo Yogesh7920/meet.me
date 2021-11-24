@@ -128,7 +128,7 @@ namespace Client.ViewModel
                                         ReceivedMsg.MessageId = messageData.MessageId;
                                         ReceivedMsg.UserName = _users[messageData.SenderId];
                                         ReceivedMsg.TextMessage = messageData.Message;
-                                        ReceivedMsg.Time = messageData.SentTime.ToString();
+                                        ReceivedMsg.Time = messageData.SentTime.ToShortTimeString();
                                         ReceivedMsg.ToFrom = UserId == messageData.MessageId;
                                         ReceivedMsg.ReplyMessage = messageData.ReplyThreadId == -1 ? "" : _messages[messageData.ReplyThreadId];
                                         ReceivedMsg.Type = messageData.Type == MessageType.Chat;
