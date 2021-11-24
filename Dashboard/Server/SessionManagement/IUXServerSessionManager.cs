@@ -14,5 +14,7 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         /// <returns> A MeetingCredentials Object </returns>
         MeetingCredentials GetPortsAndIPAddress();
+
+        public event NotifyEndMeet MeetingEnded; 
     }
 }

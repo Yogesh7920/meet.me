@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dashboard.Server.Telemetry;
+using Dashboard.Client;
 
 namespace Dashboard.Client.SessionManagement
 {
-    using Dashboard.Server.Telemetry;
     public interface IUXClientSessionManager
     {
 
