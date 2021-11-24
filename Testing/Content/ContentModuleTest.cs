@@ -367,7 +367,7 @@ namespace Testing.Content
             fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
             System.Threading.Thread.Sleep(10);
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CMarkStar(msgId));
-            Assert.AreEqual("Message with given message id isn't a chat message", ex.Message);
+            Assert.AreEqual("Message with given message id is not chat", ex.Message);
         }
 
         /// <summary>
@@ -400,7 +400,7 @@ namespace Testing.Content
             fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
             System.Threading.Thread.Sleep(10);
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
-            Assert.AreEqual("Message with given message id can't be updated. Make sure it's a chat message and was sent by this client", ex.Message);
+            Assert.AreEqual("Message type is not chat", ex.Message);
         }
 
         [Test]
@@ -417,7 +417,7 @@ namespace Testing.Content
             fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
             System.Threading.Thread.Sleep(10);
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
-            Assert.AreEqual("Message with given message id can't be updated. Make sure it's a chat message and was sent by this client", ex.Message);
+            Assert.AreEqual("Update not allowed for messages from another sender", ex.Message);
         }
 
         /// <summary>

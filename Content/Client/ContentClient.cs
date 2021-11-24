@@ -78,7 +78,12 @@ namespace Content
             }
         }
 
-        private void setAllMessages(List<ChatContext> allMessages)
+        public List<ChatContext> AllMessages
+        {
+            get => _allMessages;
+        }
+
+        public void setAllMessages(List<ChatContext> allMessages)
         {
             lock (_lock)
             {
@@ -184,7 +189,7 @@ namespace Content
             if (msg.Type == MessageType.Chat)
                 _chatHandler.ChatStar(messageId);
             else
-                throw new ArgumentException($"Message with given message id isn't a chat message");
+                throw new ArgumentException($"Message with given message id is not chat");
         }
 
         /// <inheritdoc />
@@ -197,16 +202,25 @@ namespace Content
                 throw new ArgumentException($"Message with given message id doesn't exist");
             }
 
-            if (msg.Type == MessageType.Chat && msg.SenderId == UserId)
-                _chatHandler.ChatUpdate(messageId, newMessage);
+            if (msg.Type == MessageType.Chat)
+            {
+                if (msg.SenderId == UserId)
+                    _chatHandler.ChatUpdate(messageId, newMessage);
+                else
+                    throw new ArgumentException("Update not allowed for messages from another sender");
+            }
+
             else
-                throw new ArgumentException($"Message with given message id can't be updated. Make sure it's a chat message and was sent by this client");
+                throw new ArgumentException($"Message type is not chat");
         }
 
         /// <inheritdoc />
         public void CSubscribe(IContentListener subscriber)
         {
             Trace.WriteLine("[ContentClient] Added new subscriber");
+            if (subscriber is null)
+                throw new ArgumentException("Subscriber is null");
+
             _subscribers.Add(subscriber);
         }
 
@@ -229,6 +243,9 @@ namespace Content
         /// <param name="message">The message object to call OnMessage function of subscribers with</param>
         public void Notify(ReceiveMessageData message)
         {
+            if (message is null)
+                throw new ArgumentException("Null message in argument");
+
             Trace.WriteLine("[ContentClient] Notifying subscribers of new received message");
             foreach (var subscriber in _subscribers)
             {
@@ -242,6 +259,9 @@ namespace Content
         /// <param name="allMessages">The entire message history to call OnAllMessages function of subscribers with</param>
         public void Notify(List<ChatContext> allMessages)
         {
+            if (allMessages is null)
+                throw new ArgumentException("Null message in argument");
+            
             // since the received message history is from the server and thus more definitive,
             // replace the current message history with it
             setAllMessages(allMessages);
@@ -261,6 +281,10 @@ namespace Content
         /// <param name="message">The received message</param>
         public void OnReceive(MessageData message)
         {
+            if (message is null)
+            {
+                throw new ArgumentException("Received null message");
+            }
             _messageHandlers[message.Event](message);
         }
 
