@@ -103,5 +103,18 @@ namespace Testing.Content
             Assert.AreEqual(file.ReceiverIds, deserializesSentMessage.ReceiverIds);
             Assert.IsTrue(communicator.GetIsBroadcast());
         }
+
+        [Test]
+        public void OnDataReceived_InvalidDataIsReceived_CallReceiveMethodOfContentDatabase()
+        {
+            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
+            string previousMessageToCommunicator = communicator.GetSentData();
+
+            string garbageData = " adfasfasfsadf";
+            notificationHandler.OnDataReceived(garbageData);
+
+            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
+            Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
+        }
     }
 }
