@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Login" ResizeMode="CanMinimize" WindowStyle="None"
+        Title="Login" WindowStyle="None" MinWidth="1500" MinHeight="750"
         Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
     <Window.Resources>
         
@@ -28,16 +28,8 @@
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
-       
+
         <Grid.RowDefinitions>
-            <!--<RowDefinition Height="3*"/>
-            <RowDefinition Height="0.4*"/>
-            <RowDefinition Height="0.5*"/>
-            <RowDefinition Height="0.5*"/>
-            <RowDefinition Height="0.5*"/>
-            <RowDefinition Height="0.5*"/>
-            <RowDefinition Height="0.6*"/>
-            <RowDefinition Height="3*"/>-->
             <RowDefinition Height="50"/>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="0.4*"/>
@@ -60,6 +52,13 @@
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
                         ToolTip="Minimize" ToolTipService.ShowDuration="3000">
                     <materialDesign:PackIcon Kind="WindowMinimize"/>
+                </Button>
+                
+                <!--Maximize button -->
+                <Button x:Name="MaximizeButton" Click="OnMaximizeButtonClick" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        ToolTip="Maximize" ToolTipService.ShowDuration="3000">
+                    <materialDesign:PackIcon Kind="WindowMaximize"/>
                 </Button>
 
                 <!--Close button-->
