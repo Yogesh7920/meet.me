@@ -28,8 +28,10 @@ namespace Content
             _communicator.Subscribe("Content", _notificationHandler);
         }
 
-        // getter and setter for communicator
-        public ICommunicator Communicator
+        /// <summary>
+        /// Get and Set Communicator, Meant to be only used for testing
+        /// </summary>
+        internal ICommunicator Communicator
         {
             get => _communicator;
             set
@@ -168,6 +170,9 @@ namespace Content
             }
         }
 
+        /// <summary>
+        /// Resets the ContentServer, Meant to be used only for Testing
+        /// </summary>
         internal void Reset()
         {
             _subscribers = new List<IContentListener>();
