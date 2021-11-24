@@ -80,7 +80,7 @@ namespace Testing.Content
             var whatWeGet = fakeContentHandler.GetNotify();
 
             ContentModuleTesting conModTest = new ContentModuleTesting();
-			CompareChatContextList(whatWeGet,sampleList);
+			conModTest.CompareChatContextList(whatWeGet,sampleList);
 
         }
 	
