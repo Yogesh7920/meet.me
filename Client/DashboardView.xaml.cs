@@ -49,6 +49,7 @@ namespace Client
         /// </summary>
         private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
         {
+            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             this.WindowState = WindowState.Maximized;
             MaximizeButton.Visibility = Visibility.Collapsed;
             RestoreButton.Visibility = Visibility.Visible;
