@@ -622,7 +622,7 @@ namespace Testing.Content
             fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
-            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", ReplyThreadId: 1);
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 400, ReplyThreadId: 1);
             fakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
             System.Threading.Thread.Sleep(10);
             // Fetching listened data from listener
@@ -640,8 +640,8 @@ namespace Testing.Content
             fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
-            MessageData dataToSerialize1 = util.GenerateNewMessageData("Hello", ReplyThreadId: 1);
-            MessageData dataToSerialize2 = util.GenerateNewMessageData("Hi", ReplyThreadId: 2);
+            MessageData dataToSerialize1 = util.GenerateNewMessageData("Hello", MessageId: 123, ReplyThreadId: 1);
+            MessageData dataToSerialize2 = util.GenerateNewMessageData("Hi", MessageId: 42, ReplyThreadId: 2);
             fakeCommunicator.Notify(serializer.Serialize(dataToSerialize1));
             System.Threading.Thread.Sleep(10);
             // Msg1
@@ -731,7 +731,7 @@ namespace Testing.Content
             iContentClient.CSubscribe(iFakeListener);
             MessageData dataToSerialize1 = util.GenerateNewMessageData("Hello", MessageId: 1, ReplyThreadId: 11);
             MessageData dataToSerialize2 = util.GenerateNewMessageData("Hi", MessageId: 2, ReplyThreadId: 12);
-            MessageData dataToSerialize3 = util.GenerateNewMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 11);
+            MessageData dataToSerialize3 = util.GenerateNewMessageData("How are you? I am fine!", MessageId: 3, ReplyThreadId: 11);
             ChatContext chatList1 = new ChatContext();
             chatList1.ThreadId = 11;
             chatList1.MsgList.Add(dataToSerialize1);
