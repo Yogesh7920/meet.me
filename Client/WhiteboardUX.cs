@@ -1715,7 +1715,7 @@ namespace Client
     /// <summary>
     /// View Model of Whiteboard in MVVM design pattern 
     /// </summary>
-    public class WhiteBoardViewModel
+    public class WhiteBoardViewModel : IClientBoardStateListener
     {
 
         /// UX sets this enum to different options when user clicks on the appropriate tool icon
@@ -1738,6 +1738,7 @@ namespace Client
         public ShapeManager shapeManager;
         public FreeHand freeHand;
         private Canvas GlobCanvas;
+        List<UXShape> toRender;
         private IClientBoardStateManager manager;
 
         public IWhiteBoardOperationHandler WBOps;
@@ -1759,6 +1760,13 @@ namespace Client
             this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
             this.manager = ClientBoardStateManager.Instance;
             this.manager.Start();
+            this.manager.Subscribe(this, "arpan");
+            this.GlobCanvas.IsEnabled = false; 
+
+            Task.Factory.StartNew(() =>
+            {
+                OnUpdateFromStateManager(toRender);
+            });
         }
 
         /// <summary>
@@ -1858,11 +1866,11 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public void OnMessageReceived(List<UXShape> ServerUpdate)
+        public void OnUpdateFromStateManager(List<UXShape> shapeUpdates)
         {
 
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                    DispatcherPriority.Normal,
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                    //DispatcherPriority.Normal,
                     new Action<List<UXShape>>((received) =>
                     {
                         lock (this)
@@ -1874,11 +1882,30 @@ namespace Client
                             //shapeManager.RenderUXElement(received, GlobCanvas); 
 
                             //RestoreFrame(received, GlobCanvas); 
+
+                            //Fetch : Fetch Checkpoint 
+
+                            if (received != null)
+                            {
+                                if (received[0].OperationType == Operation.FETCH_STATE || received[0].OperationType == Operation.FETCH_CHECKPOINT)
+                                {
+                                    ClearCanvas(GlobCanvas);
+                                    this.shapeManager.RenderUXElement(received, GlobCanvas);
+                                }
+                                else if (received[0].OperationType == Operation.CLEAR_STATE)
+                                {
+                                    ClearCanvas(GlobCanvas);
+                                }
+                            }
+                         
+
+
+                            //Fetch State 
                         }
                     }
 
                 ),
-                ServerUpdate);
+                shapeUpdates);
         }
     }
 }
