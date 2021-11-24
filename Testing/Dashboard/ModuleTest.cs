@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using Dashboard.Server.Persistence;
 using System.IO;
 using Dashboard.Server.Telemetry;
+using Whiteboard;
 
 namespace Testing.Dashboard
 {
@@ -20,8 +21,9 @@ namespace Testing.Dashboard
             _testContentServer = new();
             _testCommunicator = new();
             _testCommunicator.ipAddressAndPort = validIP + ":" + validPort;
-            clientSessionManagerA = SessionManagerFactory.GetClientSessionManager(_testCommunicator);
-            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager (_testCommunicator);
+            _testWhiteBoard = new TestWhiteBoard();
+            clientSessionManagerA = SessionManagerFactory.GetClientSessionManager(_testCommunicator, _testWhiteBoard);
+            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager (_testCommunicator, _testWhiteBoard);
             newUX = new(clientSessionManagerB);
             oldUX = new(clientSessionManagerA);
             clientSessionManagerB.SubscribeSession(newUX);
@@ -150,6 +152,7 @@ namespace Testing.Dashboard
             Assert.NotNull(newUX.sessionData);
             CollectionAssert.AreEqual(sData.users, oldUX.sessionData.users);
             CollectionAssert.AreEqual(sData.users, newUX.sessionData.users);
+            Assert.AreEqual(newUser.userID.ToString(), _testWhiteBoard.userId);
 
         }
 
@@ -353,6 +356,14 @@ namespace Testing.Dashboard
         //    CollectionAssert.AreEqual(expectedData.userCountAtAnyTime, actualData.userCountAtAnyTime);
         //}
 
+        [Test]
+        public void ModuleInitialisations_ClientModuleInitialisations_InitialisesRequiredModules()
+        {
+            _testWhiteBoard.isWhiteBoardInitialised = false;
+            _ = SessionManagerFactory.GetClientSessionManager(_testCommunicator, _testWhiteBoard);
+            Assert.IsTrue(_testWhiteBoard.isWhiteBoardInitialised);
+        }
+
 
         private void AddUserClientSide(string username, int userId, string ip = "192.168.1.1", string port = "8080")
         {
@@ -391,5 +402,6 @@ namespace Testing.Dashboard
         private TestCommunicator _testCommunicator;
         private readonly string validIP = "192.168.1.1", validPort ="8080";
         private TestContentServer _testContentServer;
+        private TestWhiteBoard _testWhiteBoard;
     }
 }

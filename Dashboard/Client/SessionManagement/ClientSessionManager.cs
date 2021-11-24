@@ -57,14 +57,17 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="communicator">
         /// Test communicator to test the functionality
         /// </param>
-        public ClientSessionManager(ICommunicator communicator)
+        public ClientSessionManager(ICommunicator communicator, IClientBoardStateManager whiteboardInstance=null)
         {
             TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
-            clientBoardStateManager = ClientBoardStateManager.Instance;
+            if (whiteboardInstance != null)
+                clientBoardStateManager = whiteboardInstance;
+            else
+                clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
 
 
