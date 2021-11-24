@@ -32,7 +32,7 @@ namespace Client.ViewModel
         {
             _messages = new Dictionary<int, string>();
             _users = new Dictionary<int, string>();
-            _model = ContentClientFactory.getInstance();
+            _model = ContentClientFactory.GetInstance();
             _model.CSubscribe(this);
             UserId = _model.GetUserId();
 
@@ -74,7 +74,7 @@ namespace Client.ViewModel
                             lock (this)
                             {
 
-                                if(messageData.Event == MessageEvent.NewMessage)
+                                if (messageData.Event == MessageEvent.NewMessage)
                                 {
                                     _messages.Add(messageData.MessageId, messageData.Message);
                                     ReceivedMsg = new Message();
@@ -121,7 +121,7 @@ namespace Client.ViewModel
                             {
                                 foreach (ChatContext msgLst in allMessages)
                                 {
-                                    foreach(ReceiveMessageData messageData in msgLst.MsgList)
+                                    foreach (ReceiveMessageData messageData in msgLst.MsgList)
                                     {
                                         _messages.Add(messageData.MessageId, messageData.Message);
                                         ReceivedMsg = new Message();

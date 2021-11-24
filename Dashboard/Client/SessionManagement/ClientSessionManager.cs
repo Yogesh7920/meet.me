@@ -33,7 +33,7 @@ namespace Dashboard.Client.SessionManagement
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
-            _contentClient = ContentClientFactory.getInstance();
+            _contentClient = ContentClientFactory.GetInstance();
             clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
 
@@ -266,7 +266,7 @@ namespace Dashboard.Client.SessionManagement
             {
                 _user = user;
                 clientBoardStateManager.SetUser(user.userID.ToString());
-                ContentClientFactory.setUser(user.userID);
+                ContentClientFactory.SetUser(user.userID);
             }
 
             // The user received from the server side is equal to _user only in the case of 

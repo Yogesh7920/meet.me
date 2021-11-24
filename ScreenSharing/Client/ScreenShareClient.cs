@@ -50,7 +50,7 @@ namespace ScreenSharing
         public ScreenShareClient()
         {
             _communicator = CommunicationFactory.GetCommunicator();
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         /// <summary>

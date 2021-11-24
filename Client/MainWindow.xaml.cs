@@ -242,11 +242,11 @@ namespace Client
                 {
                     SSwb.SetValue(Grid.ColumnProperty, 4);
                     if (_chatFlag.Equals(true))
-                    {                        
+                    {
                         SSwb.SetValue(Grid.ColumnSpanProperty, 1);
                     }
                     else
-                    {                      
+                    {
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
                     }
                 }
