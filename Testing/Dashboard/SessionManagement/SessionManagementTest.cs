@@ -43,14 +43,14 @@ namespace Testing.Dashboard.SessionManagement
             Assert.That(ReferenceEquals(clientSessionManager1, clientSessionManager2));
         }
 
-        [Test]
-        public void GetServerSessionManager_TwoInstancesCreated_MustHaveSameReference()
-        {
-            IUXServerSessionManager serverSessionManager1 = SessionManagerFactory.GetServerSessionManager();
-            IUXServerSessionManager serverSessionManager2 = SessionManagerFactory.GetServerSessionManager();
+        //[Test]
+        //public void GetServerSessionManager_TwoInstancesCreated_MustHaveSameReference()
+        //{
+        //    IUXServerSessionManager serverSessionManager1 = SessionManagerFactory.GetServerSessionManager();
+        //    IUXServerSessionManager serverSessionManager2 = SessionManagerFactory.GetServerSessionManager();
 
-            Assert.That(ReferenceEquals(serverSessionManager1, serverSessionManager2));
-        }
+        //    Assert.That(ReferenceEquals(serverSessionManager1, serverSessionManager2));
+        //}
 
         [Test]
         public void NotifyUX_SessionDataChanges_UXShouldBeNotified()

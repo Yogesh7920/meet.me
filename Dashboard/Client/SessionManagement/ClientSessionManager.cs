@@ -12,6 +12,7 @@ using Content;
 namespace Dashboard.Client.SessionManagement 
 {
     using Dashboard.Server.Telemetry;
+    using System.Diagnostics;
 
     public delegate void NotifyEndMeet();
     public delegate void NotifySummaryCreated(string summary);
@@ -61,6 +62,8 @@ namespace Dashboard.Client.SessionManagement
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
+            clientBoardStateManager = ClientBoardStateManager.Instance;
+            clientBoardStateManager.Start();
 
 
             if (_clients == null)
@@ -283,6 +286,8 @@ namespace Dashboard.Client.SessionManagement
             // fetching the session data and user received from the server side
             SessionData recievedSessionData = receivedData.sessionData;
             UserData user = receivedData.GetUser();
+
+            Debug.Assert(recievedSessionData.users != null);
 
             // if there was no change in the data then nothing needs to be done
             if (recievedSessionData.users.Equals(_clientSessionData.users))

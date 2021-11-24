@@ -340,7 +340,7 @@ namespace Testing.Dashboard
             IUXClientSessionManager _uxSessionManager = clientSessionManagerB;
             INotificationHandler _networkSessionManager = clientSessionManagerB;
             // Creating the user who joined
-            ServerToClientData serverToClientData = new("removeClient",null, null, null, userData);
+            ServerToClientData serverToClientData = new("removeClient",new (), null, null, userData);
             string serialisedServerData = _serializer.Serialize(serverToClientData);
 
             // Adding the client to client first
