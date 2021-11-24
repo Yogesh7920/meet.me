@@ -61,7 +61,7 @@ namespace Testing.Dashboard.SessionManagement
             List<UserData> users = Utils.GetUsers();
             //SessionData updatedSession = new SessionData();
             //updatedSession.users = users;
-            _clientSessionManager.SetSession(users);
+            _clientSessionManager.SetSessionUsers(users);
 
             _clientSessionManager.NotifyUXSession();
 
@@ -244,7 +244,7 @@ namespace Testing.Dashboard.SessionManagement
             List<UserData> users = Utils.GetUsersSet2();
             AddUsersToServerSession(users);
             _clientSessionManager.SetUser(users.Last().username, users.Last().userID);
-            _clientSessionManager.SetSession(users);
+            _clientSessionManager.SetSessionUsers(users);
 
             // The last user in the list departs
             users.Remove(users.Last());
@@ -273,7 +273,7 @@ namespace Testing.Dashboard.SessionManagement
             List<UserData> users = Utils.GetUsers();
             AddUsersToServerSession(users);
             _clientSessionManager.SetUser(users.Last().username, users.Last().userID);
-            _clientSessionManager.SetSession(users);
+            _clientSessionManager.SetSessionUsers(users);
 
             _clientSessionManager.EndMeet();
             _serverSessionManager.OnDataReceived(_communicatorTest.transferredData);
