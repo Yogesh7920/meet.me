@@ -16,6 +16,9 @@ namespace Content
         private List<ChatContext> _allMessages;
         // a map from thread (thread id) to index of that thread in _allMessages
         private Dictionary<int, int> _contextMap;
+        // a set of message ids of all messages received until now
+        // useful for fast checking of duplicates
+        private HashSet<int> _messageIdSet;
 
         private ICommunicator _communicator;
 
@@ -36,6 +39,7 @@ namespace Content
             _subscribers = new List<IContentListener>();
             _allMessages = new List<ChatContext>();
             _contextMap = new Dictionary<int, int>();
+            _messageIdSet = new HashSet<int>();
 
             // add message handler functions for each event
             _messageHandlers = new Dictionary<MessageEvent, Action<MessageData>>();
@@ -273,6 +277,13 @@ namespace Content
 
             ReceiveMessageData receivedMessage = message;
 
+            // check if message id isn't a duplicate
+            if (_messageIdSet.Contains(receivedMessage.MessageId))
+                throw new ArgumentException("New message has duplicate message id which matches a previous message");
+
+            // add message id to the set of message ids
+            _messageIdSet.Add(receivedMessage.MessageId);
+
             // add the message to the correct ChatContext in allMessages
             var key = receivedMessage.ReplyThreadId;
 
@@ -285,17 +296,13 @@ namespace Content
                 if (_contextMap.ContainsKey(key))
                 {
                     var index = _contextMap[key];
-                    _allMessages[index].MsgList.Add(receivedMessage);
-                    _allMessages[index].NumOfMessages += 1;
+                    _allMessages[index].AddMessage(receivedMessage);
                 }
                 else // in case the message is part of a new thread
                 {
                     // create new thread with given id
                     var newContext = new ChatContext();
-                    newContext.ThreadId = key;
-                    newContext.MsgList.Add(receivedMessage);
-                    newContext.NumOfMessages = 1;
-                    newContext.CreationTime = receivedMessage.SentTime;
+                    newContext.AddMessage(receivedMessage);
                     _allMessages.Add(newContext);
 
                     // add entry in the hash table to keep track of ChatContext with given thread Id
@@ -314,29 +321,23 @@ namespace Content
 
             ReceiveMessageData receivedMessage = message;
 
+            // make sure message being updated exists
+            if (!_messageIdSet.Contains(receivedMessage.MessageId))
+                throw new ArgumentException("Failed to update because message with given message id doesn't exist");
+
             // update the message in _allMessages
             var key = receivedMessage.ReplyThreadId;
             if (_contextMap.ContainsKey(key))
             {
                 var index = _contextMap[key];
-                var numMessages = _allMessages[index].NumOfMessages;
-                int i;
                 // again, use locks to ensure thread-safe updation
                 lock (_lock)
                 {
-                    for (i = 0; i < numMessages; i++)
-                    {
-                        var id = _allMessages[index].MsgList[i].MessageId;
-                        if (id == receivedMessage.MessageId)
-                        {
-                            _allMessages[index].MsgList[i] = receivedMessage;
-                            break;
-                        }
-                    }
+                    int messageId = receivedMessage.MessageId;
+                    string newMessage = receivedMessage.Message;
+                    _allMessages[index].UpdateMessage(messageId, newMessage);
                 }
 
-                // if no match was found, there is an error
-                if (i == numMessages) throw new ArgumentException("No message with given id exists");
             }
             else
             {
@@ -355,24 +356,13 @@ namespace Content
 
             if (_contextMap.ContainsKey(contextId))
             {
-                var index = _contextMap[contextId];
-                var numMessages = _allMessages[index].NumOfMessages;
-                int i;
+                var contextIndex = _contextMap[contextId];
                 lock (_lock)
                 {
-                    for (i = 0; i < numMessages; i++)
-                    {
-                        var id = _allMessages[index].MsgList[i].MessageId;
-                        if (id == messageId)
-                        {
-                            bool starStatus = _allMessages[index].MsgList[i].Starred;
-                            _allMessages[index].MsgList[i].Starred = !starStatus;
-                            break;
-                        }
-                    }
+                    int msgIndex = _allMessages[contextIndex].RetrieveMessageIndex(messageId);
+                    bool starStatus = _allMessages[contextIndex].MsgList[msgIndex].Starred;
+                    _allMessages[contextIndex].MsgList[msgIndex].Starred = !starStatus;
                 }
-                // if no match was found, there is an error
-                if (i == numMessages) throw new ArgumentException("No message with given id exists");
             }
             else
             {
@@ -476,6 +466,7 @@ namespace Content
             {
                 _allMessages = new List<ChatContext>();
                 _contextMap = new Dictionary<int, int>();
+                _messageIdSet = new HashSet<int>();
             }
         }
     }
