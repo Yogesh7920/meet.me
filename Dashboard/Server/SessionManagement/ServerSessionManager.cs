@@ -139,7 +139,7 @@ namespace Dashboard.Server.SessionManagement
             }
             catch(Exception e)
             {
-                Console.WriteLine("Summary Creation Failed: " + e.Message);
+                Trace.WriteLine("Summary Creation Failed: " + e.Message);
                 return null;
             }
         }
@@ -177,7 +177,7 @@ namespace Dashboard.Server.SessionManagement
             {
                 // In case of any exception, the meeting is ended without saving the summary.
                 // The user is notified about this
-                Console.WriteLine("The summary/analytics could not be saved: ", e.Message);
+                Trace.WriteLine("The summary/analytics could not be saved: ", e.Message);
                 SendDataToClient("endMeet", _sessionData, null, null, user);
             }
 
@@ -205,7 +205,7 @@ namespace Dashboard.Server.SessionManagement
             catch (Exception e)
             {
                 // In case of a failure, the user is returned a null object
-                Console.WriteLine("Unable to create analytics: " + e.Message);
+                Trace.WriteLine("Unable to create analytics: " + e.Message);
                 SendDataToClient("getAnalytics", null, null, null, user);
 
             }
@@ -362,7 +362,7 @@ namespace Dashboard.Server.SessionManagement
             // If a null object or username is received, return without further processing.
             if(deserializedObj == null || deserializedObj.username == null)
             {
-                Console.WriteLine("Null object provided by the client.");
+                Trace.WriteLine("Null object provided by the client.");
                 return;
             }
 
@@ -388,7 +388,7 @@ namespace Dashboard.Server.SessionManagement
                     return;
 
                 default:
-                    Console.WriteLine("Incorrect Event type specified");
+                    Trace.WriteLine("Incorrect Event type specified");
                     return;
             }
         }
@@ -415,7 +415,7 @@ namespace Dashboard.Server.SessionManagement
         {
             if(_sessionData == null)
             {
-                Console.Write("Session is empty, cannot remove user");
+                Trace.Write("Session is empty, cannot remove user");
                 return;
             }
             List<UserData> users = _sessionData.users;
