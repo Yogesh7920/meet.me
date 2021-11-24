@@ -2,76 +2,119 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 14/10/2021
+ * date modified: 15/11/2021
 **/
 
 using System;
+using System.Timers;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using Networking;
 
 namespace ScreenSharing
 {
 	/// <summary>
-	///     Server Side screen sharing class
+	/// Server Side screen sharing class
 	/// </summary>
 	public class ScreenShareServer : INotificationHandler
-    {
-        public static string identifier;
+	{
+		//Store the Communicator used to send screen over the network.
+		public ICommunicator _communicator;
 
-        //Store the Communicator used to send screen over the network.
-        public ICommunicator _communicator;
+		//Thread to share the required signal to the required machines.
+		public Thread _sharingThread;
 
-        //Thread to share the required signal to the required machines.
-        public Thread _sharingThread;
+		// Queue to store the incoming frames
+		public Queue<SharedScreen> FrameQueue;
 
-        // Queue to store the incoming frames
-        public Queue<SharedScreen> frameQueue;
+		// Stores an instance of the Serializer
+		public ISerializer Serializer;
 
-        //Stores the moduleId which will be "ScreenSharing"
-        public string moduleId;
+		public bool IsSharing;
 
-        // Stores an instance of the Serializer
-        public ISerializer serializer;
+		//Timer will be used to sense disconnection issues.
+		public System.Timers.Timer Timer;
 
-        //Timer will be used to sense disconnection issues.
-        public Timer timer;
+		//Stores the user Id of the user currently sharing the screen.
+		public string UserId;
 
-        //Stores the user Id of the user currently sharing the screen.
-        public int userId;
+		/// <summary>
+		/// Public Constructor which will initialize most of the attributes.
+		/// </summary>
+		public ScreenShareServer()
+		{
+			UserId = "-";
+			Timer = new System.Timers.Timer(2000);
+			Timer.Elapsed += OnTimeout;
+			Timer.AutoReset = true;
 
-        /// <summary>
-        ///     Public Constructor which will initialize most of the attributes.
-        /// </summary>
-        public ScreenShareServer()
-        {
-            _communicator = CommunicationFactory.GetCommunicator();
-            //_communicator.Subscribe();
-            throw new NotImplementedException();
-        }
+			_communicator = CommunicationFactory.GetCommunicator();
+			_communicator.Subscribe(this.GetType().Namespace, this);
+			Serializer = new Serializer();
 
-        /// <summary>
-        ///     This method will be triggered by the Networking team whenever a screen is sent.
-        /// </summary>
-        public void OnDataReceived(string data)
-        {
-            throw new NotImplementedException();
-        }
+			IsSharing = true;
+			_sharingThread = new Thread(Share);
+			_sharingThread.Start();
+		}
 
-        /// <summary>
-        ///     This method will implement the logic of sharing the required signal.
-        /// </summary>
-        public void share()
-        {
-            throw new NotImplementedException();
-        }
+		/// <summary>
+		/// This method will be triggered by the Networking team whenever a screen is sent.
+		/// </summary>
+		public void OnDataReceived(string data)
+		{
+			SharedScreen scrn = Serializer.Deserialize<SharedScreen>(data);
+			FrameQueue.Enqueue(scrn);
+		}
 
-        /// <summary>
-        ///     This method will be invoked when no updates are recieved for a certain amount of time.
-        /// </summary>
-        public void onTimeout()
-        {
-            throw new NotImplementedException();
-        }
-    }
+		/// <summary>
+		/// This method will implement the logic of sharing the required signal.
+		/// </summary>
+		public void Share()
+		{
+			while (IsSharing)
+			{
+				while (FrameQueue.Count == 0) ;
+				Timer.Interval = 2000;
+				if (Timer.Enabled == false)
+					Timer.Start();
+				SharedScreen currScreen = FrameQueue.Dequeue();
+				if (UserId == "-")
+				{
+					// this is the case when server is idle and someone wants to share screen
+					UserId = currScreen.UserId;
+				}
+				else if (currScreen.UserId != UserId)
+				{
+					// this is a case of simultaneous sharing and the user who is sharing has to be rejected
+					continue;
+				}
+				else
+				{
+					if (currScreen.MessageType == 0)
+					{
+						Timer.Stop();
+						Timer.Interval = 2000;
+					}
+					// Broadcasting the screen
+					string data = Serializer.Serialize<SharedScreen>(currScreen);
+					_communicator.Send(data, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+				}
+			}
+		}
+
+		/// <summary>
+		/// This method will be invoked when no updates are recieved for a certain amount of time.
+		/// </summary>
+		public void OnTimeout(Object source, ElapsedEventArgs e)
+		{
+			UserId = "-";
+			FrameQueue.Clear();
+		}
+		~ScreenShareServer()
+		{
+			IsSharing = false;
+			Timer.Dispose();
+		}
+	}
 }
