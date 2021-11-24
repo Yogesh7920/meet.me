@@ -229,6 +229,26 @@ namespace Testing.Dashboard
         }
 
 
+        //[Test]
+        //public void EndMeetingProcedure_MeetingEnds_SaveAnalytics()
+        //{
+        //    int expectedUsers = 10;
+        //    _testContentServer.chats = Utils.GetSampleChatContext();
+        //    List<UserData> users = Utils.GenerateUserData(expectedUsers);
+        //    AddUsersAtServer(users);
+        //    _testContentServer.chats = Utils.GetSampleChatContextForUsers(users);
+        //    ClientToServerData sampleClientRequest = new("endMeet", users[0].username, users[0].userID);
+        //    serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+        //    string serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+        //    Assert.IsTrue(File.Exists(Path.Combine(serverDataPath, "GlobalServerData.xml")));
+        //    string sessionAnalyticsPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
+        //    foreach (string filename in PersistenceFactory.lastSaveResponse.TelemetryAnalyticsFiles)
+        //    {
+        //        Assert.IsTrue(File.Exists(Path.Combine(sessionAnalyticsPath,filename));
+        //    }
+        //}
+
+
         [Test]
         public void EndMeetingProcedure_MeetingEnds_SendEndMeetingEventToClients()
         {
@@ -258,16 +278,16 @@ namespace Testing.Dashboard
         }
 
 
-        //[Test]
-        //public void GetSummaryProcedure_GetSummarryServerSideWhenChatContextNull_ReturnsEmptyString()
-        //{
-        //    _testContentServer.chats = null;
-        //    ClientToServerData sampleClientRequest = new ClientToServerData("getSummary", "John", 1);
-        //    serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
-        //    ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
-        //    string actualSummary = deserialisedReceivedData.summaryData.summary;
-        //    Assert.IsEmpty(actualSummary);
-        //}
+        [Test]
+        public void GetSummaryProcedure_GetSummarryServerSideWhenChatContextNull_ReturnsEmptyString()
+        {
+            _testContentServer.chats = null;
+            ClientToServerData sampleClientRequest = new ClientToServerData("getSummary", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            SummaryData actualSummaryDataObj = deserialisedReceivedData.summaryData;
+            Assert.IsNull(actualSummaryDataObj);
+        }
 
         [Test]
         public void GetSummaryProcedure_GetSummarryServerSideWhenNoChats_ReturnsEmptyString()
