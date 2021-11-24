@@ -180,5 +180,9 @@
         <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="View" />
+    </ItemGroup>
+
 
 </Project>

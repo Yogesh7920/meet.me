@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/**
+ * owned by: Irene Casmir
+ * created by: Irene Casmir
+ * date created: 25/10/2021
+ * date modified: 23/11/2021
+**/
+
+using Client.ViewModel;
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Client.ViewModels;
 
 namespace Client
 {
@@ -58,6 +54,20 @@ namespace Client
             }
         }
         /// <summary>
+        /// Maximize button functionality
+        /// </summary>
+        private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
         /// Close button functionality
         /// </summary>
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
@@ -84,7 +94,7 @@ namespace Client
            else
            {
                AuthViewModel viewmodel = this.DataContext as AuthViewModel;
-               var result = true;//viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
+               var result = viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
                if (result == true)
                {
                    obj.Show();

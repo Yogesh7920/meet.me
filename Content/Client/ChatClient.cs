@@ -55,7 +55,7 @@ namespace Content
 			}
 			else
 			{
-				throw new ArgumentException("Empty Message String");
+				throw new ArgumentException("Null Message String");
 			}
         }
 

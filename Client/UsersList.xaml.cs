@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Client.ViewModels;
+using Client.ViewModel;
 
 namespace Client
 {
@@ -37,7 +37,7 @@ namespace Client
 
             this.DataContext = new HomePageViewModel();
             users = new ObservableCollection<UserViewData>();
-            //this.UsersListView.ItemsSource = users;
+            this.UsersListView.ItemsSource = users;
         }
         private void Listener(object sender, PropertyChangedEventArgs e)
         {
@@ -60,10 +60,6 @@ namespace Client
                 UserListHidden = true;
             }
         }
-        /*public void Helper()
-        {
-
-        }*/
         public void OnLeaveButtonClick()
         {
             HomePageViewModel homeviewmodel = this.DataContext as HomePageViewModel;
