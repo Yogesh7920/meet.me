@@ -9,6 +9,10 @@ using System.ComponentModel;
 using LiveCharts.Helpers;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Dashboard;
+using Dashboard.Client.SessionManagement;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Client.ViewModel
 {
@@ -18,6 +22,10 @@ namespace Client.ViewModel
     /// </summary>
     public class DashboardViewModel : INotifyPropertyChanged
     {
+
+        private IUXClientSessionManager _clientSM;
+
+
 
         /// <summary>
         /// The summary of discussion done in the meeting so far
@@ -128,11 +136,24 @@ namespace Client.ViewModel
         //    engagementRate = CalculateEngagementRate();
         //}
 
+
+        private void OnSummaryChange(string latestSummary)
+        {
+            lock (this)
+            {
+                chatSummary = latestSummary;
+            }
+        }
+
         /// <summary>
         /// Populates the dashboard analytics with random values for the time being
         /// </summary>
         public DashboardViewModel()
         {
+
+            _clientSM = SessionManagerFactory.GetClientSessionManager();
+            _clientSM.SummaryCreated += (latestSummary)=>OnSummaryChange(latestSummary);
+
             _chatSummary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
                 "Sit amet commodo nulla facilisi nullam vehicula ipsum a.Velit sed ullamcorper morbi tincidunt ornare massa eget. Nunc sed augue lacus viverra.";
 
