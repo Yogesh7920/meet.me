@@ -332,6 +332,114 @@ namespace Testing.Content
         }
 
         /// <summary>
+        /// Following test are all invalid testcases for CMarkStar that will throw exceptions
+        /// </summary>
+        [Test]
+        public void CMarkStar_StarringNotExistMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int msgId = 16;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CMarkStar(msgId));
+            Assert.AreEqual("Message with given message id doesn't exist", ex.Message);
+        }
+
+        [Test]
+        public void CMarkStar_StarringFileTypeMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int msgId = 15;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File);
+            sampleMsgDataSend.MessageId = msgId;
+            sampleMsgDataSend.SenderId = userId;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
+            System.Threading.Thread.Sleep(10);
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CMarkStar(msgId));
+            Assert.AreEqual("Message with given message id isn't a chat message", ex.Message);
+        }
+
+        /// <summary>
+        /// Following test are all invalid testcases for CUpdateChat that will throw exceptions
+        /// </summary>
+        [Test]
+        public void CUpdate_StarringNotExistMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int msgId = 16;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
+            Assert.AreEqual("Message with given message id doesn't exist", ex.Message);
+        }
+
+        [Test]
+        public void CUpdate_UpdatingFileTypeMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int msgId = 17;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File);
+            sampleMsgDataSend.MessageId = msgId;
+            sampleMsgDataSend.SenderId = userId;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
+            System.Threading.Thread.Sleep(10);
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
+            Assert.AreEqual("Message with given message id can't be updated. Make sure it's a chat message and was sent by this client", ex.Message);
+        }
+
+        [Test]
+        public void CUpdate_UpdatingOtherUsersMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int otherUserId = 1005;
+            int msgId = 18;
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage,"Hello", new int[] { }, type: MessageType.Chat);
+            sampleMsgDataSend.MessageId = msgId;
+            sampleMsgDataSend.SenderId = otherUserId;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
+            System.Threading.Thread.Sleep(10);
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
+            Assert.AreEqual("Message with given message id can't be updated. Make sure it's a chat message and was sent by this client", ex.Message);
+        }
+
+        /// <summary>
         /// updating msg already exist in memory, first sending msg using CSend and then caling CUpdate over it
         /// msg received from fake communicator should have same msgID, updated msg and update event
         /// </summary>
@@ -729,7 +837,6 @@ namespace Testing.Content
         public void SGetAllMessagesAndSendAllMessages_GettingAllMsgsFromServer_ShouldMatchSentMsgsToServer()
         {
             ContentServer contentServer = ContentServerFactory.GetInstance() as ContentServer;
-            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = new FakeCommunicator();
             ISerializer serializer = new Serializer();
             Utils util = new Utils();
@@ -739,31 +846,26 @@ namespace Testing.Content
             MessageData receiveMsgData3 = util.GenerateNewMessageData("I am fine", SenderId: 1003, MessageId: -1, ReplyThreadId: -1);
             contentServer.Receive(serializer.Serialize(receiveMsgData1));
             MessageData msg1 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(msg1);
             TestMsgDataFieldsServer(msg1, receiveMsgData1);
             MessageData starMsg1 = msg1;
             starMsg1.Event = MessageEvent.Star;
             contentServer.Receive(serializer.Serialize(starMsg1));
             MessageData starReplyMsg1 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(starReplyMsg1);
             TestMsgDataFieldsServer(msg1, starReplyMsg1);
             contentServer.Receive(serializer.Serialize(receiveMsgData2));
             MessageData msg2 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(msg2);
             TestMsgDataFieldsServer(msg2, receiveMsgData2);
             MessageData updateMsg2 = msg2;
             updateMsg2.Event = MessageEvent.Update;
             updateMsg2.Message = "I am fine, How about u?";
             contentServer.Receive(serializer.Serialize(updateMsg2));
             MessageData updateReplyMsg2 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(updateReplyMsg2);
             TestMsgDataFieldsServer(updateMsg2, msg2);
             Assert.AreEqual(true, starReplyMsg1.Starred);
             Assert.AreEqual(updateReplyMsg2.Message, "I am fine, How about u?");
             receiveMsgData3.ReplyThreadId = msg1.ReplyThreadId;
             contentServer.Receive(serializer.Serialize(receiveMsgData3));
             MessageData msg3 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(msg3);
             TestMsgDataFieldsServer(msg3, receiveMsgData3);
             ChatContext c1 = new ChatContext();
             c1.ThreadId = msg1.ReplyThreadId;
@@ -818,10 +920,7 @@ namespace Testing.Content
             List<int> rcvId = new List<int>();
             rcvId.Add(UserId);
             MessageData fileReturnedData = GetMsgFromCommunicator(fakeServerCommunicator, serializer, false, rcvId);
-            Assert.AreEqual(fileReturnedData.FileData.fileContent, sendNewFileData.FileData.fileContent);
-            Assert.AreEqual(fileReturnedData.Message, savePath);
-            Assert.AreEqual(fileReturnedData.FileData.fileName, sendNewFileData.FileData.fileName);
-            Assert.AreEqual(fileReturnedData.MessageId, fileReplyMsg.MessageId);
+            TestFile(fileReturnedData, savePath, sendNewFileData, fileReplyMsg.MessageId);
             contentClient.OnReceive(fileReturnedData);
             System.Threading.Thread.Sleep(50);
             if (File.Exists(savePath + fileReturnedData.FileData.fileName))
@@ -833,6 +932,17 @@ namespace Testing.Content
             {
                 Assert.Fail();
             }
+        }
+
+        /// <summary>
+        /// helper function to check file data of message data field
+        /// </summary>
+        public void TestFile(MessageData m1, string savePath, MessageData fileData, int msgId)
+        {
+            Assert.AreEqual(m1.FileData.fileContent, fileData.FileData.fileContent);
+            Assert.AreEqual(m1.Message, savePath);
+            Assert.AreEqual(m1.FileData.fileName, fileData.FileData.fileName);
+            Assert.AreEqual(m1.MessageId, msgId);
         }
 
         /// <summary>
