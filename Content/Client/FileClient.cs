@@ -77,7 +77,7 @@ namespace Content
             toSend.MessageId = messageId;
             toSend.Message = savepath;
             toSend.FileData = null;
-
+            toSend.SenderId = UserId;
             // serialize the message and send via network
             var toSendSerialized = _serializer.Serialize(toSend);
             Trace.WriteLine("[FileClient] Sending file download request to server");

@@ -7,10 +7,11 @@
     <Color x:Key="Color1">#FF340051</Color>
     <Color x:Key="Color2">#FF8522BD</Color>
     <Color x:Key="Color3">#FFCFCFCF</Color>
-
+    <Color x:Key="Color4">#D500F9</Color>
+    
     <SolidColorBrush x:Key="Color1Bg" Color="#FF340051"></SolidColorBrush>
     <SolidColorBrush x:Key="Color2Bg" Color="#FF8522BD"></SolidColorBrush>
     <SolidColorBrush x:Key="Color3Bg" Color="#FFCFCFCF"></SolidColorBrush>
-
+    <SolidColorBrush x:Key="Color4Bg" Color="#D500F9"></SolidColorBrush>
 
 </ResourceDictionary>

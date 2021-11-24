@@ -3,17 +3,22 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
+using Dashboard.Client.SessionManagement;
+using Dashboard;
 using Content;
 
 namespace Client.ViewModel
 {
     public class ChatViewModel :
         INotifyPropertyChanged, // Notifies clients that a property value has changed.
-        IContentListener // Notifies clients that has a message has been received.
+        IContentListener, // Notifies clients that has a message has been received.
+        IClientSessionNotifications
     {
 
         IDictionary<int, string> _messages;
-        public int UserId
+        private IDictionary<int, string> _users;
+
+        public static int UserId
         {
             get; private set;
         }
@@ -27,9 +32,13 @@ namespace Client.ViewModel
         public ChatViewModel()
         {
             _messages = new Dictionary<int, string>();
-            _model = ContentClientFactory.getInstance();
+            _users = new Dictionary<int, string>();
+            _model = ContentClientFactory.GetInstance();
             _model.CSubscribe(this);
-            //this.UserId = _model.GetUserId();
+            UserId = _model.GetUserId();
+
+            _modelDb = SessionManagerFactory.GetClientSessionManager();
+            _modelDb.SubscribeSession(this);
         }
 
         public void SendChat(string message, int replyMsgId)
@@ -61,7 +70,7 @@ namespace Client.ViewModel
         {
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<string, string>((path, text) =>
+                        new Action<ReceiveMessageData>(messageData =>
                         {
                             lock (this)
                             {
@@ -71,6 +80,7 @@ namespace Client.ViewModel
                                     _messages.Add(messageData.MessageId, messageData.Message);
                                     ReceivedMsg = new Message();
                                     ReceivedMsg.MessageId = messageData.MessageId;
+                                    ReceivedMsg.UserName = _users[messageData.MessageId];
                                     ReceivedMsg.TextMessage = messageData.Message;
                                     ReceivedMsg.Time = messageData.SentTime.ToString();
                                     ReceivedMsg.ToFrom = UserId == messageData.MessageId;
@@ -83,9 +93,53 @@ namespace Client.ViewModel
                         messageData);
         }
 
+        public void OnClientSessionChanged(SessionData session)
+        {
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<SessionData>(session =>
+                        {
+                            lock (this)
+                            {
+                                _users.Clear();
+                                foreach (UserData user in session.users)
+                                {
+                                    _users.Add(user.userID, user.username);
+                                }
+                            }
+                        }),
+                        session);
+        }
+
         public void OnAllMessages(List<ChatContext> allMessages)
         {
-            throw new NotImplementedException();
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<List<ChatContext>>(allMessages =>
+                        {
+                            lock (this)
+                            {
+                                foreach (ChatContext msgLst in allMessages)
+                                {
+                                    foreach(ReceiveMessageData messageData in msgLst.MsgList)
+                                    {
+                                        _messages.Add(messageData.MessageId, messageData.Message);
+                                        ReceivedMsg = new Message();
+                                        ReceivedMsg.MessageId = messageData.MessageId;
+                                        ReceivedMsg.UserName = _users[messageData.MessageId];
+                                        ReceivedMsg.TextMessage = messageData.Message;
+                                        ReceivedMsg.Time = messageData.SentTime.ToString();
+                                        ReceivedMsg.ToFrom = UserId == messageData.MessageId;
+                                        ReceivedMsg.ReplyMessage = messageData.ReplyThreadId == -1 ? "" : _messages[messageData.ReplyThreadId];
+                                        ReceivedMsg.Type = messageData.Type == MessageType.Chat;
+                                        this.OnPropertyChanged("ReceivedMsg");
+                                    }
+                                }
+                            }
+                        }),
+                        allMessages);
+
+            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -116,5 +170,6 @@ namespace Client.ViewModel
         /// Underlying data model.
         /// </summary>
         private IContentClient _model;
+        private IUXClientSessionManager _modelDb;
     }
 }
