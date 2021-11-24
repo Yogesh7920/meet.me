@@ -25,6 +25,7 @@ namespace Client.ViewModel
         {
             _model = SessionManagerFactory.GetClientSessionManager();
             _model.SubscribeSession(this);
+            users = new List<UserViewData>();
         }
 
         public void OnClientSessionChanged(SessionData session)
