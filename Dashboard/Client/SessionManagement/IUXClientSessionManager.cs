@@ -57,5 +57,8 @@ namespace Dashboard.Client.SessionManagement
 
         // Event for notifying the end of the meeting on the client side
         public event NotifyEndMeet MeetingEnded;
+
+        // Event for notifying the creation of anlalytics to the client UX.
+        public event NotifyAnalyticsCreated AnalyticsCreated;
     }
 }
