@@ -13,7 +13,7 @@ namespace Testing.Content
         [SetUp]
         public void SetUp()
         {
-            chatList = new List<ChatContext>();
+            
         }
 
         /// <summary>
@@ -673,22 +673,22 @@ namespace Testing.Content
             _fakeCommunicator.Subscribe("Content", _notificationHandler);
             // Subscribing to content client
             _iContentClient.CSubscribe(_iFakeListener);
-            MessageData DataToSerialize1 = _util.GenerateNewMessageData("Hello", MessageId: 1, ReplyThreadId: 1);
-            MessageData DataToSerialize2 = _util.GenerateNewMessageData("Hi", MessageId: 2, ReplyThreadId: 2);
-            MessageData DataToSerialize3 = _util.GenerateNewMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 1);
+            MessageData DataToSerialize1 = _util.GenerateNewMessageData("Hello", MessageId: 1, ReplyThreadId: 11);
+            MessageData DataToSerialize2 = _util.GenerateNewMessageData("Hi", MessageId: 2, ReplyThreadId: 12);
+            MessageData DataToSerialize3 = _util.GenerateNewMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 11);
             ChatContext ChatList1 = new ChatContext();
-            ChatList1.ThreadId = 1;
+            ChatList1.ThreadId = 11;
             ChatList1.MsgList.Add(DataToSerialize1);
             ChatList1.MsgList.Add(DataToSerialize3);
             ChatContext ChatList2 = new ChatContext();
             ChatList2.MsgList.Add(DataToSerialize2);
-            ChatList2.ThreadId = 2;
+            ChatList2.ThreadId = 12;
             _fakeCommunicator.Notify(_serializer.Serialize(DataToSerialize1));
             _fakeCommunicator.Notify(_serializer.Serialize(DataToSerialize2));
             _fakeCommunicator.Notify(_serializer.Serialize(DataToSerialize3));
-            ChatContext ChatsOnContext1 = _iContentClient.CGetThread(1);
+            ChatContext ChatsOnContext1 = _iContentClient.CGetThread(11);
             CompareChatContext(ChatList1, ChatsOnContext1);
-            ChatContext ChatsOnContext2 = _iContentClient.CGetThread(2);
+            ChatContext ChatsOnContext2 = _iContentClient.CGetThread(12);
             CompareChatContext(ChatList2, ChatsOnContext2);
         }
 
@@ -719,7 +719,6 @@ namespace Testing.Content
         /// </summary>
         public void SGetAllMessagesAndSendAllMessages_GettingAllMsgsFromServer_ShouldMatchSentMsgsToServer()
         {
-            Console.WriteLine(chatList.Count);
             ContentServer contentServer = ContentServerFactory.GetInstance() as ContentServer;
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = new FakeCommunicator();
@@ -758,7 +757,6 @@ namespace Testing.Content
             receiveMsgData3.ReplyThreadId = msg1.ReplyThreadId;
             contentServer.Receive(serializer.Serialize(receiveMsgData3));
             MessageData msg3 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            Console.WriteLine("h");
             contentClient.OnReceive(msg3);
             TestMsgDataFieldsServer(msg3, receiveMsgData3);
             ChatContext c1 = new ChatContext();
@@ -770,7 +768,6 @@ namespace Testing.Content
             c2.MsgList.Add(util.MessageDataToReceiveMessageData(updateReplyMsg2));
             chatList.Add(c1);
             chatList.Add(c2);
-            Console.WriteLine(chatList.Count);
             List<ChatContext> listReceived = contentServer.SGetAllMessages();
             contentServer.SSendAllMessagesToClient(1003);
             TestSSendAllMessagesToClient(fakeCommunicator, serializer, chatList, 1003);
@@ -805,14 +802,13 @@ namespace Testing.Content
             MessageData sendNewFileData = serializer.Deserialize<MessageData>(sendSerializedMsg);
             contentServer.Receive(sendSerializedMsg);
             MessageData fileReplyMsg = GetMsgFromCommunicator(fakeServerCommunicator, serializer, true, null);
-            contentClient.OnReceive(fileReplyMsg);
             ChatContext c1 = new ChatContext();
             c1.ThreadId = fileReplyMsg.ReplyThreadId;
             c1.MsgList.Add(util.MessageDataToReceiveMessageData(fileReplyMsg));
             chatList.Add(c1);
+            contentClient.OnReceive(fileReplyMsg);
             iContentClient.CDownload(fileReplyMsg.MessageId, SavePath);
             string downloadReqMsg = fakeClientCommunicator.GetSentData();
-            Console.WriteLine(serializer.Deserialize<MessageData>(downloadReqMsg).Event);
             contentServer.Receive(downloadReqMsg);
             List<int> rcvId = new List<int>();
             rcvId.Add(UserId);
@@ -821,7 +817,6 @@ namespace Testing.Content
             Assert.AreEqual(fileReturnedData.Message, SavePath);
             Assert.AreEqual(fileReturnedData.FileData.fileName, sendNewFileData.FileData.fileName);
             Assert.AreEqual(fileReturnedData.MessageId, fileReplyMsg.MessageId);
-            Console.WriteLine(fileReturnedData.Event);
             contentClient.OnReceive(fileReturnedData);
             System.Threading.Thread.Sleep(50);
             if (File.Exists(SavePath + fileReturnedData.FileData.fileName))
@@ -963,6 +958,6 @@ namespace Testing.Content
             }
         }
 
-        List<ChatContext> chatList;
+        List<ChatContext> chatList = new List<ChatContext>();
     }
 }

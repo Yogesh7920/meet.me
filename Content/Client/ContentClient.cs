@@ -235,7 +235,6 @@ namespace Content
 
             // add the message to the correct ChatContext in allMessages
             var key = receivedMessage.ReplyThreadId;
-
             // use locks because the list of chat contexts may be shared across multiple threads
             lock (_lock)
             {
@@ -253,7 +252,6 @@ namespace Content
                     newContext.MsgList.Add(receivedMessage);
                     newContext.NumOfMessages = 1;
                     newContext.CreationTime = receivedMessage.SentTime;
-
                     _allMessages.Add(newContext);
 
                     // add entry in the hash table to keep track of ChatContext with given thread Id
