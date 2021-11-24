@@ -1,6 +1,9 @@
 using NUnit.Framework;
 using Content;
 using Networking;
+using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace Testing.Content
 {
@@ -123,6 +126,24 @@ namespace Testing.Content
 			toconvert2.ReplyThreadId = -1;
 			toconvert2.ReceiverIds = new int[0];
 			return toconvert2;
+		}
+
+		public List<ChatContext> getlistContext(MessageData message)
+		{
+			
+			ReceiveMessageData receivedMessage = message;
+
+            // add the message to the correct ChatContext in allMessages
+            var key = receivedMessage.ReplyThreadId;
+			List<ChatContext> sampleData = new List<ChatContext>();
+            var newContext = new ChatContext();
+            newContext.ThreadId = key;
+            newContext.MsgList.Add(receivedMessage);
+            newContext.NumOfMessages = 1;
+            newContext.CreationTime = receivedMessage.SentTime;
+
+            sampleData.Add(newContext);            
+			return sampleData;
 		}
 
 		///<summary>
