@@ -15,9 +15,8 @@ namespace Client.ViewModel
         IClientSessionNotifications
     {
 
-        IDictionary<int, string> _messages;
-        private IDictionary<int, string> _users;
-
+        public IDictionary<int, string> _messages;
+        public IDictionary<int, string> _users;
         public static int UserId
         {
             get; private set;
@@ -75,14 +74,14 @@ namespace Client.ViewModel
                             lock (this)
                             {
 
-                                if(messageData.Event == MessageEvent.NewMessage)
+                                if (messageData.Event == MessageEvent.NewMessage)
                                 {
                                     _messages.Add(messageData.MessageId, messageData.Message);
                                     ReceivedMsg = new Message();
                                     ReceivedMsg.MessageId = messageData.MessageId;
-                                    ReceivedMsg.UserName = _users[messageData.MessageId];
+                                    ReceivedMsg.UserName = _users[messageData.SenderId];
                                     ReceivedMsg.TextMessage = messageData.Message;
-                                    ReceivedMsg.Time = messageData.SentTime.ToString();
+                                    ReceivedMsg.Time = messageData.SentTime.ToShortTimeString();
                                     ReceivedMsg.ToFrom = UserId == messageData.MessageId;
                                     ReceivedMsg.ReplyMessage = messageData.ReplyThreadId == -1 ? "" : _messages[messageData.ReplyThreadId];
                                     ReceivedMsg.Type = messageData.Type == MessageType.Chat;
@@ -104,6 +103,7 @@ namespace Client.ViewModel
                                 _users.Clear();
                                 foreach (UserData user in session.users)
                                 {
+                                    //System.Diagnostics.Debug.WriteLine(user.username);
                                     _users.Add(user.userID, user.username);
                                 }
                             }
@@ -121,14 +121,14 @@ namespace Client.ViewModel
                             {
                                 foreach (ChatContext msgLst in allMessages)
                                 {
-                                    foreach(ReceiveMessageData messageData in msgLst.MsgList)
+                                    foreach (ReceiveMessageData messageData in msgLst.MsgList)
                                     {
                                         _messages.Add(messageData.MessageId, messageData.Message);
                                         ReceivedMsg = new Message();
                                         ReceivedMsg.MessageId = messageData.MessageId;
-                                        ReceivedMsg.UserName = _users[messageData.MessageId];
+                                        ReceivedMsg.UserName = _users[messageData.SenderId];
                                         ReceivedMsg.TextMessage = messageData.Message;
-                                        ReceivedMsg.Time = messageData.SentTime.ToString();
+                                        ReceivedMsg.Time = messageData.SentTime.ToShortTimeString();
                                         ReceivedMsg.ToFrom = UserId == messageData.MessageId;
                                         ReceivedMsg.ReplyMessage = messageData.ReplyThreadId == -1 ? "" : _messages[messageData.ReplyThreadId];
                                         ReceivedMsg.Type = messageData.Type == MessageType.Chat;
