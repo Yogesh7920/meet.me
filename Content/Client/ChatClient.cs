@@ -68,7 +68,7 @@ namespace Content
 
         public void ChatUpdate(int messageId, string newMessage)
         {
-			if(MessageIsvalid(NewMessage)){
+			if(MessageIsvalid(newMessage)){
 				var toSend = new MessageData();
 				toSend.MessageId = messageId;
 				toSend.Event = MessageEvent.Update;
