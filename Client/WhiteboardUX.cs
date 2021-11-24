@@ -107,6 +107,7 @@ namespace Client
         private void Adorner_MouseDown(object sender, MouseButtonEventArgs e)
         {
             dragStart = e.GetPosition(cn);
+            dragEnd = e.GetPosition(cn);
             return;
         }
 
@@ -770,11 +771,11 @@ namespace Client
                 toRender = WBOps.TranslateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
                 //removing the local temporary render and only acknowledging the CREATE UXShape request as we cleaned up temporary render
                 cn = UnselectAllBB(cn, WBOps);
-                cn.Children.Remove(sh);
+                //cn.Children.Remove(sh);
                 //Since we are removing rendered temporary shape above and toRender[1] corresponds to CREATE operation
-                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                cn = RenderUXElement(toRender, cn);
                 cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
-                
+
                 //Bugged, adr.ClipEnabled gives NullException??
                 //cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
 
@@ -909,7 +910,7 @@ namespace Client
             if (shapeComp == true)
             {
                 cn = UnselectAllBB(cn, WBOps);
-                cn.Children.Remove(sh);
+                //cn.Children.Remove(sh);
 
                 Coordinate C_strt = new Coordinate(((int)(cn.Height - selectMouseDownPos.Y)), ((int)selectMouseDownPos.X));
                 Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
@@ -918,7 +919,7 @@ namespace Client
                 toRender = WBOps.RotateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
 
                 //Since we already removed our side of temporary render, DELETE operation by WB module is not acknowledged, whereas toRender[1] refers to necessary CREATE operation with the updated shape
-                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                cn = RenderUXElement(toRender, cn);
                 cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
                 //Bugged as adr.isClipEnabled gives Null Exception
@@ -1174,10 +1175,10 @@ namespace Client
             }
 
             cn = UnselectAllBB(cn, WBOps);
-            cn.Children.Remove(sh);
+            //cn.Children.Remove(sh);
 
             //Add 
-            cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+            cn = RenderUXElement(toRender, cn);
             cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
 
@@ -1440,10 +1441,10 @@ namespace Client
             }
 
             cn = UnselectAllBB(cn, WBOp);
-            cn.Children.Remove(shp);
+            //cn.Children.Remove(shp);
 
             toRender = WBOp.ResizeShape(C_strt, C_end, shp.Uid, drgPos, true);
-            cn = this.RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+            cn = this.RenderUXElement(toRender, cn);
 
 
 
@@ -1523,12 +1524,16 @@ namespace Client
                         cn.Children.Add(shp.WindowsShape);
                         break;
                     case (UXOperation.DELETE):
-                        IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
+                        //IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
+
+
 
                         //Check Condition that the shape to be deleted actually exists within the Canvas and has unique Uid
-                        Debug.Assert(iterat.Count() == 1);
+                        //Debug.Assert(iterat.Count() == 1);
 
-                        cn.Children.Remove(iterat.ToList()[0]);
+
+
+                        //cn.Children.Remove(iterat.ToList()[0]);
                         break;
                 }
             }
@@ -1556,14 +1561,15 @@ namespace Client
             if (creation)
             {
 
-                
+
 
                 poly = new System.Windows.Shapes.Polyline();
 
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == "-1");
+                Console.Write(assgn_uid);
 
                 //Check Condition that previous temporary polylines have been cleaned up
-                Debug.Assert(iterat.Count() <= 1);
+                //Debug.Assert(iterat.Count() <= 1);
 
                 //assigning special UID of -1 to temporary shapes
                 poly.Uid = "-1";
@@ -1615,7 +1621,7 @@ namespace Client
                     {
                         if (!poly.Points.Contains(pt))
                         {
-                            if(assgn_uid != "-1")
+                            if (assgn_uid != "-1")
                             {
                                 poly.Points.Add(pt);
                                 C_end = new Coordinate((float)pt.X, (float)pt.Y);
@@ -1678,7 +1684,7 @@ namespace Client
                         ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
 
                         //Rendering the Polyline onto the Canvas
-                        cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                        cn = RenderUXElement(toRender, cn);
 
                         assgn_uid = "-1";
                     }
