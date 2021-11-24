@@ -87,23 +87,11 @@ namespace Whiteboard
         /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start,
-                                                          Coordinate end, string shapeId, bool shapeComp = false)
+                                                          Coordinate end, string shapeId, DragPos dragpos, bool shapeComp = false)
         {
             return new List<UXShape>();
         }
 
-        /// <summary>
-        /// Perform resizing operation on shape.
-        /// </summary>
-        /// <param name="start">Start of mouse drag.</param>
-        /// <param name="end">End of mouse drag.</param>
-        /// <param name="shapeId">Id of the shape.</param>
-        /// <param name="dragPos">The latch used for performing resizing.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> Resize(Coordinate start, Coordinate end, string shapeId, DragPos dragPos)
-        {
-            return new List<UXShape>();
-        }
 
         /// <summary>
         /// Delete a shape with given shape Id.

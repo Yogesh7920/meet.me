@@ -66,7 +66,8 @@ namespace Whiteboard
     {
         TRANSLATE,
         ROTATE,
-        CREATE
+        CREATE,
+        RESIZE
     }
 
     /// <summary>
