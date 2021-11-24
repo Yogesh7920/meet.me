@@ -3,10 +3,13 @@
     <PropertyGroup>
         <TargetFramework>net5.0-windows</TargetFramework>
 
-        <UseWPF>true</UseWPF>
-        <ApplicationIcon/>
-        <OutputType>Library</OutputType>
-        <StartupObject/>
+
+		<UseWindowsForms>true</UseWindowsForms>
+
+	    <UseWPF>true</UseWPF>
+	    <ApplicationIcon />
+	    <OutputType>Library</OutputType>
+	    <StartupObject />
     </PropertyGroup>
 
     <ItemGroup>
