@@ -363,13 +363,13 @@ namespace Client
                         //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
                         if (mouseLeftBtnMoveFlag > 5)
                         {
-                            if (e.OriginalSource is Shape)
-                            {
-                                Shape selectedShape = e.OriginalSource as Shape;
+                            //if ((e.OriginalSource is Shape && ((Shape)e.OriginalSource) == mouseDownSh) || rotation == true)
+                            //{
+
                                 if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
                                 {
                                     //sets the end point for usage in both TranslateShape/RotateShape when left mouse button is release
-                                    this.viewModel.end = e.GetPosition(MyCanvas);
+                                    //this.viewModel.end = e.GetPosition(MyCanvas);
 
                                     if (rotation == true)
                                     {
@@ -383,12 +383,13 @@ namespace Client
                                     }*/
                                     else
                                     {
+                                        this.viewModel.end = e.GetPosition(MyCanvas);
                                         this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
                                     }
                                 }
                                 //Resetting the value of 'start' to perform the next Move functions
                                 this.viewModel.start = e.GetPosition(MyCanvas);
-                            }
+                            //}
                         }
 
                         //If mouse was not moved after left clicking, then shapes would be selected/unselected
@@ -492,42 +493,41 @@ namespace Client
                         }
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
-                        //if(e.OriginalSource is Shape)
-                        //{
-                        Shape selectedShape = e.OriginalSource as Shape;
-                        //sets the end point for usage in TranslateShape/RotateShape
-                        this.viewModel.end = e.GetPosition(MyCanvas);
-
-                        if ((this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y) && mouseDownFlag == 1)
-                        //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                        if(e.OriginalSource is Shape && ((Shape)e.OriginalSource) == mouseDownSh)
                         {
-                            //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
-                            if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
-                            {
-                                //if (e.OriginalSource is Shape)                                   
-                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
-                                //Resetting the value of 'start' to perform the next Move functions
-                                this.viewModel.start = e.GetPosition(MyCanvas);
+                            //sets the end point for usage in TranslateShape/RotateShape
+                            this.viewModel.end = e.GetPosition(MyCanvas);
 
-                                rotation = true;
-
-                            }else if(rotation == true)
+                            if ((this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y) && mouseDownFlag == 1)
+                            //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
                             {
-                                //if (e.OriginalSource is Shape)                                   
-                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
-                                //Resetting the value of 'start' to perform the next Move functions
-                                this.viewModel.start = e.GetPosition(MyCanvas);
+                                //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
+                                if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                                {
+                                    //if (e.OriginalSource is Shape)                                   
+                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
 
-                                //rotation = true;
-                            }
-                            else
-                            {
-                                this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
-                                //Resetting the value of 'start' to perform the next Move functions
-                                this.viewModel.start = e.GetPosition(MyCanvas);
+                                    rotation = true;
+
+                                }else if(rotation == true)
+                                {
+                                    //if (e.OriginalSource is Shape)                                   
+                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
+
+                                    //rotation = true;
+                                }
+                                else
+                                {
+                                    this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
+                                }
                             }
                         }
-                        //}
                         break;
                 }
             }
