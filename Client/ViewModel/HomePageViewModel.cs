@@ -29,16 +29,16 @@ namespace Client.ViewModel
 
         public void OnClientSessionChanged(SessionData session)
         {
+            if (users != null)
+            {
+                users.Clear();
+            }
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<List<UserViewData>>((users) =>
                         {
                             lock (this)
                             {
-                                if (users != null)
-                                {
-                                    users.Clear();
-                                }
                                 foreach (UserData user in session.users)
                                 {
                                     UserViewData usernew = new UserViewData();
