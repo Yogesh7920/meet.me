@@ -127,6 +127,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// This test will check CSend method by sending msg with newline to check whether it support escape sequences
+        /// Msg sent to communicator should have same msg with msg given to csend
+        /// </summary>
         [Test]
         public void CSend_ChatSendingMsgWithNewline_SerializedStringShouldMatchInputMsg()
         {
@@ -165,6 +169,9 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// Sending null msg in CSend method, which is invalid, exception will be thrown
+        /// </summary>
         [Test]
         public void CSend_ChatSendingMsgWithNullString_SerializedStringShouldMatchInputMsg()
         {
@@ -181,6 +188,10 @@ namespace Testing.Content
             Assert.AreEqual("Null Message String", ex.Message);
         }
 
+        /// <summary>
+        /// Sending msg for broadcast, receiver ID list will be empty indicating broadcast, msg should match with one send over
+        /// fake communicator
+        /// </summary>
         [Test]
         public void CSend_ChatSendingHiMsgWithBroadcast_SerializedStringShouldMatchInputMsg()
         {
@@ -219,6 +230,9 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// sending file using CSend, sent msg should have all info about file sent
+        /// </summary>
         [Test]
         public void CSend_FileSendingValidFilePathToServer_SerializedStringShouldMatchFileData()
         {
@@ -280,6 +294,10 @@ namespace Testing.Content
             Assert.AreEqual("File " + filePath + " not found", ex.Message);
         }
 
+        /// <summary>
+        /// marking star msg already exist in memory, first sending msg using CSend and then caling CMarkstar over it
+        /// msg received from fake communicator should have same msgID and star event
+        /// </summary>
         [Test]
         public void CMarkStar_ClientShouldSendProperRequestToServer_SerializedStrMustHaveProperMarkstarReq()
         {
@@ -294,6 +312,7 @@ namespace Testing.Content
             IContentClient iContentClient = contentClient;
             MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
             sampleMsgData.MessageId = msgId;
+            sampleMsgData.ReplyThreadId = 1;
             fakeCommunicator.Notify(serializer.Serialize(sampleMsgData));
             System.Threading.Thread.Sleep(10);
             iContentClient.CMarkStar(msgId);
@@ -313,6 +332,118 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// Following test are all invalid testcases for CMarkStar that will throw exceptions
+        /// </summary>
+        [Test]
+        public void CMarkStar_StarringNotExistMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int msgId = 16;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CMarkStar(msgId));
+            Assert.AreEqual("Message with given message id doesn't exist", ex.Message);
+        }
+
+        [Test]
+        public void CMarkStar_StarringFileTypeMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int msgId = 15;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File, replyId: 1);
+            sampleMsgDataSend.MessageId = msgId;
+            sampleMsgDataSend.SenderId = userId;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
+            System.Threading.Thread.Sleep(10);
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CMarkStar(msgId));
+            Assert.AreEqual("Message with given message id isn't a chat message", ex.Message);
+        }
+
+        /// <summary>
+        /// Following test are all invalid testcases for CUpdateChat that will throw exceptions
+        /// </summary>
+        [Test]
+        public void CUpdate_StarringNotExistMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int msgId = 16;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
+            Assert.AreEqual("Message with given message id doesn't exist", ex.Message);
+        }
+
+        [Test]
+        public void CUpdate_UpdatingFileTypeMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int msgId = 17;
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File, replyId: 1);
+            sampleMsgDataSend.MessageId = msgId;
+            sampleMsgDataSend.SenderId = userId;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
+            System.Threading.Thread.Sleep(10);
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
+            Assert.AreEqual("Message with given message id can't be updated. Make sure it's a chat message and was sent by this client", ex.Message);
+        }
+
+        [Test]
+        public void CUpdate_UpdatingOtherUsersMsg_ShouldThrowException()
+        {
+            Utils util = new Utils();
+            int userId = 1001;
+            int otherUserId = 1005;
+            int msgId = 18;
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage,"Hello", new int[] { }, type: MessageType.Chat, replyId: 1);
+            sampleMsgDataSend.MessageId = msgId;
+            sampleMsgDataSend.SenderId = otherUserId;
+            ISerializer serializer = new Serializer();
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator fakeCommunicator = util.GetFakeCommunicator();
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            IContentClient iContentClient = contentClient;
+            fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
+            System.Threading.Thread.Sleep(10);
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
+            Assert.AreEqual("Message with given message id can't be updated. Make sure it's a chat message and was sent by this client", ex.Message);
+        }
+
+        /// <summary>
+        /// updating msg already exist in memory, first sending msg using CSend and then caling CUpdate over it
+        /// msg received from fake communicator should have same msgID, updated msg and update event
+        /// </summary>
         [Test]
         public void CUpdate_ClientShouldSendProperRequestToServer_SerializedStrMustHaveProperUpdateReq()
         {
@@ -329,6 +460,7 @@ namespace Testing.Content
             MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?\n I am fine", new int[] { 1002 }, type: MessageType.Chat);
             sampleMsgData.MessageId = msgId;
             sampleMsgData.SenderId = userId;
+            sampleMsgData.ReplyThreadId = 1;
             fakeCommunicator.Notify(serializer.Serialize(sampleMsgData));
             System.Threading.Thread.Sleep(10);
             iContentClient.CUpdateChat(msgId, updateChat);
@@ -349,6 +481,9 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// We are sending invalid msg id in CDownload which will throw exception
+        /// </summary>
         [Test]
         public void CDownload_SendingDownloadReqToServerWithInvalidMsgId_ShouldThrowArgumentException()
         {
@@ -367,6 +502,9 @@ namespace Testing.Content
             Assert.AreEqual("Message with given message ID not found", ex.Message);
         }
 
+        /// <summary>
+        /// We will send msgId which will have chat type hence should throw exception
+        /// </summary>
         [Test]
         public void CDownload_NonFileType_ShouldThrowArgumentException()
         {
@@ -389,9 +527,13 @@ namespace Testing.Content
             fakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
             System.Threading.Thread.Sleep(10);
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CDownload(msgId, savePath));
-            Assert.AreEqual("Message requested for download is not a file type message", ex.Message);
+            Assert.That(ex.Message.Contains("not a file"));
         }
 
+        /// <summary>
+        /// we will send download request to server with valid msgId of file type over fake communicator and will fetch msg from there
+        /// and compare field to see if valid request sent.
+        /// </summary>
         [Test]
         public void CDownload_ValidFileMsgExistInDataBase_ShouldSendProperReqToServer()
         {
@@ -401,7 +543,7 @@ namespace Testing.Content
             string currentDirectory = Directory.GetCurrentDirectory() as string;
             string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
-            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File);
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File, replyId: 1);
             sampleMsgDataSend.MessageId = msgId;
             sampleMsgDataSend.SenderId = userId;
             string savePath = currentDirectory + "\\SavedTestFile.pdf";
@@ -436,6 +578,9 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// This test will check whether contentClient handles subscription, by checking whether subscriber receive msg
+        /// </summary>
         [Test]
         public void CSubscribe_SubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
         {
@@ -459,6 +604,9 @@ namespace Testing.Content
             Assert.AreEqual(listenedData.Message, Msg);
         }
 
+        /// <summary>
+        /// This test will check whether contentClient handles multiple subscription, by checking whether all subscriber receive msg
+        /// </summary>
         [Test]
         public void CSubscribe_MultipleSubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
         {
@@ -486,6 +634,9 @@ namespace Testing.Content
             Assert.AreEqual(listenedData2.Message, Msg);
         }
 
+        /// <summary>
+        /// This test will check INotification handler for content client and IListener which will be used by UX in case of single msg arrival from server
+        /// </summary>
         [Test]
         public void OnDataReceived_NewMessage_SameMsgShouldReceivedToSubscriber()
         {
@@ -501,7 +652,7 @@ namespace Testing.Content
             fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
-            MessageData dataToSerialize = util.GenerateNewMessageData("Hello");
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", ReplyThreadId: 1);
             fakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
             System.Threading.Thread.Sleep(10);
             // Fetching listened data from listener
@@ -509,6 +660,9 @@ namespace Testing.Content
             Assert.AreEqual(listenedData.Message, dataToSerialize.Message);
         }
 
+        /// <summary>
+        /// This test will check INotification handler for content client and IListener which will be used by UX in case of multiple msg arrival from server
+        /// </summary>
         [Test]
         public void OnDataReceived_MultipleNewMessage_SameMsgShouldReceivedToSubscriber()
         {
@@ -524,8 +678,8 @@ namespace Testing.Content
             fakeCommunicator.Subscribe("Content", notificationHandler);
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
-            MessageData dataToSerialize1 = util.GenerateNewMessageData("Hello");
-            MessageData dataToSerialize2 = util.GenerateNewMessageData("Hi");
+            MessageData dataToSerialize1 = util.GenerateNewMessageData("Hello", ReplyThreadId: 1);
+            MessageData dataToSerialize2 = util.GenerateNewMessageData("Hi", ReplyThreadId: 2);
             fakeCommunicator.Notify(serializer.Serialize(dataToSerialize1));
             System.Threading.Thread.Sleep(10);
             // Msg1
@@ -573,6 +727,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// sending list of chat context to onDataReceived of INotificationHandler, will compare built chat context list with 
+        /// chat context list we got by subsribing contentClient using fakeListener
+        /// </summary>
         [Test]
         public void OnDataReceived_ListChatContext_SameChatContextsShouldReceivedToSubscriber()
         {
@@ -612,6 +770,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// getting messages on particular chat context thread, we will first store msg on memory of content client using OnDataReceived of fakeCommunicator
+        /// and also building chat context and will compare returned chat context using CGetThread with built one.
+        /// </summary>
         [Test]
         public void CGetThread_ReturnsChatContextOfGivenThreadIDMultipleThreads_ShouldMatchWithConstructedChatContext()
         {
@@ -646,6 +808,9 @@ namespace Testing.Content
             CompareChatContext(chatList2, chatsOnContext2);
         }
 
+        /// <summary>
+        /// invalid thread i.e thread id does not exist, should throw exception
+        /// </summary>
         [Test]
         public void CGetThread_InvalidThreadIdGiven_ShouldThrowException()
         {
@@ -674,7 +839,6 @@ namespace Testing.Content
         public void SGetAllMessagesAndSendAllMessages_GettingAllMsgsFromServer_ShouldMatchSentMsgsToServer()
         {
             ContentServer contentServer = ContentServerFactory.GetInstance() as ContentServer;
-            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator fakeCommunicator = new FakeCommunicator();
             ISerializer serializer = new Serializer();
             Utils util = new Utils();
@@ -684,31 +848,26 @@ namespace Testing.Content
             MessageData receiveMsgData3 = util.GenerateNewMessageData("I am fine", SenderId: 1003, MessageId: -1, ReplyThreadId: -1);
             contentServer.Receive(serializer.Serialize(receiveMsgData1));
             MessageData msg1 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(msg1);
             TestMsgDataFieldsServer(msg1, receiveMsgData1);
             MessageData starMsg1 = msg1;
             starMsg1.Event = MessageEvent.Star;
             contentServer.Receive(serializer.Serialize(starMsg1));
             MessageData starReplyMsg1 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(starReplyMsg1);
             TestMsgDataFieldsServer(msg1, starReplyMsg1);
             contentServer.Receive(serializer.Serialize(receiveMsgData2));
             MessageData msg2 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(msg2);
             TestMsgDataFieldsServer(msg2, receiveMsgData2);
             MessageData updateMsg2 = msg2;
             updateMsg2.Event = MessageEvent.Update;
             updateMsg2.Message = "I am fine, How about u?";
             contentServer.Receive(serializer.Serialize(updateMsg2));
             MessageData updateReplyMsg2 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(updateReplyMsg2);
             TestMsgDataFieldsServer(updateMsg2, msg2);
             Assert.AreEqual(true, starReplyMsg1.Starred);
             Assert.AreEqual(updateReplyMsg2.Message, "I am fine, How about u?");
             receiveMsgData3.ReplyThreadId = msg1.ReplyThreadId;
             contentServer.Receive(serializer.Serialize(receiveMsgData3));
             MessageData msg3 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
-            contentClient.OnReceive(msg3);
             TestMsgDataFieldsServer(msg3, receiveMsgData3);
             ChatContext c1 = new ChatContext();
             c1.ThreadId = msg1.ReplyThreadId;
@@ -719,10 +878,9 @@ namespace Testing.Content
             c2.MsgList.Add(util.MessageDataToReceiveMessageData(updateReplyMsg2));
             chatList.Add(c1);
             chatList.Add(c2);
-            List<ChatContext> listReceived = contentServer.SGetAllMessages();
             contentServer.SSendAllMessagesToClient(1003);
             TestSSendAllMessagesToClient(fakeCommunicator, serializer, chatList, 1003);
-            CompareChatContextList(chatList, listReceived);
+            CompareChatContextList(chatList, contentServer.SGetAllMessages());
         }
 
         [Test]
@@ -764,10 +922,7 @@ namespace Testing.Content
             List<int> rcvId = new List<int>();
             rcvId.Add(UserId);
             MessageData fileReturnedData = GetMsgFromCommunicator(fakeServerCommunicator, serializer, false, rcvId);
-            Assert.AreEqual(fileReturnedData.FileData.fileContent, sendNewFileData.FileData.fileContent);
-            Assert.AreEqual(fileReturnedData.Message, savePath);
-            Assert.AreEqual(fileReturnedData.FileData.fileName, sendNewFileData.FileData.fileName);
-            Assert.AreEqual(fileReturnedData.MessageId, fileReplyMsg.MessageId);
+            TestFile(fileReturnedData, savePath, sendNewFileData, fileReplyMsg.MessageId);
             contentClient.OnReceive(fileReturnedData);
             System.Threading.Thread.Sleep(50);
             if (File.Exists(savePath + fileReturnedData.FileData.fileName))
@@ -781,6 +936,21 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// helper function to check file data of message data field
+        /// </summary>
+        public void TestFile(MessageData m1, string savePath, MessageData fileData, int msgId)
+        {
+            Assert.AreEqual(m1.FileData.fileContent, fileData.FileData.fileContent);
+            Assert.AreEqual(m1.Message, savePath);
+            Assert.AreEqual(m1.FileData.fileName, fileData.FileData.fileName);
+            Assert.AreEqual(m1.MessageId, msgId);
+        }
+
+        /// <summary>
+        /// subscribing to server using SSubscribe method given by IContentServer, subscriber should get proper msg on calling 
+        ///  notify, which will be triggered when server will call Receive
+        /// </summary>
         [Test]
         public void SSubscribe_SubcribingToContentServer_SubscriberShouldGetMsgOnNotify()
         {
@@ -918,6 +1088,10 @@ namespace Testing.Content
             }
         }
 
+        /// <summary>
+        /// This will keep track of all contexts created over server for testing purpose when we will call
+        /// SGetAllMessages and SSendAllMessagesToClient
+        /// </summary>
         List<ChatContext> chatList = new List<ChatContext>();
     }
 }
