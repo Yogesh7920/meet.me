@@ -12,6 +12,7 @@ namespace Testing.Dashboard.TestModels
         public TestCommunicator()
         {
             sentData = null;
+            isCommunicatorStopped = false;
         }
 
         public void AddClient<T>(string clientID, T socketObject)
@@ -49,7 +50,7 @@ namespace Testing.Dashboard.TestModels
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            isCommunicatorStopped = true;
         }
 
         public void Subscribe(string identifier, INotificationHandler handler, int priority=1)
@@ -60,6 +61,6 @@ namespace Testing.Dashboard.TestModels
         public int clientCount;
         public string ipAddressAndPort;
         public string sentData;
-
+        public bool isCommunicatorStopped;
     }
 }

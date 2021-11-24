@@ -6,12 +6,12 @@ using System;
 
 namespace Testing.Content
 {
-    internal class FakeContentListener : IContentListener
+    public class FakeContentListener : IContentListener
     {
         private ReceiveMessageData _rcvMsgData;
         private List<ChatContext> _chatContextList;
 
-        FakeContentListener()
+        public FakeContentListener()
         {
             _rcvMsgData = new ReceiveMessageData();
             _chatContextList = new List<ChatContext>();

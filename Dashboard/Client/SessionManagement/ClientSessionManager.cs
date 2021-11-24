@@ -29,14 +29,15 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public ClientSessionManager()
         {
+            TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe(moduleIdentifier, this);
-            _contentClient = ContentClientFactory.getInstance();
 
-            TraceManager session = new();
-            session.TraceListener();
+            _contentClient = ContentClientFactory.GetInstance();
+            clientBoardStateManager = ClientBoardStateManager.Instance;
+            clientBoardStateManager.Start();
 
             if (_clients == null)
             {
@@ -292,10 +293,8 @@ namespace Dashboard.Client.SessionManagement
             if (_user == null)
             {
                 _user = user;
-                IClientBoardStateManager clientBoardStateManager = ClientBoardStateManager.Instance;
-                clientBoardStateManager.Start();
                 clientBoardStateManager.SetUser(user.userID.ToString());
-                ContentClientFactory.setUser(user.userID);
+                ContentClientFactory.SetUser(user.userID);
             }
 
             // The user received from the server side is equal to _user only in the case of 
