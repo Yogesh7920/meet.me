@@ -60,9 +60,13 @@ namespace Whiteboard
             {
                 return _polyline.ShapeMaker(start, end, prevShape);
             }
-            else
+            else if (shapeType == ShapeType.RECTANGLE)
             {
                 return _rectangle.ShapeMaker(start, end, prevShape);
+            }
+            else
+            {
+                throw new Exception("Invalid Object type");
             }
         }
 

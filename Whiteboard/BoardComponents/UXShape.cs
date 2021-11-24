@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/23/2021
 **/
 
 using System;
@@ -49,7 +49,9 @@ namespace Whiteboard
         /// </summary>
         public int CheckPointNumber;
 
-        // Operation performed on the state.
+        /// <summary>
+        /// Operation to be performed on the state.
+        /// </summary>
         public Operation OperationType;
 
         /// <summary>
@@ -74,7 +76,6 @@ namespace Whiteboard
             {
                 Color = Color.FromArgb(255, Convert.ToByte(s.ShapeFill.R), Convert.ToByte(s.ShapeFill.G), Convert.ToByte(s.ShapeFill.B))
             };
-
             // setting paramaters based on shape
             if (s.ShapeIdentifier == ShapeType.ELLIPSE)
             {
@@ -99,14 +100,16 @@ namespace Whiteboard
             }
             else if (s.ShapeIdentifier == ShapeType.LINE)
             {
+                Coordinate dir = s.Center - s.Start;
+
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
-                    X1 = s.Start.R,
-                    Y1 = s.Start.C,
-                    X2 = s.Start.R + s.Height,
-                    Y2 = s.Start.R + s.Width
+                    Y1 = s.Center.R,
+                    X1 = s.Center.C - (s.Width / 2),
+                    Y2 = s.Center.R,
+                    X2 = s.Center.C + (s.Width / 2)
                 };
-                
+
                 WindowsShape = LineUXElement;
             }
             else
@@ -133,6 +136,10 @@ namespace Whiteboard
             if (shapeId != null)
             {
                 WindowsShape.Uid = shapeId;
+            }
+            else
+            {
+                WindowsShape.Uid = Guid.NewGuid().ToString();
             }
             
         }
