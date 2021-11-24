@@ -9,9 +9,12 @@ using Dashboard.Server.Summary;
 using Content;
 using Whiteboard;
 using ScreenSharing;
+using Dashboard.Server.Telemetry;
 
 namespace Dashboard.Server.SessionManagement
 {
+    public delegate void NotifyEndMeet();
+
     public class ServerSessionManager : ITelemetrySessionManager, IUXServerSessionManager, INotificationHandler
     {
         /// <summary>
@@ -23,6 +26,7 @@ namespace Dashboard.Server.SessionManagement
             TraceManager traceManager = new();
 
             moduleIdentifier = "Dashboard";
+            summarySaved = false;
             _sessionData = new SessionData();
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
@@ -36,6 +40,8 @@ namespace Dashboard.Server.SessionManagement
 
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(moduleIdentifier, this);
+
+            _telemetry = new Telemetry.Telemetry();
         }
 
         /// <summary>
@@ -58,6 +64,7 @@ namespace Dashboard.Server.SessionManagement
 
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
+            summarySaved = false;
         }
 
         /// <summary>
@@ -90,7 +97,7 @@ namespace Dashboard.Server.SessionManagement
             NotifyTelemetryModule();
 
             // serialize and broadcast the data back to the client side.
-            SendDataToClient("addClient", _sessionData, null, user);
+            SendDataToClient("addClient", _sessionData, null, null, user);
         }
 
         /// <summary>
@@ -121,14 +128,14 @@ namespace Dashboard.Server.SessionManagement
                 allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
 
                 // creating the summary from the chats
-                string summary = _summarizer.GetSummary(allChatsTillNow);
+                _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
 
                 // returning the summary
-                return new SummaryData(summary);
+                return new SummaryData(_sessionSummary);
             }
             catch(Exception e)
             {
-                Console.WriteLine("No messages received: "+e.Message);
+                Console.WriteLine("Summary Creation Failed: " + e.Message);
                 return null;
             }
         }
@@ -137,15 +144,26 @@ namespace Dashboard.Server.SessionManagement
         {
             ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
 
-            bool summarySaved = _summarizer.SaveSummary(allChats);
+            summarySaved = _summarizer.SaveSummary(allChats);
+            //_telemetry.SaveAnalytics(allChats);
 
             if (summarySaved == true)
             {
                 UserData user = new(receivedObject.username, receivedObject.userID);
-                SendDataToClient("endMeet", _sessionData, null, user);
+                SendDataToClient("endMeet", _sessionData, null, null, user);
             }
             _communicator.Stop();
-            // Cannot find telemetry factory yet.
+            MeetingEnded?.Invoke();
+        }
+
+        private void GetAnalyticsProcedure(ClientToServerData receivedObject)
+        {
+            ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
+            _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+
+            UserData user = new(receivedObject.username, receivedObject.userID);
+            //SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
+            SendDataToClient("getAnalytics", null, null, "somethign", user);
         }
 
         /// <summary>
@@ -184,6 +202,16 @@ namespace Dashboard.Server.SessionManagement
 
         }
 
+        public string GetStoredSummary()
+        {
+            return _sessionSummary;
+        }
+
+        public SessionData GetSessionData()
+        {
+            return _sessionData;
+        }
+
         /// <summary>
         /// This method is called when a request for getting summary reaches the server side.
         /// A summary is created along with a user object (with the ID and the name of the user who requested the summary)
@@ -194,8 +222,7 @@ namespace Dashboard.Server.SessionManagement
         {
             SummaryData summaryData = CreateSummary();
             UserData user = new(receivedObject.username, receivedObject.userID);
-
-            SendDataToClient("getSummary", null, summaryData, user);
+            SendDataToClient("getSummary", null, summaryData, null, user);
         }
 
         /// <summary>
@@ -291,6 +318,9 @@ namespace Dashboard.Server.SessionManagement
                     GetSummaryProcedure(deserializedObj);
                     return;
 
+                case "getAnalytics":
+                    return;
+
                 case "removeClient":
                     RemoveClientProcedure(deserializedObj);
                     return;
@@ -309,7 +339,7 @@ namespace Dashboard.Server.SessionManagement
             UserData userToRemove = new(receivedObject.username, receivedObject.userID);
             RemoveUserFromSession(userToRemove);
             NotifyTelemetryModule();
-            SendDataToClient("removeClient", _sessionData, null, userToRemove);
+            SendDataToClient("removeClient", _sessionData, null, null, userToRemove);
         }
 
         private void RemoveUserFromSession(UserData userToRemove)
@@ -329,12 +359,13 @@ namespace Dashboard.Server.SessionManagement
             }
         }
 
-        private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, UserData user)
+        private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, string sessionaAnalytics, UserData user)
+        //private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, SessionAnalytics sessionaAnalytics, UserData user)
         {
             ServerToClientData serverToClientData;
             lock (this)
             {
-                serverToClientData = new ServerToClientData(eventName, sessionData, summaryData, user);
+                serverToClientData = new ServerToClientData(eventName, sessionData, summaryData, sessionaAnalytics, user);
                 string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
                 _communicator.Send(serializedSessionData, moduleIdentifier);
             }
@@ -357,6 +388,8 @@ namespace Dashboard.Server.SessionManagement
         private readonly ICommunicator _communicator;
         private readonly ISerializer _serializer;
         int userCount;
+        private string _sessionSummary;
+        public bool summarySaved;
 
         private readonly List<ITelemetryNotifications> _telemetrySubscribers;
 
@@ -364,5 +397,9 @@ namespace Dashboard.Server.SessionManagement
         private MeetingCredentials _meetingCredentials;
         private readonly ISummarizer _summarizer;
         private readonly IContentServer _contentServer;
+        private SessionAnalytics _sessionAnalytics;
+        private ITelemetry _telemetry;
+
+        public event NotifyEndMeet MeetingEnded;
     }
 }
