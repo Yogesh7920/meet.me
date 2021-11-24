@@ -25,6 +25,13 @@ namespace Content
             _communicator = communicator;
             _serializer = new Serializer();
         }
+		private bool MessageIsvalid(string message)
+		{
+			if(message == null || message == "")
+				return false;
+
+			return true;
+		}
 
         public int UserId { get; set; }
 
@@ -46,7 +53,7 @@ namespace Content
 
         public void ChatNewMessage(SendMessageData toserver)
         {
-			if(toserver.Message != null){
+			if(MessageIsvalid(toserver.Message)){
 				var tosend = SendToMessage(toserver, MessageEvent.NewMessage);
 				tosend.MessageId = -1;
 				var xml = _serializer.Serialize(tosend);
@@ -55,22 +62,29 @@ namespace Content
 			}
 			else
 			{
-				throw new ArgumentException("Null Message String");
+				throw new ArgumentException("Invalid Message String");
 			}
         }
 
         public void ChatUpdate(int messageId, string newMessage)
         {
+			if(MessageIsvalid(NewMessage)){
+				var toSend = new MessageData();
+				toSend.MessageId = messageId;
+				toSend.Event = MessageEvent.Update;
+				toSend.SenderId = UserId;
+				toSend.Message = newMessage;
+				toSend.Type = MessageType.Chat;
+				var xml = _serializer.Serialize(toSend);
+				Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
+				_communicator.Send(xml, _moduleIdentifier);
+			}
+			else
+			{
+				throw new ArgumentException("Invalid Message String");
+			}
+
 			
-			var toSend = new MessageData();
-			toSend.MessageId = messageId;
-            toSend.Event = MessageEvent.Update;
-            toSend.SenderId = UserId;
-			toSend.Message = newMessage;
-			toSend.Type = MessageType.Chat;
-			var xml = _serializer.Serialize(toSend);
-			Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
-            _communicator.Send(xml, _moduleIdentifier);
         }
 
         public void ChatStar(int messageId)
