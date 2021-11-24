@@ -8,7 +8,7 @@ namespace Content
     internal class ContentServer : IContentServer
     {
         private readonly List<IContentListener> _subscribers;
-        private readonly ICommunicator _communicator;
+        private ICommunicator _communicator;
         private readonly INotificationHandler _notificationHandler;
         private readonly ContentDatabase _contentDatabase;
         private readonly ISerializer _serializer;
@@ -26,6 +26,17 @@ namespace Content
             _chatContextServer = new ChatContextServer(_contentDatabase);
             _serializer = new Serializer();
             _communicator.Subscribe("Content", _notificationHandler);
+        }
+
+        // getter and setter for communicator
+        public ICommunicator Communicator
+        {
+            get => _communicator;
+            set
+            {
+                _communicator = value;
+                _communicator.Subscribe("Content", _notificationHandler);
+            }
         }
 
         /// <inheritdoc />
@@ -102,9 +113,9 @@ namespace Content
             if (messageData.Event != MessageEvent.Download)
             {
                 Trace.WriteLine("[ContentServer] Notifying subscribers");
-                Notify(messageData);
+                Notify(receiveMessageData);
                 Trace.WriteLine("[ContentServer] Sending message to clients");
-                Send(messageData);
+                Send(receiveMessageData);
             }
             else
             {

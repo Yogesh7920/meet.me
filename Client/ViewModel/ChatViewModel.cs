@@ -74,7 +74,7 @@ namespace Client.ViewModel
                             lock (this)
                             {
 
-                                if(messageData.Event == MessageEvent.NewMessage)
+                                if (messageData.Event == MessageEvent.NewMessage)
                                 {
                                     _messages.Add(messageData.MessageId, messageData.Message);
                                     ReceivedMsg = new Message();
@@ -121,7 +121,7 @@ namespace Client.ViewModel
                             {
                                 foreach (ChatContext msgLst in allMessages)
                                 {
-                                    foreach(ReceiveMessageData messageData in msgLst.MsgList)
+                                    foreach (ReceiveMessageData messageData in msgLst.MsgList)
                                     {
                                         _messages.Add(messageData.MessageId, messageData.Message);
                                         ReceivedMsg = new Message();
