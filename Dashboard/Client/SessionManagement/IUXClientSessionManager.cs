@@ -50,9 +50,15 @@ namespace Dashboard.Client.SessionManagement
         /// <summary>
         /// Gather analytics of the users and messages.
         /// </summary>
-        SessionAnalytics GetAnalytics();
+        void GetAnalytics();
 
+        // Event for notifying summary creation 
         public event NotifySummaryCreated SummaryCreated;
+
+        // Event for notifying the end of the meeting on the client side
         public event NotifyEndMeet MeetingEnded;
+
+        // Event for notifying the creation of anlalytics to the client UX.
+        public event NotifyAnalyticsCreated AnalyticsCreated;
     }
 }

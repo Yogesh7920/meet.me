@@ -13,13 +13,17 @@ using Dashboard.Server.Telemetry;
 
 namespace Dashboard.Server.SessionManagement
 {
+    // Delegate for the MeetingEnded event
     public delegate void NotifyEndMeet();
 
     public class ServerSessionManager : ITelemetrySessionManager, IUXServerSessionManager, INotificationHandler
     {
         /// <summary>
-        /// Constructor for the ServerSessionManager, calls the 
-        /// tracelistener and creates a list for telemetry subscribers.
+        /// Constructor for the ServerSessionManager. It initialises the 
+        /// tracelistener, whiteboard module, content module, screenshare module, 
+        /// networking module, summary module, telemetry moudle and creates a list 
+        /// for telemetry subscribers. The serverSessionManager also subscribes 
+        /// to the communicator for notifications. It maintains the userCount.
         /// </summary>
         public ServerSessionManager()
         {
@@ -45,8 +49,8 @@ namespace Dashboard.Server.SessionManagement
         }
 
         /// <summary>
-        /// Constructor for the ServerSessionManager, calls the 
-        /// tracelistener and creates a list for telemetry subscribers.
+        /// This constructor is used to set fake communicator and contentServer for the
+        /// puprose of testing and debugging.
         /// </summary>
         public ServerSessionManager(ICommunicator communicator, IContentServer contentServer)
         {
@@ -81,9 +85,10 @@ namespace Dashboard.Server.SessionManagement
 
         /// <summary>
         /// This function updates the session, notifies telemetry and 
-        /// broadcast the new session data
+        /// broadcast the new session data to all users.
         /// </summary>
-        /// <param name="arrivedClient"></param>
+        /// <param name="arrivedClient"> A ClientToServerData object which contains the details such as the
+        /// eventType and the user who wants to join. </param>
         private void ClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
@@ -105,7 +110,7 @@ namespace Dashboard.Server.SessionManagement
         /// client side.
         /// </summary>
         /// <param name="username"> The username of the user </param>
-        /// <returns></returns>
+        /// <returns>An UserData object that contains a unique ID for the username provided. </returns>
         private UserData CreateUser(string username)
         {
             UserData user = new(username, userCount);
@@ -122,7 +127,6 @@ namespace Dashboard.Server.SessionManagement
         {
             try
             {
-                //_contentServer.s
                 // fetching all the chats from the content module.
                 ChatContext[] allChatsTillNow;
                 allChatsTillNow = _contentServer.SGetAllMessages().ToArray();
@@ -135,35 +139,76 @@ namespace Dashboard.Server.SessionManagement
             }
             catch(Exception e)
             {
-                Console.WriteLine("Summary Creation Failed: " + e.Message);
+                Trace.WriteLine("Summary Creation Failed: " + e.Message);
                 return null;
             }
         }
 
+        /// <summary>
+        /// This method is called when the host wants to end the meeting. The summary and analytics
+        /// of the session is created and stored locally. The UX server is then notified about the end of the 
+        /// meet and the client side session manager is also provided with the same information.
+        /// </summary>
+        /// <param name="receivedObject"> A ClientToServerData object which contains the eventType for ending
+        /// the session.</param>
         private void EndMeetProcedure(ClientToServerData receivedObject)
         {
-            ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
-
-            summarySaved = _summarizer.SaveSummary(allChats);
-            //_telemetry.SaveAnalytics(allChats);
-
-            if (summarySaved == true)
+            int tries = 3;
+            // User who requested to end the meet.
+            UserData user = new(receivedObject.username, receivedObject.userID);
+            try
             {
-                UserData user = new(receivedObject.username, receivedObject.userID);
+                // n tries are made to save summary and analytics before ending the meet
+                while(tries > 0 && summarySaved == false)
+                {
+                    // Fetching all the chats from the content module
+                    ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
+
+
+                    summarySaved = _summarizer.SaveSummary(allChats);
+                    _telemetry.SaveAnalytics(allChats);
+
+                    tries--;
+                }
+                SendDataToClient("endMeet", _sessionData, null, null, user);
+
+            }
+            catch (Exception e) 
+            {
+                // In case of any exception, the meeting is ended without saving the summary.
+                // The user is notified about this
+                Trace.WriteLine("The summary/analytics could not be saved: ", e.Message);
                 SendDataToClient("endMeet", _sessionData, null, null, user);
             }
+
+            // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
             MeetingEnded?.Invoke();
         }
 
+        /// <summary>
+        /// Fetches the chats from the content moudle and then asks telemetry to generate analytics on it.
+        /// The analytics created are then sent to the client side again.
+        /// </summary>
+        /// <param name="receivedObject">  A ClientToServerData object which contains the eventType for getting analytics
+        /// and the user who requested them. </param>
         private void GetAnalyticsProcedure(ClientToServerData receivedObject)
         {
-            ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
-            _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
-
             UserData user = new(receivedObject.username, receivedObject.userID);
-            //SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
-            SendDataToClient("getAnalytics", null, null, "somethign", user);
+            try
+            {
+                // Fetching the chats and creating analytics on them
+                ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
+                _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                SendDataToClient("getAnalytics", null, null, "somethign", user);
+            }
+            catch (Exception e)
+            {
+                // In case of a failure, the user is returned a null object
+                Trace.WriteLine("Unable to create analytics: " + e.Message);
+                SendDataToClient("getAnalytics", null, null, null, user);
+
+            }
         }
 
         /// <summary>
@@ -178,19 +223,17 @@ namespace Dashboard.Server.SessionManagement
                 Trace.WriteLine("Fetching IP Address and port from the networking module");
                 string meetAddress = _communicator.Start();
 
-                // Debug.Assert(IsValidIPAddress(meetAddress), "IP Address is NOT valid!");
+                // Invalid credentials results in a returnign a null object
                 if (IsValidIPAddress(meetAddress) != true)
                 {
                     Trace.WriteLine("IP Address is not valid, returning null");
                     return null;
                 }
 
+                // For valid IP address, a MeetingCredentials Object is created and returned
                 Trace.WriteLine("Returning the IP Address to the UX");
-                //string ipAddress = meetAddress.Substring(0, meetAddress.IndexOf(':'));
                 string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
-                //int port = Convert.ToInt16(meetAddress.Substring(meetAddress.IndexOf(':') + 2));
                 int port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
-
 
                 return _meetingCredentials = new MeetingCredentials(ipAddress, port);
             }
@@ -202,11 +245,19 @@ namespace Dashboard.Server.SessionManagement
 
         }
 
+        /// <summary>
+        /// A getter function to fetch the summary stored in the server side.
+        /// </summary>
+        /// <returns> Summary in the form of a string. </returns>
         public string GetStoredSummary()
         {
             return _sessionSummary;
         }
 
+        /// <summary>
+        /// Fetches the sessionData of the server. Mainly for testing and debugging.
+        /// </summary>
+        /// <returns> A sessionData object which contains the current users in the meeting.</returns>
         public SessionData GetSessionData()
         {
             return _sessionData;
@@ -308,6 +359,13 @@ namespace Dashboard.Server.SessionManagement
             // based on the 'eventType' field of the deserialized object. 
             ClientToServerData deserializedObj = _serializer.Deserialize<ClientToServerData>(serializedObject);
 
+            // If a null object or username is received, return without further processing.
+            if(deserializedObj == null || deserializedObj.username == null)
+            {
+                Trace.WriteLine("Null object provided by the client.");
+                return;
+            }
+
             switch (deserializedObj.eventType)
             {
                 case "addClient":
@@ -330,10 +388,17 @@ namespace Dashboard.Server.SessionManagement
                     return;
 
                 default:
-                    throw new NotImplementedException();
+                    Trace.WriteLine("Incorrect Event type specified");
+                    return;
             }
         }
 
+        /// <summary>
+        /// Removes the user received (from the ClientToServerData) object from the sessionData and
+        /// Notifies telemetry about it. The new session is then broadcasted to all the users.
+        /// </summary>
+        /// <param name="receivedObject"> A ClientToServerData object which contains the eventType for removing the user
+        /// and the user who wants to leave. </param>
         private void RemoveClientProcedure(ClientToServerData receivedObject)
         {
             UserData userToRemove = new(receivedObject.username, receivedObject.userID);
@@ -341,10 +406,18 @@ namespace Dashboard.Server.SessionManagement
             NotifyTelemetryModule();
             SendDataToClient("removeClient", _sessionData, null, null, userToRemove);
         }
-
+        
+        /// <summary>
+        /// Removes the user from the user list in the sessionData.
+        /// </summary>
+        /// <param name="userToRemove">A UserData object that denotes the used to remove. </param>
         private void RemoveUserFromSession(UserData userToRemove)
         {
-            // raise exception if the user is not in the session or the _sessionData is null
+            if(_sessionData == null)
+            {
+                Trace.Write("Session is empty, cannot remove user");
+                return;
+            }
             List<UserData> users = _sessionData.users;
             for (int i = 0; i < users.Count; ++i)
             {
@@ -359,6 +432,14 @@ namespace Dashboard.Server.SessionManagement
             }
         }
 
+        /// <summary>
+        /// Function to send data from Server to client side of the session manager.
+        /// </summary>
+        /// <param name="eventName">The type of event. </param>
+        /// <param name="sessionData">The current session data. </param>
+        /// <param name="summaryData">The summary of the session. </param>
+        /// <param name="sessionaAnalytics">The analytics of the session.</param>
+        /// <param name="user">The user to broadcast/reply. </param>
         private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, string sessionaAnalytics, UserData user)
         //private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, SessionAnalytics sessionaAnalytics, UserData user)
         {
@@ -376,7 +457,7 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         /// <param name="listener"> The subscriber. </param>
         /// <param name="identifier"> The listener of the subscriber </param>
-        public void Subcribe(ITelemetryNotifications listener)
+        public void Subscribe(ITelemetryNotifications listener)
         {
             lock (this)
             {
