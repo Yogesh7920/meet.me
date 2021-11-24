@@ -20,25 +20,25 @@ namespace Testing.Content
         [Test]
         public void Test_Converting_SendMessageObject_To_MessageData()
         {
-			Utils _util = new Utils();
-			SendMessageData SampleData = _util.GetSendMessageData2();
-			ChatClient conch = new ChatClient(_util.GetFakeCommunicator());
-			MessageData x = conch.SendToMessage(SampleData, MessageEvent.NewMessage);
+			Utils util = new Utils();
+			SendMessageData sampleData = util.GetSendMessageData2();
+			ChatClient conch = new ChatClient(util.GetFakeCommunicator());
+			MessageData x = conch.SendToMessage(sampleData, MessageEvent.NewMessage);
 
-			Assert.AreEqual(x.Message, SampleData.Message);
+			Assert.AreEqual(x.Message, sampleData.Message);
 			Assert.AreEqual(x.Event, MessageEvent.NewMessage);
-			Assert.AreEqual(x.Type, SampleData.Type);
+			Assert.AreEqual(x.Type, sampleData.Type);
 			Assert.AreEqual(x.FileData, null);
 			Assert.AreEqual(x.Starred, false);
-			Assert.AreEqual(x.ReplyThreadId, SampleData.ReplyThreadId);
-			Assert.AreEqual(x.ReceiverIds.Length, SampleData.ReceiverIds.Length);
+			Assert.AreEqual(x.ReplyThreadId, sampleData.ReplyThreadId);
+			Assert.AreEqual(x.ReceiverIds.Length, sampleData.ReceiverIds.Length);
         }
 
 		[Test]
 		public void Test_ChatNewMessage()
 		{
 			Utils _util = new Utils();
-            int UserId = 1001;
+            int userId = 1001;
             SendMessageData SampleData = _util.GenerateChatSendMsgData("Apple", new int[] { 1002 }, type: MessageType.Chat);
             MessageData SampleMsgData = _util.GenerateChatMessageData(MessageEvent.NewMessage, "Apple", new int[] { 1002 }, type: MessageType.Chat);
 
@@ -46,7 +46,7 @@ namespace Testing.Content
            
 			ChatClient _contentChat = new ChatClient(_util.GetFakeCommunicator());
             FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
-            _contentChat.UserId = UserId;
+            _contentChat.userId = userId;
             _contentChat.Communicator = _fakeCommunicator;
 
             _contentChat.ChatNewMessage(SampleData);
@@ -63,7 +63,7 @@ namespace Testing.Content
                 Assert.AreEqual(receivedMessage.FileData, SampleMsgData.FileData);
                 Assert.AreEqual(receivedMessage.Starred, SampleMsgData.Starred);
                 Assert.AreEqual(receivedMessage.ReplyThreadId, SampleMsgData.ReplyThreadId);
-                Assert.AreEqual(receivedMessage.SenderId, UserId);
+                Assert.AreEqual(receivedMessage.SenderId, userId);
                 Assert.AreEqual(receivedMessage.ReceiverIds.Length, SampleMsgData.ReceiverIds.Length);
             }
             else
@@ -74,19 +74,38 @@ namespace Testing.Content
 		[Test]
 		public void Test_ChatNewMessage_EmptyString()
 		{
-			Utils _util = new Utils();
+			Utils util = new Utils();
             int UserId = 1001;
-            SendMessageData SampleData = _util.GenerateChatSendMsgData("", new int[] { 1002 }, type: MessageType.Chat);
+            SendMessageData SampleData = util.GenerateChatSendMsgData("", new int[] { 1002 }, type: MessageType.Chat);
             ISerializer _serializer = new Serializer();
            
-			ChatClient _contentChat = new ChatClient(_util.GetFakeCommunicator());
-            FakeCommunicator _fakeCommunicator = _util.GetFakeCommunicator();
+			ChatClient _contentChat = new ChatClient(util.GetFakeCommunicator());
+            FakeCommunicator _fakeCommunicator = util.GetFakeCommunicator();
             _contentChat.UserId = UserId;
             _contentChat.Communicator = _fakeCommunicator;
 
             
             ArgumentException ex = Assert.Throws<ArgumentException>(() => _contentChat.ChatNewMessage(SampleData));
-            Assert.AreEqual("Empty Message String", ex.Message);
+			bool contains = ex.Message.IndexOf("Invalid Message", StringComparison.OrdinalIgnoreCase) >= 0;
+            Assert.That(contains);
+		}
+		[Test]
+		public void Test_ChatNewMessage_NullString()
+		{
+			Utils util = new Utils();
+            int UserId = 1001;
+            SendMessageData SampleData = util.GenerateChatSendMsgData(null, new int[] { 1002 }, type: MessageType.Chat);
+            ISerializer _serializer = new Serializer();
+           
+			ChatClient _contentChat = new ChatClient(util.GetFakeCommunicator());
+            FakeCommunicator _fakeCommunicator = util.GetFakeCommunicator();
+            _contentChat.UserId = UserId;
+            _contentChat.Communicator = _fakeCommunicator;
+
+            
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => _contentChat.ChatNewMessage(SampleData));
+			bool contains = ex.Message.IndexOf("Invalid Message", StringComparison.OrdinalIgnoreCase) >= 0;
+            Assert.That(contains);
 		}
 		[Test]
 		public void Test_ChatUpdate()
