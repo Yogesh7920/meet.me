@@ -21,8 +21,8 @@ namespace Content
             _chatContexts = new List<ChatContext>();
             _chatContextsMap = new Dictionary<int, int>();
             _messageMap = new Dictionary<int, int>();
-            IdGenerator.resetChatContextId();
-            IdGenerator.resetMessageId();
+            IdGenerator.ResetChatContextId();
+            IdGenerator.ResetMessageId();
         }
 
         /// <summary>
@@ -59,27 +59,27 @@ namespace Content
         /// <returns>Retuns the new message stored</returns>
         public MessageData StoreMessage(MessageData messageData)
         {
-            messageData.MessageId = IdGenerator.getMessageId();
+            messageData.MessageId = IdGenerator.GetMessageId();
             if (_chatContextsMap.ContainsKey(messageData.ReplyThreadId))
             {
                 int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
                 ChatContext chatContext = _chatContexts[threadIndex];
-                ReceiveMessageData msg = new ReceiveMessageData(messageData);
+                ReceiveMessageData msg = new(messageData);
                 chatContext.MsgList.Add(msg);
                 chatContext.NumOfMessages++;
                 _messageMap[messageData.MessageId] = chatContext.NumOfMessages - 1;
             }
             else
             {
-                ChatContext chatContext = new ChatContext
+                ChatContext chatContext = new()
                 {
                     CreationTime = messageData.SentTime,
                     NumOfMessages = 1,
                     MsgList = new List<ReceiveMessageData>(),
-                    ThreadId = IdGenerator.getChatContextId()
+                    ThreadId = IdGenerator.GetChatContextId()
                 };
                 messageData.ReplyThreadId = chatContext.ThreadId;
-                ReceiveMessageData msg = new ReceiveMessageData(messageData);
+                ReceiveMessageData msg = new(messageData);
                 chatContext.MsgList.Add(msg);
 
                 _messageMap[messageData.MessageId] = 0;

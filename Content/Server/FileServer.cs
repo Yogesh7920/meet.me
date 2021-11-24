@@ -67,6 +67,7 @@ namespace Content
 
             // store file path on which the file will be downloaded on the client's system
             receiveMessageData.Message = messageData.Message;
+            receiveMessageData.Event = MessageEvent.Download;
             return receiveMessageData;
         }
     }
