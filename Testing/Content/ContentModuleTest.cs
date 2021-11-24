@@ -360,7 +360,7 @@ namespace Testing.Content
             string currentDirectory = Directory.GetCurrentDirectory() as string;
             string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
-            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File);
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File, replyId: 1);
             sampleMsgDataSend.MessageId = msgId;
             sampleMsgDataSend.SenderId = userId;
             ISerializer serializer = new Serializer();
@@ -403,7 +403,7 @@ namespace Testing.Content
             string currentDirectory = Directory.GetCurrentDirectory() as string;
             string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string filePath = path[0] + "\\Testing\\Content\\Test_File.pdf";
-            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File);
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage, filePath, new int[] { }, type: MessageType.File, replyId: 1);
             sampleMsgDataSend.MessageId = msgId;
             sampleMsgDataSend.SenderId = userId;
             ISerializer serializer = new Serializer();
@@ -425,7 +425,7 @@ namespace Testing.Content
             int userId = 1001;
             int otherUserId = 1005;
             int msgId = 18;
-            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage,"Hello", new int[] { }, type: MessageType.Chat);
+            MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage,"Hello", new int[] { }, type: MessageType.Chat, replyId: 1);
             sampleMsgDataSend.MessageId = msgId;
             sampleMsgDataSend.SenderId = otherUserId;
             ISerializer serializer = new Serializer();
