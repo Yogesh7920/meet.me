@@ -34,7 +34,7 @@ namespace Testing.Content
         {
             maxValidMsgId = 0;
             maxValidThreadId = 0;
-            sleeptime = 10; // 10 ms is enough judging by trial and error
+            sleeptime = 50; // trial and error
             u = new Utils();
             serializer = new Serializer();
 
