@@ -40,7 +40,7 @@ namespace Content
                 _contentHandler.OnReceive(_receivedMessage);
             }
 
-            else if (string.Equals(deserializedType, "Content.ArrayOfChatContext"))
+            else if (string.Equals(deserializedType, typeof(List<ChatContext>).ToString()))
             {
                 _allMessages = _serializer.Deserialize<List<ChatContext>>(data);
                 _contentHandler.OnReceive(_allMessages);
