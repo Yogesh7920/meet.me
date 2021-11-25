@@ -106,7 +106,7 @@ namespace Testing.Content
             SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] { 1002 }, replyId: 101);
             contentClient.UserId = userId;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
-            Assert.AreEqual(ex.Message.Contains("Thread with given thread id"), true);
+            Assert.That(ex.Message.Contains("thread id"));
         }
 
         [Test]
@@ -715,7 +715,7 @@ namespace Testing.Content
             iContentClient.CSubscribe(iFakeListener);
             ReceiveMessageData dataToSerialize1 = util.GenerateNewReceiveMessageData("Hello", MessageId: 1, ReplyThreadId: 1);
             ReceiveMessageData dataToSerialize2 = util.GenerateNewReceiveMessageData("Hi", MessageId: 2, ReplyThreadId: 2);
-            ReceiveMessageData dataToSerialize3 = util.GenerateNewReceiveMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 1);
+            ReceiveMessageData dataToSerialize3 = util.GenerateNewReceiveMessageData("How are you? I am fine!", MessageId: 3, ReplyThreadId: 1);
             ChatContext chatList1 = new ChatContext();
             chatList1.ThreadId = 1;
             chatList1.MsgList.Add(dataToSerialize1);

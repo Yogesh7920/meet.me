@@ -50,6 +50,9 @@ namespace Content
         /// </summary>
         public MessageType Type;
 
+        /// <summary>
+        ///     Id of the message being replied to
+        /// </summary>
         public int ReplyMsgId;
 
         public ReceiveMessageData()
