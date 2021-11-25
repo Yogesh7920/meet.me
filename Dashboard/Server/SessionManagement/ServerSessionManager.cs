@@ -45,7 +45,7 @@ namespace Dashboard.Server.SessionManagement
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(moduleIdentifier, this);
 
-            
+            _telemetry = new Telemetry.Telemetry();
         }
 
         /// <summary>
@@ -113,10 +113,6 @@ namespace Dashboard.Server.SessionManagement
         /// <returns>An UserData object that contains a unique ID for the username provided. </returns>
         private UserData CreateUser(string username)
         {
-            if(userCount == 1)
-            {
-                _telemetry = new Telemetry.Telemetry();
-            }
             UserData user = new(username, userCount);
             return user;
         }

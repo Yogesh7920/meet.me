@@ -1,10 +1,3 @@
-/// <author>Siddharth Shah</author>
-/// <created>14/11/2021</created>
-/// <summary>
-///		This file tests the modular end ponits
-///		for the Dashboard module
-/// </summary>
-
 using NUnit.Framework;
 using Networking;
 using Testing.Dashboard.TestModels;
@@ -17,8 +10,6 @@ using Dashboard.Server.Persistence;
 using System.IO;
 using Dashboard.Server.Telemetry;
 using Whiteboard;
-
-
 
 namespace Testing.Dashboard
 {
