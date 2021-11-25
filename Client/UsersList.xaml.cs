@@ -26,6 +26,7 @@ namespace Client
         public bool UserListHidden;
         ObservableCollection<UserViewData> users;
         MainWindow obj;
+        HomePageViewModel viewModelHomePage;
         public UsersList(MainWindow instance)
         {
             InitializeComponent();
@@ -35,7 +36,7 @@ namespace Client
             UserListHidden = true;
             UserListHead.Visibility = System.Windows.Visibility.Hidden;
 
-            HomePageViewModel viewModelHomePage = new HomePageViewModel();
+            viewModelHomePage = new HomePageViewModel();
             //subscribe to the property changed event
             viewModelHomePage.UsersListChanged += Listener;
             DataContext = viewModelHomePage;
@@ -47,8 +48,7 @@ namespace Client
         }
         private void Listener(object sender, PropertyChangedEventArgs e)
         {
-            HomePageViewModel viewModel = DataContext as HomePageViewModel;
-            users = new ObservableCollection<UserViewData>(viewModel.users);
+            users = new ObservableCollection<UserViewData>(viewModelHomePage.users);
         }
         private void UsersListClick(object sender, RoutedEventArgs e)
         {
@@ -68,8 +68,7 @@ namespace Client
         }
         public void OnLeaveButtonClick()
         {
-            HomePageViewModel homeviewmodel = DataContext as HomePageViewModel;
-            homeviewmodel.LeftClient();
+            viewModelHomePage.LeftClient();
         }
     }
 }
