@@ -98,16 +98,6 @@ namespace Testing.Content
             Assert.AreEqual("Invalid MessageType field. Must be one of MessageType.Chat or MessageType.File", ex.Message);
         }
 
-        /*
-         // ensure receiver ids isn't null
-            if (toSend.ReceiverIds is null)
-                throw new ArgumentException("List of receiver ids given is null");
-
-            // if the message is part of a thread, ensure thread exists
-            if (toSend.ReplyThreadId != -1)
-                if (!_contextMap.ContainsKey(toSend.ReplyThreadId))
-                    throw new ArgumentException($"Thread with given thread id ({toSend.ReplyThreadId}) doesn't exist");
-         */
 
         [Test]
         public void CSend_ReplyThreadIdDoesNotExist_ShouldThrowException()
@@ -553,51 +543,49 @@ namespace Testing.Content
 
         /// <summary>
         /// This test will check whether contentClient handles subscription, by checking whether subscriber receive msg
+        /// on CSubscribe content client. We will send msg using fakecommunicator to notify Content client who will notify it to subscriber
         /// </summary>
-        //[Test]
-        //public void CSubscribe_SubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
-        //{
-        //    // Subscribing to content client
-        //    iContentClient.CSubscribe(iFakeListener);
-        //    // Building receiveMessageData to notify to subscribers
-        //    ReceiveMessageData receivedData = new ReceiveMessageData();
-        //    string Msg = "hello";  // data will have msg hello
-        //    receivedData.Message = Msg;
-        //    receivedData.MessageId = 2;
-        //    // Notifying to subscribers
-        //    contentClient.Notify(receivedData);
-        //    System.Threading.Thread.Sleep(50);
-        //    // Fetching listened data from listener
-        //    ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
-        //    Assert.AreEqual(listenedData.Message, Msg);
-        //}
+        [Test]
+        public void CSubscribe_SubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
+        {
+            // Subscribing to communicator
+            fakeCommunicator.Subscribe("Content", notificationHandler);
+            // Subscribing to content client
+            iContentClient.CSubscribe(iFakeListener);
+            string msg = "Hello";
+            MessageData dataToSerialize = util.GenerateNewMessageData(msg, MessageId: 401, ReplyThreadId: 1);
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
+            System.Threading.Thread.Sleep(10);
+            // Fetching listened data from listener
+            ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
+            Assert.AreEqual(listenedData.Message, msg);
+        }
 
         ///// <summary>
         ///// This test will check whether contentClient handles multiple subscription, by checking whether all subscriber receive msg
         ///// </summary>
-        //[Test]
-        //public void CSubscribe_MultipleSubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
-        //{
-        //    FakeContentListener _fakeListener1 = new FakeContentListener();
-        //    IContentListener _iFakeListener1 = _fakeListener1;
-        //    FakeContentListener _fakeListener2 = new FakeContentListener();
-        //    IContentListener _iFakeListener2 = _fakeListener2;
-        //    // Subscribing to content client
-        //    iContentClient.CSubscribe(_iFakeListener1);
-        //    iContentClient.CSubscribe(_iFakeListener2);
-        //    // Building receiveMessageData to notify to subscribers
-        //    ReceiveMessageData receivedData = new ReceiveMessageData();
-        //    string Msg = "hello";  // data will have msg hello
-        //    receivedData.Message = Msg;
-        //    // Notifying to subscribers
-        //    contentClient.Notify(receivedData);
-        //    System.Threading.Thread.Sleep(50);
-        //    // Fetching listened data from listener
-        //    ReceiveMessageData listenedData1 = _fakeListener1.GetOnMessageData();
-        //    ReceiveMessageData listenedData2 = _fakeListener2.GetOnMessageData();
-        //    Assert.AreEqual(listenedData1.Message, Msg);
-        //    Assert.AreEqual(listenedData2.Message, Msg);
-        //}
+        [Test]
+        public void CSubscribe_MultipleSubcribingToContentClient_SubscriberShouldGetMsgOnNotify()
+        {
+            // Subscribing to communicator
+            fakeCommunicator.Subscribe("Content", notificationHandler);
+            FakeContentListener fakeListener1 = new FakeContentListener();
+            IContentListener iFakeListener1 = fakeListener1;
+            FakeContentListener fakeListener2 = new FakeContentListener();
+            IContentListener iFakeListener2 = fakeListener2;
+            // Subscribing to content client
+            iContentClient.CSubscribe(iFakeListener1);
+            iContentClient.CSubscribe(iFakeListener2);
+            string msg = "Hello";
+            MessageData dataToSerialize = util.GenerateNewMessageData(msg, MessageId: 402, ReplyThreadId: 1);
+            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
+            System.Threading.Thread.Sleep(10);
+            // Fetching listened data from listener
+            ReceiveMessageData listenedData1 = fakeListener1.GetOnMessageData();
+            ReceiveMessageData listenedData2 = fakeListener2.GetOnMessageData();
+            Assert.AreEqual(listenedData1.Message, msg);
+            Assert.AreEqual(listenedData2.Message, msg);
+        }
 
         /// <summary>
         /// listening unsupported datatype by content, should throw exception
