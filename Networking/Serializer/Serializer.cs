@@ -25,7 +25,8 @@ namespace Networking
     {
         string SerializeJSON<T>(T objectToSerialize)
         {
-            string serializedString = JsonConvert.SerializeObject(objectToSerialize);
+            var jset = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+            string serializedString = JsonConvert.SerializeObject(objectToSerialize, jset);
             return serializedString;
         }
         string SerializeXML<T>(T objectToSerialize)
@@ -48,22 +49,23 @@ namespace Networking
         {
             try
             {
-                string xml = SerializeXML(objectToSerialize);
-                MetaObject obj = new MetaObject(typeof(T).ToString(), xml);
-                return SerializeXML<MetaObject>(obj);
+                string json = SerializeJSON(objectToSerialize);
+                MetaObject obj = new MetaObject(typeof(T).ToString(), json);
+                return SerializeJSON<MetaObject>(obj);
             }
             catch
             {
                 try
                 {
-                    string json = SerializeJSON(objectToSerialize);
-                    MetaObject obj = new MetaObject(typeof(T).ToString(), json);
-                    return SerializeJSON<MetaObject>(obj);
+                    string xml = SerializeXML(objectToSerialize);
+                    MetaObject obj = new MetaObject(typeof(T).ToString(), xml);
+                    return SerializeXML<MetaObject>(obj);
                 }
                 catch
                 {
                     throw;
                 }
+                throw;
             }
         }
 
@@ -102,28 +104,31 @@ namespace Networking
         }
         T deserializeJSON<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json);
+            var jset = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+            return JsonConvert.DeserializeObject<T>(json, jset);
         }
         /// <inheritdoc />
         T ISerializer.Deserialize<T>(string serializedString)
         {
             try
             {
-                MetaObject obj = deserializeXML<MetaObject>(serializedString);
-                return deserializeXML<T>(obj.data);
+                MetaObject obj = deserializeJSON<MetaObject>(serializedString);
+                return deserializeJSON<T>(obj.data);
             }
-            catch (Exception ex)
+            catch (Exception ex1)
             {
                 try
                 {
-                    MetaObject obj = deserializeJSON<MetaObject>(serializedString);
-                    return deserializeJSON<T>(obj.data);
+                    MetaObject obj = deserializeXML<MetaObject>(serializedString);
+                    return deserializeXML<T>(obj.data);
                 }
-                catch
+                catch (Exception ex2)
                 {
-                    Trace.WriteLine(ex.Message);
+                    Trace.WriteLine(ex2.Message);
                     throw;
                 }
+                Trace.WriteLine(ex1.Message);
+                throw;
             }
         }
     }
