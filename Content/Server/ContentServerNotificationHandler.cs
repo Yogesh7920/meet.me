@@ -1,5 +1,9 @@
-﻿using Networking;
-using System;
+﻿/// <author>Sameer Dhiman</author>
+/// <created>16/10/2021</created>
+/// <summary>
+///     This file handles the notifications from Network Module
+/// </summary>
+using Networking;
 
 namespace Content
 {
@@ -16,18 +20,6 @@ namespace Content
         public void OnDataReceived(string data)
         {
             _contentServer.Receive(data);
-        }
-
-        /// <inheritdoc />
-        public void OnClientJoined<T>(T socketObject)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void OnClientLeft(string clientId)
-        {
-            throw new NotImplementedException();
         }
     }
 }

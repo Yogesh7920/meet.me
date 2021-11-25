@@ -1,8 +1,8 @@
 ﻿/**
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
- * Date Created: 15/22/2021
- * Date Modified: 15/22/2021
+ * Date Created: 11/22/2021
+ * Date Modified: 11/23/2021
 **/
 
 using NUnit.Framework;
@@ -13,33 +13,39 @@ using System.Text;
 using System.Threading.Tasks;
 using Whiteboard;
 
-namespace Testing.Whiteboard.Client.Shapes
+namespace Testing.Whiteboard
 {
     [TestFixture]
     class LineTests
     {
         private MainShape _line;
+        private Random _random;
 
         [SetUp]
         public void SetUp()
         {
             _line = new Line();
+            _random = new();
         }
 
         [Test]
-        public void Clone__CreatesClone()
+        public void Clone__CreatesLineClone_ReturnsClone()
         {
-            float height = 2;
-            float width = 2;
-            float strokeWidth = 1;
-            BoardColor strokeColor = new (34, 5, 6);
-            BoardColor fillColor = new (34, 5, 64);
+            // setting some parameters of the line to be cloned
+            float height = _random.Next(0, 10);
+            float width = _random.Next(0, 10);
+            float strokeWidth = _random.Next(0, 3);
+            BoardColor strokeColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
+            BoardColor fillColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
             Coordinate start = new (3, 4);
             Coordinate center = new (4, 5);
             float angleOfRotation = (float)3.00;
 
+            // creating a line to be cloned
             MainShape previousMainShape = new Line(height, width, strokeWidth, strokeColor, fillColor, start, center, null, angleOfRotation);
             MainShape ClonedShape = previousMainShape.Clone();
+
+            // checker on clone to verify it is correct.
             Comparators.Compare(ClonedShape, start, center, height, width, strokeWidth, strokeColor, fillColor, angleOfRotation);
             Assert.IsFalse(ReferenceEquals(previousMainShape, ClonedShape));
             Assert.IsFalse(ReferenceEquals(strokeColor, ClonedShape.StrokeColor));
@@ -51,28 +57,38 @@ namespace Testing.Whiteboard.Client.Shapes
         [Test]
         public void ShapeMaker_NewShape_ReturnsNewShape()
         {
-            MainShape newEllipse = _line.ShapeMaker(new Coordinate(1, 1), new Coordinate(-3, -5), null);
+            // creation of ellipse from stratch.
+            MainShape newLine = _line.ShapeMaker(new Coordinate(-1, 2), new Coordinate(1, 0), null);
 
-            Comparators.Compare(newEllipse, new Coordinate(1, 1), new Coordinate(-1, -2), 4, 6, 1, new BoardColor(0, 0, 0), new BoardColor(255, 255, 255), 0);
-
+            // verify if it is the expected ellipse
+            float expectedWidth = (float)Math.Sqrt(8);
+            Comparators.Compare(newLine, new (-1, 2), new(0, 1), 0,
+                                expectedWidth, 1, new(0, 0, 0), new(255, 255, 255), (float)(3 * Math.PI/4));
         }
 
-        [Test, TestCaseSource(typeof(TestIterators), "ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape_TestCases")]
-        public void ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape(float expectedWidth, float expectedHeight, Coordinate expectedCenter, Coordinate stopDrag)
+        [Test, TestCaseSource(typeof(TestIterators), "ShapeMaker_PreviousLine_ReturnsModifiedPreviousShape_TestCases")]
+        public void ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape(float expectedWidth, Coordinate expectedCenter,
+                                                                          Coordinate stopDrag, float expectedAngle)
         {
-            float height = 2;
-            float width = 2;
+            // setting parameters for ellipse.
+            float height = 0;
+            float width = (float)Math.Sqrt(8);
             float strokeWidth = 1;
             BoardColor strokeColor = new (34, 5, 6);
             BoardColor fillColor = new (34, 5, 64);
-            Coordinate start = new (3, 4);
-            Coordinate center = new (4, 5);
-            float angleOfRotation = 0;
+            Coordinate start = new(2, 2);
+            Coordinate center = new (3, 3);
+            float angleOfRotation = (float)Math.PI/4;
 
-            MainShape previousMainShape = new Line(height, width, strokeWidth, strokeColor.Clone(), fillColor.Clone(), start.Clone(), center.Clone(), null, angleOfRotation);
-            MainShape modification1 = _line.ShapeMaker(new Coordinate(5, 6), stopDrag, previousMainShape);
+            // creating a ellipse to be modified by shapeMaker.
+            MainShape previousMainShape = new Line(height, width, strokeWidth, strokeColor.Clone(),
+                                                   fillColor.Clone(), start.Clone(), center.Clone(), null, angleOfRotation);
+            MainShape modification1 = _line.ShapeMaker(new Coordinate(4, 4), stopDrag, previousMainShape);
+
+            // Modified shape verification
             Assert.That(ReferenceEquals(previousMainShape, modification1));
-            Comparators.Compare(modification1, start, expectedCenter, expectedHeight, expectedWidth, strokeWidth, strokeColor, fillColor, angleOfRotation);
+            Comparators.Compare(modification1, start, expectedCenter, 0, expectedWidth, strokeWidth, strokeColor,
+                                fillColor, expectedAngle);
         }
     }
 }

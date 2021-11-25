@@ -95,7 +95,7 @@ namespace Dashboard
         }
 
         // the List of users in the meeting 
-        public int SessionId;
+        
         public List<UserData> users;
     }
 }

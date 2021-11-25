@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Client.ViewModels;
+using Client.ViewModel;
 
 namespace Client
 {
@@ -35,14 +35,18 @@ namespace Client
             UserListHidden = true;
             UserListHead.Visibility = System.Windows.Visibility.Hidden;
 
-            this.DataContext = new HomePageViewModel();
+            HomePageViewModel viewModelHomePage = new HomePageViewModel();
+            //subscribe to the property changed event
+            viewModelHomePage.UsersListChanged += Listener;
+            DataContext = viewModelHomePage;
+
             users = new ObservableCollection<UserViewData>();
-            //this.UsersListView.ItemsSource = users;
+            UsersListView.ItemsSource = users;
         }
         private void Listener(object sender, PropertyChangedEventArgs e)
         {
-            HomePageViewModel viewModel = this.DataContext as HomePageViewModel;
-            users = new ObservableCollection<UserViewData>(viewModel.users as List<UserViewData>);
+            HomePageViewModel viewModel = DataContext as HomePageViewModel;
+            users = new ObservableCollection<UserViewData>(viewModel.users);
         }
         private void UsersListClick(object sender, RoutedEventArgs e)
         {
@@ -60,13 +64,9 @@ namespace Client
                 UserListHidden = true;
             }
         }
-        /*public void Helper()
-        {
-
-        }*/
         public void OnLeaveButtonClick()
         {
-            HomePageViewModel homeviewmodel = this.DataContext as HomePageViewModel;
+            HomePageViewModel homeviewmodel = DataContext as HomePageViewModel;
             homeviewmodel.LeftClient();
         }
     }

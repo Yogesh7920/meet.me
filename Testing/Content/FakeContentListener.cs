@@ -1,3 +1,10 @@
+/// <author>Sahil J. Chaudhari</author>
+/// <created>20/11/2021</created>
+/// <modified>24/11/2021</modified>
+/// <summary>
+/// This file contains Fake listener which will mimic UX's defined functions of IContentListener for tesing purpose
+/// </summary>
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using Networking;
@@ -6,12 +13,12 @@ using System;
 
 namespace Testing.Content
 {
-    internal class FakeContentListener : IContentListener
+    public class FakeContentListener : IContentListener
     {
         private ReceiveMessageData _rcvMsgData;
         private List<ChatContext> _chatContextList;
 
-        FakeContentListener()
+        public FakeContentListener()
         {
             _rcvMsgData = new ReceiveMessageData();
             _chatContextList = new List<ChatContext>();

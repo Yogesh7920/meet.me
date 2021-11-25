@@ -92,16 +92,24 @@ namespace Dashboard.Server.Summary
 		/// <returns>
 		/// List of string sentences of chats and 
 		/// their corresponding semantic meanings
+		/// along with a dynamic priority
 		/// </returns>
-		private List<(string, List<string>)> Preprocess(string chat)
+		private (List<(string, bool, List<string>)>, float) Preprocess(List<(string, bool)> chat)
 		{
-			List<string> individualMsgs = new List<string>();
-			individualMsgs.AddRange(chat.Split('.'));
-			List<(string, List<string>)> semantics = new List<(string, List<string>)>();
-			foreach (string t in individualMsgs)
-				semantics.Add((t.Trim(), TokenizeLemmatize(t)));
+			List<(string, bool)> individualMsgs = new();
+			float priority = 0;
+			foreach (var c in chat)
+			{
+				priority += c.Item2 ? 1 : 0;
+				foreach (string s in c.Item1.Split('.'))
+					individualMsgs.Add((s, c.Item2));
+			}
+			priority = (priority > 0) ? 10 * chat.Count / priority : 1;
+			List<(string, bool, List<string>)> semantics = new();
+			foreach (var t in individualMsgs)
+				semantics.Add((t.Item1.Trim(), t.Item2, TokenizeLemmatize(t.Item1)));
 			Trace.WriteLine("Obtained the semantics of the chat.");
-			return semantics;
+			return (semantics, priority);
 		}
 
 		/// <summary>
@@ -113,11 +121,11 @@ namespace Dashboard.Server.Summary
 		/// <returns>
 		/// List of all the words used in the chat of discussion
 		/// </returns>
-		private static List<string> GetWords(List<(string, List<string>)> semantics)
+		private static List<string> GetWords(List<(string, bool, List<string>)> semantics)
 		{
-			List<string> words = new List<string>();
+			List<string> words = new();
 			foreach (var t in semantics)
-				words.AddRange(t.Item2);
+				words.AddRange(t.Item3);
 			return words;
 		}
 
@@ -136,7 +144,7 @@ namespace Dashboard.Server.Summary
 		/// </returns>
 		private static Dictionary<string, int> GetVocab(List<string> words)
 		{
-			Dictionary<string, int> vocab = new Dictionary<string, int>();
+			Dictionary<string, int> vocab = new();
 			foreach (string word in words)
 			{
 				// Add new unseen words to dictionary using exceptions
@@ -150,29 +158,27 @@ namespace Dashboard.Server.Summary
 		/// Get the probability scores for each of the input 
 		/// chat sentences based on the semantic meaning.
 		/// </summary>
-		/// <param name="input"></param>
+		/// <param name="input">
+		/// Input of the preprocessed chat
+		/// </param>
+		/// <param name="priority">
+		/// Priority of starred messages
+		/// </param>
 		/// <returns>
 		/// List of sentence strings and their corresponding scores
 		/// </returns>
-		private static List<(string, float)> SentenceScores(List<(string, List<string>)> input)
+		private static List<(string, float)> SentenceScores(List<(string, bool, List<string>)> input, float priority)
 		{
 			Dictionary<string, int> vocab = GetVocab(GetWords(input));
-			List<(string, float)> sentenceScore = new List<(string, float)>();
-			int allSentenceScore = 0;
+			List<(string, float)> sentenceScore = new();
+			float allSentenceScore = 0;
 			foreach (var item in input)
 			{
-				int score = 0;
-				foreach (string lemma in item.Item2)
-				{
+				float score = 0;
+				foreach (string lemma in item.Item3)
 					// Raw score is the frequency sum of all the words
 					// in the sentence's semantic meaning
-					try { score += vocab[lemma]; }
-					catch (ArgumentException)
-					{
-						Trace.WriteLine("Lemma " + lemma + " not found in vocabulary.");
-						continue;
-					}
-				}
+					score += item.Item2 ? priority * vocab[lemma] : vocab[lemma];
 				sentenceScore.Add((item.Item1, score));
 				allSentenceScore += score;
 			}
@@ -190,7 +196,7 @@ namespace Dashboard.Server.Summary
 		/// Input string which is concatenation of all the chat strings
 		/// </param>
 		/// <param name="fraction">
-		/// Fraction of the original input size for length of summary
+		/// Fraction of the summary string in comparision to original chat
 		/// </param>
 		/// <returns>
 		/// List of strings which are sampled using the 
@@ -199,12 +205,12 @@ namespace Dashboard.Server.Summary
 		/// <remarks>
 		/// Reference : https://stackoverflow.com/a/43345968
 		/// </remarks>
-		private List<string> SummarySamples(string input, double fraction)
+		private List<string> SummarySamples(List<(string, bool)> input, float fraction)
 		{
 			float sum = 0;
-			List<string> summary = new List<string>();
-			List<(string, List<string>)> processedChat = Preprocess(input);
-			List<(string, float)> scores = SentenceScores(processedChat);
+			List<string> summary = new();
+			(List<(string, bool, List<string>)> processedChat, float priority) = Preprocess(input);
+			List<(string, float)> scores = SentenceScores(processedChat, priority);
 			// Get the cummulative distributive scores for the sampling process
 			List<(string, float)> cdfScores = scores.Select(s =>
 			{
@@ -212,17 +218,18 @@ namespace Dashboard.Server.Summary
 				sum += s.Item2;
 				return (s.Item1, res);
 			}).ToList();
-			if (cdfScores.Count == 1 && cdfScores[0].Item1 == "")
+			bool isEmpty = true;
+			foreach(var s in cdfScores)
 			{
+				if (s.Item1 != "")
+				{
+					isEmpty = false;
+					break;
+				}
+			}
+			if (isEmpty)
 				throw new EmptyStringException();
-			}
 			int size = Convert.ToInt32(fraction * cdfScores.Count);
-			if (size == 0)
-			{
-				Trace.WriteLine("Not enough chat sentences to summarize " +
-					"the minimum required is = " + Convert.ToInt32(1 / fraction).ToString());
-				return summary;
-			}
 			while (summary.Count < size)
 			{
 				float p = (float)_random.NextDouble();
@@ -250,15 +257,18 @@ namespace Dashboard.Server.Summary
 		/// <param name="chat">
 		/// Input chat in the discussion after the concatenation
 		/// </param>
-		/// <param name="fraction">
-		/// Fraction of the original input size for length of summary
-		/// </param>
 		/// <returns>
 		/// A summary string which presents the summary as 
 		/// all important points of the chats in the discussion
 		/// </returns>
-		public string Summarize(string chat, double fraction)
+		public string Summarize(List<(string, bool)> chat)
 		{
+			int length = chat.Count;
+			float fraction;
+			if (length > 20)
+				fraction = (float)10 / length;
+			else
+				fraction = (float)(20 - length) / 20;
 			try
 			{
 				List<string> summary = SummarySamples(chat, fraction);
