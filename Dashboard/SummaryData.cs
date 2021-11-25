@@ -13,6 +13,9 @@ namespace Dashboard
     /// </summary>
     public class SummaryData 
     {
+        /// <summary>
+        /// Default Constructor, necessary for serialization
+        /// </summary>
         public SummaryData()
         {
 

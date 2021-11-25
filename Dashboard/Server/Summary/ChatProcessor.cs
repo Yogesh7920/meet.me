@@ -1,4 +1,12 @@
-﻿using System;
+﻿/// <author>Sairoop Bodepudi</author>
+/// <created>3/11/2021</created>
+/// <summary>
+///		This file contains the processor which
+///		processes the string chat and returns
+///		the summary of the chat discussion.
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -219,7 +227,7 @@ namespace Dashboard.Server.Summary
 				return (s.Item1, res);
 			}).ToList();
 			bool isEmpty = true;
-			foreach(var s in cdfScores)
+			foreach (var s in cdfScores)
 			{
 				if (s.Item1 != "")
 				{
