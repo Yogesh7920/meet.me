@@ -187,10 +187,10 @@ namespace Content
             if (msg is null)
             {
                 throw new ArgumentException($"Message with given message id doesn't exist");
-            }
+            }          
 
             if (msg.Type == MessageType.Chat)
-                _chatHandler.ChatStar(messageId);
+                _chatHandler.ChatStar(messageId, msg.ReplyThreadId);
             else
                 throw new ArgumentException($"Message with given message id is not chat");
         }
@@ -208,7 +208,7 @@ namespace Content
             if (msg.Type == MessageType.Chat)
             {
                 if (msg.SenderId == UserId)
-                    _chatHandler.ChatUpdate(messageId, newMessage);
+                    _chatHandler.ChatUpdate(messageId, msg.ReplyThreadId, newMessage);
                 else
                     throw new ArgumentException("Update not allowed for messages from another sender");
             }
@@ -424,16 +424,16 @@ namespace Content
         /// <returns>ReceiveMessageData object if message exists otherwise null</returns>
         private ReceiveMessageData RetrieveMessage(int messageid)
         {
-            foreach (var context in _allMessages)
-            {
-                foreach (var message in context.MsgList)
-                {
-                    if (message.MessageId == messageid)
-                        return message;
-                }
-            }
+            if (!_messageIdMap.ContainsKey(messageid))
+                return null;
 
-            return null;
+            int threadId = _messageIdMap[messageid];
+            int contextIndex = _contextMap[threadId];
+            ChatContext context = _allMessages[contextIndex];
+
+            int msgIndex = context.RetrieveMessageIndex(messageid);
+
+            return context.MsgList[msgIndex];
         }
 
         /// <summary>
