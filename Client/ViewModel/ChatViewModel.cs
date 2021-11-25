@@ -46,6 +46,7 @@ namespace Client.ViewModel
             msg.Type = MessageType.Chat;
             msg.Message = message;
             msg.ReplyThreadId = replyMsgId;
+            msg.ReceiverIds = new int[0];
             _model.CSend(msg);
         }
 
