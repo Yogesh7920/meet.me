@@ -69,6 +69,7 @@ namespace Dashboard.Server.SessionManagement
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
             summarySaved = false;
+            testmode = true;
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace Dashboard.Server.SessionManagement
         {
             if (userCount == 1)
             {
-                _telemetry = TelemetryFactory.GetTelemetryInstance();
+                _telemetry = testmode ? new Telemetry.Telemetry(this) : TelemetryFactory.GetTelemetryInstance();
             }
             UserData user = new(username, userCount);
             return user;
@@ -485,5 +486,7 @@ namespace Dashboard.Server.SessionManagement
         private ITelemetry _telemetry;
 
         public event NotifyEndMeet MeetingEnded;
+        private bool testmode;
+
     }
 }

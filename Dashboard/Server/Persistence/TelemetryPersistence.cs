@@ -302,7 +302,10 @@ namespace Dashboard.Server.Persistence
                 Trace.WriteLine("ServerData saved Succesfully!!");
                 response.IsSaved = true;
                 response.FileName = "GlobalServerData.xml";
-                PersistenceFactory.lastSaveResponse = response;
+                if (PersistenceFactory.lastSaveResponse == null)
+                    PersistenceFactory.lastSaveResponse = response;
+                else
+                    PersistenceFactory.lastSaveResponse.FileName = response.FileName;
                 return response;
             }
             catch(Exception except)

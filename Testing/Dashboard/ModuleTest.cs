@@ -232,24 +232,19 @@ namespace Testing.Dashboard
         }
 
 
-        //[Test]
-        //public void EndMeetingProcedure_MeetingEnds_SaveAnalytics()
-        //{
-        //    int expectedUsers = 10;
-        //    _testContentServer.chats = Utils.GetSampleChatContext();
-        //    List<UserData> users = Utils.GenerateUserData(expectedUsers);
-        //    AddUsersAtServer(users);
-        //    _testContentServer.chats = Utils.GetSampleChatContextForUsers(users);
-        //    ClientToServerData sampleClientRequest = new("endMeet", users[0].username, users[0].userID);
-        //    serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
-        //    string serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
-        //    Assert.IsTrue(File.Exists(Path.Combine(serverDataPath, "GlobalServerData.xml")));
-        //    string sessionAnalyticsPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
-        //    foreach (string filename in PersistenceFactory.lastSaveResponse.TelemetryAnalyticsFiles)
-        //    {
-        //        Assert.IsTrue(File.Exists(Path.Combine(sessionAnalyticsPath,filename));
-        //    }
-        //}
+        [Test]
+        public void EndMeetingProcedure_MeetingEnds_SaveServerAnalytics()
+        {
+            int expectedUsers = 10;
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            List<UserData> users = Utils.GenerateUserData(expectedUsers);
+            AddUsersAtServer(users);
+            _testContentServer.chats = Utils.GetSampleChatContextForUsers(users);
+            ClientToServerData sampleClientRequest = new("endMeet", users[0].username, users[0].userID);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            string serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            Assert.IsTrue(File.Exists(Path.Combine(serverDataPath, "GlobalServerData.xml")));
+        }
 
 
         [Test]
