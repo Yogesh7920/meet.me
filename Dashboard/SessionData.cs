@@ -10,7 +10,7 @@ namespace Dashboard
     /// This class is used to store the data about the 
     /// current session 
     /// </summary>
-    public class SessionData : IRecievedFromServer, IEquatable<SessionData>
+    public class SessionData : IEquatable<SessionData>
     {
         /// <summary>
         /// Constructor to initialise and empty list of users
@@ -95,6 +95,7 @@ namespace Dashboard
         }
 
         // the List of users in the meeting 
+        
         public List<UserData> users;
     }
 }

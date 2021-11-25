@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Networking;
+using Content;
 
 
 namespace Dashboard
@@ -12,23 +14,6 @@ namespace Dashboard
     public static class SessionManagerFactory
     {
         /// <summary>
-        /// Constructor to create client and server session manager objects.
-        /// </summary>
-        static SessionManagerFactory()
-        {
-            // the objects are initialized only once for the program
-            if(s_clientSessionManager == null)
-            {
-                s_clientSessionManager = new ClientSessionManager();
-            }
-
-            if(s_serverSessionManager == null)
-            {
-               s_serverSessionManager = new ServerSessionManager();
-            }
-        }
-
-        /// <summary>
         /// This method will create a Client sided server 
         /// manager that will live till the end of the program
         /// </summary>
@@ -36,9 +21,19 @@ namespace Dashboard
         /// Returns a ClientSessionManager object which 
         /// implements the interface IUXClientSM
         /// </returns>
-        public static IUXClientSessionManager GetClientSessionManager()
+        public static ClientSessionManager GetClientSessionManager()
         {
-            return s_clientSessionManager;
+            return s_clientSessionManager.Value;
+        }
+
+        /// <summary>
+        /// Constructor for testing the module
+        /// </summary>
+        /// <param name="communicator"> Test communicator to test functionality</param>
+        /// <returns></returns>
+        public static ClientSessionManager GetClientSessionManager(ICommunicator communicator)
+        {
+            return new ClientSessionManager(communicator);
         }
 
         /// <summary>
@@ -49,12 +44,22 @@ namespace Dashboard
         /// Returns a ServerSessionManager object which 
         /// implements the interface ITelemetrySessionManager
         /// </returns>
-        public static ITelemetrySessionManager  GetServerSessionManager()
+        public static ServerSessionManager GetServerSessionManager()
         {
-            return s_serverSessionManager;
+            return s_serverSessionManager.Value;
         }
 
-        private static IUXClientSessionManager s_clientSessionManager;
-        private static ITelemetrySessionManager s_serverSessionManager;
+        /// <summary>
+        /// Constructor for testing the module
+        /// </summary>
+        /// <param name="communicator"> Test communicator to test functionality</param>
+        /// <returns></returns>
+        public static ServerSessionManager GetServerSessionManager(ICommunicator communicator, IContentServer contentServer = null)
+        {
+            return new ServerSessionManager(communicator, contentServer);
+        }
+
+        private static readonly Lazy<ClientSessionManager> s_clientSessionManager = new(()=>new ClientSessionManager());
+        private static readonly Lazy<ServerSessionManager> s_serverSessionManager = new(()=>new ServerSessionManager());
     }
 }

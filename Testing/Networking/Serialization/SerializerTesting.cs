@@ -1,8 +1,8 @@
 ﻿using System;
-using NUnit.Framework;
-using Networking;
 using AutoFixture;
 using FluentAssertions;
+using Networking;
+using NUnit.Framework;
 using Testing.Networking.Objects;
 
 namespace Testing.Networking
@@ -10,55 +10,60 @@ namespace Testing.Networking
     [TestFixture]
     public class SerializerTesting
     {
-        private ISerializer _ser;
         [SetUp]
         public void SetUp()
         {
             _ser = new Serializer();
-            var random = TestContext.CurrentContext.Random;
         }
+
+        private ISerializer _ser;
+
         [Test]
         public void SerializeDeserializeSimpleObject()
         {
             // Instantiate
-            SimpleObject serObj = new Fixture().Create<SimpleObject>();
+            var serObj = new Fixture().Create<SimpleObject>();
             // Serialize
-            string xml = _ser.Serialize(serObj);
+            var xml = _ser.Serialize(serObj);
             // Deserialize
-            SimpleObject desObj = _ser.Deserialize<SimpleObject>(xml);
+            var desObj = _ser.Deserialize<SimpleObject>(xml);
             // Object Comparison
             desObj.Should().BeEquivalentTo(serObj);
         }
+
         [Test]
         public void SerializeDeserializeComplexObject()
         {
             // Instantiate
-            ComplexObject serObj = new Fixture().Create<ComplexObject>();
-            string xml = _ser.Serialize(serObj);
-            ComplexObject desObj = _ser.Deserialize<ComplexObject>(xml);
+            var serObj = new Fixture().Create<ComplexObject>();
+            var xml = _ser.Serialize(serObj);
+            var desObj = _ser.Deserialize<ComplexObject>(xml);
             desObj.Should().BeEquivalentTo(serObj);
         }
+
         [Test]
         public void ObjectType()
         {
             // Serialize
-            ComplexObject serObj = new Fixture().Create<ComplexObject>();
-            string xml = _ser.Serialize(serObj);
+            var serObj = new Fixture().Create<ComplexObject>();
+            var xml = _ser.Serialize(serObj);
             // Get object type from xml
-            string nameSpace = "Testing.Networking.Objects";
-            string typ = _ser.GetObjectType(xml, nameSpace);
+            const string nameSpace = "Testing.Networking.Objects";
+            var typ = _ser.GetObjectType(xml, nameSpace);
             Assert.That(typeof(ComplexObject).ToString() == typ);
         }
+
         [Test]
         public void BasicDataTypes()
         {
             // Serialize
-            int serObj = new Fixture().Create<int>();
-            string xml = _ser.Serialize(serObj);
+            var serObj = new Fixture().Create<int>();
+            var xml = _ser.Serialize(serObj);
             // Deserialize
-            int desObj = _ser.Deserialize<int>(xml);
+            var desObj = _ser.Deserialize<int>(xml);
             Assert.That(serObj == desObj);
         }
+
         [Test]
         public void NonSerializableAttributeError()
         {
@@ -66,8 +71,8 @@ namespace Testing.Networking
             string xml = _ser.Serialize(serObj);
             NonSerializableAttribute des = _ser.Deserialize<NonSerializableAttribute>(xml);
             des.Should().BeEquivalentTo(serObj);
-            //Assert.Throws<InvalidOperationException>(() => _ser.Serialize(serObj));
         }
+
         [Test]
         public void DeserializationFailed()
         {

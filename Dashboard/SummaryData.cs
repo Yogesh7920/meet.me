@@ -11,8 +11,13 @@ namespace Dashboard
     /// implemets the IReceivedFromServer interface so that it 
     /// can be sent to the client side (from the server side)
     /// </summary>
-    public class SummaryData : IRecievedFromServer
+    public class SummaryData 
     {
+        public SummaryData()
+        {
+
+        }
+
         /// <summary>
         /// Constructor to initialize the field summary with
         /// a given string.

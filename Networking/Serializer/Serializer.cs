@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
@@ -31,12 +33,10 @@ namespace Networking
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(objectToSerialize.GetType());
-                using (var stringStream = new StringWriter())
-                {
-                    serializer.Serialize(stringStream, objectToSerialize);
-                    return stringStream.ToString();
-                }
+                var serializer = new XmlSerializer(objectToSerialize.GetType());
+                using var stringStream = new StringWriter();
+                serializer.Serialize(stringStream, objectToSerialize);
+                return stringStream.ToString();
             }
             catch (Exception ex)
             {

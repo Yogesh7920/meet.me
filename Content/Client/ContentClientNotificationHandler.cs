@@ -1,26 +1,44 @@
-using Networking;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Networking;
 
 namespace Content
 {
     public class ContentClientNotificationHandler : INotificationHandler
     {
-        /// <inheritdoc/>
+        private readonly ContentClient _contentHandler;
+
+        private readonly ISerializer _serializer;
+
+        public ContentClientNotificationHandler(IContentClient contentHandler)
+        {
+            _serializer = new Serializer();
+            _contentHandler = contentHandler as ContentClient;
+        }
+
+        /// <inheritdoc />
         public void OnDataReceived(string data)
         {
-            throw new NotImplementedException();
-        }
+            Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
+            string deserializedType = _serializer.GetObjectType(data, "Content");
 
-        /// <inheritdoc/>
-        public void OnClientJoined<T>(T socketObject)
-        {
-            throw new NotImplementedException();
-        }
+            if (string.Equals(deserializedType,"Content.MessageData"))
+            {
+                MessageData receivedMessage = _serializer.Deserialize<MessageData>(data);
+                _contentHandler.OnReceive(receivedMessage);
+            }
 
-        /// <inheritdoc/>
-        public void OnClientLeft(string clientId)
-        {
-            throw new NotImplementedException();
+            else if (string.Equals(deserializedType, "Content.ArrayOfChatContext"))
+            {
+                List<ChatContext> allMessages = _serializer.Deserialize<List<ChatContext>>(data);
+                _contentHandler.Notify(allMessages);
+            }
+
+            else
+            {
+                throw new ArgumentException($"Deserialized object of unknown type: {deserializedType}");
+            }
         }
     }
 }

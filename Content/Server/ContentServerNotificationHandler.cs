@@ -1,26 +1,20 @@
 ﻿using Networking;
-using System;
 
 namespace Content
 {
     public class ContentServerNotificationHandler : INotificationHandler
     {
+        private readonly ContentServer _contentServer;
+
+        internal ContentServerNotificationHandler(ContentServer contentServer)
+        {
+            _contentServer = contentServer;
+        }
+
         /// <inheritdoc />
         public void OnDataReceived(string data)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void OnClientJoined<T>(T socketObject)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void OnClientLeft(string clientId)
-        {
-            throw new NotImplementedException();
+            _contentServer.Receive(data);
         }
     }
 }

@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 11/02/2021
+ * Date Modified: 11/12/2021
 **/
 
 using System;
@@ -10,33 +10,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Whiteboard
 {
+    /// <summary>
+    /// Main Handler for Board Operations.
+    /// </summary>
     public class WhiteBoardOperationHandler : IWhiteBoardOperationHandler
     {
+        /// <summary>
+        /// Size of the Canvas.
+        /// </summary>
+        private readonly Coordinate _canvasSize;
 
-        private Coordinate _canvasSize;
+        /// <summary>
+        /// State the board is in.
+        /// </summary>
         private BoardOperationsState _boardState;
 
+        /// <summary>
+        /// Storing Handler for Active State.
+        /// </summary>
+        private readonly ActiveBoardOperationsHandler _activeBoardOperationsHandler;
+
+        /// <summary>
+        /// Storing Handler for inactive State.
+        /// </summary>
+        private readonly InactiveBoardOperationsHandler _inactiveBoardOperationsHandler;
+        private BoardState _boardStateIdentifier;
+
+        /// <summary>
+        /// Construction for WhiteBoardOperationHandler.
+        /// </summary>
+        /// <param name="canvasSize"></param>
         public WhiteBoardOperationHandler(Coordinate canvasSize)
         {
             _canvasSize = canvasSize;
-            _boardState = new ActiveBoardOperationsHandler(_canvasSize);
+            _activeBoardOperationsHandler = new ActiveBoardOperationsHandler();
+            _inactiveBoardOperationsHandler = new InactiveBoardOperationsHandler();
+            _boardState = _activeBoardOperationsHandler;
+            _boardStateIdentifier = BoardState.ACTIVE;
         }
 
-        /// <summary>
-        /// Changes the height of shape with given shape ID.
-        /// </summary>
-        /// <param name="start"> Coordinate of mouse down event. </param>
-        /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
-        /// <param name="shapeId"> Id of the shape. </param>
-        /// <param name="shapeComp"> Indicative of a mouse up event. </param>
-        /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ChangeHeight(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Changes the Fill Color of the shape.
@@ -46,7 +62,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId)
         {
-            throw new NotImplementedException();
+            return _boardState.ChangeShapeFill(shapeFill, shapeId);
         }
 
         /// <summary>
@@ -57,7 +73,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> ChangeStrokeColor(BoardColor strokeColor, string shapeId)
         {
-            throw new NotImplementedException();
+            return _boardState.ChangeStrokeColor(strokeColor, shapeId);
         }
 
         /// <summary>
@@ -68,20 +84,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> ChangeStrokeWidth(float strokeWidth, string shapeId)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Changes the width of the shape with given shape ID.
-        /// </summary>
-        /// <param name="start"> Coordinate of mouse down event. </param>
-        /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
-        /// <param name="shapeId"> Id of the shape. </param>
-        /// <param name="shapeComp"> Indicative of a mouse up event. </param>
-        /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ChangeWidth(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
-        {
-            throw new NotImplementedException();
+            return _boardState.ChangeStrokeWidth(strokeWidth, shapeId);
         }
 
         /// <summary>
@@ -96,7 +99,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
-            throw new NotImplementedException();
+            return _boardState.CreateShape(ShapeType.ELLIPSE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
         /// <summary>
@@ -111,7 +114,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
-            throw new NotImplementedException();
+            return _boardState.CreateShape(ShapeType.LINE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
         /// <summary>
@@ -126,7 +129,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
-            throw new NotImplementedException();
+            return _boardState.CreateShape(ShapeType.POLYLINE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
         /// <summary>
@@ -141,7 +144,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
-            throw new NotImplementedException();
+            return _boardState.CreateShape(ShapeType.RECTANGLE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
         /// <summary>
@@ -151,7 +154,7 @@ namespace Whiteboard
         /// <returns></returns>
         public List<UXShape> DeleteShape(string shapeId)
         {
-            throw new NotImplementedException();
+            return _boardState.Delete(shapeId);
         }
 
         /// <summary>
@@ -161,7 +164,7 @@ namespace Whiteboard
         /// <returns> User Name. </returns>
         public string GetUserName(string shapeId)
         {
-            throw new NotImplementedException();
+            return _boardState.GetUserName(shapeId);
         }
 
         /// <summary>
@@ -170,7 +173,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> Redo()
         {
-            throw new NotImplementedException();
+            return _boardState.Redo() ?? (new());
         }
 
         /// <summary>
@@ -180,10 +183,12 @@ namespace Whiteboard
         /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
         /// <param name="shapeId"> Id of the shape. </param>
         /// <param name="shapeComp"> Indicative of a mouse up event. </param>
+        /// <param name="dragPos">The latch used for performing resizing.</param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
+        public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false)
         {
-            throw new NotImplementedException();
+            Debug.Assert(shapeComp == true);
+            return _boardState.Resize(start, end, shapeId, dragPos);
         }
 
         /// <summary>
@@ -196,7 +201,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            throw new NotImplementedException();
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, shapeComp);
         }
 
         /// <summary>
@@ -205,7 +210,9 @@ namespace Whiteboard
         /// <returns> Denotes succesfull state switch. </returns>
         public bool SwitchState()
         {
-            throw new NotImplementedException();
+            _boardState = (_boardStateIdentifier == BoardState.ACTIVE) ? _inactiveBoardOperationsHandler : _activeBoardOperationsHandler;
+            _boardStateIdentifier = (_boardStateIdentifier == BoardState.ACTIVE) ? BoardState.INACTIVE : BoardState.ACTIVE;
+            return true;
         }
 
         /// <summary>
@@ -218,7 +225,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            throw new NotImplementedException();
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, shapeComp);
         }
 
         /// <summary>
@@ -227,7 +234,12 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> Undo()
         {
-            throw new NotImplementedException();
+            return _boardState.Undo() ?? (new());
+        }
+
+        public void SetUserLevel(int userlevel)
+        {
+            _boardState.UserLevel = userlevel;
         }
     }
 }

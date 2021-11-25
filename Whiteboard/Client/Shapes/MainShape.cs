@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/02/2021
+ * Date Modified: 11/12/2021
 **/
 
 using System;
@@ -10,9 +10,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Windows;
 
 namespace Whiteboard
 {
+    /// <summary>
+    /// Base Class for Shapes.
+    /// </summary>
     abstract public class MainShape
     {
 
@@ -25,56 +30,109 @@ namespace Whiteboard
             this.ShapeIdentifier = s;
             this.Height = 0;
             this.Width = 0;
-            this.StrokeWidth = 0;
+            this.StrokeWidth = 1;
             this.ShapeFill = new BoardColor(255, 255, 255);
             this.StrokeColor = new BoardColor(0, 0, 0);
             this.Start = new Coordinate(0, 0);
-            this.Points = new List<Coordinate>();
+            this.Center = new Coordinate(0, 0);
+            this.Points = null;
             this.AngleOfRotation = 0;
         }
 
         /// <summary>
-        /// Constructor
+        /// Constructor of Base Class.
         /// </summary>
         /// <param name="s">Type of shape.</param>
-        /// <param name="height">Height of the Shape.</param>
-        /// <param name="width">Width of the Shape.</param>
-        /// <param name="strokeWidth">Width of shape outline stroke.</param>
-        /// <param name="strokeColor">Color of shape outline stroke.</param>
-        /// <param name="shapeFill">Shape fill of the shape.</param>
-        /// <param name="start">The left bottom coordinate of the smallest rectangle surrounding the shape.</param>
+        /// <param name="height">Height.</param>
+        /// <param name="width">Width.</param>
+        /// <param name="strokeWidth">Stroke Width.</param>
+        /// <param name="strokeColor">Stroke Color.</param>
+        /// <param name="shapeFill">Shape fill.</param>
+        /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
         /// <param name="points">Points in case it is a polyline or a line.</param>
-        /// <param name="angle">Angle of Rotation of the Shape</param>
-        public MainShape(ShapeType s, int height, int width, float strokeWidth, BoardColor strokeColor, BoardColor shapeFill, Coordinate start, List<Coordinate> points, float angle)
+        /// <param name="angle">Angle of Rotation of the Shape.</param>
+        public MainShape(
+            ShapeType s, float height, float width, float strokeWidth, BoardColor strokeColor, BoardColor shapeFill,
+            Coordinate start, Coordinate center, List<Coordinate> points, float angle)
         {
             this.ShapeIdentifier = s;
             this.Height = height;
             this.Width = width;
             this.StrokeWidth = strokeWidth;
-            this.StrokeColor = strokeColor.Clone();
-            this.ShapeFill = shapeFill.Clone();
-            this.Start = start.Clone();
-            this.Points = points.Select(cord => new Coordinate(cord.R, cord.C)).ToList();
+            this.StrokeColor = strokeColor;
+            this.ShapeFill = shapeFill;
+            this.Start = start;
+            this.Center = center;
+            this.Points = points;
             this.AngleOfRotation = angle;
         }
 
+        // Type of shape.
         public ShapeType ShapeIdentifier { get; set; }
-        public int Height { get; set; }
-        public int Width { get; set; }
+
+        // Height of shape.
+        public float Height { get; set; }
+
+        // Width of shape.
+        public float Width { get; set; }
+
+        // Stroke Width of shape.
         public float StrokeWidth { get; set; }
+
+        // Stroke color of shape.
         public BoardColor StrokeColor { get; set; }
+
+        // Shape fill of the shape.
         public BoardColor ShapeFill { get; set; }
+
+        // The Coordinate of start of mouse drag while creation.
         public Coordinate Start { get; set; }
-        public float AngleOfRotation { get; set; }
+
+        // Coordinate of Center of shape.
+        public Coordinate Center { get; set; }
+
+        // Angle at which the shape is rotated.
+
+        private float _angleOfRotation;
+        public float AngleOfRotation
+        {
+            get
+            {
+                return _angleOfRotation;
+            }
+            set
+            {
+                _angleOfRotation = value;
+                while (_angleOfRotation >= (2 * Math.PI))
+                {
+                    _angleOfRotation -= (float)(2 * Math.PI);
+                }
+                while (_angleOfRotation <= (-2 * Math.PI))
+                {
+                    _angleOfRotation += (float)(2 * Math.PI);
+                }
+                if (_angleOfRotation > Math.PI)
+                {
+                    _angleOfRotation = - (float)(2 * Math.PI) + _angleOfRotation;
+                }
+                if (_angleOfRotation <= -Math.PI)
+                {
+                    _angleOfRotation = (float)(2 * Math.PI) + _angleOfRotation;
+                }
+            }
+        }
         protected List<Coordinate> Points;
 
         /// <summary>
         /// Add a coordinate to the list of points in the shape.
-        /// Useful for Line and Polyline.
         /// </summary>
-        /// <param name="c">Coordinate.</param>
+        /// <param name="c">Coordinate to add.</param>
         public void AddToList(Coordinate c)
         {
+            if (Points == null)
+            {
+                Points = new();
+            }
             Points.Add(c);
         } 
 
@@ -107,16 +165,7 @@ namespace Whiteboard
         /// <returns></returns>
         public List<Coordinate> GetPoints()
         {
-            return Points.ConvertAll(point => new Coordinate(point.R, point.C));
-        }
-
-        /// <summary>
-        /// Gets the Coordinate of the Center of the Shape.
-        /// </summary>
-        /// <returns></returns>
-        public Coordinate GetCenter()
-        {
-            return new Coordinate(Start.R + Height/2, Start.C + Width/2);
+            return Points?.ConvertAll(point => new Coordinate(point.R, point.C));
         }
 
         /// <summary>
@@ -133,5 +182,84 @@ namespace Whiteboard
         /// <param name="prevShape">Previous shape to modify, if any.</param>
         /// <returns></returns>
         abstract public MainShape ShapeMaker(Coordinate start, Coordinate end, MainShape prevShape = null);
+
+        /// <summary>
+        /// Performs rotation on shape.
+        /// </summary>
+        /// <param name="start">Start coordinate for rotation.</param>
+        /// <param name="end">End coordinate for rotation.</param>
+        /// <returns>True if rotation successful, else false.</returns>
+        public virtual bool Rotate(Coordinate start, Coordinate end)
+        {
+            Coordinate v1 = start - Center;
+            Coordinate v2 = end - Center;
+
+            // finding angle of rotation from start and end coordinates.
+            float rotAngle = (float)(0.01745 * Vector.AngleBetween(new Vector(v1.C, v1.R), new Vector(v2.C, v2.R)));
+            Console.WriteLine("Angle to be rotated is"+rotAngle.ToString());
+            AngleOfRotation += rotAngle;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Performs resize operation on the shape.
+        /// </summary>
+        /// <param name="start">Start coordinate for Resize.</param>
+        /// <param name="end">End coordinate for Resize.</param>
+        /// <param name="dragPos"></param>
+        /// <returns>Success of resizing operation.</returns>
+        public virtual bool Resize(Coordinate start, Coordinate end, DragPos dragPos)
+        {
+            // Unit vector at an angle AngleOfRotation from x-axis.
+            Vector centerVector = new(Math.Cos(AngleOfRotation), Math.Sin(AngleOfRotation));
+
+            // Finding displacement vector.
+            Coordinate deltaCord = end - start;            
+            Vector deltaVector = new(deltaCord.C, deltaCord.R);
+
+            double angleBetween = Math.Abs(Vector.AngleBetween(centerVector, deltaVector));
+
+            // Magnitude of displacement.
+            float deltaNorm = (float)(Math.Sqrt(Math.Pow(deltaCord.R, 2) + Math.Pow(deltaCord.C, 2)));
+
+            // Calculating displacements in direction of unit vector
+            float xDelta = (float)(deltaNorm * Math.Cos(angleBetween));
+            float yDelta = (int)(deltaNorm * Math.Sin(angleBetween));
+
+            // Changing shape attributes after resizing.
+            switch (dragPos)
+            {
+                // the dignonal direction resizing broken into its 2 components.
+                case DragPos.TOP_RIGHT:
+                    return (Resize(start, end, DragPos.TOP) || Resize(start, end, DragPos.RIGHT));
+                case DragPos.BOTTOM_LEFT:
+                    return (Resize(start, end, DragPos.BOTTOM) || Resize(start, end, DragPos.LEFT));
+                case DragPos.TOP_LEFT:
+                    return (Resize(start, end, DragPos.TOP) || Resize(start, end, DragPos.LEFT));
+                case DragPos.BOTTOM_RIGHT:
+                    return (Resize(start, end, DragPos.BOTTOM) || Resize(start, end, DragPos.RIGHT));
+                case DragPos.LEFT:
+                    Center.Add(new Coordinate((float)((-xDelta/2)*Math.Cos(AngleOfRotation)), (float)((-xDelta/2)*Math.Sin(AngleOfRotation))));
+                    Width += xDelta;
+                    break;
+                case DragPos.RIGHT:
+                    Center.Add(new Coordinate((float)((xDelta/2)*Math.Cos(AngleOfRotation)), (float)((xDelta/2)*Math.Sin(AngleOfRotation))));
+                    Width += xDelta;
+                    break;
+                case DragPos.TOP:
+                    Center.Add(new Coordinate((float)((-xDelta/2)*Math.Sin(AngleOfRotation)),(float) ((xDelta/2)*Math.Cos(AngleOfRotation))));
+                    Height += yDelta;
+                    break;
+                case DragPos.BOTTOM:
+                    Center.Add(new Coordinate((float)((xDelta/2)*Math.Sin(AngleOfRotation)), (float)((-xDelta/2)*Math.Cos(AngleOfRotation))));
+                    Height += yDelta;
+                    break;
+                default:
+                    return false;
+            } 
+            return true;
+        }
     }
+
 }

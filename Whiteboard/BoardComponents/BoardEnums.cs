@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 11/01/2021
+ * Date Modified: 11/12/2021
 **/
 
 using System;
@@ -30,7 +30,8 @@ namespace Whiteboard
         ELLIPSE,
         RECTANGLE,
         LINE,
-        POLYLINE
+        POLYLINE,
+        NONE
     }
 
     /// <summary>
@@ -39,7 +40,8 @@ namespace Whiteboard
     public enum UXOperation
     {
         CREATE,
-        DELETE
+        DELETE,
+        NONE
     }
 
     /// <summary>
@@ -53,7 +55,33 @@ namespace Whiteboard
         FETCH_STATE,
         FETCH_CHECKPOINT,
         CREATE_CHECKPOINT,
+        CLEAR_STATE,
         NONE
     }
 
+    /// <summary>
+    /// Operations which should be rendered real-time on UX.
+    /// </summary>
+    public enum RealTimeOperation
+    {
+        TRANSLATE,
+        ROTATE,
+        CREATE
+    }
+
+    /// <summary>
+    /// Latches for Resizing operation.
+    /// </summary>
+    public enum DragPos
+    {
+        TOP_RIGHT,
+        TOP_LEFT,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT,
+        RIGHT,
+        LEFT,
+        TOP,
+        BOTTOM,
+        NONE
+    };
 }

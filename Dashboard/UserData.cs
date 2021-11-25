@@ -12,6 +12,11 @@ namespace Dashboard
     /// </summary>
     public class UserData : IEquatable<UserData>
     {
+        public UserData()
+        {
+
+        }
+
         /// <summary>
         /// Parametric constructor to initialize the fields 
         /// </summary>
@@ -55,6 +60,11 @@ namespace Dashboard
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return "UserName: " + this.username + "\n UserID: " + this.userID + "\n";
         }
 
         public string username;
