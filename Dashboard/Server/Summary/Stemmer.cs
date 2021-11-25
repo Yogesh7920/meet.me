@@ -107,7 +107,7 @@
 			var index = endIndex - length + 1;
 			if (index < 0) return false;
 
-			string word = new string(wordArray);
+			string word = new(wordArray);
 			bool retVal = word.Substring(index, length) == s;
 			// If it does then update the stem index based on the
 			// length of the string that is checked and original stem

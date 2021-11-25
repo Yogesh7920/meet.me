@@ -1,23 +1,32 @@
-﻿using System;
+﻿/*
+ * Author: Tausif Iqbal
+ * Created on: 13/10/2021
+ * Modified on: 16/11/2021
+ * Summary: This file contains the class definition of
+ *          ClientCommunicator.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 
 namespace Networking
 {
-    public class ClientCommunicator : ICommunicator
+    internal class ClientCommunicator : ICommunicator
     {
-        private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
-
-        // Declare socket object for client
-        private TcpClient _clientSocket;
-
         // Declare queue variable for receiving messages
         private readonly Queue _receiveQueue = new();
 
         // Declare queue variable for sending messages
         private readonly Queue _sendQueue = new();
+        private readonly Dictionary<string, INotificationHandler> _subscribedModules = new();
+
+        // Declare socket object for client
+        private TcpClient _clientSocket;
+
+        private ReceiveQueueListener _receiveQueueListener;
 
         //Declare ReceiveSocketListener variable for listening messages 
         private ReceiveSocketListener _receiveSocketListener;
@@ -25,21 +34,19 @@ namespace Networking
         // Declare sendSocketListenerClient variable for sending messages 
         private SendSocketListenerClient _sendSocketListenerClient;
 
-        private ReceiveQueueListener _receiveQueueListener;
-
         /// <summary>
-        /// This method connects client to server
-        /// <param name="serverIp">serverIP</param>
-        /// <param name="serverPort">serverPort.</param>
+        ///     This method connects client to server
         /// </summary>
-        ///  /// <returns> String </returns>
+        /// <param name="serverIp"> Ip of server</param>
+        /// <param name="serverPort"> port of server</param>
+        /// <returns> String </returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
             try
             {
                 //try to connect with server
-                IPAddress ip = IPAddress.Parse(serverIp);
-                int port = int.Parse(serverPort);
+                var ip = IPAddress.Parse(serverIp);
+                var port = int.Parse(serverPort);
                 _clientSocket = new TcpClient();
                 // _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, false);
                 _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
@@ -68,44 +75,42 @@ namespace Networking
         }
 
         /// <summary>
-        /// This method stops all the running thread
-        ///  of client and closes the connection
+        ///     This method stops all the running thread
+        ///     of client and closes the connection
         /// </summary>
         /// <returns> void </returns>
         void ICommunicator.Stop()
         {
-            if (_clientSocket.Connected)
-            {
-                // stop the listener of the client 
-                _sendSocketListenerClient.Stop();
-                _receiveSocketListener.Stop();
-                _receiveQueueListener.Stop();
+            if (!_clientSocket.Connected) return;
+            // stop the listener of the client 
+            _sendSocketListenerClient.Stop();
+            _receiveSocketListener.Stop();
+            _receiveQueueListener.Stop();
 
-                //close stream  and connection of the client
-                _clientSocket.GetStream().Close();
-                _clientSocket.Close();
-            }
+            //close stream  and connection of the client
+            _clientSocket.GetStream().Close();
+            _clientSocket.Close();
         }
 
-        /// <inheritdoc />
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
             throw new NotSupportedException();
         }
 
-        /// <inheritdoc />
         void ICommunicator.RemoveClient(string clientId)
         {
             throw new NotSupportedException();
         }
 
         /// <summary>
-        /// This method is for sending message
+        ///     This method is for sending message
         /// </summary>
+        /// <param name="data"> data to be sent</param>
+        /// <param name="identifier"> module Id </param>
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
-            Packet packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
+            var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {
                 _sendQueue.Enqueue(packet);
@@ -117,13 +122,15 @@ namespace Networking
             }
         }
 
-        /// <inheritdoc />
         void ICommunicator.Send(string data, string identifier, string destination)
         {
             throw new NotSupportedException();
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        ///     This method registers different handler
+        /// </summary>
+        ///<returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);

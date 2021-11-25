@@ -19,7 +19,7 @@ namespace Whiteboard
         private static ServerBoardCommunicator instance = null;
         private static ISerializer serializer;
         private static ICommunicator communicator;
-        private static string moduleIdentifier = "Whiteboard";
+        private readonly static string moduleIdentifier = "Whiteboard";
         private static ServerBoardStateManager stateManager;
         /// <summary>
         /// private constructor for a singleton
@@ -37,7 +37,7 @@ namespace Whiteboard
                 {
                     instance = new ServerBoardCommunicator();
                     serializer = new Serializer();
-                    communicator = new ServerCommunicator();
+                    communicator = CommunicationFactory.GetCommunicator(false);
                     communicator.Subscribe(moduleIdentifier, instance);
                     stateManager = new ServerBoardStateManager();
                 }
