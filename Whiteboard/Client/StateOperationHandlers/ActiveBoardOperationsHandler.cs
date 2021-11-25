@@ -61,22 +61,6 @@ namespace Whiteboard
             }
         }
 
-        // Check if running as part of NUnit
-        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
-
-        /// <summary>
-        /// Allows setting stateManager handler when running as part of NUnit tests.
-        /// </summary>
-        /// <param name="stateManager">state Manager object.</param>
-        public void SetStateManager(IClientBoardStateManagerInternal stateManager)
-        {
-            if (IsRunningFromNUnit)
-            {
-                _stateManager = stateManager;
-            }
-
-        }
-
         public BoardShape GetLastDrawn()
         {
             if (IsRunningFromNUnit)
@@ -269,6 +253,7 @@ namespace Whiteboard
                 // List of Operations to be send to UX
                 List<UXShape> operations = new ();
                 string prevShapeId;
+                bool alreadyDrawn = false;
 
                 // A new shape creation.
                 if (shapeId == null)
@@ -309,6 +294,7 @@ namespace Whiteboard
                 else if (_lastDrawn.IsPending() && _lastDrawn._shape.Uid == shapeId && _lastDrawn._operation == RealTimeOperation.CREATE)
                 {
                     Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Preparing previous object for deletion");
+                    alreadyDrawn = true;
 
                     // Delete the Object that was already created in the canvas because of real time rendering
                     prevShapeId = _lastDrawn._shape.Uid;
@@ -341,7 +327,11 @@ namespace Whiteboard
                     newBoardShape.LastModifiedTime = DateTime.Now;
                     newBoardShape.CreationTime = DateTime.Now;
 
-                    UpdateStateManager(newBoardShape);
+                    if (!_stateManager.SaveOperation(newBoardShape))
+                    {
+                        _lastDrawn = null;
+                        return UndoRealTimeRenderingCreation(operations, alreadyDrawn, true);
+                    }
 
                     //reset the variables
                     _lastDrawn = null;
@@ -351,7 +341,6 @@ namespace Whiteboard
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
                 Trace.WriteLine("ActiveBoardOperationsHandler:CreateShape: Failure in creation of shape.");
                 Trace.WriteLine(e.Message);
                 return null;
@@ -444,9 +433,13 @@ namespace Whiteboard
                     // send updates to server .. clone of _lastDrawn
                     BoardShape newBoardShape = _lastDrawn._shape.Clone();
                     newBoardShape.LastModifiedTime = DateTime.Now;
-                    newBoardShape.CreationTime = DateTime.Now;
-                    UpdateStateManager(newBoardShape);
-                    
+
+                    if (!_stateManager.SaveOperation(newBoardShape))
+                    {
+                        _lastDrawn = null;
+                        return UndoRealTimeRenderingModify(shapeId, operations);
+                    }
+
                     //reset the variables
                     _lastDrawn = null;
                 }
@@ -462,6 +455,38 @@ namespace Whiteboard
             }
         }
 
+        private List<UXShape> UndoRealTimeRenderingModify(string uid, List<UXShape> operations)
+        {
+            Trace.WriteLine("ActiveBoardOperationsHandler:UndoRealTimeRenderingModify: Couldn't send updates to the server. Removing Temporary Rendering.");
+
+            // get the shape from manager in order to re-render the original shape distorted by UX.
+            BoardShape shapeFromManager = GetShapeFromManager(uid);
+            UXShape oldShape = new(UXOperation.CREATE, shapeFromManager.MainShapeDefiner, uid);
+            operations.RemoveAt(1);
+            operations.Add(oldShape);
+            return operations;
+        }
+
+        private List<UXShape> UndoRealTimeRenderingCreation(List<UXShape> operations, bool alreadyDrawn, bool uxSpecific)
+        {
+            Trace.WriteLine("ActiveBoardOperationsHandler:UndoRealTimeRenderingCreation: Couldn't send updates to the server. Removing Temporary Rendering.");
+            
+            // UX might be doing real-time handling on its own.. so this flag specifies whether to take into consideration.
+            if (uxSpecific)
+            {
+                return null;
+            }
+            else if (alreadyDrawn && !uxSpecific)
+            {
+                operations.RemoveAt(1);
+                return operations;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        
         /// <summary>
         /// Send update to state Manager, and verify its response.
         /// </summary>
