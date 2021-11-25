@@ -76,7 +76,7 @@ namespace Testing.Networking
             string xml = _ser.Serialize(serObj);
             // Corupt xml string
             xml = xml.Substring(50);
-            Assert.Throws<Newtonsoft.Json.JsonReaderException>(() => _ser.Deserialize<SimpleObject>(xml));
+            Assert.Throws<System.InvalidOperationException>(() => _ser.Deserialize<SimpleObject>(xml));
         }
     }
 }
