@@ -11,26 +11,16 @@ using NUnit.Framework;
 namespace Testing.Networking.SocketManagement
 {
     [TestFixture]
-    public class SendSocketListenerClientTesting
+    public class SendSocketListenerServerTesting
     {
         private IQueue _queueS;
         private IQueue _queueR;
         private Machine _server;
-        private SendSocketListenerClient _sendSocketListenerClient;
+        private SendSocketListenerServer _sendSocketListenerServer;
         private ReceiveSocketListener _receiveSocketListener;
-        private const int Threshold = 1025;
-        private string Message => NetworkingGlobals.GetRandomString();
         private TcpClient _serverSocket;
         private TcpClient _clientSocket;
-        
-        private string GetMessage(Packet packet)
-        {
-            string msg = packet.ModuleIdentifier;
-            msg += ":";
-            msg += packet.SerializedData;
-            msg += "EOF";
-            return msg;
-        }
+        private  Dictionary<string, TcpClient> _clientIdSocket;
 
         [SetUp]
         public void StartSendSocketListenerClient()
@@ -48,24 +38,28 @@ namespace Testing.Networking.SocketManagement
             {
                 _clientSocket.Connect(ip, port);
             });
-            Task t2 = Task.Run(() =>
-            {
-                _serverSocket = serverSocket.AcceptTcpClient();
-            });
-            Task.WaitAll(t1, t2);
+            
             _queueS = new Queue();
             _queueS.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
-            _sendSocketListenerClient = new SendSocketListenerClient(_queueS, _clientSocket);
-            _sendSocketListenerClient.Start();
+            _clientIdSocket = new();
+            _sendSocketListenerServer = new SendSocketListenerServer(_queueS, _clientIdSocket);
+            _sendSocketListenerServer.Start();
             
             _queueR = new Queue();
             _queueR.RegisterModule(Modules.WhiteBoard, Priorities.WhiteBoard);
-            _receiveSocketListener = new ReceiveSocketListener(_queueR, _serverSocket);
+            _receiveSocketListener = new ReceiveSocketListener(_queueR, _clientSocket);
             _receiveSocketListener.Start();
+            
+            Task t2 = Task.Run(() =>
+            {
+                _serverSocket = serverSocket.AcceptTcpClient();
+                _clientIdSocket["1"] = _serverSocket;
+            });
+            Task.WaitAll(t1, t2);
         }
 
         [Test]
-        public void SinglePacketClientSendTesting()
+        public void SinglePacketServerSendTesting()
         {
             string whiteBoardData = "hello ";
             Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
@@ -81,9 +75,9 @@ namespace Testing.Networking.SocketManagement
         }
         
         [Test]
-        public void BigPacketClientSendTesting()
+        public void BigPacketServerSendTesting()
         {
-            string whiteBoardData = NetworkingGlobals.GetRandomString(4000);
+            string whiteBoardData = NetworkingGlobals.GetRandomString(1500);
             Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             _queueS.Enqueue(whiteBoardPacket);
             
@@ -95,33 +89,15 @@ namespace Testing.Networking.SocketManagement
                 Assert.AreEqual(whiteBoardData, packet.SerializedData);
             });
         }
-
-        [Test]
-        public void MultiplePacketClientSendTesting()
-        { 
-            for (int i = 1; i <= 10; i++)
-            {
-                string whiteBoardData = "packet"+i.ToString();
-                Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
-                _queueS.Enqueue(whiteBoardPacket);
-            }
-            
          
-            Thread.Sleep(100);
-            for (int i = 1; i <= 10; i++)
-            {
-                string whiteBoardData = "packet"+i.ToString();
-                Packet packet = _queueR.Dequeue();
-                Assert.AreEqual(whiteBoardData, packet.SerializedData);
-            }
-        }
         [TearDown]
         public void TearDown()
         {
-            _clientSocket.Close();
-            _sendSocketListenerClient.Stop();
-            _receiveSocketListener.Stop();
             _serverSocket.Close();
+            _receiveSocketListener.Stop();
+            _sendSocketListenerServer.Stop();
+            
+            _clientSocket.Close();
         }
     }
 }

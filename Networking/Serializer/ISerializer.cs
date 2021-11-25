@@ -8,7 +8,7 @@
         /// <typeparam name="T">Object Type.</typeparam>
         /// <param name="objectToSerialize">Object to serialize.</param>
         /// <returns>Serialized XML string.</returns>
-        string Serialize<T>(T objectToSerialize) where T : new();
+        string Serialize<T>(T objectToSerialize);
 
         /// <summary>
         /// Returns the type of object serialized as the XML string.
