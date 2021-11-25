@@ -82,7 +82,7 @@ namespace ScreenSharing
 		public void Share()
 		{
 			try
-            { 
+            {
 				while (IsSharing)
 				{
 					while (FrameQueue.Count == 0) ;
@@ -126,8 +126,8 @@ namespace ScreenSharing
 		/// </summary>
 		public void OnTimeout(Object source, ElapsedEventArgs e)
 		{
-            try 
-			{ 
+            try
+			{
 				UserId = "-";
 				FrameQueue.Clear();
 			}

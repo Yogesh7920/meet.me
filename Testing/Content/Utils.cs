@@ -1,6 +1,11 @@
-using NUnit.Framework;
+/// <author>Sahil J. Chaudhari</author>
+/// <created>20/11/2021</created>
+/// <modified>24/11/2021</modified>
+/// <summary>
+/// This file contains required methods for module testing and unit testing
+/// </summary>
 using Content;
-using Networking;
+using System.Collections.Generic;
 
 namespace Testing.Content
 {
@@ -41,10 +46,78 @@ namespace Testing.Content
             {
 				rcvIds = new int[0];
             }
-			SendMessageData SampleData = GenerateChatSendMsgData(msg,rcvIds,replyId,type);
+			SendMessageData sampleData = GenerateChatSendMsgData(msg,rcvIds,replyId,type);
 			ChatClient contentChatClient = new ChatClient(_fakeCommunicator);
-			MessageData MsgData = contentChatClient.SendToMessage(SampleData, chatEvent);
-			return MsgData;
+			MessageData msgData = contentChatClient.SendToMessage(sampleData, chatEvent);
+			return msgData;
+		}
+
+		public MessageData GenerateNewMessageData(string Message, int MessageId = 1, int[] rcvIds = null, int ReplyThreadId = -1, int SenderId = -1, bool Starred = false, MessageType Type = MessageType.Chat)
+		{
+			if (rcvIds == null)
+			{
+				rcvIds = new int[0];
+			}
+			var msg = new MessageData();
+			msg.Event = MessageEvent.NewMessage;
+			msg.Message = Message;
+			msg.MessageId = MessageId;
+			msg.ReceiverIds = rcvIds;
+			msg.SenderId = SenderId;
+			msg.ReplyThreadId = ReplyThreadId;
+			msg.Starred = Starred;
+			msg.Type = Type;
+			return msg;
+		}
+
+		public ReceiveMessageData MessageDataToReceiveMessageData(MessageData msgData)
+        {
+			var msg = new ReceiveMessageData();
+			msg.Event = msgData.Event;
+			msg.Message = msgData.Message;
+			msg.MessageId = msgData.MessageId;
+			msg.ReceiverIds = msgData.ReceiverIds;
+			msg.SenderId = msgData.SenderId;
+			msg.ReplyThreadId = msgData.ReplyThreadId;
+			msg.Starred = msgData.Starred;
+			msg.Type = msgData.Type;
+			return msg;
+		}
+
+        public ReceiveMessageData GenerateNewReceiveMessageData(string Message, int MessageId = 1, int[] rcvIds = null, int ReplyThreadId = -1, int SenderId = -1, bool Starred = false, MessageType Type = MessageType.Chat)
+        {
+            if (rcvIds == null)
+            {
+                rcvIds = new int[0];
+            }
+            var msg = new ReceiveMessageData();
+            msg.Event = MessageEvent.NewMessage;
+            msg.Message = Message;
+            msg.MessageId = MessageId;
+            msg.ReceiverIds = rcvIds;
+            msg.SenderId = SenderId;
+            msg.ReplyThreadId = ReplyThreadId;
+            msg.Starred = Starred;
+            msg.Type = Type;
+            return msg;
+        }
+
+		public List<ChatContext> getlistContext(MessageData message)
+		{
+
+			ReceiveMessageData receivedMessage = message;
+
+			// add the message to the correct ChatContext in allMessages
+			var key = receivedMessage.ReplyThreadId;
+			List<ChatContext> sampleData = new List<ChatContext>();
+			var newContext = new ChatContext();
+			newContext.ThreadId = key;
+			newContext.MsgList.Add(receivedMessage);
+			newContext.NumOfMessages = 1;
+			newContext.CreationTime = receivedMessage.SentTime;
+
+			sampleData.Add(newContext);
+			return sampleData;
 		}
 
 		public SendMessageData GetSendMessageData1()
@@ -59,10 +132,10 @@ namespace Testing.Content
 
 		public MessageData GetMessageData1()
         {
-			SendMessageData SampleData = GetSendMessageData1();
+			SendMessageData sampleData = GetSendMessageData1();
 			ChatClient conch = new ChatClient(_fakeCommunicator);
-			MessageData MsgData = conch.SendToMessage(SampleData, MessageEvent.NewMessage);
-			return MsgData;
+			MessageData msgData = conch.SendToMessage(sampleData, MessageEvent.NewMessage);
+			return msgData;
 		}
 
 		public SendMessageData GetSendMessageData2()

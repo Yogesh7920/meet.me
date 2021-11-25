@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/**
+ * owned by: Irene Casmir
+ * created by: Irene Casmir
+ * date created: 25/10/2021
+ * date modified: 23/11/2021
+**/
 using Dashboard;
 using Dashboard.Client.SessionManagement;
+using System;
 
-namespace Client.ViewModels
+namespace Client.ViewModel
 {
     public class AuthViewModel
     {
@@ -31,7 +33,7 @@ namespace Client.ViewModels
             }
             catch(Exception _)
             {
-                return true;
+                return false;
             }
         }
     }

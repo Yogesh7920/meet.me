@@ -98,7 +98,7 @@ namespace ScreenSharing
 		public void StartSharing()
 		{
 			try
-            { 
+            {
 				ThisSharing = true;
 				// starting the execution of the sharing thread
 				SharingThread.Start();
@@ -117,7 +117,7 @@ namespace ScreenSharing
 		public void StopSharing()
 		{
 			try
-            { 
+            {
 				ThisSharing = false;
 				SharedScreen message = new SharedScreen(UserId, UserName, 0, null);
 				string scrn = Serializer.Serialize<SharedScreen>(message);
@@ -192,7 +192,7 @@ namespace ScreenSharing
 		public void Capture()
 		{
 			try
-            { 
+            {
 				if (OtherSharing)
 				{
 					ThisSharing = false;
@@ -243,7 +243,7 @@ namespace ScreenSharing
 		public void Send(SharedScreen message)
 		{
 			try
-            { 
+            {
 				string scrn = Serializer.Serialize<SharedScreen>(message);
 				Communicator.Send(scrn, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
 			}
@@ -260,7 +260,7 @@ namespace ScreenSharing
 		public void Subscribe(IScreenShare listener)
 		{
             try
-			{ 
+			{
 				Ux = listener;
 			}
 			catch(Exception e)
@@ -279,7 +279,7 @@ namespace ScreenSharing
 			{
 				while (FrameQueue.Count == 0) ;
 				try
-                { 
+                {
 					// if the queue is not empty take the screen from the queue and pass it to the ux
 					Timer.Interval = 2000;
 					if (Timer.Enabled == false)
@@ -320,8 +320,8 @@ namespace ScreenSharing
 		/// </summary>
 		public void OnTimeout(Object source, ElapsedEventArgs e)
 		{
-			try 
-			{ 
+			try
+			{
 				ThisSharing = false;
 				OtherSharing = false;
 				FrameQueue.Clear();
