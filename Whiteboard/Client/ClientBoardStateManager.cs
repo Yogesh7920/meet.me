@@ -106,26 +106,34 @@ namespace Whiteboard
                 lock (_stateLock)
                 {
                     Trace.WriteLine("ClientBoardStateManager.DoRedo: Redo is called.");
-                    
+
                     if (_redoStack.IsEmpty())
                     {
                         Trace.WriteLine("ClientBoardStateManager.DoRedo: Stack is empty.");
                         return null;
                     }
 
-                    // get the top element and put it in undo stack
-                    Tuple<BoardShape, BoardShape> tuple = _redoStack.Top();
-                    _redoStack.Pop();
-                    _undoStack.Push(tuple.Item2?.Clone(), tuple.Item1?.Clone());
+                    // updates for UX
+                    List<UXShape> uXShapes = new();
+                    int flag = 0;
 
-                    // do desired operation and send updates to UX and server
-                    List<UXShape> uXShapes = UndoRedoRollback(tuple);
-                    
-                    // if the shape got deleted from server updates, user can't undo-redo that, hence do redo on next entry.
-                    if(uXShapes.Count == 0)
+                    // if the shape got deleted from server updates, user can't undo-redo that, hence do redo on next entry.s
+                    while (uXShapes.Count == 0)
                     {
-                        _undoStack.Pop();
-                        DoRedo();
+                        if (flag != 0)
+                        {
+                            _undoStack.Pop();
+                        }
+                        if (_redoStack.IsEmpty())
+                        {
+                            Trace.WriteLine("ClientBoardStateManager.DoRedo: Stack got emptied. No valid shape available in state.");
+                            return null;
+                        }
+                        // get the top element and put it in undo stack
+                        Tuple<BoardShape, BoardShape> tuple = _redoStack.Top();
+                        _redoStack.Pop();
+                        _undoStack.Push(tuple.Item2?.Clone(), tuple.Item1?.Clone());
+                        uXShapes = UndoRedoRollback(tuple);
                     }
                     return uXShapes;
                 }
@@ -156,19 +164,27 @@ namespace Whiteboard
                         return null;
                     }
 
-                    // get the top element and put it in redo stack
-                    Tuple<BoardShape, BoardShape> tuple = _undoStack.Top();
-                    _undoStack.Pop();
-                    _redoStack.Push(tuple.Item2?.Clone(), tuple.Item1?.Clone());
+                    // updates for UX
+                    List<UXShape> uXShapes = new();
+                    int flag = 0;
 
-                    // do desired operation and send updates to UX and server
-                    List<UXShape> uXShapes = UndoRedoRollback(tuple);
-
-                    // if the shape got deleted from server updates, user can't undo-redo that, hence do undo on next entry.
-                    if (uXShapes.Count == 0)
+                    // if the shape got deleted from server updates, user can't undo-redo that, hence do redo on next entry.s
+                    while (uXShapes.Count == 0)
                     {
-                        _redoStack.Pop();
-                        DoUndo();
+                        if (flag != 0)
+                        {
+                            _redoStack.Pop();
+                        }
+                        if (_undoStack.IsEmpty())
+                        {
+                            Trace.WriteLine("ClientBoardStateManager.DoUndo: Stack got emptied. No valid shape available in state.");
+                            return null;
+                        }
+                        // get the top element and put it in redo stack
+                        Tuple<BoardShape, BoardShape> tuple = _undoStack.Top();
+                        _undoStack.Pop();
+                        _redoStack.Push(tuple.Item2?.Clone(), tuple.Item1?.Clone());
+                        uXShapes = UndoRedoRollback(tuple);
                     }
                     return uXShapes;
                 }
