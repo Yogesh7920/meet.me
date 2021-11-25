@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Whiteboard
 {
@@ -59,6 +60,9 @@ namespace Whiteboard
         // The level of user.
         private int _userLevel;
 
+        // Check if running as part of NUnit
+        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
+
         /// <summary>
         /// Private constructor. 
         /// </summary>
@@ -79,6 +83,15 @@ namespace Whiteboard
                 Trace.WriteLine("Whiteboard.ClientBoardStateManager.Instance: Returning the stored instance.s");
                 Trace.Unindent();
                 return s_instance;
+            }
+        }
+
+        public void SetCommunicatorAndCheckpointHandler(IClientBoardCommunicator clientBoardCommunicator, IClientCheckPointHandler clientCheckPointHandler)
+        {
+            if (IsRunningFromNUnit)
+            {
+                _clientBoardCommunicator = clientBoardCommunicator;
+                _clientCheckPointHandler = clientCheckPointHandler;
             }
         }
 
@@ -176,7 +189,7 @@ namespace Whiteboard
         public void FetchCheckpoint([NotNull] int checkpointNumber)
         {
             Trace.WriteLine("ClientBoardStateManager.FetchCheckpoint: Fetch checkpoint request received.");
-            _clientCheckPointHandler.FetchCheckpoint(checkpointNumber);
+            _clientCheckPointHandler.FetchCheckpoint(checkpointNumber, _currentUserId, _currentCheckpointState);
         }
 
         /// <summary>
@@ -263,7 +276,7 @@ namespace Whiteboard
                         _clientCheckPointHandler.CheckpointNumber = _checkpointsNumber;
 
                         // notify UX to display new number
-                        NotifyClients(new List<UXShape> { new(_checkpointsNumber, Operation.FETCH_CHECKPOINT) });
+                        NotifyClients(new List<UXShape> { new(_checkpointsNumber, Operation.CREATE_CHECKPOINT) });
                     }
                     Trace.WriteLine("ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
@@ -355,7 +368,7 @@ namespace Whiteboard
         public void SaveCheckpoint()
         {
             Trace.WriteLine("ClientBoardStateManager.SaveCheckpoint: Create checkpoint request received.");
-            _clientCheckPointHandler.SaveCheckpoint();
+            _clientCheckPointHandler.SaveCheckpoint(_currentUserId, _currentCheckpointState);
         }
 
         /// <summary>
@@ -437,7 +450,7 @@ namespace Whiteboard
                         PreConditionChecker(Operation.DELETE, boardShape.Uid);
 
                         // create a deep copy and push it in undo stack
-                        _undoStack.Push(boardShape.Clone(), null);
+                        _undoStack.Push(_mapIdToBoardShape[boardShape.Uid].Clone(), null);
 
                         // Delete from respective data structures
                         _mapIdToBoardShape.Remove(boardShape.Uid);
@@ -498,6 +511,7 @@ namespace Whiteboard
             _clientCheckPointHandler = new ClientCheckPointHandler();
             _clients = new Dictionary<string, IClientBoardStateListener>();
             _deletedShapeIds = new HashSet<string>();
+            _currentUserId = null;
             _userLevel = BoardConstants.LOW_USER_LEVEL;
 
             InitializeDataStructures();
@@ -622,26 +636,15 @@ namespace Whiteboard
                 for (int i = 0; i < boardShapes.Count; i++)
                 {
                     string boardShapeId = boardShapes[i].Uid;
-
                     // insert in id to BoardShape map
-                    if (_mapIdToBoardShape.ContainsKey(boardShapeId))
+                    if (_mapIdToBoardShape.ContainsKey(boardShapeId) || _mapIdToQueueElement.ContainsKey(boardShapeId))
                     {
-                        // if already there is some reference present, removing it
-                        _mapIdToBoardShape.Remove(boardShapeId);
-                        GC.Collect();
+                        // if already there is some reference present, then raise an Exception
+                        throw new Exception("Same board shape present twice. Problem with state fetching.");
                     }
                     _mapIdToBoardShape.Add(boardShapeId, boardShapes[i]);
-
                     // insert in priority queue and id to QueueElement map
                     QueueElement queueElement = new(boardShapeId, boardShapes[i].LastModifiedTime);
-                    if (_mapIdToQueueElement.ContainsKey(boardShapeId))
-                    {
-                        // if already there is some reference present, removing it
-                        QueueElement tempQueueElement = _mapIdToQueueElement[boardShapeId];
-                        _priorityQueue.DeleteElement(tempQueueElement);
-                        _mapIdToQueueElement.Remove(boardShapeId);
-                        GC.Collect();
-                    }
                     _mapIdToQueueElement.Add(boardShapeId, queueElement);
                     _priorityQueue.Insert(queueElement);
 
@@ -650,7 +653,6 @@ namespace Whiteboard
                     {
                         _deletedShapeIds.Remove(boardShapeId);
                     }
-
                     // converting BoardShape to UXShape and adding it in the list
                     uXShapes.Add(new(UXOperation.CREATE, boardShapes[i].MainShapeDefiner, boardShapeId, _checkpointsNumber, boardServerShape.OperationFlag));
                 }
@@ -658,6 +660,7 @@ namespace Whiteboard
             }
             catch (Exception e)
             {
+                NullifyDataStructures();
                 Trace.WriteLine("ClientBoardStateManager.UpdateStateOnFetch: Exception occurred.");
                 Trace.WriteLine(e.Message);
             }
@@ -730,6 +733,8 @@ namespace Whiteboard
                 boardShapes.Add(_mapIdToBoardShape[_priorityQueue.Top().Id]);
                 queueElements.Add(_priorityQueue.Extract());
             }
+            boardShapes.Reverse();
+            queueElements.Reverse();
             return new(boardShapes, queueElements);
         }
 

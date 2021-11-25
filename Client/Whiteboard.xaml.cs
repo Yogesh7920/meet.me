@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+
+using System.Collections.ObjectModel;
 
 namespace Client
 {
@@ -58,12 +59,23 @@ namespace Client
         private float penThickness = 5;
         private float eraserThickness = 5;
 
-        bool rotation = false; 
+        bool rotation = false;
+
+        //private List<string> ckptList;
+        private ObservableCollection<string> ckptList;
+
+
+
+
         public WhiteBoardView()
         {
             InitializeComponent();
             this.GlobCanvas = MyCanvas;
             viewModel = new WhiteBoardViewModel(GlobCanvas);
+            ckptList = new ObservableCollection<string>()  
+            {  
+               "1", "2"
+            };
         }
 
         // Function to clear flags and mouse variables to be called when a popup is opened/closed or active tool is changed
@@ -978,29 +990,42 @@ namespace Client
         //Clear Frame Button Control 
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
-            //To change this 
-            GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
-            return;
+
+            MessageBoxResult result = MessageBox.Show( "If you close this window, all data will be lost.",
+"Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.OK)
+            {
+                GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
+                return;
+            }
+            else
+            {
+                return;
+            }
+            
         }
 
         //Save Frame Button Control
         private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedSaveFrame");
+            //MessageBox.Show("ClickedSaveFrame");
+            viewModel.SaveFrame();
             return;
         }
 
         //Undo Button Control
         private void ClickedUndoButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedUndo");
+            //MessageBox.Show("ClickedUndo");
+            this.viewModel.sendUndoRequest();
             return;
         }
 
         //Redo Button Control
         private void ClickedRedoButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedRedo");
+            //MessageBox.Show("ClickedRedo");
+            this.viewModel.sendRedoRequest();
             return;
         }
 
@@ -1009,14 +1034,15 @@ namespace Client
         {
             if (Bu.Toggled1 == true)
             {
+                viewModel.ChangePrivilegeSwitch();
                 MessageBox.Show("Toggled On");
             }
             else
             {
+                viewModel.ChangePrivilegeSwitch();
                 MessageBox.Show("Toggled Off");
             }
         }
-
 
     }
 }

@@ -25,25 +25,24 @@ namespace Client.ViewModel
         {
             _model = SessionManagerFactory.GetClientSessionManager();
             _model.SubscribeSession(this);
+            users = new List<UserViewData>();
         }
 
         public void OnClientSessionChanged(SessionData session)
         {
+            int userid = ChatViewModel.UserId;
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<List<UserViewData>>((users) =>
+                        new Action<SessionData, List<UserViewData>,int>((session,users,userid) =>
                         {
                             lock (this)
                             {
-                                if (users != null)
-                                {
-                                    users.Clear();
-                                }
+                                users.Clear();
                                 foreach (UserData user in session.users)
                                 {
                                     UserViewData usernew = new UserViewData();
                                     usernew.username = user.username;
-                                    if(user.userID == ChatViewModel.UserId)
+                                    if(user.userID == userid)
                                     {
                                         usernew.username += " (You)";
                                     }
@@ -53,7 +52,7 @@ namespace Client.ViewModel
                                 this.OnPropertyChanged("ListChanged");
                             }
                         }),
-                        users);
+                        session,users,userid);
         }
 
         public void LeftClient()
@@ -61,7 +60,7 @@ namespace Client.ViewModel
             _model.RemoveClient();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler UsersListChanged;
 
         /// <summary>
         /// Handles the property changed event raised on a component.
@@ -69,7 +68,7 @@ namespace Client.ViewModel
         /// <param name="property">The name of the property.</param>
         private void OnPropertyChanged(string property)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            UsersListChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
         private Dispatcher ApplicationMainThreadDispatcher =>
             (Application.Current?.Dispatcher != null) ?

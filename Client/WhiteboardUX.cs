@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -14,6 +15,7 @@ using System.Diagnostics;
 using Whiteboard;
 using System.Windows.Documents;
 using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace Client
 {
@@ -653,10 +655,10 @@ namespace Client
                         toRender[0].WindowsShape.Fill = strokeColorBrush;
                         break;
                 }
-                //Removing temporary render from Canvas
+                //Removing temporary render from Canvas as Whiteboard module sends only CREATE operation, so we need to clean up temporary render
                 cn.Children.Remove(underCreation);
 
-                cn = RenderUXElement(toRender, cn);
+                if (!(toRender==null || toRender.Count() == 0)) cn = RenderUXElement(toRender, cn);
 
                 //select the shape 
                 SelectShape(cn, toRender.ElementAt(0).WindowsShape, WBOps, 0);
@@ -1105,6 +1107,26 @@ namespace Client
 
 
                 }
+                switch (shp.OperationType)
+                {
+                    case (Operation.CREATE_CHECKPOINT):
+                        break;
+                    case (Operation.FETCH_CHECKPOINT):
+                        break;
+                    case (Operation.FETCH_STATE):
+                        break;
+                    case (Operation.MODIFY):
+                        break;
+                        //case (Operation.CLEAR_STATE ):
+                        //In the `Clear Canvas` button on View, remember to display a warning message that the new shapes since last checkpoint would be lost forever
+                        //cn.Children.Clear()
+
+                        //Clearing pending rendering of the listened items from server, as the canvas would be cleared anyway
+                        //renderQueue.Clear()
+
+
+
+                }
 
             }
 
@@ -1147,6 +1169,9 @@ namespace Client
             List<UXShape> toRender = new List<UXShape>();
             SolidColorBrush color = (SolidColorBrush)(new BrushConverter().ConvertFrom(hexCode));
             BoardColor color_b = new BoardColor(color.Color.R, color.Color.G, color.Color.B);
+
+            //If no shape is selected while changing fill property, do not update Canvas
+            if (selectedShapes.Count() == 0) return cn;
 
             string shUID = selectedShapes[0];
 
@@ -1715,8 +1740,23 @@ namespace Client
     /// <summary>
     /// View Model of Whiteboard in MVVM design pattern 
     /// </summary>
-    public class WhiteBoardViewModel : IClientBoardStateListener
+    public class WhiteBoardViewModel :  IClientBoardStateListener , INotifyPropertyChanged
     {
+        //To be bound to the number of "Checkpoint #n" in Restore Checkpoint dropdown in Whiteboard.xaml
+        private int _numCheckpoints;
+
+        public int NumCheckpoints
+        {
+            get { return _numCheckpoints; }
+            set
+            {
+                if (_numCheckpoints != value)
+                {
+                    _numCheckpoints = value;
+                    OnPropertyChanged(nameof(NumCheckpoints));
+                }
+            }
+        }
 
         /// UX sets this enum to different options when user clicks on the appropriate tool icon
         public enum WBTools
@@ -1738,7 +1778,6 @@ namespace Client
         public ShapeManager shapeManager;
         public FreeHand freeHand;
         private Canvas GlobCanvas;
-        List<UXShape> toRender;
         private IClientBoardStateManager manager;
 
         public IWhiteBoardOperationHandler WBOps;
@@ -1747,6 +1786,9 @@ namespace Client
             (Application.Current?.Dispatcher != null) ?
                 Application.Current.Dispatcher :
                 Dispatcher.CurrentDispatcher;
+
+
+        private int TEMPVAR;
 
         /// <summary>
         /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
@@ -1758,15 +1800,49 @@ namespace Client
             this.activeTool = WBTools.Initial;
             this.GlobCanvas = GlobCanvas;
             this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
+
+            //TO BE CALLED BY DASHBOARD
             this.manager = ClientBoardStateManager.Instance;
             this.manager.Start();
-            this.manager.Subscribe(this, "arpan");
-            this.GlobCanvas.IsEnabled = false; 
 
-            Task.Factory.StartNew(() =>
-            {
-                OnUpdateFromStateManager(toRender);
-            });
+            this.manager.Subscribe(this, "us");
+
+
+            this._numCheckpoints = 0;
+            //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
+            //this.GlobCanvas.IsEnabled = false;
+
+            this.TEMPVAR = 0;
+
+            /*var thread = new Thread(incremTest);
+            thread.IsBackground = true;
+            Trace.WriteLine("STARTING THREAD");
+
+            thread.Start();*/
+
+            Trace.WriteLine("STARTING THREAD");
+
+             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                   DispatcherPriority.Normal,
+                   new Action<int>((varrr) =>
+                   {
+                       lock (this)
+                       {
+                           varrr++;
+                           Trace.WriteLine(varrr.ToString());
+                       }
+                   }
+
+               ),
+               TEMPVAR); 
+
+        }
+
+        private void incremTest()
+        {
+            this.TEMPVAR++;
+            Trace.WriteLine(this.TEMPVAR.ToString());
+            return;
         }
 
         /// <summary>
@@ -1843,30 +1919,37 @@ namespace Client
             return;
         }
 
+        //should be called only when user accepts warning of Clear Whiteboard
         public Canvas ClearCanvas(Canvas cn)
         {
             cn = shapeManager.UnselectAllBB(cn, WBOps);
-            cn.Children.Clear();
+            //cn.Children.Clear();
+
+            //Only calling state manager's clear whiteboard here, whiteboard would be cleared when request received in the listener thread
+            manager.ClearWhiteBoard();
             return cn;
         }
 
         /// <summary>
         /// Checkpoints the drawn shapes on canvas  
         /// </summary>
-        public void SaveFrame(Canvas GlobCanvas)
+        public void SaveFrame()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            manager.SaveCheckpoint();
         }
 
         /// <summary>
-        /// Resotres the selected checkpoint  
+        /// Restores the selected checkpoint  
         /// </summary>
-        public void RestoreFrame(List<UXShape> toRender, Canvas GlobCanvas)
+        /// //should be called only when user accepts warning of Restore Whiteboard
+        public void RestoreFrame(int CheckNum, Canvas GlobCanvas)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            manager.FetchCheckpoint(CheckNum);
         }
 
-        public void OnUpdateFromStateManager(List<UXShape> shapeUpdates)
+        public void OnUpdateFromStateManager (List<UXShape> ServerUpdate)
         {
 
             _ = ApplicationMainThreadDispatcher.BeginInvoke(
@@ -1875,37 +1958,193 @@ namespace Client
                     {
                         lock (this)
                         {
-                            //check which type of operation is it
-                            //if shape is freeHand only 
-                            //freeHand.RenderUXElement(received, GlobCanvas);
-
-                            //shapeManager.RenderUXElement(received, GlobCanvas); 
-
-                            //RestoreFrame(received, GlobCanvas); 
-
-                            //Fetch : Fetch Checkpoint 
-
-                            if (received != null)
-                            {
-                                if (received[0].OperationType == Operation.FETCH_STATE || received[0].OperationType == Operation.FETCH_CHECKPOINT)
-                                {
-                                    ClearCanvas(GlobCanvas);
-                                    this.shapeManager.RenderUXElement(received, GlobCanvas);
-                                }
-                                else if (received[0].OperationType == Operation.CLEAR_STATE)
-                                {
-                                    ClearCanvas(GlobCanvas);
-                                }
-                            }
-                         
-
-
-                            //Fetch State 
+                            processServerUpdateBatch(received);
                         }
                     }
 
                 ),
-                shapeUpdates);
+                ServerUpdate);
         }
+
+        public void sendUndoRequest()
+        {
+            List<UXShape> renderUndo = WBOps.Undo();
+            for (int i = 0; i < renderUndo.Count(); i++)
+            {
+                if (renderUndo[i].WindowsShape is System.Windows.Shapes.Polyline)
+                {
+                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                }
+                else
+                {
+                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                }
+            }
+            return;
+        }
+
+        public void sendRedoRequest()
+        {
+            List<UXShape> renderRedo = WBOps.Redo();
+            for (int i = 0; i < renderRedo.Count(); i++)
+            {
+                if (renderRedo[i].WindowsShape is System.Windows.Shapes.Polyline)
+                {
+                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderRedo[i] }, GlobCanvas);
+                }
+                else
+                {
+                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderRedo[i] }, GlobCanvas);
+                }
+            }
+            return;
+        }
+
+
+        public void increaseCheckpointNum(int latestNumCheckpoints)
+        {
+            if (latestNumCheckpoints == this._numCheckpoints)
+            {
+                return;
+            }
+            else
+            {
+                //Write code to update the dropdown in "Restore Checkpoint" on .xaml, can use binding to viewModel.numCheckpoints
+                return;
+            }
+        }
+
+        //To be called when drop downs in 'Load Checkpoint' button on view is clicked, if this returns false, ignore user's click, else call manager.LoadCheckpoint(num)
+        public bool ShowWarningFetchCheckpoint(int checkpointNumLoad)
+        {
+            //Write code such that
+            //if user accepts warning, return true
+            //else return false
+
+            return false;
+
+        }
+
+        //To be called when drop downs in 'Clear Board' button on view is called, if this returns false, ignore user's click, else call manager.ClearFrame(num)
+        public bool ShowWarningClearBoard()
+        {
+            //Write code such that
+            //if user accepts warning, return true
+            //else return false
+
+            return false;
+
+        }
+
+        private void processServerUpdateBatch(List<UXShape> received)
+        {
+            //WE ASSUME that an update batch can only have a single Clear Canvas request 
+            IEnumerable<UXShape> iterat = received.OfType<UXShape>().Where(x => x.OperationType == Operation.CLEAR_STATE);
+            Debug.Assert(iterat.Count() == 1);
+            //additional flag to signify whether the Clear Canvas request in current batch has been registered
+            //Ignores all the other CLEAR_STATE requests in current batch
+            int clearCanFlag = 0;
+
+
+            //WE ASSUME that an update batch can only have either no FETCH_STATE requests, or all FETCH_STATE requests
+            IEnumerable<UXShape> iterat2 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_STATE);
+            Debug.Assert(iterat2.Count() == 0 || iterat2.Count() == received.Count());
+            if (received[0].OperationType == Operation.FETCH_STATE)
+            {
+                //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor
+                Debug.Assert(_numCheckpoints == 0);
+                Debug.Assert(GlobCanvas.IsEnabled == false);
+                //Supposed to make the "Restore Checkpoint" dropdown with CheckPointNumber number of dropdown tiles
+                increaseCheckpointNum(received[0].CheckPointNumber);
+            }
+
+            //WE ASSUME that an update batch can only have either no FETCH_CHECKPOINT requests, or all FETCH_CHECKPOINT requests
+            IEnumerable<UXShape> iterat3 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_CHECKPOINT);
+            Debug.Assert(iterat3.Count() == 0 || iterat3.Count() == received.Count());
+            if (received[0].OperationType == Operation.FETCH_CHECKPOINT)
+            {
+                //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO SAVE CHECKPOINT, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
+                //IN THE WARNING, MENTION THAT THIS CHANGE CANNOT BE UNDOED
+
+                //To verify above thing, trace 'ShowWarningFetchCheckpoint'
+
+
+                //ASSUMING that the user has already been SHOWN THE WARNING
+                GlobCanvas.Children.Clear();
+
+                //The user should not be able to draw anything on the Canvas while the checkpoint is being fetched
+                GlobCanvas.IsEnabled = false;
+
+
+            }
+
+            for (int i = 0; i < received.Count(); i++)
+            {
+                switch (received[i].OperationType)
+                {
+
+                    //Case when new user joins and the whole state of server is sent to user
+                    case Operation.FETCH_STATE:
+
+                        ///
+                        /// ASSUMING that this batch of server update contains ONLY AND ONLY Operation.FETCH_STATE requests
+                        /// VERIFY THE ABOVE ASSUMPTION FROM ASHISH
+                        ///
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        //Enabling the Canvas as all of the FETCH_STATE render requests in current batch have been rendered and the new user can now use Canvas
+                        if (i == received.Count() - 1)  this.GlobCanvas.IsEnabled = true;
+
+                        break;
+
+                    case Operation.FETCH_CHECKPOINT:
+
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        //Enabling the Canvas as all of the FETCH_STATE render requests in current batch have been rendered and the new user can now use Canvas
+                        if (i == received.Count() - 1) this.GlobCanvas.IsEnabled = true;
+
+                        //MessageBox.Show("Loading Checkpoint +", received[i].CheckPointNumber.ToString());
+
+
+                        break;
+                    case Operation.CLEAR_STATE:
+                        //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO CLEAR FRAME, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
+                        //IN THE WARNING, MENTION THAT THIS CHANGE CANNOT BE UNDOED
+
+                        //To verify above thing, trace 'ShowWarningClearBoard'
+
+
+                        //based on above assumption that current server update batch can only have one CLEAR_STATE request
+                        if (clearCanFlag == 0)
+                        {
+                            GlobCanvas.Children.Clear();
+                            clearCanFlag = 1;
+                        }
+                        break;
+
+                    case Operation.CREATE_CHECKPOINT:
+                        increaseCheckpointNum(received[i].CheckPointNumber);
+                        break;
+
+                    case Operation.MODIFY:
+                        //If the operation is MODIFY, directly render it onto the Canvas
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        break;
+                }
+            }
+        }
+
+        private void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+        //RestorFrameDropDown
+        public event PropertyChangedEventHandler PropertyChanged;
+
     }
 }
