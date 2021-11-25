@@ -109,12 +109,33 @@ namespace Content
             }
         }
 
+
         // interface functions
 
         /// <inheritdoc/>
         public int GetUserId()
         {
             return _userId;
+        }
+
+        private bool IsReplyMsgIdValid(int replyMsgId, int threadId)
+        {
+            if (threadId != -1)
+                if (!_contextMap.ContainsKey(threadId))
+                    throw new ArgumentException($"Thread with given thread id ({threadId}) doesn't exist");
+            int index = _contextMap[threadId];
+            ChatContext replyToChatContext = _allMessages[index];
+            return _messageIdMap.ContainsKey(replyMsgId);
+        }
+
+        private bool IsReplyToMsgBroadcast(int replyMsgId, int threadId)
+        {
+            int index = _contextMap[threadId];
+            ChatContext replyToChatContext = _allMessages[index];
+            int msgIndex = replyToChatContext.RetrieveMessageIndex(replyMsgId);
+            if (replyToChatContext.MsgList[msgIndex].ReceiverIds.Length == 0)
+                return true;
+            return false;
         }
 
         /// <inheritdoc />
@@ -126,9 +147,24 @@ namespace Content
 
             // if the message is part of a thread, ensure thread exists
             if (toSend.ReplyThreadId != -1)
-                if (!_contextMap.ContainsKey(toSend.ReplyThreadId))
-                    throw new ArgumentException($"Thread with given thread id ({toSend.ReplyThreadId}) doesn't exist");
+                if (!IsReplyMsgIdValid(toSend.ReplyMsgId, toSend.ReplyThreadId))
+                    throw new ArgumentException($"Msg with given msg id ({toSend.ReplyThreadId}) for reply doesn't exist");
 
+            // if the reply msg exist or not
+            if (toSend.ReplyMsgId != -1)
+            {
+                if (!_contextMap.ContainsKey(toSend.ReplyThreadId))
+                {
+                    throw new ArgumentException($"Thread with given thread id ({toSend.ReplyThreadId}) doesn't exist");
+                }
+                // if reply msg exist checking whether msg replied to is broadcast
+                if (!(IsReplyToMsgBroadcast(toSend.ReplyMsgId, toSend.ReplyThreadId)))
+                {
+                    throw new ArgumentException("Message to reply is not broadcast");
+                }
+                    
+            }
+                
             switch (toSend.Type)
             {
                 case MessageType.Chat:
@@ -273,7 +309,6 @@ namespace Content
             // in case there is any file data associated with the message (there shouldn't be)
             // make file data null
             if (message.FileData != null) message.FileData = null;
-
             ReceiveMessageData receivedMessage = message;
 
             // check if message id isn't a duplicate
@@ -287,7 +322,6 @@ namespace Content
 
             // add message id to the set of message ids
             _messageIdMap.Add(receivedMessage.MessageId, key);
-
             // add the message to the correct ChatContext in allMessages
             // use locks because the list of chat contexts may be shared across multiple threads
             lock (_lock)
