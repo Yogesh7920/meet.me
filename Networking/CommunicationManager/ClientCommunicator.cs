@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * Author: Tausif Iqbal
+ * Created on: 13/10/2021
+ * Modified on: 16/11/2021
+ * Summary: This file contains the class definition of
+ *          ClientCommunicator.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
@@ -28,10 +36,9 @@ namespace Networking
 
         /// <summary>
         ///     This method connects client to server
-        ///     <param name="serverIp">serverIP</param>
-        ///     <param name="serverPort">serverPort.</param>
         /// </summary>
-        /// ///
+        /// <param name="serverIp"> Ip of server</param>
+        /// <param name="serverPort"> port of server</param>
         /// <returns> String </returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
@@ -71,6 +78,7 @@ namespace Networking
         ///     This method stops all the running thread
         ///     of client and closes the connection
         /// </summary>
+        /// <returns> void </returns>
         void ICommunicator.Stop()
         {
             if (!_clientSocket.Connected) return;
@@ -97,6 +105,8 @@ namespace Networking
         /// <summary>
         ///     This method is for sending message
         /// </summary>
+        /// <param name="data"> data to be sent</param>
+        /// <param name="identifier"> module Id </param>
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
@@ -117,6 +127,10 @@ namespace Networking
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        ///     This method registers different handler
+        /// </summary>
+        ///<returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);

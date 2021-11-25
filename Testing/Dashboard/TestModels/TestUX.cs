@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
+using Dashboard.Server.Telemetry;
 
 namespace Testing.Dashboard.TestModels
 {
@@ -41,5 +42,6 @@ namespace Testing.Dashboard.TestModels
         public bool meetingEndEvent;
         private IUXClientSessionManager _sessionManager;
         public SessionData sessionData;
+        public SessionAnalytics sessionAnalytics;
     }
 }
