@@ -1,4 +1,12 @@
-﻿using Content;
+﻿/// <author>Sairoop Bodepudi</author>
+/// <created>3/11/2021</created>
+/// <summary>
+///		This is the interface file for the
+///		summarizer and contains all the function
+///		declarations that the summarizer provides.
+/// </summary>
+
+using Content;
 
 namespace Dashboard.Server.Summary
 {
