@@ -346,7 +346,7 @@
                         ></TextBlock>
                     </StackPanel>
 
-                    <ListBox Grid.Row="1" Background="#cfcfcf">
+                    <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="#cfcfcf">
                         <ListBoxItem>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontSize="10" FontWeight="Light">Checkpoint #1</TextBlock>
@@ -369,7 +369,7 @@
             </Popup>
 
             <!--Restore Frame Button-->
-            <ToggleButton Content="Retore Frame" 
+            <ToggleButton Content="Restore Frame" 
                     Name ="RestoreFrameButton"
                     Grid.Column="5" 
                     Foreground="LightGray"

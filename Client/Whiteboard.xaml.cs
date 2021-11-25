@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -978,9 +977,19 @@ namespace Client
         //Clear Frame Button Control 
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
-            //To change this 
-            GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
-            return;
+
+            MessageBoxResult result = MessageBox.Show( "If you close this window, all data will be lost.",
+"Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.OK)
+            {
+                GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
+                return;
+            }
+            else
+            {
+                return;
+            }
+            
         }
 
         //Save Frame Button Control

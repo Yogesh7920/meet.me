@@ -1858,7 +1858,7 @@ namespace Client
         /// <summary>
         /// Checkpoints the drawn shapes on canvas  
         /// </summary>
-        public void SaveFrame(Canvas GlobCanvas)
+        public void SaveFrame()
         {
             //throw new NotImplementedException();
             manager.SaveCheckpoint();
