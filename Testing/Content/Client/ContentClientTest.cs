@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Testing.Content
 {
@@ -21,6 +22,8 @@ namespace Testing.Content
         ISerializer serializer;
         int userId = 42;
         string testfilepath;
+        // the testing thread will need to sleep for a few ms as some functions to be tested create a separate execution thread and may take some time to show the result
+        int sleeptime;
 
         // we'll simulate a chat and a file message being received on the client from the server
         MessageData chatmsg, userchatmsg, filemsg;
@@ -31,6 +34,7 @@ namespace Testing.Content
         {
             maxValidMsgId = 0;
             maxValidThreadId = 0;
+            sleeptime = 10; // 10 ms is enough judging by trial and error
             u = new Utils();
             serializer = new Serializer();
 
@@ -65,6 +69,8 @@ namespace Testing.Content
 
             // using the OnReceive function to simulate messages being received on the client
             cClient.OnReceive(chatmsg);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
 
             // similarly simulate a new file message being received using the OnReceive function
             filemsg = new MessageData();
@@ -78,6 +84,7 @@ namespace Testing.Content
             filemsg.SenderId = 2;
 
             cClient.OnReceive(filemsg);
+            Thread.Sleep(sleeptime);
 
             // also simulate a chat message sent by the client itself, i.e., its sender id is same as user id
             userchatmsg = chatmsg.Clone();
@@ -85,6 +92,7 @@ namespace Testing.Content
             userchatmsg.ReplyThreadId = ++maxValidThreadId; // part of new thread because why not
             userchatmsg.MessageId = ++maxValidMsgId;
             cClient.OnReceive(userchatmsg);
+            Thread.Sleep(sleeptime);
         }
 
         [TearDown]
@@ -413,6 +421,8 @@ namespace Testing.Content
             
             // simulate the client receiving them
             cClient.OnReceive(contexts);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
 
             // check if all messages field is set
             List<ChatContext> newContexts = cClient.AllMessages;
@@ -517,6 +527,8 @@ namespace Testing.Content
             msg.SenderId = 401; // doesn't really matter
 
             cClient.OnReceive(msg);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
 
             // validate that the message has been stored
             ChatContext msgContext = cClient.CGetThread(msg.ReplyThreadId);
@@ -541,6 +553,8 @@ namespace Testing.Content
             msg.SenderId = 401; // doesn't really matter
 
             cClient.OnReceive(msg);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
 
             // validate that the message has been stored
             ChatContext msgContext = cClient.CGetThread(msg.ReplyThreadId);
@@ -585,6 +599,8 @@ namespace Testing.Content
             msg.Message = "New message";
 
             cClient.OnReceive(msg);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
 
             // validate that the message has been updated
             ChatContext msgContext = cClient.CGetThread(chatmsg.ReplyThreadId);
@@ -631,6 +647,8 @@ namespace Testing.Content
             bool starStatus = chatmsg.Starred;
 
             cClient.OnReceive(msg);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
 
             // validate that the message's star status has been toggled
             ChatContext msgContext = cClient.CGetThread(chatmsg.ReplyThreadId);
@@ -645,6 +663,8 @@ namespace Testing.Content
 
             // star again to check both starring and unstarring
             cClient.OnReceive(msg);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
 
             // the message's star status should have reverted to as before
             msgContext = cClient.CGetThread(chatmsg.ReplyThreadId);
