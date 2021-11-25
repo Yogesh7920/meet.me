@@ -1,7 +1,7 @@
 ﻿using System.Security.Permissions;
 using System.Windows.Threading;
 
-namespace Testing.Client.Chat
+namespace Testing.UX.Chat
 {
     public class ChatUtils
     {
