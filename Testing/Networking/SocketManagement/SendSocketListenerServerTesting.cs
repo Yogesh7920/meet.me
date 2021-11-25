@@ -163,8 +163,8 @@ namespace Testing.Networking.SocketManagement
             string whiteBoardData = "hello ";
             Packet whiteBoardPacket = new Packet{ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
             _queueS.Enqueue(whiteBoardPacket);
-            Thread.Sleep(1000);
             FakeNotificationHandler whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[Modules.WhiteBoard];
+            whiteBoardHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnClientLeft, whiteBoardHandler.Event);
         }
         [TearDown]
