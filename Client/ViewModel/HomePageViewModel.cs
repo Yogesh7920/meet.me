@@ -12,11 +12,9 @@ using Client;
 
 namespace Client.ViewModel
 {
-
     class HomePageViewModel : IClientSessionNotifications
     {
-        private IUXClientSessionManager _model;
-
+        int userid;
         public List<UserViewData> users
         {
             get; private set;
@@ -26,14 +24,14 @@ namespace Client.ViewModel
             _model = SessionManagerFactory.GetClientSessionManager();
             _model.SubscribeSession(this);
             users = new List<UserViewData>();
+            userid = ChatViewModel.UserId;
         }
 
         public void OnClientSessionChanged(SessionData session)
         {
-            int userid = ChatViewModel.UserId;
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<SessionData, List<UserViewData>,int>((session,users,userid) =>
+                        new Action<SessionData>((session) =>
                         {
                             lock (this)
                             {
@@ -53,7 +51,7 @@ namespace Client.ViewModel
                                 OnPropertyChanged("ListChanged");
                             }
                         }),
-                        session,users,userid);
+                        session);
         }
 
         public void LeftClient()
@@ -75,5 +73,7 @@ namespace Client.ViewModel
             (Application.Current?.Dispatcher != null) ?
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
+
+        private IUXClientSessionManager _model;
     }
 }

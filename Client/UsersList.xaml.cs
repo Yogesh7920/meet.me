@@ -49,6 +49,7 @@ namespace Client
         private void Listener(object sender, PropertyChangedEventArgs e)
         {
             users = new ObservableCollection<UserViewData>(viewModelHomePage.users);
+            System.Diagnostics.Debug.WriteLine("Here");
         }
         private void UsersListClick(object sender, RoutedEventArgs e)
         {
