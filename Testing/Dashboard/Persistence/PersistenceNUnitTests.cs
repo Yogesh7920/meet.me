@@ -72,6 +72,22 @@ namespace Testing.Dashboard.Persistence
 
         }
 
+        /// <summary>
+        /// It tests the SaveSummary function of SummmaryPersistence
+        /// It must fail on null PathException
+        /// </summary>
+        [Test]
+        public void SaveSummary_FailsOnNullPathExceptions()
+        {
+
+            string summary = "NUnit Testing";
+            SummaryPersistence _summary_persister = PersistenceFactory.GetSummaryPersistenceInstance();
+            _summary_persister.summaryPath = null;
+            
+            ResponseEntity response = _summary_persister.SaveSummary(summary, true);
+            _summary_persister.summaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+            Assert.IsFalse(response.IsSaved);
+        }
 
         /// <summary>
         /// It tests the SaveServerData function of TelemetryPersistence
@@ -99,6 +115,7 @@ namespace Testing.Dashboard.Persistence
             ResponseEntity response = PersistenceFactory.GetTelemetryPersistenceInstance().SaveServerData(sdtns);
 
             string path = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            Trace.WriteLine("IsSaved = " + response.IsSaved);
 
             //Checking if File actually exists
             Assert.IsTrue(File.Exists(Path.Combine(path, response.FileName)));
@@ -146,6 +163,38 @@ namespace Testing.Dashboard.Persistence
         }
 
         /// <summary>
+        /// It tests the RetrieveAllSeverData_FailsOnEmptyPathExceptions function of TelemetryPersistence
+        /// It must fail to retrive if path is set to empty as No xml file will be found there
+        /// </summary>
+        [Test]
+        public void RetrieveAllSeverData_FailsOnEmptyPathExceptions()
+        {
+            TelemetryPersistence _telemetry_persister = PersistenceFactory.GetTelemetryPersistenceInstance();
+            _telemetry_persister.ServerDataPath = "";
+
+            ServerDataToSave serverdataToSave = _telemetry_persister.RetrieveAllSeverData();
+            _telemetry_persister.ServerDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            Assert.IsTrue(serverdataToSave.sessionCount == 0);
+        }
+
+        /// <summary>
+        /// It tests the SaveSummary function of SummmaryPersistence
+        /// It must fail on ArgumentException of Empty Path
+        /// </summary>
+        [Test]
+        public void SaveSummary_FailsOnEmptyPathAsDirectoryCannotBeCreated()
+        {
+
+            string summary = "NUnit Testing";
+            SummaryPersistence _summary_persister = PersistenceFactory.GetSummaryPersistenceInstance();
+            _summary_persister.summaryPath = "";
+
+            ResponseEntity response = _summary_persister.SaveSummary(summary, true);
+            _summary_persister.summaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+            Assert.IsFalse(response.IsSaved);
+        }
+
+        /// <summary>
         /// It tests the Save function of TelemetryPersistence
         ///// </summary>
         [Test]
@@ -187,5 +236,6 @@ namespace Testing.Dashboard.Persistence
             File.Delete(Path.Combine(p1, "UserCountVsTimeStamp.png"));
             Assert.IsTrue(IsChatCountForUserSaved && IsInsincereMembersSaved && IsUserCountAtAnyTimeSaved);
         }
+
     }
 }
