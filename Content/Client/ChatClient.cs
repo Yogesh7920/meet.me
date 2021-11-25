@@ -80,11 +80,12 @@ namespace Content
 		/// This function gets the messageId and new message to change.
 		/// Then creates a MessageData, then sets the event, Serialize, change the message and sends to Content server via Networking.
 		/// </summary>
-        public void ChatUpdate(int messageId, string newMessage)
+        public void ChatUpdate(int messageId, int replyThreadId, string newMessage)
         {
 			if(MessageIsvalid(newMessage)){
 				var toSend = new MessageData();
 				toSend.MessageId = messageId;
+				toSend.ReplyThreadId = replyThreadId;
 				toSend.Event = MessageEvent.Update;
 				toSend.SenderId = UserId;
 				toSend.Message = newMessage;
@@ -102,10 +103,11 @@ namespace Content
 		/// This function simply takes a message Id and send it in the form of a MessageData to the Content Server 
 		/// where in the message is marked Star.
 		/// </summary>
-        public void ChatStar(int messageId)
+        public void ChatStar(int messageId, int replyThreadId)
         {
             var toSend = new MessageData();
             toSend.MessageId = messageId;
+			toSend.ReplyThreadId = replyThreadId;
             toSend.Event = MessageEvent.Star;
             toSend.SenderId = UserId;
 			toSend.Type = MessageType.Chat;
