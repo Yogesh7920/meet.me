@@ -261,6 +261,8 @@ namespace Whiteboard
                 default:
                     return false;
             }
+            Height = (Height < BoardConstants.MIN_HEIGHT) ? BoardConstants.MIN_HEIGHT : Height;
+            Width = (Width < BoardConstants.MIN_WIDTH) ? BoardConstants.MIN_WIDTH : Width;
             return true;
 
         }

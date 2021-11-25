@@ -287,14 +287,16 @@ namespace Whiteboard
                     prevShapeId = newUxShape.WindowsShape.Uid;
                     operations.Add(newUxShape);
 
-                    string userId = "5";
-                    /*string userId = _stateManager.GetUser();
+                    string userId = "42";
+
+                    //string userId = _stateManager.GetUser();
+
                     if (userId == null)
                     {
                         Console.WriteLine("user id got is " + userId);
                         throw new Exception("Invalid User");
-                    }*/
-
+                    }
+                    
                     _lastDrawn = new LastDrawnDetails
                     {
                         _shape = new (newMainShape, UserLevel, DateTime.Now, DateTime.Now, prevShapeId, userId, Operation.CREATE),
