@@ -986,7 +986,8 @@ namespace Client
         //Save Frame Button Control
         private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedSaveFrame");
+            //MessageBox.Show("ClickedSaveFrame");
+            viewModel.SaveFrame();
             return;
         }
 

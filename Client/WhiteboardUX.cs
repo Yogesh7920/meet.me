@@ -656,7 +656,7 @@ namespace Client
                 //Removing temporary render from Canvas as Whiteboard module sends only CREATE operation, so we need to clean up temporary render
                 cn.Children.Remove(underCreation);
 
-                cn = RenderUXElement(toRender, cn);
+                if (!(toRender==null || toRender.Count() == 0)) cn = RenderUXElement(toRender, cn);
 
                 //select the shape 
                 SelectShape(cn, toRender.ElementAt(0).WindowsShape, WBOps, 0);
@@ -1844,10 +1844,14 @@ namespace Client
             return;
         }
 
+        //should be called only when user accepts warning of Clear Whiteboard
         public Canvas ClearCanvas(Canvas cn)
         {
             cn = shapeManager.UnselectAllBB(cn, WBOps);
-            cn.Children.Clear();
+            //cn.Children.Clear();
+
+            //Only calling state manager's clear whiteboard here, whiteboard would be cleared when request received in the listener thread
+            manager.ClearWhiteBoard();
             return cn;
         }
 
@@ -1856,15 +1860,18 @@ namespace Client
         /// </summary>
         public void SaveFrame(Canvas GlobCanvas)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            manager.SaveCheckpoint();
         }
 
         /// <summary>
-        /// Resotres the selected checkpoint  
+        /// Restores the selected checkpoint  
         /// </summary>
-        public void RestoreFrame(List<UXShape> toRender, Canvas GlobCanvas)
+        /// //should be called only when user accepts warning of Restore Whiteboard
+        public void RestoreFrame(int CheckNum, Canvas GlobCanvas)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            manager.FetchCheckpoint(CheckNum);
         }
 
         public void OnMessageReceived(List<UXShape> ServerUpdate)
@@ -1877,15 +1884,6 @@ namespace Client
                         lock (this)
                         {
                             processServerUpdateBatch(received);
-                            
-
-                            //check which type of operation is it
-                            //if shape is freeHand only 
-                            //freeHand.RenderUXElement(received, GlobCanvas);
-
-                            //shapeManager.RenderUXElement(received, GlobCanvas); 
-
-                            //RestoreFrame(received, GlobCanvas); 
                         }
                     }
 
@@ -1930,18 +1928,30 @@ namespace Client
 
         public void increaseCheckpointNum(int latestNumCheckpoints)
         {
-            if (latestNumCheckpoints == numCheckpoints)
+            if (latestNumCheckpoints == this.numCheckpoints)
             {
                 return;
             }
             else
             {
-                //Write code to update the dropdown in "Restore Checkpoint" on .xaml
+                //Write code to update the dropdown in "Restore Checkpoint" on .xaml, can use binding to viewModel.numCheckpoints
                 return;
             }
         }
 
-        public bool ShowWarningFetchCheckpoint()
+        //To be called when drop downs in 'Load Checkpoint' button on view is clicked, if this returns false, ignore user's click, else call manager.LoadCheckpoint(num)
+        public bool ShowWarningFetchCheckpoint(int checkpointNumLoad)
+        {
+            //Write code such that
+            //if user accepts warning, return true
+            //else return false
+
+            return false;
+
+        }
+
+        //To be called when drop downs in 'Clear Board' button on view is called, if this returns false, ignore user's click, else call manager.ClearFrame(num)
+        public bool ShowWarningClearBoard()
         {
             //Write code such that
             //if user accepts warning, return true
@@ -1990,8 +2000,6 @@ namespace Client
                 //The user should not be able to draw anything on the Canvas while the checkpoint is being fetched
                 GlobCanvas.IsEnabled = false;
 
-                //A checkpoint should obviously exist in Whiteboard dropdown, cannot be too sure though, hence assertion
-                Debug.Assert(numCheckpoints > 0);
 
             }
 
@@ -2023,12 +2031,17 @@ namespace Client
                         //Enabling the Canvas as all of the FETCH_STATE render requests in current batch have been rendered and the new user can now use Canvas
                         if (i == received.Count() - 1) this.GlobCanvas.IsEnabled = true;
 
-
                         //MessageBox.Show("Loading Checkpoint +", received[i].CheckPointNumber.ToString());
 
 
                         break;
                     case Operation.CLEAR_STATE:
+                        //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO CLEAR FRAME, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
+                        //IN THE WARNING, MENTION THAT THIS CHANGE CANNOT BE UNDOED
+
+                        //To verify above thing, trace 'ShowWarningClearBoard'
+
+
                         //based on above assumption that current server update batch can only have one CLEAR_STATE request
                         if (clearCanFlag == 0)
                         {
@@ -2041,6 +2054,12 @@ namespace Client
                         increaseCheckpointNum(received[i].CheckPointNumber);
                         break;
 
+                    case Operation.MODIFY:
+                        //If the operation is MODIFY, directly render it onto the Canvas
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        break;
                 }
             }
         }
