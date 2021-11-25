@@ -2,7 +2,7 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 15/11/2021
+ * date modified: 25/11/2021
 **/
 
 using System;
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Networking;
+using System.Diagnostics;
 
 namespace ScreenSharing
 {
@@ -20,10 +21,10 @@ namespace ScreenSharing
 	public class ScreenShareServer : INotificationHandler
 	{
 		//Store the Communicator used to send screen over the network.
-		public ICommunicator _communicator;
+		public ICommunicator Communicator;
 
 		//Thread to share the required signal to the required machines.
-		public Thread _sharingThread;
+		public Thread SharingThread;
 
 		// Queue to store the incoming frames
 		public Queue<SharedScreen> FrameQueue;
@@ -49,13 +50,13 @@ namespace ScreenSharing
 			Timer.Elapsed += OnTimeout;
 			Timer.AutoReset = true;
 
-			_communicator = CommunicationFactory.GetCommunicator();
-			_communicator.Subscribe(this.GetType().Namespace, this);
+			Communicator = CommunicationFactory.GetCommunicator();
+			Communicator.Subscribe(this.GetType().Namespace, this);
 			Serializer = new Serializer();
 
 			IsSharing = true;
-			_sharingThread = new Thread(Share);
-			_sharingThread.Start();
+			SharingThread = new Thread(Share);
+			SharingThread.Start();
 		}
 
 		/// <summary>
@@ -63,8 +64,16 @@ namespace ScreenSharing
 		/// </summary>
 		public void OnDataReceived(string data)
 		{
-			SharedScreen scrn = Serializer.Deserialize<SharedScreen>(data);
-			FrameQueue.Enqueue(scrn);
+			try
+			{
+				SharedScreen scrn = Serializer.Deserialize<SharedScreen>(data);
+				FrameQueue.Enqueue(scrn);
+			}
+			catch (Exception e)
+			{
+				Trace.WriteLine("ScreenSharing: Unable to recieve data");
+				Trace.WriteLine(e.Message);
+			}
 		}
 
 		/// <summary>
@@ -72,35 +81,44 @@ namespace ScreenSharing
 		/// </summary>
 		public void Share()
 		{
-			while (IsSharing)
-			{
-				while (FrameQueue.Count == 0) ;
-				Timer.Interval = 2000;
-				if (Timer.Enabled == false)
-					Timer.Start();
-				SharedScreen currScreen = FrameQueue.Dequeue();
-				if (UserId == "-")
+			try
+            { 
+				while (IsSharing)
 				{
-					// this is the case when server is idle and someone wants to share screen
-					UserId = currScreen.UserId;
-				}
-				else if (currScreen.UserId != UserId)
-				{
-					// this is a case of simultaneous sharing and the user who is sharing has to be rejected
-					continue;
-				}
-				else
-				{
-					if (currScreen.MessageType == 0)
+					while (FrameQueue.Count == 0) ;
+					Timer.Interval = 2000;
+					if (Timer.Enabled == false)
+						Timer.Start();
+					SharedScreen currScreen = FrameQueue.Dequeue();
+					if (UserId == "-")
 					{
-						Timer.Stop();
-						Timer.Interval = 2000;
+						// this is the case when server is idle and someone wants to share screen
+						UserId = currScreen.UserId;
 					}
-					// Broadcasting the screen
-					string data = Serializer.Serialize<SharedScreen>(currScreen);
-					_communicator.Send(data, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+					else if (currScreen.UserId != UserId)
+					{
+						// this is a case of simultaneous sharing and the user who is trying to share has to be rejected
+						continue;
+					}
+					else
+					{
+						if (currScreen.MessageType == 0)
+						{
+							UserId="-";
+							Timer.Stop();
+							Timer.Interval = 2000;
+						}
+						// Broadcasting the screen
+						string data = Serializer.Serialize<SharedScreen>(currScreen);
+						Communicator.Send(data, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+					}
 				}
 			}
+			catch(Exception e)
+            {
+				Trace.WriteLine("ScreenSharing: Problem in sharing thread");
+                Trace.WriteLine(e.Message);
+            }
 		}
 
 		/// <summary>
@@ -108,8 +126,16 @@ namespace ScreenSharing
 		/// </summary>
 		public void OnTimeout(Object source, ElapsedEventArgs e)
 		{
-			UserId = "-";
-			FrameQueue.Clear();
+            try 
+			{ 
+				UserId = "-";
+				FrameQueue.Clear();
+			}
+			catch(Exception ex)
+            {
+				Trace.WriteLine("ScreenSharing:Timeout event not working properly");
+                Trace.WriteLine(ex.Message);
+            }
 		}
 		~ScreenShareServer()
 		{

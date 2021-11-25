@@ -2,7 +2,7 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 7/11/2021
+ * date modified: 24/11/2021
 **/
 
 namespace ScreenSharing
@@ -10,10 +10,18 @@ namespace ScreenSharing
 
     public class SharedScreen
     {
+        /// <summary>
+        /// /// <summary>
+        /// unparametrized constructor necessary for serialization.
+        /// </summary>
         public SharedScreen()
         {
 
         }
+
+        /// <summary>
+        /// parametrized constructor.
+        /// </summary>
         public SharedScreen(string uid, string uname, int mtype, byte[] data)
         {
             UserId = uid;
