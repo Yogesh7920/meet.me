@@ -58,6 +58,7 @@ namespace Client
         private float penThickness = 5;
         private float eraserThickness = 5;
 
+        bool rotation = false; 
         public WhiteBoardView()
         {
             InitializeComponent();
@@ -71,6 +72,7 @@ namespace Client
             mouseDownFlag = 0;
             mouseLeftBtnMoveFlag = 0;
             mouseDownSh = null;
+            rotation = false; 
             viewModel.start = new Point { X = 0, Y = 0 };
             viewModel.end = new Point { X = 0, Y = 0 };
             return;
@@ -114,6 +116,7 @@ namespace Client
                     {
                         Point fh_pt = e.GetPosition(GlobCanvas);
                         GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, false, true);
+                        mouseDownFlag = 0;
                     }
                     break;
                 case (WhiteBoardViewModel.WBTools.Eraser):
@@ -222,7 +225,7 @@ namespace Client
                             Point fh_pt = e.GetPosition(GlobCanvas);
                             this.viewModel.freeHand.SetColor(curPenColor);
                             this.viewModel.freeHand.SetThickness(penThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: true);
                         }
                         break;
                     case (WhiteBoardViewModel.WBTools.Eraser):
@@ -232,7 +235,7 @@ namespace Client
                             Point fh_pt = e.GetPosition(GlobCanvas);
                             this.viewModel.freeHand.SetColor(curEraseColor);
                             this.viewModel.freeHand.SetThickness(eraserThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:true, isEraser:true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: true, isEraser: true);
 
                             if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
                             {
@@ -290,7 +293,7 @@ namespace Client
                             if (mouseDownFlag == 1)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:false, shapeComp:true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, shapeComp: true);
                                 mouseDownFlag = 0;
                             }
                         }
@@ -360,26 +363,33 @@ namespace Client
                         //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
                         if (mouseLeftBtnMoveFlag > 5)
                         {
-                            if (e.OriginalSource is Shape)
-                            {
-                                Shape selectedShape = e.OriginalSource as Shape;
+                            //if ((e.OriginalSource is Shape && ((Shape)e.OriginalSource) == mouseDownSh) || rotation == true)
+                            //{
+
                                 if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
                                 {
                                     //sets the end point for usage in both TranslateShape/RotateShape when left mouse button is release
-                                    this.viewModel.end = e.GetPosition(MyCanvas);
+                                    //this.viewModel.end = e.GetPosition(MyCanvas);
 
-                                    if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                                    if (rotation == true)
                                     {
                                         this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                        rotation = false; 
                                     }
+                                    /*else if (Keyboard.IsKeyUp(Key.LeftAlt) && rotation == true)
+                                    {
+                                        this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                        rotation = false;
+                                    }*/
                                     else
                                     {
+                                        this.viewModel.end = e.GetPosition(MyCanvas);
                                         this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
                                     }
                                 }
                                 //Resetting the value of 'start' to perform the next Move functions
                                 this.viewModel.start = e.GetPosition(MyCanvas);
-                            }
+                            //}
                         }
 
                         //If mouse was not moved after left clicking, then shapes would be selected/unselected
@@ -436,7 +446,7 @@ namespace Client
                             if (mouseDownFlag == 1 && mouseLeftBtnMoveFlag > 5)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:false);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false);
                                 mouseLeftBtnMoveFlag = 0;
                             }
                         }
@@ -447,7 +457,7 @@ namespace Client
                             if (mouseDownFlag == 1)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation:false, isEraser:true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, isEraser: true);
 
 
                                 if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
@@ -483,35 +493,41 @@ namespace Client
                         }
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
-                        //if(e.OriginalSource is Shape)
-                        //{
-                        Shape selectedShape = e.OriginalSource as Shape;
-                        //sets the end point for usage in TranslateShape/RotateShape
-                        this.viewModel.end = e.GetPosition(MyCanvas);
-
-                        if ((this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y) && mouseDownFlag == 1)
-                        //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                        if(e.OriginalSource is Shape && ((Shape)e.OriginalSource) == mouseDownSh)
                         {
-                            //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
-                            if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                            //sets the end point for usage in TranslateShape/RotateShape
+                            this.viewModel.end = e.GetPosition(MyCanvas);
+
+                            if ((this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y) && mouseDownFlag == 1)
+                            //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
                             {
-                                //if (e.OriginalSource is Shape)                                   
-                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
-                                //Resetting the value of 'start' to perform the next Move functions
-                                this.viewModel.start = e.GetPosition(MyCanvas);
-                            }
-                            /*else if (Keyboard.IsKeyUp(Key.LeftAlt) || Keyboard.IsKeyUp(Key.RightAlt))
-                            {
-                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
-                            }*/
-                            else
-                            {
-                                this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
-                                //Resetting the value of 'start' to perform the next Move functions
-                                this.viewModel.start = e.GetPosition(MyCanvas);
+                                //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
+                                if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                                {
+                                    //if (e.OriginalSource is Shape)                                   
+                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
+
+                                    rotation = true;
+
+                                }else if(rotation == true)
+                                {
+                                    //if (e.OriginalSource is Shape)                                   
+                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
+
+                                    //rotation = true;
+                                }
+                                else
+                                {
+                                    this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
+                                }
                             }
                         }
-                        //}
                         break;
                 }
             }
@@ -548,7 +564,7 @@ namespace Client
             GlobCanvas.Children.Remove(shp);
             return;
         }
-        
+
 
         //Pop-up togglers 
         //Canvas BG color Pop-Up
@@ -977,14 +993,16 @@ namespace Client
         //Undo Button Control
         private void ClickedUndoButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedUndo");
+            //MessageBox.Show("ClickedUndo");
+            this.viewModel.sendUndoRequest();
             return;
         }
 
         //Redo Button Control
         private void ClickedRedoButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedRedo");
+            //MessageBox.Show("ClickedRedo");
+            this.viewModel.sendRedoRequest();
             return;
         }
 
@@ -993,14 +1011,16 @@ namespace Client
         {
             if (Bu.Toggled1 == true)
             {
+                viewModel.ChangePrivilegeSwitch();
                 MessageBox.Show("Toggled On");
             }
             else
             {
+                viewModel.ChangePrivilegeSwitch();
                 MessageBox.Show("Toggled Off");
             }
         }
 
-       
+
     }
 }

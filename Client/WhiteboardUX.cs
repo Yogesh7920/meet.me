@@ -55,7 +55,7 @@ namespace Client
         Point dragStart, dragEnd, permissibleDragEnd;
         AdornerDragPos lastDraggedCorner;
 
-         IWhiteBoardOperationHandler WbOp;
+        IWhiteBoardOperationHandler WbOp;
 
         public BorderAdorner(UIElement element, ShapeManager shapeManager, Canvas cn, IWhiteBoardOperationHandler WbOp) : base(element)
         {
@@ -107,12 +107,13 @@ namespace Client
         private void Adorner_MouseDown(object sender, MouseButtonEventArgs e)
         {
             dragStart = e.GetPosition(cn);
+            dragEnd = e.GetPosition(cn);
             return;
         }
 
         private void Adorner_MouseUp(object sender, DragCompletedEventArgs e)
         {
-            
+
             FrameworkElement adornedElement = this.AdornedElement as FrameworkElement;
             Thumb corner = sender as Thumb;
             /*if (corner.Equals(topLeft)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on topLeft");
@@ -652,7 +653,7 @@ namespace Client
                         toRender[0].WindowsShape.Fill = strokeColorBrush;
                         break;
                 }
-                //Removing temporary render from Canvas
+                //Removing temporary render from Canvas as Whiteboard module sends only CREATE operation, so we need to clean up temporary render
                 cn.Children.Remove(underCreation);
 
                 cn = RenderUXElement(toRender, cn);
@@ -763,16 +764,17 @@ namespace Client
                 //Coordinate C_strt = new Coordinate(((float)selectMouseDownPos.X), ((float)selectMouseDownPos.Y));
                 //Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
 
-                Coordinate C_strt = new Coordinate(((int)(cn.Height - strt.Y)), ((int)strt.X));
+                Coordinate C_strt = new Coordinate(((int)(cn.Height - selectMouseDownPos.Y)), ((int)selectMouseDownPos.X));
                 Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
 
                 toRender = new List<UXShape>();
                 toRender = WBOps.TranslateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
                 //removing the local temporary render and only acknowledging the CREATE UXShape request as we cleaned up temporary render
                 cn = UnselectAllBB(cn, WBOps);
-                cn.Children.Remove(sh);
+                //cn.Children.Remove(sh);
                 //Since we are removing rendered temporary shape above and toRender[1] corresponds to CREATE operation
-                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                cn = RenderUXElement(toRender, cn);
+                cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
                 //Bugged, adr.ClipEnabled gives NullException??
                 //cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
@@ -908,7 +910,7 @@ namespace Client
             if (shapeComp == true)
             {
                 cn = UnselectAllBB(cn, WBOps);
-                cn.Children.Remove(sh);
+                //cn.Children.Remove(sh);
 
                 Coordinate C_strt = new Coordinate(((int)(cn.Height - selectMouseDownPos.Y)), ((int)selectMouseDownPos.X));
                 Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
@@ -917,7 +919,8 @@ namespace Client
                 toRender = WBOps.RotateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
 
                 //Since we already removed our side of temporary render, DELETE operation by WB module is not acknowledged, whereas toRender[1] refers to necessary CREATE operation with the updated shape
-                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                cn = RenderUXElement(toRender, cn);
+                cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
                 //Bugged as adr.isClipEnabled gives Null Exception
                 //cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
@@ -944,7 +947,7 @@ namespace Client
         /// <returns> The Updated Canvas </returns>
         public Canvas DuplicateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, int offs_x = 10, int offs_y = 10)
         {
-            Point strt, end; 
+            Point strt, end;
 
             string shUID = selectedShapes[0];
 
@@ -975,7 +978,7 @@ namespace Client
                     end.X = Canvas.GetLeft(sh) + sh.Width + offs_x;
                     end.Y = Canvas.GetTop(sh) + sh.Height + offs_y;
 
-                    cn = CreateShape(cn, WBOps, WhiteBoardViewModel.WBTools.NewRectangle, strt, end, shapeComp: true); 
+                    cn = CreateShape(cn, WBOps, WhiteBoardViewModel.WBTools.NewRectangle, strt, end, shapeComp: true);
                     break;
                 case System.Windows.Shapes.Ellipse:
                     strt.X = Canvas.GetLeft(sh) + offs_x;
@@ -987,7 +990,7 @@ namespace Client
                     cn = CreateShape(cn, WBOps, WhiteBoardViewModel.WBTools.NewEllipse, strt, end, shapeComp: true);
                     break;
                 default:
-                    break; 
+                    break;
             }
 
             return cn;
@@ -1007,18 +1010,18 @@ namespace Client
 
                         //Convert Radians from WB to Degrres for Render Transform 
                         int degrees = (int)(shp.AngleOfRotation * (180 / Math.PI));
-  
+
                         //Setting the rendering such that bottom-right and top-left adorners adjust appropriately
                         if (degrees > 90) degrees -= 180;
                         else if (degrees < -90) degrees += 180;
                         shp.AngleOfRotation = degrees;
 
-                        //shp.AngleOfRotation = (-1) * degrees;
+                        shp.AngleOfRotation = (-1) * degrees;
 
                         if (shp.WindowsShape is not System.Windows.Shapes.Line)
                         {
 
-                            Canvas.SetLeft(shp.WindowsShape, (shp.TranslationCoordinate.C - shp.WindowsShape.Width  / 2));
+                            Canvas.SetLeft(shp.WindowsShape, (shp.TranslationCoordinate.C - shp.WindowsShape.Width / 2));
                             Canvas.SetTop(shp.WindowsShape, ((cn.Height - shp.TranslationCoordinate.R) - shp.WindowsShape.Height / 2));
 
                             //Since WB module stores the System.Windows.Shape.Width as height & System.Windows.Shape.Height as width?
@@ -1043,8 +1046,8 @@ namespace Client
                             Shape ParsedLineUXElement = new System.Windows.Shapes.Line();
                             ((System.Windows.Shapes.Line)ParsedLineUXElement).X1 = 0;
                             ((System.Windows.Shapes.Line)ParsedLineUXElement).Y1 = 0;
-                            ((System.Windows.Shapes.Line)ParsedLineUXElement).X2 = recv_Line.Y2 - recv_Line.Y1;
-                            ((System.Windows.Shapes.Line)ParsedLineUXElement).Y2 = recv_Line.X2 - recv_Line.X1;
+                            ((System.Windows.Shapes.Line)ParsedLineUXElement).X2 = recv_Line.X2 - recv_Line.X1;
+                            ((System.Windows.Shapes.Line)ParsedLineUXElement).Y2 = recv_Line.Y1 - recv_Line.Y2;
                             //((System.Windows.Shapes.Line)ParsedLineUXElement).RenderTransform = rotateTransform;
                             ParsedLineUXElement.Stroke = recv_Line.Stroke;
                             ParsedLineUXElement.StrokeThickness = recv_Line.StrokeThickness;
@@ -1064,11 +1067,11 @@ namespace Client
                             System.Windows.Shapes.Line transf_Line = (System.Windows.Shapes.Line)ParsedLineUXElement;
 
                             shp.WindowsShape = ParsedLineUXElement;
-                            
+
                             //NOT WORKING
                             //shp.WindowsShape.RenderTransform = rotateTransform;
-                            Canvas.SetLeft(shp.WindowsShape, recv_Line.Y1);
-                            Canvas.SetTop(shp.WindowsShape, recv_Line.X1);
+                            Canvas.SetLeft(shp.WindowsShape, recv_Line.X1);
+                            Canvas.SetTop(shp.WindowsShape, (cn.Height - recv_Line.Y1));
                         }
 
                         cn.Children.Add(shp.WindowsShape);
@@ -1141,31 +1144,46 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas CustomizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, string property, string hexCode, float thickness = 0)
         {
-            List<UXShape> toRender;
+            List<UXShape> toRender = new List<UXShape>();
             SolidColorBrush color = (SolidColorBrush)(new BrushConverter().ConvertFrom(hexCode));
-            foreach (string shUID in selectedShapes)
+            BoardColor color_b = new BoardColor(color.Color.R, color.Color.G, color.Color.B);
+
+            //If no shape is selected while changing fill property, do not update Canvas
+            if (selectedShapes.Count() == 0) return cn;
+
+            string shUID = selectedShapes[0];
+
+            IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
+
+            //Check Condition 
+            Debug.Assert(iterat.Count() == 1);
+
+            //Convert the UI element to Shape type 
+            Shape sh = (Shape)iterat.ToList()[0];
+
+            switch (property)
             {
-                IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
-
-                //Check Condition 
-                Debug.Assert(iterat.Count() == 1);
-
-                //Convert the UI element to Shape type 
-                Shape sh = (Shape)iterat.ToList()[0];
-
-                switch (property)
-                {
-                    case "Stroke":
-                        sh.Stroke = color;
-                        break;
-                    case "StrokeThickness":
-                        sh.StrokeThickness = thickness;
-                        break;
-                    case "Fill":
-                        sh.Fill = color;
-                        break;
-                }
+                case "Stroke":
+                    //sh.Stroke = color;
+                    toRender = WBOps.ChangeStrokeColor(color_b, sh.Uid);
+                    break;
+                case "StrokeThickness":
+                    //sh.StrokeThickness = thickness;
+                    toRender = WBOps.ChangeStrokeWidth(thickness, sh.Uid);
+                    break;
+                case "Fill":
+                    //sh.Fill = color;
+                    toRender = WBOps.ChangeShapeFill(color_b, sh.Uid);
+                    break;
             }
+
+            cn = UnselectAllBB(cn, WBOps);
+            //cn.Children.Remove(sh);
+
+            //Add 
+            cn = RenderUXElement(toRender, cn);
+            cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
+
 
             return cn;
         }
@@ -1307,7 +1325,7 @@ namespace Client
                             adornedElement.Height = newHeight;
                         }
 
-                        
+
                         if (newHeight == 10 && newWidth == 10)
                         {
                             return cn;
@@ -1426,10 +1444,10 @@ namespace Client
             }
 
             cn = UnselectAllBB(cn, WBOp);
-            cn.Children.Remove(shp);
-            
+            //cn.Children.Remove(shp);
+
             toRender = WBOp.ResizeShape(C_strt, C_end, shp.Uid, drgPos, true);
-            cn = this.RenderUXElement( new List<UXShape> { toRender[1] } , cn);
+            cn = this.RenderUXElement(toRender, cn);
 
 
 
@@ -1452,12 +1470,18 @@ namespace Client
         private System.Windows.Shapes.Polyline poly;
         private SolidColorBrush polyLineColor;
         private float polyLineThickness;
+        string assgn_uid;
+        Coordinate prev;
+        Coordinate C_end;
 
         //Consructor for the class 
         public FreeHand()
         {
             polyLineColor = new SolidColorBrush(Colors.Black);
             polyLineThickness = 5;
+            assgn_uid = "-1";
+            prev = new Coordinate(0, 0);
+            C_end = new Coordinate(0, 0);
         }
 
         public SolidColorBrush GetColor()
@@ -1503,12 +1527,16 @@ namespace Client
                         cn.Children.Add(shp.WindowsShape);
                         break;
                     case (UXOperation.DELETE):
-                        IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
+                        //IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
+
+
 
                         //Check Condition that the shape to be deleted actually exists within the Canvas and has unique Uid
-                        Debug.Assert(iterat.Count() == 1);
+                        //Debug.Assert(iterat.Count() == 1);
 
-                        cn.Children.Remove(iterat.ToList()[0]);
+
+
+                        //cn.Children.Remove(iterat.ToList()[0]);
                         break;
                 }
             }
@@ -1527,19 +1555,21 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false, bool shapeComp = false)
         {
-            List<UXShape> toRender;
-            string assgn_uid = "";
-            Coordinate prev = new Coordinate(0, 0);
-
-            //Brush for Border 
             SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
             BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
 
+            //SERVER REQUEST TO CREATE FINAL SHAPE
+            List<UXShape> toRender = new List<UXShape>();
+
             if (creation)
             {
+
+
+
                 poly = new System.Windows.Shapes.Polyline();
 
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == "-1");
+                Console.Write(assgn_uid);
 
                 //Check Condition that previous temporary polylines have been cleaned up
                 //Debug.Assert(iterat.Count() <= 1);
@@ -1551,7 +1581,6 @@ namespace Client
                 poly.StrokeThickness = polyLineThickness;
                 poly.StrokeLineJoin = PenLineJoin.Round;
                 poly.StrokeDashCap = PenLineCap.Round;
-
                 poly.Points.Add(pt);
 
                 if (isEraser == true)
@@ -1562,15 +1591,14 @@ namespace Client
                 else
                 {
                     poly.Tag = "FREEHAND";
-                    prev = new Coordinate((float)pt.X, (float)pt.Y);
-                    Coordinate C_end = new Coordinate((float)pt.X, (float)pt.Y);
+                    C_end = new Coordinate((float)pt.X, (float)pt.Y);
                     toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: null, shapeComp: false);
-                    //storing the assigned Uid of the Polyline
-                    assgn_uid = toRender[0].WindowsShape.Uid;
+                    prev = C_end;
 
+                    assgn_uid = toRender[0].WindowsShape.Uid;
                 }
 
-                
+
                 cn.Children.Add(poly);
             }
             else
@@ -1596,12 +1624,17 @@ namespace Client
                     {
                         if (!poly.Points.Contains(pt))
                         {
-                            poly.Points.Add(pt);
-
-                            Coordinate C_end = new Coordinate((float)pt.X, (float)pt.Y);
-                            toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
-                            prev = C_end;
-
+                            if (assgn_uid != "-1")
+                            {
+                                poly.Points.Add(pt);
+                                C_end = new Coordinate((float)pt.X, (float)pt.Y);
+                                toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
+                                prev = C_end;
+                            }
+                            else
+                            {
+                                cn.Children.Remove(poly);
+                            }
                         }
                     }
                 }
@@ -1612,8 +1645,8 @@ namespace Client
                 if (isEraser) cn.Children.Remove(poly);
                 else
                 {
-                    /*//Brush for Border 
-                    SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
+                    //Brush for Border 
+                    /*SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
                     BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
                     Coordinate prev = new Coordinate((float)poly.Points[0].X, (float)poly.Points[0].Y);
 
@@ -1632,26 +1665,36 @@ namespace Client
                         toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
                         prev = C_end;
                     }*/
+
                     //Sending final point with shapeComp=true
-                    Coordinate C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
-                    toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: true);
 
-                    //Since the WBOps.CreatePolyline sends render requests of form DELETE then CREATE,
-                    //we choose to ignore DELETE as we are doing temporary rendering
-                    System.Windows.Shapes.Polyline pl = (System.Windows.Shapes.Polyline)toRender[1].WindowsShape;
+                    if (assgn_uid != "-1")
+                    {
+                        C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
+                        toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: true);
 
-                    //Removing temporary render from Canvas
-                    cn.Children.Remove(poly);
+                        //Since the WBOps.CreatePolyline sends render requests of form DELETE then CREATE,
+                        //we choose to ignore DELETE as we are doing temporary rendering
+                        System.Windows.Shapes.Polyline pl = (System.Windows.Shapes.Polyline)toRender[1].WindowsShape;
 
-                    //Adjusting the polyline render request to the user preference during Create Polyline operation
-                    ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).Stroke = polyLineColor;
-                    ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeThickness = polyLineThickness;
-                    ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
-                    ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
+                        //Removing temporary render from Canvas
+                        cn.Children.Remove(poly);
 
-                    //Rendering the Polyline onto the Canvas
-                    cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                        //Adjusting the polyline render request to the user preference during Create Polyline operation
+                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).Stroke = polyLineColor;
+                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeThickness = polyLineThickness;
+                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
+                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
 
+                        //Rendering the Polyline onto the Canvas
+                        cn = RenderUXElement(toRender, cn);
+
+                        assgn_uid = "-1";
+                    }
+                    else
+                    {
+                        cn.Children.Remove(poly);
+                    }
                 }
             }
             return cn;
@@ -1677,6 +1720,8 @@ namespace Client
     /// </summary>
     public class WhiteBoardViewModel
     {
+        //To be bound to the number of "Checkpoint #n" in Restore Checkpoint dropdown in Whiteboard.xaml
+        public int numCheckpoints;
 
         /// UX sets this enum to different options when user clicks on the appropriate tool icon
         public enum WBTools
@@ -1719,6 +1764,10 @@ namespace Client
             this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
             this.manager = ClientBoardStateManager.Instance;
             this.manager.Start();
+
+            this.numCheckpoints = 0;
+            //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
+            //this.GlobCanvas.IsEnabled = false;
         }
 
         /// <summary>
@@ -1827,6 +1876,9 @@ namespace Client
                     {
                         lock (this)
                         {
+                            processServerUpdateBatch(received);
+                            
+
                             //check which type of operation is it
                             //if shape is freeHand only 
                             //freeHand.RenderUXElement(received, GlobCanvas);
@@ -1840,5 +1892,158 @@ namespace Client
                 ),
                 ServerUpdate);
         }
+
+        public void sendUndoRequest()
+        {
+            List<UXShape> renderUndo = WBOps.Undo();
+            for (int i = 0; i < renderUndo.Count(); i++)
+            {
+                if (renderUndo[i].WindowsShape is System.Windows.Shapes.Polyline)
+                {
+                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                }
+                else
+                {
+                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                }
+            }
+            return;
+        }
+
+        public void sendRedoRequest()
+        {
+            List<UXShape> renderUndo = WBOps.Redo();
+            for (int i = 0; i < renderUndo.Count(); i++)
+            {
+                if (renderUndo[i].WindowsShape is System.Windows.Shapes.Polyline)
+                {
+                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                }
+                else
+                {
+                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                }
+            }
+            return;
+        }
+
+
+        public void increaseCheckpointNum(int latestNumCheckpoints)
+        {
+            if (latestNumCheckpoints == numCheckpoints)
+            {
+                return;
+            }
+            else
+            {
+                //Write code to update the dropdown in "Restore Checkpoint" on .xaml
+                return;
+            }
+        }
+
+        public bool ShowWarningFetchCheckpoint()
+        {
+            //Write code such that
+            //if user accepts warning, return true
+            //else return false
+
+            return false;
+
+        }
+
+        private void processServerUpdateBatch(List<UXShape> received)
+        {
+            //WE ASSUME that an update batch can only have a single Clear Canvas request 
+            IEnumerable<UXShape> iterat = received.OfType<UXShape>().Where(x => x.OperationType == Operation.CLEAR_STATE);
+            Debug.Assert(iterat.Count() == 1);
+            //additional flag to signify whether the Clear Canvas request in current batch has been registered
+            //Ignores all the other CLEAR_STATE requests in current batch
+            int clearCanFlag = 0;
+
+
+            //WE ASSUME that an update batch can only have either no FETCH_STATE requests, or all FETCH_STATE requests
+            IEnumerable<UXShape> iterat2 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_STATE);
+            Debug.Assert(iterat2.Count() == 0 || iterat2.Count() == received.Count());
+            if (received[0].OperationType == Operation.FETCH_STATE)
+            {
+                //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor
+                Debug.Assert(numCheckpoints == 0);
+                Debug.Assert(GlobCanvas.IsEnabled == false);
+                //Supposed to make the "Restore Checkpoint" dropdown with CheckPointNumber number of dropdown tiles
+                increaseCheckpointNum(received[0].CheckPointNumber);
+            }
+
+            //WE ASSUME that an update batch can only have either no FETCH_CHECKPOINT requests, or all FETCH_CHECKPOINT requests
+            IEnumerable<UXShape> iterat3 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_CHECKPOINT);
+            Debug.Assert(iterat3.Count() == 0 || iterat3.Count() == received.Count());
+            if (received[0].OperationType == Operation.FETCH_CHECKPOINT)
+            {
+                //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO SAVE CHECKPOINT, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
+                //IN THE WARNING, MENTION THAT THIS CHANGE CANNOT BE UNDOED
+
+                //To verify above thing, trace 'ShowWarningFetchCheckpoint'
+
+
+                //ASSUMING that the user has already been SHOWN THE WARNING
+                GlobCanvas.Children.Clear();
+
+                //The user should not be able to draw anything on the Canvas while the checkpoint is being fetched
+                GlobCanvas.IsEnabled = false;
+
+                //A checkpoint should obviously exist in Whiteboard dropdown, cannot be too sure though, hence assertion
+                Debug.Assert(numCheckpoints > 0);
+
+            }
+
+            for (int i = 0; i < received.Count(); i++)
+            {
+                switch (received[i].OperationType)
+                {
+
+                    //Case when new user joins and the whole state of server is sent to user
+                    case Operation.FETCH_STATE:
+
+                        ///
+                        /// ASSUMING that this batch of server update contains ONLY AND ONLY Operation.FETCH_STATE requests
+                        /// VERIFY THE ABOVE ASSUMPTION FROM ASHISH
+                        ///
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        //Enabling the Canvas as all of the FETCH_STATE render requests in current batch have been rendered and the new user can now use Canvas
+                        if (i == received.Count() - 1)  this.GlobCanvas.IsEnabled = true;
+
+                        break;
+
+                    case Operation.FETCH_CHECKPOINT:
+
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        //Enabling the Canvas as all of the FETCH_STATE render requests in current batch have been rendered and the new user can now use Canvas
+                        if (i == received.Count() - 1) this.GlobCanvas.IsEnabled = true;
+
+
+                        //MessageBox.Show("Loading Checkpoint +", received[i].CheckPointNumber.ToString());
+
+
+                        break;
+                    case Operation.CLEAR_STATE:
+                        //based on above assumption that current server update batch can only have one CLEAR_STATE request
+                        if (clearCanFlag == 0)
+                        {
+                            GlobCanvas.Children.Clear();
+                            clearCanFlag = 1;
+                        }
+                        break;
+
+                    case Operation.CREATE_CHECKPOINT:
+                        increaseCheckpointNum(received[i].CheckPointNumber);
+                        break;
+
+                }
+            }
+        }
+
     }
 }
