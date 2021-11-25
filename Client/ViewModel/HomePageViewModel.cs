@@ -35,7 +35,10 @@ namespace Client.ViewModel
                         {
                             lock (this)
                             {
-                                users.Clear();
+                                if (users != null)
+                                {
+                                    users.Clear();
+                                }
                                 foreach (UserData user in session.users)
                                 {
                                     UserViewData usernew = new UserViewData();
