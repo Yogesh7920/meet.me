@@ -14,14 +14,14 @@ namespace Whiteboard
     public static class UserLevelHandler
     {   
         /// <summary>
-        /// to find out whether the user have the right to do the desired whiteboard operation
+        /// To find out whether the user have the right to do the desired whiteboard operation
         /// </summary>
         /// <param name="UserLevelofUser"></param>
         /// <param name="UserLevelofShapeOwner"></param>
         /// <returns></returns>
-        public static bool is_accessible(int UserLevelofUser, int UserLevelofShapeOwner)
+        public static bool IsAccessible(int userLevelOfUser, int userLevelOfShapeOwner)
         {
-            return (UserLevelofUser >= UserLevelofShapeOwner) ;
+            return (userLevelOfUser >= userLevelOfShapeOwner) ;
             
         }
     }
