@@ -130,6 +130,7 @@ namespace Testing.Content
 			Utils util = new Utils();
             int userId = 1001;
 			int msgId = 10;
+            int threadId = 10;
             MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.Update, "Banana", new int[] { }, type: MessageType.Chat);
 
             ISerializer serializer = new Serializer();
@@ -139,7 +140,7 @@ namespace Testing.Content
             contentChat.UserId = userId;
             contentChat.Communicator = fakeCommunicator;
 
-            contentChat.ChatUpdate(msgId,"APPLE");
+            contentChat.ChatUpdate(msgId, threadId, "APPLE");
 
             var sendSerializedMsg = fakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
@@ -152,7 +153,7 @@ namespace Testing.Content
                 Assert.AreEqual(receivedMessage.Type, sampleMsgData.Type);
                 Assert.AreEqual(receivedMessage.SenderId, userId);
 				Assert.AreEqual(receivedMessage.MessageId, msgId);
-
+                Assert.AreEqual(receivedMessage.ReplyThreadId, threadId);
             }
             else
             {
@@ -175,7 +176,7 @@ namespace Testing.Content
             contentChat.Communicator = fakeCommunicator;
 
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => contentChat.ChatUpdate(11,""));
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => contentChat.ChatUpdate(11, 1, ""));
             bool contains = ex.Message.IndexOf("Invalid Message", StringComparison.OrdinalIgnoreCase) >= 0;
             Assert.That(contains);
         }
@@ -196,7 +197,7 @@ namespace Testing.Content
             contentChat.Communicator = fakeCommunicator;
 
 
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => contentChat.ChatUpdate(11, null));
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => contentChat.ChatUpdate(11, 1, null));
             bool contains = ex.Message.IndexOf("Invalid Message", StringComparison.OrdinalIgnoreCase) >= 0;
             Assert.That(contains);
         }
@@ -210,6 +211,7 @@ namespace Testing.Content
 			Utils util = new Utils();
             int userId = 1001;
 			int msgId = 10;
+            int threadId = 11;
             MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.Update, "", new int[] { }, type: MessageType.Chat);
 
             ISerializer serializer = new Serializer();
@@ -219,7 +221,7 @@ namespace Testing.Content
             contentChat.UserId = userId;
             contentChat.Communicator = fakeCommunicator;
 
-            contentChat.ChatStar(msgId);
+            contentChat.ChatStar(msgId, threadId);
 
             var sendSerializedMsg = fakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
@@ -229,10 +231,9 @@ namespace Testing.Content
                 var receivedMessage = deserialized as MessageData;
                 Assert.AreEqual(receivedMessage.Event, MessageEvent.Star);
                 Assert.AreEqual(receivedMessage.Type, sampleMsgData.Type);
-                Assert.AreEqual(receivedMessage.ReplyThreadId, sampleMsgData.ReplyThreadId);
                 Assert.AreEqual(receivedMessage.SenderId, userId);
 				Assert.AreEqual(receivedMessage.MessageId, msgId);
-
+                Assert.AreEqual(receivedMessage.ReplyThreadId, threadId);
             }
             else
             {
