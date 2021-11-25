@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using System.Collections.ObjectModel;
+
 namespace Client
 {
     /// <summary>
@@ -57,12 +59,23 @@ namespace Client
         private float penThickness = 5;
         private float eraserThickness = 5;
 
-        bool rotation = false; 
+        bool rotation = false;
+
+        //private List<string> ckptList;
+        private ObservableCollection<string> ckptList;
+
+
+
+
         public WhiteBoardView()
         {
             InitializeComponent();
             this.GlobCanvas = MyCanvas;
             viewModel = new WhiteBoardViewModel(GlobCanvas);
+            ckptList = new ObservableCollection<string>()  
+            {  
+               "1", "2"
+            };
         }
 
         // Function to clear flags and mouse variables to be called when a popup is opened/closed or active tool is changed
@@ -1030,7 +1043,6 @@ namespace Client
                 MessageBox.Show("Toggled Off");
             }
         }
-
 
     }
 }

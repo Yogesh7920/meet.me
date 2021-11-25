@@ -14,6 +14,7 @@ using System.Diagnostics;
 using Whiteboard;
 using System.Windows.Documents;
 using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace Client
 {
@@ -1718,10 +1719,23 @@ namespace Client
     /// <summary>
     /// View Model of Whiteboard in MVVM design pattern 
     /// </summary>
-    public class WhiteBoardViewModel
+    public class WhiteBoardViewModel : INotifyPropertyChanged
     {
         //To be bound to the number of "Checkpoint #n" in Restore Checkpoint dropdown in Whiteboard.xaml
-        public int numCheckpoints;
+        private int _numCheckpoints;
+
+        public int NumCheckpoints
+        {
+            get { return _numCheckpoints; }
+            set
+            {
+                if (_numCheckpoints != value)
+                {
+                    _numCheckpoints = value;
+                    OnPropertyChanged(nameof(NumCheckpoints));
+                }
+            }
+        }
 
         /// UX sets this enum to different options when user clicks on the appropriate tool icon
         public enum WBTools
@@ -1765,7 +1779,7 @@ namespace Client
             this.manager = ClientBoardStateManager.Instance;
             this.manager.Start();
 
-            this.numCheckpoints = 0;
+            this._numCheckpoints = 0;
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
             //this.GlobCanvas.IsEnabled = false;
         }
@@ -1928,7 +1942,7 @@ namespace Client
 
         public void increaseCheckpointNum(int latestNumCheckpoints)
         {
-            if (latestNumCheckpoints == this.numCheckpoints)
+            if (latestNumCheckpoints == this._numCheckpoints)
             {
                 return;
             }
@@ -1977,7 +1991,7 @@ namespace Client
             if (received[0].OperationType == Operation.FETCH_STATE)
             {
                 //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor
-                Debug.Assert(numCheckpoints == 0);
+                Debug.Assert(_numCheckpoints == 0);
                 Debug.Assert(GlobCanvas.IsEnabled == false);
                 //Supposed to make the "Restore Checkpoint" dropdown with CheckPointNumber number of dropdown tiles
                 increaseCheckpointNum(received[0].CheckPointNumber);
@@ -2063,6 +2077,13 @@ namespace Client
                 }
             }
         }
+
+        private void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+        //RestorFrameDropDown
+        public event PropertyChangedEventHandler PropertyChanged;
 
     }
 }
