@@ -291,8 +291,9 @@ namespace Testing.Content
             string sentData = fakeComm.GetSentData();
             MessageData sentMsg = serializer.Deserialize<MessageData>(sentData);
 
-            Assert.AreEqual(sentMsg.Event, MessageEvent.Star);
-            Assert.AreEqual(sentMsg.MessageId, messageid);
+            Assert.AreEqual(MessageEvent.Star, sentMsg.Event);
+            Assert.AreEqual(messageid, sentMsg.MessageId);
+            Assert.AreEqual(chatmsg.ReplyThreadId, sentMsg.ReplyThreadId);
         }
 
         // CUpdateChat tests
@@ -358,9 +359,10 @@ namespace Testing.Content
             MessageData sentMsg = serializer.Deserialize<MessageData>(sentData);
 
             // validate necessary fields
-            Assert.AreEqual(sentMsg.Event, MessageEvent.Update);
-            Assert.AreEqual(sentMsg.MessageId, messageid);
-            Assert.AreEqual(sentMsg.Message, newMessage);
+            Assert.AreEqual(MessageEvent.Update, sentMsg.Event);
+            Assert.AreEqual(messageid, sentMsg.MessageId);
+            Assert.AreEqual(userchatmsg.ReplyThreadId, sentMsg.ReplyThreadId);
+            Assert.AreEqual(newMessage, sentMsg.Message);
         }
 
         // CSubscribe tests
@@ -592,9 +594,9 @@ namespace Testing.Content
 
             // validate that the subscribers have also received notification for update
             ReceiveMessageData recvdMsg = listener.GetOnMessageData();
-            Assert.AreEqual(recvdMsg.Event, MessageEvent.Update);
-            Assert.AreEqual(recvdMsg.MessageId, chatmsg.MessageId);
-            Assert.AreEqual(recvdMsg.Message, msg.Message);
+            Assert.AreEqual(MessageEvent.Update, recvdMsg.Event);
+            Assert.AreEqual(chatmsg.MessageId, recvdMsg.MessageId);
+            Assert.AreEqual(msg.Message, recvdMsg.Message);
         }
 
         [Test]
@@ -619,26 +621,36 @@ namespace Testing.Content
         }
 
         [Test]
-        public void OnReceive_MessageStar_ValidUpdate_ShouldUpdateAndInformSubscribers()
+        public void OnReceive_MessageStar_Valid_ShouldStarAndInformSubscribers()
         {
+            // we'll star chatmsg 
             MessageData msg = new MessageData();
-            msg.Event = MessageEvent.Update;
+            msg.Event = MessageEvent.Star;
             msg.MessageId = chatmsg.MessageId;
-            msg.Message = "New message";
+
+            bool starStatus = chatmsg.Starred;
 
             cClient.OnReceive(msg);
 
-            // validate that the message has been updated
+            // validate that the message's star status has been toggled
             ChatContext msgContext = cClient.CGetThread(chatmsg.ReplyThreadId);
             int index = msgContext.RetrieveMessageIndex(chatmsg.MessageId);
             ReceiveMessageData storedMsg = msgContext.MsgList[index];
-            Assert.AreEqual(storedMsg.Message, msg.Message);
+            Assert.AreEqual(storedMsg.Starred, !starStatus);
 
             // validate that the subscribers have also received notification for update
             ReceiveMessageData recvdMsg = listener.GetOnMessageData();
-            Assert.AreEqual(recvdMsg.Event, MessageEvent.Update);
+            Assert.AreEqual(recvdMsg.Event, MessageEvent.Star);
             Assert.AreEqual(recvdMsg.MessageId, chatmsg.MessageId);
-            Assert.AreEqual(recvdMsg.Message, msg.Message);
+
+            // star again to check both starring and unstarring
+            cClient.OnReceive(msg);
+
+            // the message's star status should have reverted to as before
+            msgContext = cClient.CGetThread(chatmsg.ReplyThreadId);
+            index = msgContext.RetrieveMessageIndex(chatmsg.MessageId);
+            storedMsg = msgContext.MsgList[index];
+            Assert.AreEqual(storedMsg.Starred, starStatus);
         }
 
         // helper functions to assert deep equality of data structures that the Content module uses
