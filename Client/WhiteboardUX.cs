@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -1719,7 +1720,7 @@ namespace Client
     /// <summary>
     /// View Model of Whiteboard in MVVM design pattern 
     /// </summary>
-    public class WhiteBoardViewModel : INotifyPropertyChanged
+    public class WhiteBoardViewModel :  IClientBoardStateListener , INotifyPropertyChanged
     {
         //To be bound to the number of "Checkpoint #n" in Restore Checkpoint dropdown in Whiteboard.xaml
         private int _numCheckpoints;
@@ -1766,6 +1767,9 @@ namespace Client
                 Application.Current.Dispatcher :
                 Dispatcher.CurrentDispatcher;
 
+
+        private int TEMPVAR;
+
         /// <summary>
         /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
         /// </summary>
@@ -1776,12 +1780,49 @@ namespace Client
             this.activeTool = WBTools.Initial;
             this.GlobCanvas = GlobCanvas;
             this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
+
+            //TO BE CALLED BY DASHBOARD
             this.manager = ClientBoardStateManager.Instance;
             this.manager.Start();
+
+            this.manager.Subscribe(this, "us");
+
 
             this._numCheckpoints = 0;
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
             //this.GlobCanvas.IsEnabled = false;
+
+            this.TEMPVAR = 0;
+
+            /*var thread = new Thread(incremTest);
+            thread.IsBackground = true;
+            Trace.WriteLine("STARTING THREAD");
+
+            thread.Start();*/
+
+            Trace.WriteLine("STARTING THREAD");
+
+             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                   DispatcherPriority.Normal,
+                   new Action<int>((varrr) =>
+                   {
+                       lock (this)
+                       {
+                           varrr++;
+                           Trace.WriteLine(varrr.ToString());
+                       }
+                   }
+
+               ),
+               TEMPVAR); 
+
+        }
+
+        private void incremTest()
+        {
+            this.TEMPVAR++;
+            Trace.WriteLine(this.TEMPVAR.ToString());
+            return;
         }
 
         /// <summary>
@@ -1888,7 +1929,7 @@ namespace Client
             manager.FetchCheckpoint(CheckNum);
         }
 
-        public void OnMessageReceived(List<UXShape> ServerUpdate)
+        public void OnUpdateFromStateManager (List<UXShape> ServerUpdate)
         {
 
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
@@ -1924,16 +1965,16 @@ namespace Client
 
         public void sendRedoRequest()
         {
-            List<UXShape> renderUndo = WBOps.Redo();
-            for (int i = 0; i < renderUndo.Count(); i++)
+            List<UXShape> renderRedo = WBOps.Redo();
+            for (int i = 0; i < renderRedo.Count(); i++)
             {
-                if (renderUndo[i].WindowsShape is System.Windows.Shapes.Polyline)
+                if (renderRedo[i].WindowsShape is System.Windows.Shapes.Polyline)
                 {
-                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderRedo[i] }, GlobCanvas);
                 }
                 else
                 {
-                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderRedo[i] }, GlobCanvas);
                 }
             }
             return;
