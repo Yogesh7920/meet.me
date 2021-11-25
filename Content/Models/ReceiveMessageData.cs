@@ -50,6 +50,8 @@ namespace Content
         /// </summary>
         public MessageType Type;
 
+        public int ReplyMsgId;
+
         public ReceiveMessageData()
         {
             MessageId = -1;
@@ -58,6 +60,7 @@ namespace Content
             SenderId = -1;
             SentTime = new DateTime();
             Starred = false;
+            ReplyMsgId = -1;
         }
 
         /// <summary>
@@ -75,6 +78,7 @@ namespace Content
             ReplyThreadId = msgData.ReplyThreadId;
             Starred = msgData.Starred;
             Type = msgData.Type;
+            ReplyMsgId = msgData.ReplyMsgId;
         }
     }
 }
