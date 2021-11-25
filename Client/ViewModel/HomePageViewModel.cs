@@ -10,10 +10,10 @@ using Dashboard;
 using Dashboard.Client.SessionManagement;
 using Client;
 
-namespace Client.ViewModels
+namespace Client.ViewModel
 {
 
-    class HomePageViewModel : ISessionNotifications
+    class HomePageViewModel : IClientSessionNotifications
     {
         private IUXClientSessionManager _model;
 
@@ -24,12 +24,11 @@ namespace Client.ViewModels
         public HomePageViewModel()
         {
             _model = SessionManagerFactory.GetClientSessionManager();
-         //   _model.SubscribeSession(this, identifier);
+            _model.SubscribeSession(this);
         }
 
-        public void OnSessionChanged(SessionData session)
+        public void OnClientSessionChanged(SessionData session)
         {
-
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<List<UserViewData>>((users) =>
@@ -41,6 +40,10 @@ namespace Client.ViewModels
                                 {
                                     UserViewData usernew = new UserViewData();
                                     usernew.username = user.username;
+                                    if(user.userID == ChatViewModel.UserId)
+                                    {
+                                        usernew.username += " (You)";
+                                    }
                                     usernew.shortname = user.username.Substring(0,2);
                                     users.Add(usernew);
                                 }
@@ -69,7 +72,5 @@ namespace Client.ViewModels
             (Application.Current?.Dispatcher != null) ?
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
-
-        private const string identifier = "UsersList";
     }
 }
