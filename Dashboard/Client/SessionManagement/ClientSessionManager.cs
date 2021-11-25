@@ -15,7 +15,7 @@ namespace Dashboard.Client.SessionManagement
     using System.Diagnostics;
 
     public delegate void NotifyEndMeet();
-    public delegate SessionAnalytics NotifyAnalyticsCreated(SessionAnalytics analytics);
+    public delegate void NotifyAnalyticsCreated(SessionAnalytics analytics);
     public delegate void NotifySummaryCreated(string summary);
 
     /// <summary>
@@ -137,6 +137,11 @@ namespace Dashboard.Client.SessionManagement
             return _clientSessionData;
         }
 
+        public string GetStoredAnalytics()
+        {
+            return _tempAnalytics;
+        }
+
         /// <summary>
         /// Used to fetch the stored summary for the client. Helpful for testing and debugging.
         /// </summary>
@@ -204,7 +209,7 @@ namespace Dashboard.Client.SessionManagement
                     return;
 
                 case "getAnalytics":
-                    //UpdateAnalytics(deserializedObject);
+                    UpdateAnalytics(deserializedObject);
                     return;
 
                 case "removeClient":
@@ -216,7 +221,8 @@ namespace Dashboard.Client.SessionManagement
                     return;
 
                 default:
-                    throw new NotImplementedException();
+                    Trace.WriteLine("Received Invalid event type from the server");
+                    return;
             }
         }
 
@@ -273,6 +279,7 @@ namespace Dashboard.Client.SessionManagement
             //receivedData.sessionAnalytics;
             //string receivedAnalytics = receivedData.sessionAnalytics;;
             UserData receiveduser = receivedData.GetUser();
+            _tempAnalytics = receivedData.temp;
             AnalyticsCreated?.Invoke(receivedAnalytics);
         }
 
@@ -375,6 +382,8 @@ namespace Dashboard.Client.SessionManagement
         private IContentClient _contentClient;
         private readonly ISerializer _serializer;
         private readonly ICommunicator _communicator;
+
+        private string _tempAnalytics;
 
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
