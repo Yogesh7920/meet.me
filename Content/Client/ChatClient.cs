@@ -55,6 +55,7 @@ namespace Content
             Converted.ReplyThreadId = toconvert.ReplyThreadId;
             Converted.Starred = false;
             Converted.SentTime = DateTime.Now;
+			Converted.ReplyMsgId = toconvert.ReplyMsgId;
 			Trace.WriteLine("[ChatClient Converting SendMessageData object to a MessageData object");
             return Converted;
         }

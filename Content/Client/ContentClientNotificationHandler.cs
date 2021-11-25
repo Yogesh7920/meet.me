@@ -34,7 +34,7 @@ namespace Content
             Trace.WriteLine("[ContentClientNotificationHandler] Deserializing data received from network");
             string deserializedType = _serializer.GetObjectType(data, "Content");
 
-            if (string.Equals(deserializedType,"Content.MessageData"))
+            if (string.Equals(deserializedType,typeof(MessageData).ToString()))
             {
                 _receivedMessage = _serializer.Deserialize<MessageData>(data);
                 _contentHandler.OnReceive(_receivedMessage);
