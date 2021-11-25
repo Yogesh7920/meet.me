@@ -78,60 +78,60 @@ namespace Testing.UX.Chat
 
         //}
 
-        [Test]
-        public void OnAllMessages_ReceivedMsgObj_ShouldMatchReceivedMsg()
-        {
-            //Arrange
-            List<ChatContext> sampleAllMessages = new List<ChatContext>();
-            ChatContext sampleChatContext = new ChatContext();
-            ReceiveMessageData sampleMessageData1 = new ReceiveMessageData();
-            ReceiveMessageData sampleMessageData2 = new ReceiveMessageData();
-            sampleMessageData1.Event = MessageEvent.NewMessage;
-            sampleMessageData1.Message = "Hi Suchitra, how are you???";
-            sampleMessageData1.MessageId = 1;
-            sampleMessageData1.ReceiverIds = new int[0];
-            sampleMessageData1.ReplyThreadId = -1;
-            sampleMessageData1.SenderId = 111801017;
-            sampleMessageData1.SentTime = DateTime.Now;
-            sampleMessageData1.Starred = false;
-            sampleMessageData1.Type = MessageType.Chat;
+        //[Test]
+        //public void OnAllMessages_ReceivedMsgObj_ShouldMatchReceivedMsg()
+        //{
+        //    //Arrange
+        //    List<ChatContext> sampleAllMessages = new List<ChatContext>();
+        //    ChatContext sampleChatContext = new ChatContext();
+        //    ReceiveMessageData sampleMessageData1 = new ReceiveMessageData();
+        //    ReceiveMessageData sampleMessageData2 = new ReceiveMessageData();
+        //    sampleMessageData1.Event = MessageEvent.NewMessage;
+        //    sampleMessageData1.Message = "Hi Suchitra, how are you???";
+        //    sampleMessageData1.MessageId = 1;
+        //    sampleMessageData1.ReceiverIds = new int[0];
+        //    sampleMessageData1.ReplyThreadId = -1;
+        //    sampleMessageData1.SenderId = 111801017;
+        //    sampleMessageData1.SentTime = DateTime.Now;
+        //    sampleMessageData1.Starred = false;
+        //    sampleMessageData1.Type = MessageType.Chat;
 
-            sampleMessageData2.Event = MessageEvent.NewMessage;
-            sampleMessageData2.Message = "I'm fine, what about you?";
-            sampleMessageData2.MessageId = 2;
-            sampleMessageData2.ReceiverIds = new int[0];
-            sampleMessageData2.ReplyThreadId = 1;
-            sampleMessageData2.SenderId = 111801043;
-            sampleMessageData2.SentTime = DateTime.Now;
-            sampleMessageData2.Starred = false;
-            sampleMessageData2.Type = MessageType.Chat;
+        //    sampleMessageData2.Event = MessageEvent.NewMessage;
+        //    sampleMessageData2.Message = "I'm fine, what about you?";
+        //    sampleMessageData2.MessageId = 2;
+        //    sampleMessageData2.ReceiverIds = new int[0];
+        //    sampleMessageData2.ReplyThreadId = 1;
+        //    sampleMessageData2.SenderId = 111801043;
+        //    sampleMessageData2.SentTime = DateTime.Now;
+        //    sampleMessageData2.Starred = false;
+        //    sampleMessageData2.Type = MessageType.Chat;
 
-            List<ReceiveMessageData> sampleMsgList = new List<ReceiveMessageData>();
-            sampleMsgList.Add(sampleMessageData1);
-            sampleMsgList.Add(sampleMessageData2);
-            sampleChatContext.MsgList = sampleMsgList;
-            sampleAllMessages.Add(sampleChatContext);
+        //    List<ReceiveMessageData> sampleMsgList = new List<ReceiveMessageData>();
+        //    sampleMsgList.Add(sampleMessageData1);
+        //    sampleMsgList.Add(sampleMessageData2);
+        //    sampleChatContext.MsgList = sampleMsgList;
+        //    sampleAllMessages.Add(sampleChatContext);
 
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("Suchitra", 111801043);
-            UserData sampleUser2 = new UserData("Irene", 111801017);
-            sampleSession.AddUser(sampleUser1);
-            sampleSession.AddUser(sampleUser2);
-            _viewModel.OnClientSessionChanged(sampleSession);
-            DispatcherUtil.DoEvents();
+        //    SessionData sampleSession = new SessionData();
+        //    UserData sampleUser1 = new UserData("Suchitra", 111801043);
+        //    UserData sampleUser2 = new UserData("Irene", 111801017);
+        //    sampleSession.AddUser(sampleUser1);
+        //    sampleSession.AddUser(sampleUser2);
+        //    _viewModel.OnClientSessionChanged(sampleSession);
+        //    DispatcherUtil.DoEvents();
 
-            //Act
-            _viewModel.OnAllMessages(sampleAllMessages);
+        //    //Act
+        //    _viewModel.OnAllMessages(sampleAllMessages);
 
-            //Assert
-            // Without calling DispatcherUtil.DoEvents() the test will fail
-            DispatcherUtil.DoEvents();
-            Assert.AreEqual(_viewModel.ReceivedMsg.UserName, "Suchitra");
-            Assert.AreEqual(_viewModel.ReceivedMsg.MessageId, 2);
-            Assert.AreEqual(_viewModel.ReceivedMsg.TextMessage, "I'm fine, what about you?");
-            Assert.AreEqual(_viewModel.ReceivedMsg.ReplyMessage, "Hi Suchitra, how are you???");
-            Assert.AreEqual(_viewModel.ReceivedMsg.Type, true);
-        }
+        //    //Assert
+        //    // Without calling DispatcherUtil.DoEvents() the test will fail
+        //    DispatcherUtil.DoEvents();
+        //    Assert.AreEqual(_viewModel.ReceivedMsg.UserName, "Suchitra");
+        //    Assert.AreEqual(_viewModel.ReceivedMsg.MessageId, 2);
+        //    Assert.AreEqual(_viewModel.ReceivedMsg.TextMessage, "I'm fine, what about you?");
+        //    Assert.AreEqual(_viewModel.ReceivedMsg.ReplyMessage, "Hi Suchitra, how are you???");
+        //    Assert.AreEqual(_viewModel.ReceivedMsg.Type, true);
+        //}
 
         [Test]
         public void OnPropertyChanged_EventShouldBeRaised()
