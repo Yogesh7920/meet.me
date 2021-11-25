@@ -1,3 +1,5 @@
+/// <author>Yuvraj Raghuvanshi</author>
+/// <created>01/11/2021</created>
 using System;
 using System.Collections.Generic;
 
@@ -56,8 +58,13 @@ namespace Content
 
             else
             {
+                // ensure the message belongs to this chat context
                 if (msg.ReplyThreadId != ThreadId)
                     throw new ArgumentException("Invalid thread id, message doesn't belong in this thread");
+                
+                // ensure the message being replied to (if any) is also part of this chat context
+                if (msg.ReplyMsgId != -1 && !messageIds.ContainsKey(msg.ReplyMsgId))
+                    throw new ArgumentException("Message being replied to isn't part of the same thread");
 
                 if (messageIds.ContainsKey(msg.MessageId))
                     throw new ArgumentException("Message with given message id already exists in thread");
