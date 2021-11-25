@@ -359,12 +359,10 @@ namespace Content
 
             if (_contextMap.ContainsKey(contextId))
             {
-                var contextIndex = _contextMap[contextId];
+                var index = _contextMap[contextId];
                 lock (_lock)
                 {
-                    int msgIndex = _allMessages[contextIndex].RetrieveMessageIndex(messageId);
-                    bool starStatus = _allMessages[contextIndex].MsgList[msgIndex].Starred;
-                    _allMessages[contextIndex].MsgList[msgIndex].Starred = !starStatus;
+                    _allMessages[index].StarMessage(messageId);
                 }
             }
             else

@@ -85,6 +85,19 @@ namespace Content
             MsgList[index].Message = newMessage;
         }
 
+        public void StarMessage(int messageId)
+        {
+
+            if (!messageIds.ContainsKey(messageId))
+                throw new ArgumentException("Message with given message id doesn't exist in thread");
+
+            int index = messageIds[messageId];
+            if (MsgList[index].Type != MessageType.Chat)
+                throw new ArgumentException("Message requested for update is not chat");
+
+            MsgList[index].Starred = !MsgList[index].Starred;
+        }
+
         public int RetrieveMessageIndex(int messageId)
         {
             if (!messageIds.ContainsKey(messageId))
