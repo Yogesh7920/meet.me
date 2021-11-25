@@ -3,13 +3,33 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using System.IO;
+using System.Diagnostics;
+using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace Networking
 {
+    public class MetaObject
+    {
+        public string typ;
+        public string data;
+        public MetaObject() { }
+        public MetaObject(string typ, string data)
+        {
+            this.data = data;
+            this.typ = typ;
+        }
+    }
     public class Serializer : ISerializer
     {
-        /// <inheritdoc />
-        string ISerializer.Serialize<T>(T objectToSerialize)
+        string SerializeJSON<T>(T objectToSerialize)
+        {
+            var jset = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+            string serializedString = JsonConvert.SerializeObject(objectToSerialize, jset);
+            return serializedString;
+        }
+        string SerializeXML<T>(T objectToSerialize)
         {
             try
             {
@@ -24,30 +44,90 @@ namespace Networking
                 throw;
             }
         }
+        /// <inheritdoc />
+        string ISerializer.Serialize<T>(T objectToSerialize)
+        {
+            try
+            {
+                string json = SerializeJSON(objectToSerialize);
+                MetaObject obj = new MetaObject(typeof(T).ToString(), json);
+                return SerializeJSON<MetaObject>(obj);
+            }
+            catch
+            {
+                try
+                {
+                    string xml = SerializeXML(objectToSerialize);
+                    MetaObject obj = new MetaObject(typeof(T).ToString(), xml);
+                    return SerializeXML<MetaObject>(obj);
+                }
+                catch
+                {
+                    throw;
+                }
+                throw;
+            }
+        }
 
         /// <inheritdoc />
         string ISerializer.GetObjectType(string serializedString, string nameSpace)
         {
-            var stringReader = new StringReader(serializedString);
-            var xmlReader = XmlReader.Create(stringReader);
-            if (xmlReader.MoveToContent() != XmlNodeType.Element) throw new FormatException();
-
-            var typ = nameSpace + "." + xmlReader.Name;
-            return typ;
+            try
+            {
+                if (serializedString[0] == '<')
+                {
+                    // xml string
+                    MetaObject obj = deserializeXML<MetaObject>(serializedString);
+                    return obj.typ;
+                }
+                if (serializedString[0] == '{')
+                {
+                    // json string
+                    MetaObject obj = deserializeJSON<MetaObject>(serializedString);
+                    return obj.typ;
+                }
+                else
+                {
+                    throw new InvalidDataException();
+                }
+            }
+            catch
+            {
+                throw;
+            }
         }
-
+        T deserializeXML<T>(string xml)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            using (StringReader stringReader = new StringReader(xml))
+                return (T)serializer.Deserialize(stringReader);
+        }
+        T deserializeJSON<T>(string json)
+        {
+            var jset = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+            return JsonConvert.DeserializeObject<T>(json, jset);
+        }
         /// <inheritdoc />
         T ISerializer.Deserialize<T>(string serializedString)
         {
             try
             {
-                var serializer = new XmlSerializer(typeof(T));
-                using var stringReader = new StringReader(serializedString);
-                return (T) serializer.Deserialize(stringReader);
+                MetaObject obj = deserializeJSON<MetaObject>(serializedString);
+                return deserializeJSON<T>(obj.data);
             }
-            catch (Exception ex)
+            catch (Exception ex1)
             {
-                Trace.WriteLine(ex.Message);
+                try
+                {
+                    MetaObject obj = deserializeXML<MetaObject>(serializedString);
+                    return deserializeXML<T>(obj.data);
+                }
+                catch (Exception ex2)
+                {
+                    Trace.WriteLine(ex2.Message);
+                    throw;
+                }
+                Trace.WriteLine(ex1.Message);
                 throw;
             }
         }
