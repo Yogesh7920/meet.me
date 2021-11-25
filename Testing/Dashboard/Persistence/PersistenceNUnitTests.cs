@@ -174,7 +174,7 @@ namespace Testing.Dashboard.Persistence
 
             ServerDataToSave serverdataToSave = _telemetry_persister.RetrieveAllSeverData();
             _telemetry_persister.ServerDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
-            Assert.IsTrue(serverdataToSave.sessionCount == -1);
+            Assert.IsTrue(serverdataToSave.sessionCount == 0);
         }
 
         /// <summary>

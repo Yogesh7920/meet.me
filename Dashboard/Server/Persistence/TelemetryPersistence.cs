@@ -39,6 +39,15 @@ namespace Dashboard.Server.Persistence
 
             //Saving the Path to save find the XML file.
             string path = serverDataPath;
+
+            // Create new object if directory does not exist
+            if (!Directory.Exists(serverDataPath))
+            {
+                ServerDataToSave sdts = new ServerDataToSave();
+                sdts.sessionCount = 0;
+                sdts.allSessionsSummary = new();
+                return sdts;
+            }
             object objectsList = null;
             try
             {
@@ -57,6 +66,7 @@ namespace Dashboard.Server.Persistence
                 Trace.WriteLine("Yeah it is being catched here....");
                 ServerDataToSave sdts = new ServerDataToSave();
                 sdts.sessionCount = -1;
+                sdts.allSessionsSummary = new();
                 return sdts;
             }
              

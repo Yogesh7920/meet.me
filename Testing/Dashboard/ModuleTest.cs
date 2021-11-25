@@ -244,6 +244,7 @@ namespace Testing.Dashboard
             serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
             string serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
             Assert.IsTrue(File.Exists(Path.Combine(serverDataPath, "GlobalServerData.xml")));
+            Directory.Delete("../../../Persistence",true);
         }
 
 
