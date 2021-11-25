@@ -378,10 +378,9 @@ namespace Content
         private void DownloadMessageHandler(MessageData message)
         {
             Trace.WriteLine("[ContentClient] Received requested file from server");
-            var savedirpath = message.Message;
-            var savepath = savedirpath + message.FileData.fileName;
+            var savepath = message.Message;
 
-            Trace.WriteLine("[ContentClient] Saving file to path: {0}", savepath);
+            Trace.WriteLine($"[ContentClient] Saving file to path: {savepath}");
             File.WriteAllBytes(savepath, message.FileData.fileContent);
         }
 

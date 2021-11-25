@@ -672,9 +672,9 @@ namespace Testing.Content
             deserialized.Event = MessageEvent.Download;
             fakeCommunicator.Notify(serializer.Serialize(deserialized));
             System.Threading.Thread.Sleep(50);
-            if (File.Exists(savePath+deserialized.FileData.fileName))
+            if (File.Exists(savePath))
             {
-                File.Delete(savePath + deserialized.FileData.fileName);
+                File.Delete(savePath);
                 Assert.Pass();
             }
             else
@@ -846,9 +846,9 @@ namespace Testing.Content
             TestFile(fileReturnedData, savePath, sendNewFileData, fileReplyMsg.MessageId);
             contentClient.OnReceive(fileReturnedData);
             System.Threading.Thread.Sleep(50);
-            if (File.Exists(savePath + fileReturnedData.FileData.fileName))
+            if (File.Exists(savePath))
             {
-                File.Delete(savePath + fileReturnedData.FileData.fileName);
+                File.Delete(savePath);
                 Assert.Pass();
             }
             else
