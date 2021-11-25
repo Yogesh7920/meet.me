@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 11/12/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/25/2021
 **/
 
 using System;
@@ -57,5 +57,10 @@ namespace Whiteboard
         /// Maximum Allowed Width for a shape.
         /// </summary>
         public const float MIN_WIDTH = (float)0.1;
+
+        /// <summary>
+        /// Allowed variation in floats to be declared as equal.
+        /// </summary>
+        public const float ALLOWED_DELTA = (float)0.02;
     }
 }
