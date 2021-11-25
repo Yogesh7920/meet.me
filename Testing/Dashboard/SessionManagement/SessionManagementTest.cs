@@ -43,14 +43,14 @@ namespace Testing.Dashboard.SessionManagement
             Assert.That(ReferenceEquals(clientSessionManager1, clientSessionManager2));
         }
 
-        //[Test]
-        //public void GetServerSessionManager_TwoInstancesCreated_MustHaveSameReference()
-        //{
-        //    IUXServerSessionManager serverSessionManager1 = SessionManagerFactory.GetServerSessionManager();
-        //    IUXServerSessionManager serverSessionManager2 = SessionManagerFactory.GetServerSessionManager();
+        [Test]
+        public void GetServerSessionManager_TwoInstancesCreated_MustHaveSameReference()
+        {
+            IUXServerSessionManager serverSessionManager1 = SessionManagerFactory.GetServerSessionManager();
+            IUXServerSessionManager serverSessionManager2 = SessionManagerFactory.GetServerSessionManager();
 
-        //    Assert.That(ReferenceEquals(serverSessionManager1, serverSessionManager2));
-        //}
+            Assert.That(ReferenceEquals(serverSessionManager1, serverSessionManager2));
+        }
 
         [Test]
         public void NotifyUX_SessionDataChanges_UXShouldBeNotified()
@@ -225,7 +225,12 @@ namespace Testing.Dashboard.SessionManagement
             FakeClientUX fakeClientUX = new(_clientSessionManager);
             fakeClientUX.sessionSummary = null;
 
-            _clientSessionManager.SetUser("Jake Vickers");
+            UserData user = new("Jake Vickers", 1);
+
+            _clientSessionManager.SetUser(user.username,user.userID);
+            _clientSessionManager.SetSessionUsers(new List<UserData>(){ user });
+            AddUsersToServerSession(new List<UserData>() { user });
+
             _clientSessionManager.GetSummary();
             _serverSessionManager.OnDataReceived(_communicatorTest.transferredData);
             _clientSessionManager.OnDataReceived(_communicatorTest.transferredData);
@@ -236,6 +241,26 @@ namespace Testing.Dashboard.SessionManagement
             Assert.NotNull(clientSummary);
             Assert.NotNull(serverSummary);
             Assert.NotNull(fakeClientUX.sessionSummary);
+        }
+
+        [Test]
+        public void GetAnalytics_RequestAnalytics_ReturnSessionAnalyticsAndNotifyUX()
+        {
+            FakeClientUX fakeClientUX = new(_clientSessionManager);
+            FakeTelemetry fakeTelemetry = new(_serverSessionManager);
+
+            UserData user = new("Jake Vickers", 1);
+
+            _clientSessionManager.SetUser(user.username, user.userID);
+            _clientSessionManager.SetSessionUsers(new List<UserData>() { user });
+            AddUsersToServerSession(new List<UserData>() { user });
+
+            _clientSessionManager.GetAnalytics();
+            _serverSessionManager.OnDataReceived(_communicatorTest.transferredData);
+            _clientSessionManager.OnDataReceived(_communicatorTest.transferredData);
+
+            Assert.AreEqual(_clientSessionManager.GetStoredAnalytics(), "sampleString");
+            Assert.NotNull(fakeClientUX.sessionAnalytics);
         }
 
         [Test]
@@ -283,6 +308,20 @@ namespace Testing.Dashboard.SessionManagement
             Assert.AreEqual(fakeClientUx.meetingEnded, true);
             Assert.AreEqual(_serverSessionManager.summarySaved, true);
         }
+
+        //[Test]
+        //public void OnDataReceivedServerSide_SendingNullData_TraceAndReturn()
+        //{
+        //    try
+        //    {
+        //        _serverSessionManager.OnDataReceived(null);
+        //        Assert.Pass();
+        //    }
+        //    catch(Exception e)
+        //    {
+        //        Assert.Fail("OnDataReceived failed: " + e.Message);
+        //    }
+        //}
 
         public void AddUsersToServerSession(List<UserData> users)
         {

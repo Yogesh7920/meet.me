@@ -45,7 +45,7 @@ namespace Dashboard.Server.SessionManagement
             _communicator = CommunicationFactory.GetCommunicator(false);
             _communicator.Subscribe(moduleIdentifier, this);
 
-            _telemetry = new Telemetry.Telemetry();
+            //_telemetry = new Telemetry.Telemetry();
         }
 
         /// <summary>
@@ -113,6 +113,10 @@ namespace Dashboard.Server.SessionManagement
         /// <returns>An UserData object that contains a unique ID for the username provided. </returns>
         private UserData CreateUser(string username)
         {
+            if (userCount == 1)
+            {
+                _telemetry = TelemetryFactory.GetTelemetryInstance();
+            }
             UserData user = new(username, userCount);
             return user;
         }
@@ -164,7 +168,6 @@ namespace Dashboard.Server.SessionManagement
                     // Fetching all the chats from the content module
                     ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
 
-
                     summarySaved = _summarizer.SaveSummary(allChats);
                     _telemetry.SaveAnalytics(allChats);
 
@@ -200,14 +203,13 @@ namespace Dashboard.Server.SessionManagement
                 // Fetching the chats and creating analytics on them
                 ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
                 _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
-                SendDataToClient("getAnalytics", null, null, "somethign", user);
+                SendDataToClient("getAnalytics", null, null, "sampleString", user);
             }
             catch (Exception e)
             {
                 // In case of a failure, the user is returned a null object
                 Trace.WriteLine("Unable to create analytics: " + e.Message);
                 SendDataToClient("getAnalytics", null, null, null, user);
-
             }
         }
 
@@ -377,6 +379,7 @@ namespace Dashboard.Server.SessionManagement
                     return;
 
                 case "getAnalytics":
+                    GetAnalyticsProcedure(deserializedObj);
                     return;
 
                 case "removeClient":

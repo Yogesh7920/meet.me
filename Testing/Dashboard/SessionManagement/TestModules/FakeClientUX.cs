@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
+using Dashboard.Server.Telemetry;
 
 namespace Testing.Dashboard.SessionManagement.TestModules
 {
@@ -14,9 +15,15 @@ namespace Testing.Dashboard.SessionManagement.TestModules
         {
             meetingEnded = false;
             sessionManager.MeetingEnded += () => OnMeetingEnded();
+            sessionManager.AnalyticsCreated += (sessionAnalytics) => OnAnalyticsChanged(sessionAnalytics);
             sessionManager.SummaryCreated += (summary) => OnSummaryCreated(summary);
             sessionManager.SubscribeSession(this);
             sessionData = null;
+        }
+
+        public void OnAnalyticsChanged(SessionAnalytics analytics)
+        {
+            sessionAnalytics = analytics;
         }
 
         public void OnClientSessionChanged(SessionData session)
@@ -38,5 +45,6 @@ namespace Testing.Dashboard.SessionManagement.TestModules
         public bool meetingEnded;
         public string sessionSummary;
         public SessionData sessionData;
+        public SessionAnalytics sessionAnalytics;
     }
 }
