@@ -8,12 +8,12 @@ namespace Dashboard.Server.Telemetry{
     ///<summary>
     /// All analytics are done in this class
     ///</summary>
-    public class Telemetry: ITelemetry
+    public class Telemetry: ITelemetry,ITelemetryNotifications
     {
-        // public void Telemetry
-        // {
-        //     _sessionmanager.subscribe();
-        // }
+         public Telemetry()
+         {
+             _sm.Subscribe(this);
+         }
         /// <summary>
         ///     constructs a dictionary with DateTime as key and int as value
         ///     which indicates UserCount at corresponding DateTime 
@@ -107,11 +107,22 @@ namespace Dashboard.Server.Telemetry{
         }
 
         /// <summary>
-        ///     To get any change in the SessionData
+        ///     To get any change in the SessionData, this function is used for testing
         /// </summary>
         /// <params name="newSession"> Received new SessionData </params>
         public void OnAnalyticsChanged(SessionData newSession, DateTime time)
         {
+            GetUserCountVsTimeStamp(newSession, time);
+            CalculateEnterExitTimes(newSession, time);
+        }
+
+        /// <summary>
+        ///     To get any change in the SessionData, this function is used for testing
+        /// </summary>
+        /// <params name="newSession"> Received new SessionData </params>
+        public void OnAnalyticsChanged(SessionData newSession)
+        {
+            DateTime time = DateTime.Now;
             GetUserCountVsTimeStamp(newSession, time);
             CalculateEnterExitTimes(newSession, time);
         }
@@ -159,12 +170,14 @@ namespace Dashboard.Server.Telemetry{
             return sessionAnalyticsToSend;
         }
 
+       
+
         public Dictionary<DateTime, int> userCountAtEachTimeStamp = new Dictionary<DateTime, int>();
         public Dictionary<UserData,DateTime> userEnterTime=new Dictionary<UserData, DateTime>();
         public Dictionary<UserData,DateTime> userExitTime=new Dictionary<UserData, DateTime>();
         public Dictionary<int, int> userIdChatCountDic= new Dictionary<int, int>();
         public List<int> insincereMembers= new List<int>();
         private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
-        // private ITelemetrySessionManager _sm = new ITelemetrySessionManager();
+        private readonly ITelemetrySessionManager _sm = SessionManagerFactory.GetServerSessionManager();
     }
 }
