@@ -18,8 +18,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client"
-        mc:Ignorable="d"
+        xmlns:local="clr-namespace:Client" d:DataContext="{d:DesignInstance Type=local:WhiteBoardViewModel}"
+             mc:Ignorable="d"
         Height="450" Width="800"
         Background="#cfcfcf"
         >
@@ -325,7 +325,7 @@
                     PopupAnimation="Slide"
                     StaysOpen="False"
                     Height="100"
-                    Width="100">
+                    Width="115">
 
                 <Grid Name="RestoreDropdown" Background="#cfcfcf">
 
@@ -335,7 +335,7 @@
                     </Grid.RowDefinitions>
 
 
-                    <StackPanel Grid.Row="0" Orientation ="Horizontal">
+                    <StackPanel Grid.Row="0" Orientation ="Horizontal" HorizontalAlignment="Center">
                         <Image Source="/Icons/WhiteboardUX/Toolbar/flag.png" Height="20" Width="20" Margin="0 0 0 0"></Image>
                         <TextBlock Text="Checkpoints"
                                    Foreground="Black"
@@ -346,8 +346,17 @@
                         ></TextBlock>
                     </StackPanel>
 
-                    <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="#cfcfcf">
-                        <ListBoxItem>
+                    <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="#cfcfcf" ItemsSource="{Binding chckList}">
+
+                        <!--<ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Something">
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>-->
+
+
+                        <!--<ListBoxItem>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontSize="10" FontWeight="Light">Checkpoint #1</TextBlock>
                             </StackPanel>
@@ -363,7 +372,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontSize="10" FontWeight="Light">Checkpoint #3</TextBlock>
                             </StackPanel>
-                        </ListBoxItem>
+                        </ListBoxItem>-->
                     </ListBox>
                 </Grid>
             </Popup>
@@ -819,9 +828,9 @@
 
                 <!--Testing shapes-->
                 <!--<Rectangle x:Name="SelectionBox" Stroke="Blue" Height="50" Width="60" StrokeThickness="1" StrokeDashArray="4 4" SnapsToDevicePixels="True" Canvas.Left="260" Canvas.Top="175" Visibility="Collapsed"></Rectangle>-->
-                <Rectangle x:Uid="5000"  Fill="White" Height="50" Width="60" StrokeThickness="2" Stroke="Black" Canvas.Left="259" Canvas.Top="282"></Rectangle>
+                <!--<Rectangle x:Uid="5000"  Fill="White" Height="50" Width="60" StrokeThickness="2" Stroke="Black" Canvas.Left="259" Canvas.Top="282"></Rectangle>
                 <Ellipse x:Uid="6000" Fill="White" Height="50" Width="50" StrokeThickness="2" Stroke="Red" Canvas.Left="400" Canvas.Top="125"></Ellipse>
-                <Line x:Uid="7000" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="90" Y2="90" Canvas.Top="72" Canvas.Left="62" Height="90" Width="89"></Line>
+                <Line x:Uid="7000" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="90" Y2="90" Canvas.Top="72" Canvas.Left="62" Height="90" Width="89"></Line>-->
             </Canvas>
         </StackPanel>
 

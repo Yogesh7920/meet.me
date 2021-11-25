@@ -16,6 +16,8 @@ using System.Collections.ObjectModel;
 
 namespace Client
 {
+
+
     /// <summary>
     /// Interaction logic for Whiteboard.xaml
     /// </summary>
@@ -61,22 +63,59 @@ namespace Client
 
         bool rotation = false;
 
-        //private List<string> ckptList;
-        private ObservableCollection<string> ckptList;
-
-
-
+        //private ObservableCollection<string> _chk;
 
         public WhiteBoardView()
         {
             InitializeComponent();
+
             this.GlobCanvas = MyCanvas;
             viewModel = new WhiteBoardViewModel(GlobCanvas);
-            ckptList = new ObservableCollection<string>()  
-            {  
-               "1", "2"
-            };
+            this.DataContext = viewModel;
+            this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDown_SelectionChanged;
+            //this._chk = new ObservableCollection<string>();
         }
+
+        private void RestorFrameDropDown_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox listbox = (ListBox)sender;
+            string item = listbox.SelectedItem.ToString(); 
+            string numeric = new String(item.Where(Char.IsDigit).ToArray());
+            int cp = int.Parse(numeric);
+
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.OK)
+            {
+                viewModel.RestoreFrame(cp, GlobCanvas);
+                return;
+            }
+            else
+            {
+                return;
+            }
+
+        }
+
+        /*public ObservableCollection<string> chckList
+        {
+            get
+            {
+                return _chk;
+            }
+            set
+            {
+
+                int n = this.viewModel.NumCheckpoints;
+                ObservableCollection<string> temp = new ObservableCollection<string>();
+                for (int i = 0; i < n; i++)
+                {
+                    temp.Add("Checkpoint #" + (i + 1));
+                }
+                _chk = temp;
+            }
+        }*/
+
 
         // Function to clear flags and mouse variables to be called when a popup is opened/closed or active tool is changed
         private void clearFlags()
@@ -991,8 +1030,8 @@ namespace Client
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
 
-            MessageBoxResult result = MessageBox.Show( "If you close this window, all data will be lost.",
-"Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            MessageBoxResult result = MessageBox.Show( "Are you sure you want to clear frame ? All progress since the last checkpoint would be lost.",
+                                      "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
             if (result == MessageBoxResult.OK)
             {
                 GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
@@ -1009,7 +1048,10 @@ namespace Client
         private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("ClickedSaveFrame");
-            viewModel.SaveFrame();
+
+            this.viewModel.NumCheckpoints += 1;
+            
+            //viewModel.SaveFrame();
             return;
         }
 

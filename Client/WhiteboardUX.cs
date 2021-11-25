@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -16,6 +15,7 @@ using Whiteboard;
 using System.Windows.Documents;
 using System.Windows.Threading;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Client
 {
@@ -1107,26 +1107,6 @@ namespace Client
 
 
                 }
-                switch (shp.OperationType)
-                {
-                    case (Operation.CREATE_CHECKPOINT):
-                        break;
-                    case (Operation.FETCH_CHECKPOINT):
-                        break;
-                    case (Operation.FETCH_STATE):
-                        break;
-                    case (Operation.MODIFY):
-                        break;
-                        //case (Operation.CLEAR_STATE ):
-                        //In the `Clear Canvas` button on View, remember to display a warning message that the new shapes since last checkpoint would be lost forever
-                        //cn.Children.Clear()
-
-                        //Clearing pending rendering of the listened items from server, as the canvas would be cleared anyway
-                        //renderQueue.Clear()
-
-
-
-                }
 
             }
 
@@ -1443,7 +1423,7 @@ namespace Client
         /// <param name="end"> System.Windows.Point instance showing representing the point where MouseUp event occured </param>
         /// <param name="pos"> AdornerDragPos enum type that represents the positive of the dragged corner of the Shape </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOp, Shape shp, Point strt, Point end, AdornerDragPos pos)
+        public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Shape shp, Point strt, Point end, AdornerDragPos pos)
         {
             //Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
             //Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
@@ -1465,13 +1445,12 @@ namespace Client
                     break;
             }
 
-            cn = UnselectAllBB(cn, WBOp);
+            cn = UnselectAllBB(cn, WBOps);
             //cn.Children.Remove(shp);
 
-            toRender = WBOp.ResizeShape(C_strt, C_end, shp.Uid, drgPos, true);
+            toRender = WBOps.ResizeShape(C_strt, C_end, shp.Uid, drgPos, true);
             cn = this.RenderUXElement(toRender, cn);
-
-
+            cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
             return cn;
         }
@@ -1737,13 +1716,23 @@ namespace Client
         }
     }
 
+
     /// <summary>
     /// View Model of Whiteboard in MVVM design pattern 
     /// </summary>
-    public class WhiteBoardViewModel :  IClientBoardStateListener , INotifyPropertyChanged
+    public class WhiteBoardViewModel : IClientBoardStateListener, INotifyPropertyChanged
     {
         //To be bound to the number of "Checkpoint #n" in Restore Checkpoint dropdown in Whiteboard.xaml
         private int _numCheckpoints;
+        //private List<string> ckptList;
+        public ObservableCollection<string> _chk;
+
+        private void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public int NumCheckpoints
         {
@@ -1753,13 +1742,28 @@ namespace Client
                 if (_numCheckpoints != value)
                 {
                     _numCheckpoints = value;
-                    OnPropertyChanged(nameof(NumCheckpoints));
+                    OnPropertyChanged(nameof(_numCheckpoints));
+                    
+                    int n = _numCheckpoints;
+                    
+                    ObservableCollection<string> temp = new ObservableCollection<string>();
+                    for (int i = 0; i < n; i++)
+                    {
+                        chckList.Add("Checkpoint #" + (i + 1));
+                    }
+                    chckList = temp;
+                    /*for (int i = 0; i < n; i++)
+                    {
+                        Debug.WriteLine(chckList.ElementAt(i));
+                    }*/
                 }
             }
         }
 
+
+
         /// UX sets this enum to different options when user clicks on the appropriate tool icon
-        public enum WBTools
+        public enum WBTools 
         {
             Initial, /// Initialised value, never to be used again
             Selection,
@@ -1787,9 +1791,6 @@ namespace Client
                 Application.Current.Dispatcher :
                 Dispatcher.CurrentDispatcher;
 
-
-        private int TEMPVAR;
-
         /// <summary>
         /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
         /// </summary>
@@ -1800,49 +1801,35 @@ namespace Client
             this.activeTool = WBTools.Initial;
             this.GlobCanvas = GlobCanvas;
             this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
-
-            //TO BE CALLED BY DASHBOARD
             this.manager = ClientBoardStateManager.Instance;
             this.manager.Start();
 
-            this.manager.Subscribe(this, "us");
-
-
             this._numCheckpoints = 0;
+            this._chk = new ObservableCollection<string>();
+
+
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
             //this.GlobCanvas.IsEnabled = false;
-
-            this.TEMPVAR = 0;
-
-            /*var thread = new Thread(incremTest);
-            thread.IsBackground = true;
-            Trace.WriteLine("STARTING THREAD");
-
-            thread.Start();*/
-
-            Trace.WriteLine("STARTING THREAD");
-
-             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                   DispatcherPriority.Normal,
-                   new Action<int>((varrr) =>
-                   {
-                       lock (this)
-                       {
-                           varrr++;
-                           Trace.WriteLine(varrr.ToString());
-                       }
-                   }
-
-               ),
-               TEMPVAR); 
-
         }
 
-        private void incremTest()
+        public ObservableCollection<string> chckList
         {
-            this.TEMPVAR++;
-            Trace.WriteLine(this.TEMPVAR.ToString());
-            return;
+            get
+            {
+                return _chk;
+            }
+            set
+            {
+
+                int n = this.NumCheckpoints;
+                ObservableCollection<string> temp = new ObservableCollection<string>();
+                for (int i = 0; i < n; i++)
+                {
+                    temp.Add("Checkpoint #" + (i + 1));
+                }
+                _chk = temp;
+                OnPropertyChanged(nameof(chckList));
+            }
         }
 
         /// <summary>
@@ -1949,11 +1936,11 @@ namespace Client
             manager.FetchCheckpoint(CheckNum);
         }
 
-        public void OnUpdateFromStateManager (List<UXShape> ServerUpdate)
+        public void OnUpdateFromStateManager(List<UXShape> ServerUpdate)
         {
 
-            _ = ApplicationMainThreadDispatcher.BeginInvoke(
-                    //DispatcherPriority.Normal,
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                    DispatcherPriority.Normal,
                     new Action<List<UXShape>>((received) =>
                     {
                         lock (this)
@@ -1985,16 +1972,16 @@ namespace Client
 
         public void sendRedoRequest()
         {
-            List<UXShape> renderRedo = WBOps.Redo();
-            for (int i = 0; i < renderRedo.Count(); i++)
+            List<UXShape> renderUndo = WBOps.Redo();
+            for (int i = 0; i < renderUndo.Count(); i++)
             {
-                if (renderRedo[i].WindowsShape is System.Windows.Shapes.Polyline)
+                if (renderUndo[i].WindowsShape is System.Windows.Shapes.Polyline)
                 {
-                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderRedo[i] }, GlobCanvas);
+                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
                 }
                 else
                 {
-                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderRedo[i] }, GlobCanvas);
+                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
                 }
             }
             return;
@@ -2139,12 +2126,12 @@ namespace Client
             }
         }
 
-        private void OnPropertyChanged(string property)
+        /*private void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
         //RestorFrameDropDown
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;*/
 
     }
 }
