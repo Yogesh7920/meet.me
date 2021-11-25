@@ -42,6 +42,8 @@ namespace Client
 
             users = new ObservableCollection<UserViewData>();
             UsersListView.ItemsSource = users;
+            users.Add(new UserViewData() { username = "Harikrishnan", shortname = "PS" });
+            users.Add(new UserViewData() { username = "Harikrishnan", shortname = "PS" });
         }
         private void Listener(object sender, PropertyChangedEventArgs e)
         {

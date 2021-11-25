@@ -48,8 +48,9 @@ namespace Client.ViewModel
                                     }
                                     usernew.shortname = user.username.Substring(0,2);
                                     users.Add(usernew);
+                                    System.Diagnostics.Debug.WriteLine(user.username);
                                 }
-                                this.OnPropertyChanged("ListChanged");
+                                OnPropertyChanged("ListChanged");
                             }
                         }),
                         session,users,userid);
