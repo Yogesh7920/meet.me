@@ -67,9 +67,9 @@ namespace Testing.Networking
         [Test]
         public void NonSerializableAttributeError()
         {
-            NonSerializableAttribute serObj = new Fixture().Create<NonSerializableAttribute>();
-            string xml = _ser.Serialize(serObj);
-            NonSerializableAttribute des = _ser.Deserialize<NonSerializableAttribute>(xml);
+            var serObj = new Fixture().Create<NonSerializableAttribute>();
+            var xml = _ser.Serialize(serObj);
+            var des = _ser.Deserialize<NonSerializableAttribute>(xml);
             des.Should().BeEquivalentTo(serObj);
         }
 
@@ -77,11 +77,11 @@ namespace Testing.Networking
         public void DeserializationFailed()
         {
             // Serialize
-            SimpleObject serObj = new Fixture().Create<SimpleObject>();
-            string xml = _ser.Serialize(serObj);
+            var serObj = new Fixture().Create<SimpleObject>();
+            var xml = _ser.Serialize(serObj);
             // Corupt xml string
             xml = xml.Substring(50);
-            Assert.Throws<System.InvalidOperationException>(() => _ser.Deserialize<SimpleObject>(xml));
+            Assert.Throws<InvalidOperationException>(() => _ser.Deserialize<SimpleObject>(xml));
         }
     }
 }

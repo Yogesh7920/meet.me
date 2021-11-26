@@ -15,17 +15,15 @@ namespace Content
         private readonly Dictionary<int, MessageData> _files;
         private readonly List<ChatContext> _chatContexts;
         private readonly Dictionary<int, int> _chatContextsMap;
-        private readonly Dictionary<int, int> _messageMap;
 
         /// <summary>
-        /// Constructor for ContentDatabase, initilizes all the memeber variables.
+        /// Constructor for ContentDatabase, initilizes all the member variables.
         /// </summary>
         public ContentDatabase()
         {
             _files = new Dictionary<int, MessageData>();
             _chatContexts = new List<ChatContext>();
             _chatContextsMap = new Dictionary<int, int>();
-            _messageMap = new Dictionary<int, int>();
             IdGenerator.ResetChatContextId();
             IdGenerator.ResetMessageId();
         }
@@ -72,25 +70,17 @@ namespace Content
                 int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
                 ChatContext chatContext = _chatContexts[threadIndex];
                 ReceiveMessageData msg = new(messageData);
-                chatContext.MsgList.Add(msg);
-                chatContext.NumOfMessages++;
-                _messageMap[messageData.MessageId] = chatContext.NumOfMessages - 1;
+                chatContext.AddMessage(msg);
             }
             // else create a new chatContext and add the message to it
             else
             {
-                ChatContext chatContext = new()
-                {
-                    CreationTime = messageData.SentTime,
-                    NumOfMessages = 1,
-                    MsgList = new List<ReceiveMessageData>(),
-                    ThreadId = IdGenerator.GetChatContextId()
-                };
-                messageData.ReplyThreadId = chatContext.ThreadId;
+                ChatContext chatContext = new ChatContext();
+                int newThreadId = IdGenerator.GetChatContextId();
+                messageData.ReplyThreadId = newThreadId;
                 ReceiveMessageData msg = new(messageData);
-                chatContext.MsgList.Add(msg);
+                chatContext.AddMessage(msg);
 
-                _messageMap[messageData.MessageId] = 0;
                 _chatContexts.Add(chatContext);
                 _chatContextsMap[chatContext.ThreadId] = _chatContexts.Count - 1;
             }
@@ -115,21 +105,24 @@ namespace Content
         public ReceiveMessageData GetMessage(int replyThreadId, int messageId)
         {
             // If given ChatContext or Message doesn't exists return null
-            if (!(_chatContextsMap.ContainsKey(replyThreadId) && _messageMap.ContainsKey(messageId)))
+            if (!_chatContextsMap.ContainsKey(replyThreadId))
             {
                 return null;
             }
 
             int threadIndex = _chatContextsMap[replyThreadId];
-            int messageIndex = _messageMap[messageId];
+
+            ChatContext chatContext = _chatContexts[threadIndex];
 
             // If given ChatContext doesn't contain the message return null
-            if (_chatContexts[threadIndex].MsgList.Count < messageIndex + 1)
+            if (!chatContext.ContainsMessageId(messageId))
             {
                 return null;
             }
 
-            return _chatContexts[threadIndex].MsgList[messageIndex];
+            int messageIndex = chatContext.RetrieveMessageIndex(messageId);
+
+            return chatContext.MsgList[messageIndex];
         }
     }
 }

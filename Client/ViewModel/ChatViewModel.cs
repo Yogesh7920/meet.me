@@ -153,6 +153,8 @@ namespace Client.ViewModel
                         {
                             lock (this)
                             {
+                                Messages.Clear();
+                                ThreadIds.Clear();
                                 foreach (ChatContext msgLst in allMessages)
                                 {
                                     foreach (ReceiveMessageData messageData in msgLst.MsgList)
