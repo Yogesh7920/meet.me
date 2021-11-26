@@ -120,7 +120,6 @@ namespace Testing.Networking.SocketManagement
 
             while (_queue.Size() != 10)
             {
-                Console.WriteLine(_queue.Size());
                 Thread.Sleep(10);
             }
             for (var i = 1; i <= 10; i++)
