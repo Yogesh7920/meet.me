@@ -983,6 +983,8 @@ namespace Client
         /// </summary>
         public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
         {
+            if (shps == null || shps.Count() == 0) return cn;
+
             //UXShape has attribute
             foreach (UXShape shp in shps)
             {
@@ -1538,17 +1540,13 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false, bool shapeComp = false)
         {
-            SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
-            BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
+            BoardColor stroke = new BoardColor(polyLineColor.Color.R, polyLineColor.Color.G, polyLineColor.Color.B);
 
             //SERVER REQUEST TO CREATE FINAL SHAPE
             List<UXShape> toRender = new List<UXShape>();
 
             if (creation)
             {
-
-
-
                 poly = new System.Windows.Shapes.Polyline();
 
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == "-1");
@@ -1575,7 +1573,7 @@ namespace Client
                 {
                     poly.Tag = "FREEHAND";
                     C_end = new Coordinate((float)pt.X, (float)pt.Y);
-                    toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: null, shapeComp: false);
+                    toRender = WBOps.CreatePolyline(C_end, C_end, polyLineThickness, stroke, shapeId: null, shapeComp: false);
                     prev = C_end;
 
                     assgn_uid = toRender[0].WindowsShape.Uid;
@@ -1611,7 +1609,7 @@ namespace Client
                             {
                                 poly.Points.Add(pt);
                                 C_end = new Coordinate((float)pt.X, (float)pt.Y);
-                                toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
+                                toRender = WBOps.CreatePolyline(prev, C_end, polyLineThickness, stroke, shapeId: assgn_uid, shapeComp: false);
                                 prev = C_end;
                             }
                             else
@@ -1628,33 +1626,12 @@ namespace Client
                 if (isEraser) cn.Children.Remove(poly);
                 else
                 {
-                    //Brush for Border 
-                    /*SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
-                    BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
-                    Coordinate prev = new Coordinate((float)poly.Points[0].X, (float)poly.Points[0].Y);
-
-                    //SERVER REQUEST TO CREATE FINAL SHAPE
-                    List<UXShape> toRender = new List<UXShape>();
-
-                    Coordinate C_end = new Coordinate((float)poly.Points[0].X, (float)poly.Points[0].Y);
-                    toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: null, shapeComp: false);
-                    //storing the assigned Uid of the Polyline
-                    string assgn_uid = toRender[0].WindowsShape.Uid;
-
-                    //Sending intermediate points with shapeComp=false
-                    foreach (Point pnt in poly.Points)
-                    {
-                        C_end = new Coordinate((float)pnt.X, (float)pnt.Y);
-                        toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
-                        prev = C_end;
-                    }*/
-
                     //Sending final point with shapeComp=true
 
                     if (assgn_uid != "-1")
                     {
                         C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
-                        toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: true);
+                        toRender = WBOps.CreatePolyline(C_end, C_end, polyLineThickness, stroke, shapeId: assgn_uid, shapeComp: true);
 
                         //Since the WBOps.CreatePolyline sends render requests of form DELETE then CREATE,
                         //we choose to ignore DELETE as we are doing temporary rendering
@@ -1663,9 +1640,6 @@ namespace Client
                         //Removing temporary render from Canvas
                         cn.Children.Remove(poly);
 
-                        //Adjusting the polyline render request to the user preference during Create Polyline operation
-                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).Stroke = polyLineColor;
-                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeThickness = polyLineThickness;
                         ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
                         ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
 
@@ -1980,6 +1954,7 @@ namespace Client
 
         public void sendUndoRequest()
         {
+            if(this.shapeManager.selectedShapes.Count > 0) this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
             List<UXShape> renderUndo = WBOps.Undo();
             for (int i = 0; i < renderUndo.Count(); i++)
             {
@@ -1997,6 +1972,7 @@ namespace Client
 
         public void sendRedoRequest()
         {
+            if (this.shapeManager.selectedShapes.Count > 0) this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
             List<UXShape> renderUndo = WBOps.Redo();
             for (int i = 0; i < renderUndo.Count(); i++)
             {
@@ -2021,32 +1997,13 @@ namespace Client
             }
             else
             {
-                //Write code to update the dropdown in "Restore Checkpoint" on .xaml, can use binding to viewModel.numCheckpoints
+                //Changing the bound element to the 'Load Checkpoint' dropdown
+                this.NumCheckpoints = latestNumCheckpoints;
                 return;
             }
         }
 
-        //To be called when drop downs in 'Load Checkpoint' button on view is clicked, if this returns false, ignore user's click, else call manager.LoadCheckpoint(num)
-        public bool ShowWarningFetchCheckpoint(int checkpointNumLoad)
-        {
-            //Write code such that
-            //if user accepts warning, return true
-            //else return false
 
-            return false;
-
-        }
-
-        //To be called when drop downs in 'Clear Board' button on view is called, if this returns false, ignore user's click, else call manager.ClearFrame(num)
-        public bool ShowWarningClearBoard()
-        {
-            //Write code such that
-            //if user accepts warning, return true
-            //else return false
-
-            return false;
-
-        }
 
         private void processServerUpdateBatch(List<UXShapeHelper> receivedHelper)
         {
