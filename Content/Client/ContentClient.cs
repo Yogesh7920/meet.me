@@ -148,13 +148,13 @@ namespace Content
             if (toSend.ReplyMsgId != -1)
             {
                 // validate the reply message id
-                ValidateReplyMsgId(toSend.ReplyMsgId, toSend.ReplyThreadId);
+                ValidateSentReplyMsgId(toSend.ReplyMsgId, toSend.ReplyThreadId);
 
                 // modify the receiver ids to the intersection of given recipients and the precursor message's recipients
                 // this way, the privacy level of the precursor message is preserved
                 ReceiveMessageData precursorMessage = RetrieveMessage(toSend.ReplyMsgId);
                 if (precursorMessage is null)
-                    throw new ArgumentException("Message being replied to doesn't exist");
+                    throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
                 toSend.ReceiverIds = ReceiverIntersection(precursorMessage.ReceiverIds, toSend.ReceiverIds);
             }
                 
@@ -302,12 +302,20 @@ namespace Content
             if (key == -1)
                 throw new ArgumentException("Reply thread id of received message cannot be -1");
 
-            // add message id to the set of message ids
-            _messageIdMap.Add(receivedMessage.MessageId, key);
+            // if the message is a reply, ensure that the message being replied to exists
+            if (message.ReplyMsgId != -1)
+            {
+                ValidateReceivedReplyMsgId(receivedMessage.ReplyMsgId, receivedMessage.ReplyThreadId);
+            }
+
             // add the message to the correct ChatContext in allMessages
             // use locks because the list of chat contexts may be shared across multiple threads
             lock (_lock)
             {
+
+                // add message id to the set of message ids
+                _messageIdMap.Add(receivedMessage.MessageId, key);
+
                 if (_contextMap.ContainsKey(key))
                 {
                     var index = _contextMap[key];
@@ -352,7 +360,6 @@ namespace Content
                     string newMessage = receivedMessage.Message;
                     _allMessages[index].UpdateMessage(messageId, newMessage);
                 }
-
             }
             else
             {
@@ -486,29 +493,32 @@ namespace Content
             }
         }
 
-        private void ValidateReplyMsgId(int replyMsgId, int threadId)
+        private void ValidateSentReplyMsgId(int replyMsgId, int threadId)
         {
             // ensure the message being replied to exists
             if (!_messageIdMap.ContainsKey(replyMsgId))
-                throw new ArgumentException("Message being replied to doesn't exist");
+                throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
 
-            // ensure that if the reply is part of a thread its the same thread as the original message
             if (threadId != -1)
             {
                 // check equality with the thread id of the message being replied to
                 if (_messageIdMap[replyMsgId] != threadId)
-                    throw new ArgumentException("Message being replied to is part of a different thread than the reply");
+                    throw new ArgumentException("Invalid reply message id and thread id combination: Message being replied to is part of a different thread than the reply");
             }
         }
 
-        private bool IsReplyToMsgBroadcast(int replyMsgId, int threadId)
+        private void ValidateReceivedReplyMsgId(int replyMsgId, int threadId)
         {
-            int index = _contextMap[threadId];
-            ChatContext replyToChatContext = _allMessages[index];
-            int msgIndex = replyToChatContext.RetrieveMessageIndex(replyMsgId);
-            if (replyToChatContext.MsgList[msgIndex].ReceiverIds.Length == 0)
-                return true;
-            return false;
+            if (!_messageIdMap.ContainsKey(replyMsgId))
+                throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
+
+            // if the received message is part of a new thread, no check required
+            if (!_contextMap.ContainsKey(threadId))
+                return;
+
+            // otherwise check equality with the thread id of the message being replied to
+            if (_messageIdMap[replyMsgId] != threadId)
+                throw new ArgumentException("Invalid reply message id and thread id combination: Message being replied to is part of a different thread than the reply");
         }
 
         private int[] ReceiverIntersection(int[] receivers1, int[] receivers2)
