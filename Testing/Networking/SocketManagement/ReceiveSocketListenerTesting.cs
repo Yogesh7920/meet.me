@@ -5,6 +5,7 @@
 *           for for the class ReceiveSocketListener.
 */
 
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -114,13 +115,14 @@ namespace Testing.Networking.SocketManagement
                 var whiteBoardPacket = new Packet
                     {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
                 var msg = GetMessage(whiteBoardPacket);
-                var stream = _clientSocket.GetStream();
-                stream.Write(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
-                stream.Flush();
+                _clientSocket.Client.Send(Encoding.ASCII.GetBytes(msg));
             }
 
-
-            Thread.Sleep(100);
+            while (_queue.Size() != 10)
+            {
+                Console.WriteLine(_queue.Size());
+                Thread.Sleep(10);
+            }
             for (var i = 1; i <= 10; i++)
             {
                 var whiteBoardData = "packet" + i;

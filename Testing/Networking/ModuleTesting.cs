@@ -196,7 +196,7 @@ namespace Testing.Networking
         }
 
         [Test]
-        public void Serialize_SerializerShouldReturnValidXmlString()
+        public void Serialize_SerializerShouldReturnValidString()
         {
             var fakeChat = FakeChat.GetFakeChat();
             // Serializing and deserializing should give the same object.
