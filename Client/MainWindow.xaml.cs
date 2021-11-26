@@ -67,7 +67,7 @@ namespace Client
         /// </summary>
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            this.DragMove();
+            DragMove();
         }
         /// <summary>
         /// Minimize button functionality
@@ -88,14 +88,27 @@ namespace Client
         /// </summary>
         private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
         {
-            if (this.WindowState == WindowState.Normal)
+            /*if (this.WindowState == WindowState.Normal)
             {
                 this.WindowState = WindowState.Maximized;
             }
             else
             {
                 this.WindowState = WindowState.Normal;
-            }
+            }*/
+            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            this.WindowState = WindowState.Maximized;
+            MaximizeButton.Visibility = Visibility.Collapsed;
+            RestoreButton.Visibility = Visibility.Visible;
+        }
+        /// <summary>
+        /// Restore button functionality
+        /// </summary>
+        private void OnRestoreButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Normal;
+            RestoreButton.Visibility = Visibility.Collapsed;
+            MaximizeButton.Visibility = Visibility.Visible;
         }
         /// <summary>
         /// Close button functionality
