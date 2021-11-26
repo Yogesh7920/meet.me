@@ -680,72 +680,61 @@ namespace Client
 
             List<UXShape> toRender;
 
-
-            //UNCOMMENT LATER
-            /*lock (this)
+            if (shapeComp != true || testing == true)
             {
-                toRender = WBOps.TranslateShape(C_strt, C_end, shpUID, shapeComp);
-                cn = this.RenderUXElement(toRender, cn);
-            }*/
 
+                if (!testing) Debug.Assert(selectedShapes.Count == 1);
+                string shUID = selectedShapes[0];
 
-            if(!testing) Debug.Assert(selectedShapes.Count == 1);
-            string shUID = selectedShapes[0];
+                /* Temporary WB Module code to test functionality */
+                IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
 
-            /* Temporary WB Module code to test functionality */
-            IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
+                //Check Condition 
+                if (!testing) Debug.Assert(iterat.Count() == 1);
 
-            //Check Condition 
-            if (!testing) Debug.Assert(iterat.Count() == 1);
+                Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
-            Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
+                int topleft_x = (int)Canvas.GetLeft(iterat.ToList()[0]);
+                int topleft_y = (int)Canvas.GetTop(iterat.ToList()[0]);
 
-            int topleft_x = (int)Canvas.GetLeft(iterat.ToList()[0]);
-            int topleft_y = (int)Canvas.GetTop(iterat.ToList()[0]);
+                //MessageBox.Show("Entered MoveShape event");
+                //MessageBox.Show(topleft_x.ToString(), topleft_y.ToString());
 
-            //MessageBox.Show("Entered MoveShape event");
-            //MessageBox.Show(topleft_x.ToString(), topleft_y.ToString());
+                int diff_topleft_x = (int)strt.X - (int)end.X;
+                int diff_topleft_y = (int)strt.Y - (int)end.Y;
+                int center_x, center_y;
 
-            int diff_topleft_x = (int)strt.X - (int)end.X;
-            int diff_topleft_y = (int)strt.Y - (int)end.Y;
-            int center_x, center_y;
-            if (sh is not System.Windows.Shapes.Line)
-            {
-                center_x = (int)(topleft_x - diff_topleft_x + sh.Width / 2);
-                center_y = (int)(topleft_y - diff_topleft_y + sh.Height / 2);
+                if (sh is not System.Windows.Shapes.Line)
+                {
+                    center_x = (int)(topleft_x - diff_topleft_x + sh.Width / 2);
+                    center_y = (int)(topleft_y - diff_topleft_y + sh.Height / 2);
 
-                if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(sh, topleft_x - diff_topleft_x);
-                else Canvas.SetLeft(sh, Canvas.GetLeft(sh));
+                    if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(sh, topleft_x - diff_topleft_x);
+                    else Canvas.SetLeft(sh, Canvas.GetLeft(sh));
 
-                if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(sh, topleft_y - diff_topleft_y);
-                else Canvas.SetTop(sh, Canvas.GetTop(sh));
+                    if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(sh, topleft_y - diff_topleft_y);
+                    else Canvas.SetTop(sh, Canvas.GetTop(sh));
+                }
+                else
+                {
+                    center_x = (int)(Canvas.GetLeft(sh) - diff_topleft_x + +((System.Windows.Shapes.Line)sh).X2 / 2);
+                    center_y = (int)(Canvas.GetTop(sh) - diff_topleft_y + ((System.Windows.Shapes.Line)sh).Y2 / 2);
+
+                    if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(sh, topleft_x - diff_topleft_x);
+                    else Canvas.SetLeft(sh, Canvas.GetLeft(sh));
+
+                    if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(sh, topleft_y - diff_topleft_y);
+                    else Canvas.SetTop(sh, Canvas.GetTop(sh));
+                }
+
+                //else if (center_x > cn.Width) Canvas.SetLeft(newEl, Canvas.GetLeft(sh) - 2);
+                //else Canvas.SetLeft(newEl, Canvas.GetLeft(sh) + 2);
             }
             else
-            {
-                center_x = (int)(Canvas.GetLeft(sh) - diff_topleft_x + +((System.Windows.Shapes.Line)sh).X2 / 2);
-                center_y = (int)(Canvas.GetTop(sh) - diff_topleft_y + ((System.Windows.Shapes.Line)sh).Y2 / 2);
-
-                if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(sh, topleft_x - diff_topleft_x);
-                else Canvas.SetLeft(sh, Canvas.GetLeft(sh));
-
-                if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(sh, topleft_y - diff_topleft_y);
-                else Canvas.SetTop(sh, Canvas.GetTop(sh));
-            }
-
-
-
-
-            //else if (center_x > cn.Width) Canvas.SetLeft(newEl, Canvas.GetLeft(sh) - 2);
-            //else Canvas.SetLeft(newEl, Canvas.GetLeft(sh) + 2);
-
-
-
-            if (shapeComp == true)
             {
                 //Coordinate C_strt = new Coordinate(((float)strt.X), ((float)strt.Y));
                 //Coordinate C_strt = new Coordinate(((float)selectMouseDownPos.X), ((float)selectMouseDownPos.Y));
                 //Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
-
                 Coordinate C_strt = new Coordinate(((int)(cn.Height - selectMouseDownPos.Y)), ((int)selectMouseDownPos.X));
                 Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
 
@@ -1797,7 +1786,7 @@ namespace Client
             
 
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
-            this.GlobCanvas.IsEnabled = false;
+            //this.GlobCanvas.IsEnabled = false;
         }
 
         public void OnClientSessionChanged(SessionData session)
