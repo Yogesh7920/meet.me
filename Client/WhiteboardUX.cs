@@ -1770,6 +1770,8 @@ namespace Client
 
         private IUXClientSessionManager _modelDb;
 
+        private bool isSubscribedToWBState;
+
         public IWhiteBoardOperationHandler WBOps;
 
         private Dispatcher ApplicationMainThreadDispatcher =>
@@ -1799,7 +1801,9 @@ namespace Client
 
             this._numCheckpoints = 0;
             this._chk = new ObservableCollection<string>();
-            
+
+            //Initially not subscribed to WBStateManager
+            this.isSubscribedToWBState = false;
 
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
             this.GlobCanvas.IsEnabled = false;
@@ -1816,8 +1820,12 @@ namespace Client
                             {
                                 //this.manager = ClientBoardStateManager.Instance;
                                 //this.manager.Start();
-                                this.manager.Subscribe(this, "whiteboard");
-                                GlobCanvas.IsEnabled = false;
+                                if (!this.isSubscribedToWBState)
+                                {
+                                    this.manager.Subscribe(this, "whiteboard");
+                                    GlobCanvas.IsEnabled = false;
+                                    this.isSubscribedToWBState = true;
+                                }
                             }
                         }),
                         session);
@@ -2088,6 +2096,7 @@ namespace Client
                     //Case when new user joins and the whole state of server is sent to user
                     case Operation.FETCH_STATE:
 
+                        if (received[i].WindowsShape == null) continue;
                         ///
                         /// ASSUMING that this batch of server update contains ONLY AND ONLY Operation.FETCH_STATE requests
                         /// VERIFY THE ABOVE ASSUMPTION FROM ASHISH
