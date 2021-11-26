@@ -144,7 +144,7 @@ namespace Whiteboard
                 }
             }
         }
-        protected List<Coordinate> Points;
+        public List<Coordinate> Points;
 
         /// <summary>
         /// Add a coordinate to the list of points in the shape.

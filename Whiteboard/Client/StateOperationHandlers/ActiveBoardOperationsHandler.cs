@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/02/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
@@ -99,7 +99,7 @@ namespace Whiteboard
         public ActiveBoardOperationsHandler()
         {
             _lastDrawn = new LastDrawnDetails();
-            _stateManager = ClientBoardStateManager.Instance;
+            StateManager = ClientBoardStateManager.Instance;
             UserLevel = 0;
         }
 
@@ -272,7 +272,7 @@ namespace Whiteboard
                     prevShapeId = newUxShape.WindowsShape.Uid;
                     operations.Add(newUxShape);
 
-                    string userId = _stateManager.GetUser();
+                    string userId = StateManager.GetUser();
 
                     if (userId == null)
                     {
@@ -327,7 +327,7 @@ namespace Whiteboard
                     newBoardShape.LastModifiedTime = DateTime.Now;
                     newBoardShape.CreationTime = DateTime.Now;
 
-                    if (!_stateManager.SaveOperation(newBoardShape))
+                    if (!StateManager.SaveOperation(newBoardShape))
                     {
                         _lastDrawn = null;
                         return UndoRealTimeRenderingCreation(operations, alreadyDrawn, true);
@@ -434,7 +434,7 @@ namespace Whiteboard
                     BoardShape newBoardShape = _lastDrawn._shape.Clone();
                     newBoardShape.LastModifiedTime = DateTime.Now;
 
-                    if (!_stateManager.SaveOperation(newBoardShape))
+                    if (!StateManager.SaveOperation(newBoardShape))
                     {
                         _lastDrawn = null;
                         return UndoRealTimeRenderingModify(shapeId, operations);
@@ -493,7 +493,7 @@ namespace Whiteboard
         /// <param name="boardShape">Shape to update in stateManager.</param>
         private void UpdateStateManager(BoardShape boardShape)
         {
-            if (!_stateManager.SaveOperation(boardShape))
+            if (!StateManager.SaveOperation(boardShape))
             {
                 throw new Exception("Couldn't update state of state Manager.");
             }
@@ -541,7 +541,7 @@ namespace Whiteboard
         ///  <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> Undo()
         {
-            return _stateManager.DoUndo();
+            return StateManager.DoUndo();
         }
 
         /// <summary>
@@ -550,7 +550,7 @@ namespace Whiteboard
         ///  <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> Redo()
         {
-            return _stateManager.DoRedo();
+            return StateManager.DoRedo();
         }
     }
 }
