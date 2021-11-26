@@ -16,6 +16,7 @@ namespace Client
         //uncomment below lines after the respective user controls are done
         private static ChatView _chat;
         private static UsersList _userslist;
+        private ScreenShareClient SSClient;
         public MainWindow()
         {
             InitializeComponent();
@@ -29,6 +30,8 @@ namespace Client
             this.Chat.Content = _chat;
             _userslist = new UsersList(this);
             this.UsersListControl.Content = _userslist;
+
+            //SSClient = ScreenShareFactory.GetScreenSharer();
         }
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
         /// <summary>
@@ -110,9 +113,6 @@ namespace Client
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
             _ssFlag = true;
-            ScreenShareClient SSclient = new ScreenShareClient();
-            //ScreenShareClient SSclient = ScreenShareFactory.GetScreenSharer();
-
             if (!sharing)
             {
                 //SSclient.startSharing();
@@ -120,7 +120,7 @@ namespace Client
             }
             else
             {
-                SSclient.stopSharing();
+                //SSclient.StopSharing();
                 sharing = false;
             }
             //uncomment below line after respective User Controls are done
