@@ -815,13 +815,29 @@ namespace Testing.Content
             contentServer.Receive(serializer.Serialize(receiveMsgData3));
             MessageData msg3 = GetMsgFromCommunicator(fakeCommunicator, serializer, true, null);
             TestMsgDataFieldsServer(msg3, receiveMsgData3);
+
+            // reflect updates in sent messages as they should be in the database if the database functions correctly
+            // the messages will get newly generated ids in the database, so reflect those changes
+            receiveMsgData1.MessageId = msg1.MessageId;
+            receiveMsgData1.ReplyThreadId = msg1.ReplyThreadId;
+            receiveMsgData1.ReplyMsgId = msg1.ReplyMsgId;
+            // message 1 was later starred, so reflect that change
+            receiveMsgData1.Starred = !receiveMsgData1.Starred;
+
+            //similarly for message 2
+            receiveMsgData2.MessageId = msg2.MessageId;
+            receiveMsgData2.ReplyThreadId = msg2.ReplyThreadId;
+            receiveMsgData2.ReplyMsgId = msg2.ReplyMsgId;
+            // update message 2
+            receiveMsgData2.Message = "I am fine, How about u?";
+
             ChatContext c1 = new ChatContext();
             c1.ThreadId = msg1.ReplyThreadId;
-            c1.MsgList.Add(util.MessageDataToReceiveMessageData(starReplyMsg1));
+            c1.MsgList.Add(util.MessageDataToReceiveMessageData(receiveMsgData1));
             c1.MsgList.Add(util.MessageDataToReceiveMessageData(msg3));
             ChatContext c2 = new ChatContext();
             c2.ThreadId = msg2.ReplyThreadId;
-            c2.MsgList.Add(util.MessageDataToReceiveMessageData(updateReplyMsg2));
+            c2.MsgList.Add(util.MessageDataToReceiveMessageData(receiveMsgData2));
             chatList.Add(c1);
             chatList.Add(c2);
             iContentServer.SSendAllMessagesToClient(1003);

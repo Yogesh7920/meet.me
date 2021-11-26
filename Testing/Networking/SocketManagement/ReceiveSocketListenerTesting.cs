@@ -1,11 +1,9 @@
-﻿/*
-* Author: Tausif Iqbal
-* Created on: 01/11/2021
-* Summary: This file covers the unit tests
-*           for for the class ReceiveSocketListener.
-*/
+﻿/// <author>Tausif Iqbal</author>
+/// <created>01/11/2021</created>
+/// <summary>
+/// This file covers the unit tests for for the class ReceiveSocketListener.
+/// </summary>
 
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -118,10 +116,7 @@ namespace Testing.Networking.SocketManagement
                 _clientSocket.Client.Send(Encoding.ASCII.GetBytes(msg));
             }
 
-            while (_queue.Size() != 10)
-            {
-                Thread.Sleep(10);
-            }
+            while (_queue.Size() != 10) Thread.Sleep(10);
             for (var i = 1; i <= 10; i++)
             {
                 var whiteBoardData = "packet" + i;

@@ -1,10 +1,8 @@
-/*
- * Author: Tausif Iqbal
- * Created on: 13/10/2021
- * Modified on: 16/11/2021
- * Summary: This file contains the class definition of
- *          ReceiveSocketListener.
- */
+/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// This file contains the class definition of ReceiveSocketListener.
+/// </summary>
 
 using System;
 using System.Diagnostics;
@@ -51,6 +49,7 @@ namespace Networking
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            Trace.WriteLine("[Networking] ReceiveSocketListener thread started.");
         }
 
         /// <summary>
@@ -96,7 +95,7 @@ namespace Networking
                         var buffer = Encoding.ASCII.GetString(inStream);
                         buffer = buffer.Trim('\u0000');
                         message += buffer;
-                        int endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
+                        var endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
                         while (endIdx != -1)
                         {
                             var packetString = message[..endIdx];
@@ -110,7 +109,7 @@ namespace Networking
                 catch (Exception ex)
                 {
                     Trace.WriteLine(
-                        "Networking: An Exception has been raised in ReceiveSocketListenerClientThread "
+                        "[Networking] An Exception has been raised in ReceiveSocketListenerClient thread "
                         + ex.Message);
                 }
         }
@@ -122,6 +121,7 @@ namespace Networking
         public void Stop()
         {
             _listenRun = false;
+            Console.WriteLine("[Networking] Stopped ReceiveSocketListener thread.");
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Networking
         private void PushToQueue(string data, string moduleIdentifier)
         {
             var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = data};
-            Trace.WriteLine("SERVER/CLIENT : " + data);
+            Trace.WriteLine("[Networking] Received data: " + data);
             _queue.Enqueue(packet);
         }
     }
