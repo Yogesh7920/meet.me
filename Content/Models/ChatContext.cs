@@ -20,7 +20,10 @@ namespace Content
         /// <summary>
         ///     Number of messages in the thread
         /// </summary>
-        public int NumOfMessages;
+        public int NumOfMessages
+        {
+            get => MsgList.Count;
+        }
 
         /// <summary>
         ///     Id of the thread
@@ -34,7 +37,6 @@ namespace Content
         {
             CreationTime = new DateTime();
             MsgList = new List<ReceiveMessageData>();
-            NumOfMessages = 0;
             ThreadId = -1;
             messageIds = new Dictionary<int, int>();
         }
@@ -50,7 +52,6 @@ namespace Content
                     throw new ArgumentException("Thread id of a message can't be -1");
 
                 MsgList.Add(msg);
-                NumOfMessages++;
                 ThreadId = msg.ReplyThreadId;
                 CreationTime = msg.SentTime;
                 messageIds.Add(msg.MessageId, NumOfMessages - 1);
@@ -70,7 +71,6 @@ namespace Content
                     throw new ArgumentException("Message with given message id already exists in thread");
 
                 MsgList.Add(msg);
-                NumOfMessages++;
                 messageIds.Add(msg.MessageId, NumOfMessages - 1);
 
             }
@@ -111,6 +111,12 @@ namespace Content
                 throw new ArgumentException("Message with given message id doesn't exist in thread");
 
             return messageIds[messageId];
+        }
+
+        public bool ContainsMessageId(int messageId)
+        {
+            if (messageIds.ContainsKey(messageId)) return true;
+            else return false;
         }
 
         private bool MessageIsValid(string message)

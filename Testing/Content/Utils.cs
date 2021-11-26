@@ -108,13 +108,9 @@ namespace Testing.Content
 			ReceiveMessageData receivedMessage = message;
 
 			// add the message to the correct ChatContext in allMessages
-			var key = receivedMessage.ReplyThreadId;
 			List<ChatContext> sampleData = new List<ChatContext>();
 			var newContext = new ChatContext();
-			newContext.ThreadId = key;
-			newContext.MsgList.Add(receivedMessage);
-			newContext.NumOfMessages = 1;
-			newContext.CreationTime = receivedMessage.SentTime;
+			newContext.AddMessage(receivedMessage);
 
 			sampleData.Add(newContext);
 			return sampleData;
