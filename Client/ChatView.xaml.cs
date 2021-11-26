@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.ComponentModel;
 using Client.ViewModel;
 using System.Windows.Media;
+using System.IO;
 
 namespace Client
 {
@@ -113,18 +114,18 @@ namespace Client
             {
                 ChatViewModel viewModel = this.DataContext as ChatViewModel;
                 Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-                dlg.FileName = "Document"; // Default file name
-                dlg.DefaultExt = ".text"; // Default file extension
                 //dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
-
-                // Show save file dialog box
-                Nullable<bool> result = dlg.ShowDialog();
 
                 Button cmd = (Button)sender;
                 if (cmd.DataContext is Message)
                 {
                     Message m = (Message)cmd.DataContext;
-
+                    //dlg.FileName = "Document"; // Default file name
+                    //dlg.DefaultExt = ".text"; // Default file extension
+                    dlg.DefaultExt = Path.GetExtension(m.TextMessage);
+                    dlg.FileName = Path.GetFileNameWithoutExtension(m.TextMessage);
+                    // Show save file dialog box
+                    Nullable<bool> result = dlg.ShowDialog();
                     // Process save file dialog box results
                     if (result == true)
                     {
