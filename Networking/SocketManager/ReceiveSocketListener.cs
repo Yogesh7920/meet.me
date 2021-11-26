@@ -1,10 +1,8 @@
-/*
- * Author: Tausif Iqbal
- * Created on: 13/10/2021
- * Modified on: 16/11/2021
- * Summary: This file contains the class definition of
- *          ReceiveSocketListener.
- */
+/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// This file contains the class definition of ReceiveSocketListener.
+/// </summary>
 
 using System;
 using System.Diagnostics;
@@ -96,7 +94,7 @@ namespace Networking
                         var buffer = Encoding.ASCII.GetString(inStream);
                         buffer = buffer.Trim('\u0000');
                         message += buffer;
-                        int endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
+                        var endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
                         while (endIdx != -1)
                         {
                             var packetString = message[..endIdx];

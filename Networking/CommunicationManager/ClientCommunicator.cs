@@ -1,10 +1,8 @@
-﻿/*
- * Author: Tausif Iqbal
- * Created on: 13/10/2021
- * Modified on: 16/11/2021
- * Summary: This file contains the class definition of
- *          ClientCommunicator.
- */
+﻿/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+///     This file contains the class definition of ClientCommunicator.
+/// </summary>
 
 using System;
 using System.Collections.Generic;
@@ -130,7 +128,7 @@ namespace Networking
         /// <summary>
         ///     This method registers different handler
         /// </summary>
-        ///<returns> void </returns>
+        /// <returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             _subscribedModules.Add(identifier, handler);

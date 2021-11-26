@@ -1,10 +1,8 @@
-/*
- * Author: Tausif Iqbal
- * Created on: 13/10/2021
- * Modified on: 16/11/2021
- * Summary: This file contains the class definition of
- *          ServerCommunicator.
- */
+/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+///     This file contains the class definition of ServerCommunicator.
+/// </summary>
 
 using System;
 using System.Collections.Generic;
@@ -66,7 +64,7 @@ namespace Networking
             _serverSocket.Start();
 
             //start sendSocketListener of server for sending message 
-            _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket,_subscribedModules);
+            _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket, _subscribedModules);
             _sendSocketListenerServer.Start();
 
             _receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModules);
@@ -192,7 +190,7 @@ namespace Networking
         }
 
         /// <summary>
-        ///    This method registers different handler
+        ///     This method registers different handler
         /// </summary>
         /// <returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
@@ -253,18 +251,13 @@ namespace Networking
                 catch (SocketException e)
                 {
                     if (e.SocketErrorCode == SocketError.Interrupted)
-                    {
                         Trace.WriteLine("Socket blocking listener has been closed");
-                    }
                     else
-                    {
-                        Trace.WriteLine("Networking: An Exception has been raised in AcceptRequest :"+e);
-                    }
+                        Trace.WriteLine("Networking: An Exception has been raised in AcceptRequest :" + e);
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("Networking: An Exception has been raised in AcceptRequest :"+e);
-                    
+                    Trace.WriteLine("Networking: An Exception has been raised in AcceptRequest :" + e);
                 }
         }
     }

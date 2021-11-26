@@ -1,8 +1,8 @@
-﻿/*
- * Author: Alisetti Sai Vamsi
- * Created on: 27/10/2021
- * Summary: This file contains the class definition of ReceiveQueueListener.
- */
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>27/10/2021</created>
+/// <summary>
+/// This file contains the class definition of ReceiveQueueListener.
+/// </summary>
 
 using System.Collections.Generic;
 using System.Diagnostics;
