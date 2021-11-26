@@ -1,9 +1,8 @@
-/*
- * Author: Subhash S
- * Created on: 12/11/2021
- * Summary: This file contains some mock objects which can
- *          be used to simulate tests for the networking module.
- */
+/// <author>Subhash S</author>
+/// <created>12/11/2021</created>
+/// <summary>
+///     This file contains some mock objects which can be used to simulate tests for the networking module.
+/// </summary>
 
 using System;
 using System.Dynamic;
