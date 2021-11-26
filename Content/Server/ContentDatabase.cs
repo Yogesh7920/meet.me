@@ -18,7 +18,7 @@ namespace Content
         private readonly Dictionary<int, int> _messageMap;
 
         /// <summary>
-        /// Constructor for ContentDatabase, initilizes all the memeber variables.
+        /// Constructor for ContentDatabase, initilizes all the member variables.
         /// </summary>
         public ContentDatabase()
         {
@@ -72,23 +72,17 @@ namespace Content
                 int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
                 ChatContext chatContext = _chatContexts[threadIndex];
                 ReceiveMessageData msg = new(messageData);
-                chatContext.MsgList.Add(msg);
-                chatContext.NumOfMessages++;
+                chatContext.AddMessage(msg);
                 _messageMap[messageData.MessageId] = chatContext.NumOfMessages - 1;
             }
             // else create a new chatContext and add the message to it
             else
             {
-                ChatContext chatContext = new()
-                {
-                    CreationTime = messageData.SentTime,
-                    NumOfMessages = 1,
-                    MsgList = new List<ReceiveMessageData>(),
-                    ThreadId = IdGenerator.GetChatContextId()
-                };
-                messageData.ReplyThreadId = chatContext.ThreadId;
+                ChatContext chatContext = new ChatContext();
+                int newThreadId = IdGenerator.GetChatContextId();
+                messageData.ReplyThreadId = newThreadId;
                 ReceiveMessageData msg = new(messageData);
-                chatContext.MsgList.Add(msg);
+                chatContext.AddMessage(msg);
 
                 _messageMap[messageData.MessageId] = 0;
                 _chatContexts.Add(chatContext);
