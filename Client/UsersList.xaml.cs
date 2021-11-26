@@ -31,13 +31,11 @@ namespace Client
 
             users = new ObservableCollection<UserViewData>();
             UsersListView.ItemsSource = users;
-            users.Add(new UserViewData() { username = "Harikrishnan", shortname = "PS" });
-            users.Add(new UserViewData() { username = "Harikrishnan", shortname = "PS" });
         }
         private void Listener(object sender, PropertyChangedEventArgs e)
         {
             users = new ObservableCollection<UserViewData>(viewModelHomePage.users);
-            System.Diagnostics.Debug.WriteLine("Here");
+            UsersListView.ItemsSource = users;
         }
         private void UsersListClick(object sender, RoutedEventArgs e)
         {
