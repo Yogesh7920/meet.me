@@ -547,6 +547,83 @@ namespace Testing.Content
             }
         }
 
+        [Test]
+        public void OnReceive_ValidContextList_ShouldBeAbleToReplyToMessages()
+        {
+            // create a list of chat contexts
+            List<ChatContext> contexts = cClient.AllMessages;
+
+            // simulate the process of a new client joining and receiving all these messages
+            // reset and resubscribe
+            cClient.Reset();
+            cClient.UserId = userId;
+            cClient.Communicator = fakeComm;
+
+            cClient.CSubscribe(listener);
+
+            // simulate receiving all messages from the server
+            cClient.OnReceive(contexts);
+
+            // try to reply to a message from the messages received
+            SendMessageData reply = new SendMessageData();
+            reply.Message = "Hello";
+            reply.Type = MessageType.Chat;
+            reply.ReplyMsgId = chatmsg.ReplyMsgId;
+            reply.ReceiverIds = new int[0];
+
+            // use CSend to send reply
+            cClient.CSend(reply);
+
+            // capture sent data using fake communicator
+            string sentData = fakeComm.GetSentData();
+            MessageData sentMsg = serializer.Deserialize<MessageData>(sentData);
+
+            Assert.AreEqual(reply.Type, sentMsg.Type);
+            Assert.AreEqual(reply.Message, sentMsg.Message);
+            Assert.AreEqual(reply.ReplyMsgId, sentMsg.ReplyMsgId);
+            Assert.AreEqual(reply.ReceiverIds, sentMsg.ReceiverIds);
+            Assert.IsNull(sentMsg.FileData);
+            Assert.AreEqual(MessageEvent.NewMessage, sentMsg.Event);
+            Assert.AreEqual(false, sentMsg.Starred);
+            Assert.AreEqual(cClient.UserId, sentMsg.SenderId);
+
+        }
+
+        [Test]
+        public void OnReceive_ValidContextList_ShouldBeAbleToDownloadFiles()
+        {
+            // create a list of chat contexts
+            List<ChatContext> contexts = cClient.AllMessages;
+
+            // simulate the process of a new client joining and receiving all these messages
+            // reset and resubscribe
+            cClient.Reset();
+            cClient.UserId = userId;
+            cClient.Communicator = fakeComm;
+
+            cClient.CSubscribe(listener);
+
+            // simulate receiving all messages from the server
+            cClient.OnReceive(contexts);
+
+            // try to download a file from the messages
+            int messageId = filemsg.MessageId;
+            // a path that is writable (assuming directory with test file is writable)
+            string savepath = Path.GetDirectoryName(testfilepath) + Path.GetRandomFileName();
+
+            // request download and verify the data sent to the server (fake communicator) in this case
+            cClient.CDownload(messageId, savepath);
+
+            string sentData = fakeComm.GetSentData();
+            MessageData sentMsg = serializer.Deserialize<MessageData>(sentData);
+
+            // verify fields of sentMsg
+            Assert.AreEqual(MessageEvent.Download, sentMsg.Event);
+            Assert.AreEqual(messageId, sentMsg.MessageId);
+            Assert.AreEqual(cClient.UserId, sentMsg.SenderId);
+            Assert.AreEqual(savepath, sentMsg.Message);
+        }
+
         // OnReceive(MessageData) tests
 
         [Test]
