@@ -29,7 +29,7 @@ namespace Content
         public MessageData Receive(MessageData messageData)
         {
             ReceiveMessageData receiveMessageData;
-            Trace.WriteLine("[ContentServer] Received message from ContentServer");
+            Trace.WriteLine("[ChatContextServer] Received message from ContentServer");
             switch (messageData.Event)
             {
                 case MessageEvent.NewMessage:
@@ -47,7 +47,7 @@ namespace Content
                     break;
 
                 default:
-                    Trace.WriteLine($"Uknown Event {messageData.Event} for chat type.");
+                    Trace.WriteLine($"[ChatContextServer] Uknown Event {messageData.Event} for chat type.");
                     return null;
             }
 

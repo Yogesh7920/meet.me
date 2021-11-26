@@ -17,7 +17,7 @@ namespace Networking
     public class ReceiveSocketListener
     {
         // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 1025;
+        private const int Threshold = 500 * 1024;
 
         // Declare the TcpClient  variable 
         private readonly TcpClient _clientSocket;
@@ -70,7 +70,7 @@ namespace Networking
             var data = string.Join(":", msg[1..]);
 
             // search of EOF to get  end of the message
-            packet.SerializedData = data[..data.LastIndexOf("EOF", StringComparison.Ordinal)];
+            packet.SerializedData = data;
             return packet;
         }
 
@@ -92,19 +92,19 @@ namespace Networking
                     while (networkStream.DataAvailable)
                     {
                         var inStream = new byte[Threshold];
-                        networkStream.Read(inStream, 0, inStream.Length);
+                        _clientSocket.Client.Receive(inStream);
                         var buffer = Encoding.ASCII.GetString(inStream);
-                        for (var i = 0; i < Threshold; i++)
-                            if (buffer[i] != '\u0000')
-                            {
-                                message += buffer[i];
-                                if (!message.Contains("EOF")) continue;
-                                //Calls GetPacket method to form packet object out of received message
-                                var packet = GetPacket(message.Split(":"));
-                                //Calls the PushToQueue method to push packet into queue
-                                PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
-                                message = "";
-                            }
+                        buffer = buffer.Trim('\u0000');
+                        message += buffer;
+                        int endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
+                        while (endIdx != -1)
+                        {
+                            var packetString = message[..endIdx];
+                            message = message[(endIdx + 3)..];
+                            endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
+                            var packet = GetPacket(packetString.Split(":"));
+                            PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
+                        }
                     }
                 }
                 catch (Exception ex)
