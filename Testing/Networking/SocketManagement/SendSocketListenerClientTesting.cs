@@ -110,7 +110,10 @@ namespace Testing.Networking.SocketManagement
             }
 
 
-            Thread.Sleep(100);
+            while (_queueR.Size() != 10)
+            {
+                Thread.Sleep(10);
+            }
             for (var i = 1; i <= 10; i++)
             {
                 var whiteBoardData = "packet" + i;
