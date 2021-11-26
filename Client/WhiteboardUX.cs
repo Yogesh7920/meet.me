@@ -16,6 +16,8 @@ using System.Windows.Documents;
 using System.Windows.Threading;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using Dashboard.Client.SessionManagement;
+using Dashboard;
 
 namespace Client
 {
@@ -1700,13 +1702,29 @@ namespace Client
     /// <summary>
     /// View Model of Whiteboard in MVVM design pattern 
     /// </summary>
-    public class WhiteBoardViewModel : IClientBoardStateListener, INotifyPropertyChanged
+    public class WhiteBoardViewModel : IClientBoardStateListener, INotifyPropertyChanged, IClientSessionNotifications
     {
         //To be bound to the number of "Checkpoint #n" in Restore Checkpoint dropdown in Whiteboard.xaml
         private int _numCheckpoints;
         //private List<string> ckptList;
         public ObservableCollection<string> _chk;
         private bool testing;
+
+        public void OnClientSessionChanged(SessionData session)
+        {
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<SessionData>((session) =>
+                        {
+                            lock (this)
+                            {
+                                //this.manager = ClientBoardStateManager.Instance;
+                                //this.manager.Start();
+                                this.manager.Subscribe(this, "whiteboard");
+                            }
+                        }),
+                        session);
+        }
 
         private void OnPropertyChanged(string property)
         {
@@ -1784,8 +1802,7 @@ namespace Client
             if (!testing)
             {
                 this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
-                this.manager = ClientBoardStateManager.Instance;
-                this.manager.Start();
+                this.manager.Subscribe();
             }
 
             this.shapeManager = new ShapeManager(testing : this.testing);
