@@ -966,6 +966,7 @@ namespace Client
         /// </summary>
         public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
         {
+            if (shps == null || shps.Count() == 0) return cn;
 
             //UXShape has attribute
             foreach (UXShape shp in shps)
@@ -1465,6 +1466,7 @@ namespace Client
         /// </summary>
         public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
         {
+            if (shps == null || shps.Count() == 0) return cn;
 
             //UXShape has attribute
             foreach (UXShape shp in shps)
