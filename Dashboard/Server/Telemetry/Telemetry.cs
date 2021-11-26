@@ -8,8 +8,21 @@ namespace Dashboard.Server.Telemetry{
     ///<summary>
     /// All analytics are done in this class
     ///</summary>
-    public class Telemetry: ITelemetry
+    public class Telemetry: ITelemetry, ITelemetryNotifications
     {
+        /// <summary>
+        /// Constructor which will make the Telemetry subscribe to Session Manager
+        /// </summary>
+        public Telemetry()
+        {
+             _sm.Subscribe(this);
+        }
+
+        public Telemetry(ITelemetrySessionManager sessionManager)
+        {
+            sessionManager.Subscribe(this);
+        }
+
         /// <summary>
         ///     constructs a dictionary with DateTime as key and int as value
         ///     which indicates UserCount at corresponding DateTime 
@@ -19,9 +32,8 @@ namespace Dashboard.Server.Telemetry{
         ///     and whenever the session data changes, Telemetry get notified, 
         ///     based on it timestamp can be stored.
         /// </params>
-        public void GetUserCountVsTimeStamp(SessionData newSession)
+        public void GetUserCountVsTimeStamp(SessionData newSession, DateTime currTime)
         {
-            DateTime currTime = DateTime.Now;
             userCountAtEachTimeStamp[currTime] = newSession.users.Count;
         }
 
@@ -30,13 +42,17 @@ namespace Dashboard.Server.Telemetry{
         ///     indicating chat count of each user.
         /// </summary>
         /// <params name="allMessages"> Takes array of ChatContext object which contains information about Threads </params>
-        void GetUserVsChatCount(ChatContext[] allMessages)
+        public void GetUserVsChatCount(ChatContext[] allMessages)
         {
             foreach(ChatContext currThread in allMessages)
             {
                 foreach(ReceiveMessageData currMessage in currThread.MsgList)
                 {
-                    userIdChatCountDic[currMessage.SenderId]++;
+                    if(userIdChatCountDic.ContainsKey(currMessage.SenderId)) userIdChatCountDic[currMessage.SenderId]++;
+                    else
+                    {
+                        userIdChatCountDic.Add(currMessage.SenderId, 1);
+                    }
                 }
             }
         }
@@ -46,9 +62,8 @@ namespace Dashboard.Server.Telemetry{
         ///     changes, that means any user has either entered or exited.
         /// </summary>
         /// <params name="newSession"> Takes the session data which contains the list of users </params>
-        public void CalculateEnterExitTimes(SessionData newSession)
+        public void CalculateEnterExitTimes(SessionData newSession, DateTime currTime)
         {
-            DateTime currTime= DateTime.Now;
             foreach(UserData user_i in newSession.users )
             {
                 if(userEnterTime.ContainsKey(user_i)==false)
@@ -74,9 +89,10 @@ namespace Dashboard.Server.Telemetry{
             {
                 UserData  currUser = user_i.Key;
                 // if difference of exit and enter time is less than 30 min.
-                if(userExitTime[currUser].Subtract(user_i.Value).TotalMinutes<30)
+                if(userExitTime.ContainsKey(currUser) && userExitTime[currUser].Subtract(user_i.Value).TotalMinutes<30)
                 {
-                    insincereMembers.Add(currUser.userID);
+                    int id = currUser.userID;
+                    insincereMembers.Add(id);
                 }
             }
         }
@@ -100,13 +116,24 @@ namespace Dashboard.Server.Telemetry{
         }
 
         /// <summary>
+        ///     To get any change in the SessionData, overloaded for testing
+        /// </summary>
+        /// <params name="newSession"> Received new SessionData </params>
+        public void OnAnalyticsChanged(SessionData newSession, DateTime time)
+        {
+            GetUserCountVsTimeStamp(newSession, time);
+            CalculateEnterExitTimes(newSession, time);
+        }
+
+        /// <summary>
         ///     To get any change in the SessionData
         /// </summary>
         /// <params name="newSession"> Received new SessionData </params>
-        void OnAnalyticsChanged(SessionData newSession)
+        public void OnAnalyticsChanged(SessionData newSession)
         {
-            GetUserCountVsTimeStamp(newSession);
-            GetInsincereMembers();
+            DateTime time = DateTime.Now;
+            GetUserCountVsTimeStamp(newSession, time);
+            CalculateEnterExitTimes(newSession, time);
         }
 
         /// <summary>
@@ -117,6 +144,7 @@ namespace Dashboard.Server.Telemetry{
         {
             // save the session data
             GetUserVsChatCount(allMessages);
+            GetInsincereMembers();
             SessionAnalytics sessionAnalyticsToSave = new SessionAnalytics();
             sessionAnalyticsToSave.chatCountForEachUser=userIdChatCountDic;
             sessionAnalyticsToSave.userCountAtAnyTime= userCountAtEachTimeStamp;
@@ -142,6 +170,8 @@ namespace Dashboard.Server.Telemetry{
         /// </returns>
         public SessionAnalytics GetTelemetryAnalytics(ChatContext[] allMessages)
         {
+            GetUserVsChatCount(allMessages);
+            GetInsincereMembers();
             SessionAnalytics sessionAnalyticsToSend = new SessionAnalytics();
             sessionAnalyticsToSend.chatCountForEachUser=userIdChatCountDic;
             sessionAnalyticsToSend.userCountAtAnyTime= userCountAtEachTimeStamp;
@@ -149,11 +179,12 @@ namespace Dashboard.Server.Telemetry{
             return sessionAnalyticsToSend;
         }
 
-        Dictionary<DateTime, int> userCountAtEachTimeStamp = new Dictionary<DateTime, int>();
-        Dictionary<UserData,DateTime> userEnterTime=new Dictionary<UserData, DateTime>();
-        Dictionary<UserData,DateTime> userExitTime=new Dictionary<UserData, DateTime>();
-        Dictionary<int, int> userIdChatCountDic= new Dictionary<int, int>();
-        List<int> insincereMembers;
+        public Dictionary<DateTime, int> userCountAtEachTimeStamp = new Dictionary<DateTime, int>();
+        public Dictionary<UserData,DateTime> userEnterTime=new Dictionary<UserData, DateTime>();
+        public Dictionary<UserData,DateTime> userExitTime=new Dictionary<UserData, DateTime>();
+        public Dictionary<int, int> userIdChatCountDic= new Dictionary<int, int>();
+        public List<int> insincereMembers= new List<int>();
         private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
+        private ITelemetrySessionManager _sm = SessionManagerFactory.GetServerSessionManager();
     }
 }
