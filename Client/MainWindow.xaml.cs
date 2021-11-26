@@ -275,7 +275,7 @@ namespace Client
         private void OnLeaveButtonClicked(object sender, RoutedEventArgs e)
         {
             //uncomment below line after UsersList User Control is done
-            //_userslist.OnLeaveButtonClick();
+            _userslist.OnLeaveButtonClick();
         }
 
         private bool _chatFlag = false;

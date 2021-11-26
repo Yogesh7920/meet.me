@@ -20,8 +20,8 @@ namespace Testing.UX.Home
         {
             // Arrange
             SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("Hari", 111801043);
-            UserData sampleUser2 = new UserData("Irene", 111801017);
+            UserData sampleUser1 = new UserData("Hari1", 1);
+            UserData sampleUser2 = new UserData("Hari2", 2);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
 
