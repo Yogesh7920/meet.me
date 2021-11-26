@@ -1816,12 +1816,12 @@ namespace Client
                         DispatcherPriority.Normal,
                         new Action<SessionData>((session) =>
                         {
-                            lock (this)
+                            lock (this) 
                             {
-                                //this.manager = ClientBoardStateManager.Instance;
-                                //this.manager.Start();
                                 if (!this.isSubscribedToWBState)
                                 {
+                                    //When this notification occurs, Dashboard has initialised the WhiteboardStateManager properly and we can finally subscribe to it
+                                    //It is essential that this .Subscribe() method is only called once for a Whiteboard UX ViewModel
                                     this.manager.Subscribe(this, "whiteboard");
                                     GlobCanvas.IsEnabled = false;
                                     this.isSubscribedToWBState = true;
@@ -1963,7 +1963,10 @@ namespace Client
                     DispatcherPriority.Normal,
                     new Action<List<UXShape>>((received) =>
                     {
-                        lock (this)
+                        //Locking on this.shapeManager & this.freeHand and not on `this`, because `this` is the ViewModel which also contains Canvas, so there is a chance that 
+                        // while temporary rendering is occuring, there might be cases that a server update occurs and the below lock is acquired, due to whic
+                        // this.GlobCanvas would be locked too and the dragged shape's rendering would be abrupt.
+                        lock (this.shapeManager) lock (this.freeHand)
                         {
                             processServerUpdateBatch(received);
                         }
@@ -2056,6 +2059,7 @@ namespace Client
             //WE ASSUME that an update batch can only have either no FETCH_STATE requests, or all FETCH_STATE requests
             IEnumerable<UXShape> iterat2 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_STATE);
             if (!testing) Debug.Assert(iterat2.Count() == 0 || iterat2.Count() == received.Count());
+
             if (received[0].OperationType == Operation.FETCH_STATE)
             {
                 //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor
