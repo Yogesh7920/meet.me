@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
@@ -40,6 +41,7 @@ namespace Networking
         /// <returns> String </returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
+            if (Environment.GetEnvironmentVariable("isTesting") == "true") return "";
             try
             {
                 //try to connect with server
@@ -108,6 +110,10 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
+            if (Environment.GetEnvironmentVariable("isTesting") == "true")
+            {
+                File.WriteAllText("networking_output.json", data);
+            }
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {

@@ -56,6 +56,7 @@ namespace Networking
         /// <returns> String</returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
+            if (Environment.GetEnvironmentVariable("isTesting") == "true") return "";
             var ip = IPAddress.Parse(GetLocalIpAddress());
             var port = FreeTcpPort(ip);
             _serverSocket = new TcpListener(ip, port);
