@@ -31,7 +31,7 @@ namespace Content
         public int ThreadId;
 
         // dictionary mapping message id to its index in MsgList
-        private Dictionary<int, int> messageIds;
+        public Dictionary<int, int> messageIds;
 
         public ChatContext()
         {
