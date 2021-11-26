@@ -247,6 +247,20 @@ namespace Testing.Dashboard
             Directory.Delete("../../../Persistence",true);
         }
 
+        [Test]
+        public void EndMeetingProcedure_MeetingEndsWhenOnlyOneUser_SaveServerAnalytics()
+        {
+            int expectedUsers = 1;
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            List<UserData> users = Utils.GenerateUserData(expectedUsers);
+            AddUsersAtServer(users);
+            ClientToServerData sampleClientRequest = new("endMeet", users[0].username, users[0].userID);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            string serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            Assert.IsTrue(File.Exists(Path.Combine(serverDataPath, "GlobalServerData.xml")));
+            Directory.Delete("../../../Persistence", true);
+        }
+
 
         [Test]
         public void EndMeetingProcedure_MeetingEnds_SendEndMeetingEventToClients()

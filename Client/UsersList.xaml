@@ -36,7 +36,7 @@
             <ListView x:Name="UsersListView" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="{DynamicResource Color1Bg}" Foreground="White" BorderThickness="0" MaxHeight="750">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Margin="0 5" Height="30">
+                        <StackPanel Margin="0 5" Height="30" Orientation="Horizontal">
                             <Border Height="25" Width="25" BorderBrush="Gainsboro" BorderThickness="1" Background="White" CornerRadius="20">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Margin="5" Text="{Binding shortname}"/>
                             </Border>

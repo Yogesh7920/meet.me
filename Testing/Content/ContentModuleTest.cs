@@ -106,7 +106,7 @@ namespace Testing.Content
             SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] { 1002 }, replyId: 101);
             contentClient.UserId = userId;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
-            Assert.AreEqual(ex.Message.Contains("Thread with given thread id"), true);
+            Assert.That(ex.Message.Contains("thread id"));
         }
 
         [Test]
@@ -604,18 +604,49 @@ namespace Testing.Content
         /// This test will check INotification handler for content client and IListener which will be used by UX in case of single msg arrival from server
         /// </summary>
         [Test]
-        public void OnDataReceived_NewMessage_SameMsgShouldReceivedToSubscriber()
+        public void OnDataReceived_NewMessageWithReply_SameMsgShouldReceivedToSubscriber()
         {
-            // Subscribing to communicator
-            fakeCommunicator.Subscribe("Content", notificationHandler);
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator newFakeCommunicator = new FakeCommunicator();
+            contentClient.Communicator = newFakeCommunicator;
+            int userId = 1001;
+            contentClient.UserId = userId;
+            IContentClient iContentClient = contentClient;
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
-            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 400, ReplyThreadId: 1);
-            fakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
-            System.Threading.Thread.Sleep(10);
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 489, ReplyThreadId: 1);
+            newFakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
+            System.Threading.Thread.Sleep(50);
             // Fetching listened data from listener
             ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
             Assert.AreEqual(listenedData.Message, dataToSerialize.Message);
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] {}, type: MessageType.Chat);
+            MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?", new int[] {}, type: MessageType.Chat);
+            sampleData.ReplyMsgId = listenedData.MessageId;
+            sampleMsgData.ReplyMsgId = listenedData.MessageId;
+            sampleData.ReplyThreadId = listenedData.ReplyThreadId;
+            sampleMsgData.ReplyThreadId = listenedData.ReplyThreadId;
+            contentClient.CSend(sampleData);
+            System.Threading.Thread.Sleep(50);
+            var sendSerializedMsg = newFakeCommunicator.GetSentData();
+            var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
+            if (deserialized is MessageData)
+            {
+                var receivedMessage = deserialized as MessageData;
+                Assert.AreEqual(receivedMessage.Message, sampleMsgData.Message);
+                Assert.AreEqual(receivedMessage.Event, MessageEvent.NewMessage);
+                Assert.AreEqual(receivedMessage.Type, sampleMsgData.Type);
+                Assert.AreEqual(receivedMessage.FileData, sampleMsgData.FileData);
+                Assert.AreEqual(receivedMessage.Starred, sampleMsgData.Starred);
+                Assert.AreEqual(receivedMessage.ReplyThreadId, sampleMsgData.ReplyThreadId);
+                Assert.AreEqual(receivedMessage.SenderId, userId);
+                Assert.AreEqual(receivedMessage.ReceiverIds.Length, sampleMsgData.ReceiverIds.Length);
+                Assert.AreEqual(receivedMessage.ReplyMsgId, sampleMsgData.ReplyMsgId);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         /// <summary>
@@ -684,7 +715,7 @@ namespace Testing.Content
             iContentClient.CSubscribe(iFakeListener);
             ReceiveMessageData dataToSerialize1 = util.GenerateNewReceiveMessageData("Hello", MessageId: 1, ReplyThreadId: 1);
             ReceiveMessageData dataToSerialize2 = util.GenerateNewReceiveMessageData("Hi", MessageId: 2, ReplyThreadId: 2);
-            ReceiveMessageData dataToSerialize3 = util.GenerateNewReceiveMessageData("How are you? I am fine!", MessageId: 2, ReplyThreadId: 1);
+            ReceiveMessageData dataToSerialize3 = util.GenerateNewReceiveMessageData("How are you? I am fine!", MessageId: 3, ReplyThreadId: 1);
             ChatContext chatList1 = new ChatContext();
             chatList1.ThreadId = 1;
             chatList1.MsgList.Add(dataToSerialize1);
@@ -697,7 +728,6 @@ namespace Testing.Content
             listCContext.Add(chatList2);
             string SerializedStr = serializer.Serialize(listCContext);
             fakeCommunicator.Notify(SerializedStr);
-            
             System.Threading.Thread.Sleep(10);
             List<ChatContext> listenedData = fakeListener.GetOnAllMessagesData();
             for(int i=0; i<listenedData.Count; i++)

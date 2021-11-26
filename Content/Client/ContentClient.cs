@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Content
 {
@@ -92,22 +93,33 @@ namespace Content
             {
                 // clear context map
                 _contextMap = new Dictionary<int, int>();
+                // clear message id map
+                _messageIdMap = new Dictionary<int, int>();
 
                 // set _allMessages
                 _allMessages = allMessages;
 
-                // rebuild mapping
+                // rebuild mappings
                 int len = _allMessages.Count;
                 for (int i = 0; i < len; i++)
                 {
-                    // key
-                    int threadId = _allMessages[i].ThreadId;
+                    ChatContext context = _allMessages[i];
+                    // mapping for _contextMap
+                    int threadId = context.ThreadId;
                     // value is the index, which is the loop index i
                     // add key value pair to dictionary
                     _contextMap.Add(threadId, i);
+
+                    // now for the mapping of messages to thread id, i.e _messageIdMap
+                    foreach(ReceiveMessageData msg in context.MsgList)
+                    {
+                        // key is message id and value is thread id
+                        _messageIdMap.Add(msg.MessageId, threadId);
+                    }
                 }
             }
         }
+
 
         // interface functions
 
@@ -124,11 +136,28 @@ namespace Content
             if (toSend.ReceiverIds is null)
                 throw new ArgumentException("List of receiver ids given is null");
 
-            // if the message is part of a thread, ensure thread exists
+            // if the message is part of a thread
             if (toSend.ReplyThreadId != -1)
+            {
+                //  ensure thread exists
                 if (!_contextMap.ContainsKey(toSend.ReplyThreadId))
-                    throw new ArgumentException($"Thread with given thread id ({toSend.ReplyThreadId}) doesn't exist");
+                    throw new ArgumentException($"Thread with given reply thread id ({toSend.ReplyThreadId}) doesn't exist");
+            }
 
+            // if the message is a reply
+            if (toSend.ReplyMsgId != -1)
+            {
+                // validate the reply message id
+                ValidateSentReplyMsgId(toSend.ReplyMsgId, toSend.ReplyThreadId);
+
+                // modify the receiver ids to the intersection of given recipients and the precursor message's recipients
+                // this way, the privacy level of the precursor message is preserved
+                ReceiveMessageData precursorMessage = RetrieveMessage(toSend.ReplyMsgId);
+                if (precursorMessage is null)
+                    throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
+                toSend.ReceiverIds = ReceiverIntersection(precursorMessage.ReceiverIds, toSend.ReceiverIds);
+            }
+                
             switch (toSend.Type)
             {
                 case MessageType.Chat:
@@ -154,27 +183,16 @@ namespace Content
                 throw new ArgumentException("Given file path is not writable");
 
             // check that the message with ID messageID exists and is indeed a file
-            var found = 0;
-            foreach (var chatThread in _allMessages)
-            {
-                foreach (var msg in chatThread.MsgList)
-                    if (msg.MessageId == messageId)
-                    {
-                        found = 1;
-                        if (msg.Type != MessageType.File)
-                            throw new ArgumentException("Invalid message ID: Message requested for download is not a file type message");
-                        break;
-                    }
-
-                if (found == 1)
-                    break;
-            }
-
-            if (found == 0)
+            ReceiveMessageData msg = RetrieveMessage(messageId);
+            
+            if (msg is null)
             {
                 Trace.WriteLine("[ContentClient] File requested for download not found");
                 throw new ArgumentException("Message with given message ID not found");
             }
+
+            if (msg.Type != MessageType.File)
+                throw new ArgumentException("Invalid message ID: Message requested for download is not a file type message");
 
             _fileHandler.Download(messageId, savePath);
         }
@@ -273,7 +291,6 @@ namespace Content
             // in case there is any file data associated with the message (there shouldn't be)
             // make file data null
             if (message.FileData != null) message.FileData = null;
-
             ReceiveMessageData receivedMessage = message;
 
             // check if message id isn't a duplicate
@@ -285,13 +302,20 @@ namespace Content
             if (key == -1)
                 throw new ArgumentException("Reply thread id of received message cannot be -1");
 
-            // add message id to the set of message ids
-            _messageIdMap.Add(receivedMessage.MessageId, key);
+            // if the message is a reply, ensure that the message being replied to exists
+            if (message.ReplyMsgId != -1)
+            {
+                ValidateReceivedReplyMsgId(receivedMessage.ReplyMsgId, receivedMessage.ReplyThreadId);
+            }
 
             // add the message to the correct ChatContext in allMessages
             // use locks because the list of chat contexts may be shared across multiple threads
             lock (_lock)
             {
+
+                // add message id to the set of message ids
+                _messageIdMap.Add(receivedMessage.MessageId, key);
+
                 if (_contextMap.ContainsKey(key))
                 {
                     var index = _contextMap[key];
@@ -336,7 +360,6 @@ namespace Content
                     string newMessage = receivedMessage.Message;
                     _allMessages[index].UpdateMessage(messageId, newMessage);
                 }
-
             }
             else
             {
@@ -468,6 +491,47 @@ namespace Content
                 _contextMap = new Dictionary<int, int>();
                 _messageIdMap = new Dictionary<int, int>();
             }
+        }
+
+        private void ValidateSentReplyMsgId(int replyMsgId, int threadId)
+        {
+            // ensure the message being replied to exists
+            if (!_messageIdMap.ContainsKey(replyMsgId))
+                throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
+
+            if (threadId != -1)
+            {
+                // check equality with the thread id of the message being replied to
+                if (_messageIdMap[replyMsgId] != threadId)
+                    throw new ArgumentException("Invalid reply message id and thread id combination: Message being replied to is part of a different thread than the reply");
+            }
+        }
+
+        private void ValidateReceivedReplyMsgId(int replyMsgId, int threadId)
+        {
+            if (!_messageIdMap.ContainsKey(replyMsgId))
+                throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
+
+            // if the received message is part of a new thread, no check required
+            if (!_contextMap.ContainsKey(threadId))
+                return;
+
+            // otherwise check equality with the thread id of the message being replied to
+            if (_messageIdMap[replyMsgId] != threadId)
+                throw new ArgumentException("Invalid reply message id and thread id combination: Message being replied to is part of a different thread than the reply");
+        }
+
+        private int[] ReceiverIntersection(int[] receivers1, int[] receivers2)
+        {
+            // special case for empty array, which means broadcast, so the intersection is just the other array
+            if (receivers1.Length == 0)
+                return receivers2;
+            if (receivers2.Length == 0)
+                return receivers1;
+
+            // take intersection
+            int[] intersection = receivers1.Intersect(receivers2).ToArray();
+            return intersection;
         }
     }
 }
