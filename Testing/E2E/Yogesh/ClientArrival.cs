@@ -26,6 +26,7 @@ namespace Testing.E2E.Yogesh
             _clientCommunicator = CommunicationFactory.GetCommunicator();
             _serverCommunicator = CommunicationFactory.GetCommunicator(false);
             _meetingCredentials = _serverSessionManager.GetPortsAndIPAddress();
+            _chatViewModel = new ChatViewModel();
             _authViewModel = new AuthViewModel();
             _authViewModel.SendForAuth(_meetingCredentials.ipAddress, _meetingCredentials.port, "Yogesh");
             Thread.Sleep(1000);
@@ -41,7 +42,7 @@ namespace Testing.E2E.Yogesh
         [Test]
         public void UserAdded()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             var users = _chatViewModel.Users;
             var added = users.Values.Contains("Yogesh");
             Assert.IsTrue(added);
