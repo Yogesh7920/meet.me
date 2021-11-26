@@ -9,6 +9,7 @@
 using Content;
 using Dashboard.Server.Summary;
 using NUnit.Framework;
+using System.IO;
 
 namespace Testing.Dashboard.Summary
 {
@@ -68,6 +69,7 @@ namespace Testing.Dashboard.Summary
 		{
 			ChatContext[] chats = Utils.GetChatContext("General chat");
 			Assert.AreEqual(_summarizer.SaveSummary(chats), true);
+			Directory.Delete("../../../Persistence", true);
 		}
 
 		private ISummarizer _summarizer;

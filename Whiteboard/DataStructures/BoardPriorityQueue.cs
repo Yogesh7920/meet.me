@@ -209,6 +209,7 @@ namespace Whiteboard
 
                 // putting the last element at root, then remove it from the queue and call Heapify on the root. 
                 _queue[0] = _queue[GetSize() - 1];
+                _queue[0].Index = 0;
                 _queue.RemoveAt(GetSize() - 1);
                 Trace.WriteLine("Whiteboard.BoardPriorityQueue.Extract: Replaced the top with last element. Calling heapify on root.");
                 Heapify(0);
@@ -233,7 +234,7 @@ namespace Whiteboard
             if (index < BoardConstants.EMPTY_SIZE || index >= GetSize())
             {
                 Trace.WriteLine("Whiteboard.BoardPriorityQueue.IncreaseTimestamp: Index out of range.");
-                throw new IndexOutOfRangeException("Element index in the queue. IncreaseTimestamp failed.");
+                throw new IndexOutOfRangeException("Element index not in the queue. IncreaseTimestamp failed.");
             }
 
             if(queueElement.Timestamp > dateTime)

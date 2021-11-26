@@ -10,13 +10,11 @@ using Dashboard;
 using Dashboard.Client.SessionManagement;
 using Client;
 
-namespace Client.ViewModels
+namespace Client.ViewModel
 {
-
     class HomePageViewModel : IClientSessionNotifications
     {
-        private IUXClientSessionManager _model;
-
+        int userid;
         public List<UserViewData> users
         {
             get; private set;
@@ -24,15 +22,16 @@ namespace Client.ViewModels
         public HomePageViewModel()
         {
             _model = SessionManagerFactory.GetClientSessionManager();
-         //   _model.SubscribeSession(this, identifier);
+            _model.SubscribeSession(this);
+            users = new List<UserViewData>();
+            userid = ChatViewModel.UserId;
         }
 
         public void OnClientSessionChanged(SessionData session)
         {
-
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<List<UserViewData>>((users) =>
+                        new Action<SessionData>((session) =>
                         {
                             lock (this)
                             {
@@ -41,13 +40,18 @@ namespace Client.ViewModels
                                 {
                                     UserViewData usernew = new UserViewData();
                                     usernew.username = user.username;
+                                    if(user.userID == userid)
+                                    {
+                                        usernew.username += " (You)";
+                                    }
                                     usernew.shortname = user.username.Substring(0,2);
                                     users.Add(usernew);
+                                    System.Diagnostics.Debug.WriteLine(user.username);
                                 }
-                                this.OnPropertyChanged("ListChanged");
+                                OnPropertyChanged("ListChanged");
                             }
                         }),
-                        users);
+                        session);
         }
 
         public void LeftClient()
@@ -55,7 +59,7 @@ namespace Client.ViewModels
             _model.RemoveClient();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler UsersListChanged;
 
         /// <summary>
         /// Handles the property changed event raised on a component.
@@ -63,13 +67,13 @@ namespace Client.ViewModels
         /// <param name="property">The name of the property.</param>
         private void OnPropertyChanged(string property)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            UsersListChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
         private Dispatcher ApplicationMainThreadDispatcher =>
             (Application.Current?.Dispatcher != null) ?
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
 
-        private const string identifier = "UsersList";
+        private IUXClientSessionManager _model;
     }
 }
