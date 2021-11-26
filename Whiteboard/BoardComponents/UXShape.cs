@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/25/2021
 **/
 
 using System;
@@ -100,8 +100,6 @@ namespace Whiteboard
             }
             else if (s.ShapeIdentifier == ShapeType.LINE)
             {
-                Coordinate dir = s.Center - s.Start;
-
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
                     Y1 = s.Center.R,
@@ -167,5 +165,22 @@ namespace Whiteboard
         {
         }
 
+
+        public static UXShape ToUXShape(UXShapeHelper uXShapeHelper)
+        {
+            return uXShapeHelper.MainShapeDefiner == null
+                ? (new(uXShapeHelper.CheckpointNumber, uXShapeHelper.OperationType))
+                : (new(uXShapeHelper.UxOperation, uXShapeHelper.MainShapeDefiner, uXShapeHelper.ShapeId, uXShapeHelper.CheckpointNumber, uXShapeHelper.OperationType));
+        }
+
+        public static List<UXShape> ToUXShape(List<UXShapeHelper> uXShapeHelpers)
+        {
+            List<UXShape> uXShapes = new();
+            for (int i = 0; i < uXShapeHelpers.Count; i++)
+            {
+                uXShapes.Add(ToUXShape(uXShapeHelpers[i]));
+            }
+            return uXShapes;
+        }
     }
 }
