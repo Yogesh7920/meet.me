@@ -1824,6 +1824,7 @@ namespace Client
                                     this.manager.Subscribe(this, "whiteboard");
                                     this.GlobCanvas.IsEnabled = false;
                                     this.isSubscribedToWBState = true;
+                                }
                             }
                         }),
                         session);
@@ -1942,6 +1943,12 @@ namespace Client
         {
             //throw new NotImplementedException();
             manager.SaveCheckpoint();
+        }
+
+        public Canvas DeleteShape(Canvas cn)
+        {
+            cn = this.shapeManager.DeleteShape(cn, WBOps);
+            return cn;
         }
 
         /// <summary>
@@ -2148,6 +2155,19 @@ namespace Client
                         else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
 
                         break;
+                    case Operation.CREATE:
+                        //If the operation is MODIFY, directly render it onto the Canvas
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        break;
+                    case Operation.DELETE:
+                        //If the operation is MODIFY, directly render it onto the Canvas
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        break;
+
                 }
             }
         }

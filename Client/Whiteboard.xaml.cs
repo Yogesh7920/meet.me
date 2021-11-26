@@ -1020,7 +1020,7 @@ namespace Client
             activeSelectToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             activeSelectToolbarButton.ClearValue(Button.BackgroundProperty);
             //viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
-            GlobCanvas = viewModel.shapeManager.DeleteSelectedShapes(GlobCanvas, viewModel.WBOps);
+            GlobCanvas = viewModel.DeleteShape(GlobCanvas);
             return;
         }
 
