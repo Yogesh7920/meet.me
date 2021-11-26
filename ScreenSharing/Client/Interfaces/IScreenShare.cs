@@ -5,6 +5,8 @@
  * date modified: 14/10/2021
 **/
 
+using System.Drawing;
+
 namespace ScreenSharing
 {
     /// <summary>
@@ -16,6 +18,6 @@ namespace ScreenSharing
         ///     handles the reception of update from screen share client.
         /// </summary>
         /// <param name="screen">SharedScreen type object.</param>
-        public void onScreenRecieved(SharedScreen screen);
+        public void OnScreenRecieved(string uid, string uname, int mtype, Bitmap screen);
     }
 }
