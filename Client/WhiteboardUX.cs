@@ -1797,7 +1797,7 @@ namespace Client
             
 
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
-            //this.GlobCanvas.IsEnabled = false;
+            this.GlobCanvas.IsEnabled = false;
         }
 
         public void OnClientSessionChanged(SessionData session)
@@ -2046,6 +2046,9 @@ namespace Client
                 //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor
                 if (!testing) Debug.Assert(_numCheckpoints == 0);
                 if (!testing) Debug.Assert(GlobCanvas.IsEnabled == false);
+
+                //ASSUMING that the user has already been SHOWN THE WARNING
+                GlobCanvas.Children.Clear();
                 //Supposed to make the "Restore Checkpoint" dropdown with CheckPointNumber number of dropdown tiles
                 increaseCheckpointNum(received[0].CheckPointNumber);
             }
