@@ -1,9 +1,8 @@
-﻿/*
- * Author: Alisetti Sai Vamsi
- * Created on: 01/11/2021
- * Summary: This file contains the unit tests
- *          for the Queue Module.
- */
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>01/11/2021</created>
+/// <summary>
+/// This file contains the unit tests for the Queue Module.
+/// </summary>
 
 using System;
 using System.Collections.Generic;
@@ -91,7 +90,7 @@ namespace Testing.Networking.QueueManagement
             var ex = Assert.Throws<Exception>(() => { _queue.Enqueue(packet); });
 
             Assert.IsNotNull(ex);
-            const string expectedMessage = "Key Error: Packet holds invalid module identifier";
+            const string expectedMessage = "[Networking] Key Error: Packet holds invalid module identifier";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
@@ -158,7 +157,7 @@ namespace Testing.Networking.QueueManagement
                 Assert.IsNotNull(ex);
                 var innerEx = ex.InnerExceptions;
                 var clearEx = innerEx.ElementAt(0);
-                const string expectedMessage = "Empty Queue cannot be dequeued";
+                const string expectedMessage = "[Networking] Empty Queue cannot be dequeued";
                 var empty = _queue.IsEmpty();
                 Assert.AreEqual(expectedMessage, clearEx.Message);
                 Assert.AreEqual(true, empty);
@@ -181,7 +180,7 @@ namespace Testing.Networking.QueueManagement
             Assert.IsNotNull(ex);
             var innerEx = ex.InnerExceptions;
             var registerEx = innerEx.ElementAt(0);
-            const string expectedMessage = "Adding Queue to MultiLevelQueue Failed!";
+            const string expectedMessage = "[Networking] Adding Queue to MultiLevelQueue Failed!";
             Assert.AreEqual(expectedMessage, registerEx.Message);
         }
 
@@ -192,7 +191,7 @@ namespace Testing.Networking.QueueManagement
             const int priority = Priorities.Invalid;
             var ex = Assert.Throws<Exception>(() => { _queue.RegisterModule(moduleId, priority); });
             Assert.IsNotNull(ex);
-            const string expectedMessage = "Priority should be positive integer";
+            const string expectedMessage = "[Networking] Priority should be positive integer";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
@@ -201,7 +200,7 @@ namespace Testing.Networking.QueueManagement
         {
             var ex = Assert.Throws<Exception>(() => { _queue.Dequeue(); });
             Assert.IsNotNull(ex);
-            const string expectedMessage = "Cannot Dequeue empty queue";
+            const string expectedMessage = "[Networking] Cannot Dequeue empty queue";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
@@ -210,7 +209,7 @@ namespace Testing.Networking.QueueManagement
         {
             var ex = Assert.Throws<Exception>(() => { _queue.Peek(); });
             Assert.IsNotNull(ex);
-            const string expectedMessage = "Cannot Peek into empty queue";
+            const string expectedMessage = "[Networking] Cannot Peek into empty queue";
             Assert.AreEqual(expectedMessage, ex.Message);
         }
 
