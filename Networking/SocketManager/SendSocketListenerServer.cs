@@ -1,10 +1,8 @@
-/*
- * Author: Tausif Iqbal
- * Created on: 13/10/2021
- * Modified on: 16/11/2021
- * Summary: This file contains the class definition of
- *          SendSocketListenerServer.
- */
+/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// This file contains the class definition of SendSocketListenerServer.
+/// </summary>
 
 using System;
 using System.Collections.Generic;
@@ -13,21 +11,19 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 namespace Networking
 {
     public class SendSocketListenerServer
     {
-        // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 1025;
-
         // Declare the dictionary variable which stores client_ID and corresponding socket object 
         private readonly Dictionary<string, TcpClient> _clientIdSocket;
-        
-        // Declare dictionary variable to get handler
-        private readonly Dictionary<string, INotificationHandler> _subscribedModules;
-        
+
         // Declare the queue variable which is used to dequeue the required the packet 
         private readonly IQueue _queue;
+
+        // Declare dictionary variable to get handler
+        private readonly Dictionary<string, INotificationHandler> _subscribedModules;
 
         // Declare the thread variable of SendSocketListenerServer 
         private Thread _listen;
@@ -56,6 +52,7 @@ namespace Networking
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            Trace.WriteLine("[Networking] SendSocketListenerServer thread started.");
         }
 
         /// <summary>
@@ -99,7 +96,7 @@ namespace Networking
 
             return tcpSocket;
         }
-        
+
         /// <summary>
         ///     This method extract finds client Id
         ///     from tcpSocket Object
@@ -135,80 +132,69 @@ namespace Networking
                 // Call GetDestination function to know destination from the packet object
                 var tcpSockets = GetDestination(packet);
 
-                // Send the message in chunks of threshold number of characters, 
-                // if the data size is greater than threshold value
-                 for (var i = 0; i < msg.Length; i += Threshold)
+                foreach (var tcpSocket in tcpSockets)
                 {
-                    var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
-                    foreach (var tcpSocket in tcpSockets)
+                    var outStream = Encoding.ASCII.GetBytes(msg);
+                    try
                     {
-                        var outStream = Encoding.ASCII.GetBytes(chunk);
-                        try
+                        var socket = tcpSocket.Client;
+
+                        // check client is still connected or not
+                        if (socket.Poll(1, SelectMode.SelectRead) && socket.Available == 0)
                         {
-                            var networkStream = tcpSocket.GetStream();
-                            Socket s = tcpSocket.Client;
-                            
-                            // check client is still connected or not
-                            if ( s.Poll(1, SelectMode.SelectRead) && s.Available == 0 )
+                            Trace.WriteLine("[Networking] Client lost connection! Retrying...");
+
+                            // client is disconnected try 3 times to send data
+                            _ = Task.Run(() =>
                             {
-                                Trace.WriteLine("Client lost connection ");
-                                
-                                // client is disconnected try 3 times to send data
-                                _ = Task.Run(() =>
+                                var tcpSocketTry = tcpSocket;
+                                var outStreamTry = outStream;
+                                var isSent = false;
+                                var sTry = tcpSocketTry.Client;
+                                try
                                 {
-                                    var tcpSocketTry = tcpSocket;
-                                    var outStreamTry = outStream;
-                                    var isSent = false;
-                                    Socket sTry = tcpSocketTry.Client;
-                                    try
+                                    for (var t = 0; t < 3; t++)
                                     {
-                                        for (int t = 0; t < 3; t++)
+                                        Thread.Sleep(1000);
+                                        if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
                                         {
-                                            Thread.Sleep(1);
-                                            if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
-                                            {
-                                                var networkStreamTry = tcpSocketTry.GetStream();
-                                                networkStreamTry.Write(outStreamTry, 0, outStream.Length);
-                                                networkStreamTry.Flush();
-                                                isSent = true;
-                                                break;
-                                            }
-                                        }
-                                        
-                                        if (isSent == false)
-                                        {
-                                            Trace.WriteLine("client is disconnected");
-                                            var clientId = GetClientId(tcpSocketTry);
-                                            
-                                            // call notification handler for removing the client
-                                            foreach (var module in
-                                                _subscribedModules)
-                                                if (clientId != null)
-                                                {
-                                                    module.Value.OnClientLeft(clientId); 
-                                                }
-                                                else
-                                                {
-                                                    Trace.WriteLine("ClientId is not present");
-                                                }
+                                            Trace.WriteLine("[Networking] Client has reconnected!");
+                                            sTry.Send(outStreamTry);
+                                            Trace.WriteLine("[Networking] Data sent from server to client.");
+                                            isSent = true;
+                                            break;
                                         }
                                     }
-                                    catch (Exception e)
+
+                                    if (isSent == false)
                                     {
-                                        Console.WriteLine("Networking :"+e);
-                                        
+                                        Trace.WriteLine("[Networking] Client has disconnected! Removing Client...");
+                                        var clientId = GetClientId(tcpSocketTry);
+
+                                        // call notification handler for removing the client
+                                        foreach (var module in
+                                            _subscribedModules)
+                                            if (clientId != null)
+                                                module.Value.OnClientLeft(clientId);
+                                            else
+                                                Trace.WriteLine("[Networking] ClientId is not present");
                                     }
-                                });
-                                
-                            }else{
-                                networkStream.Write(outStream, 0, outStream.Length);
-                                networkStream.Flush();
-                            }
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine($"[Networking] {e}");
+                                }
+                            });
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Console.WriteLine("Networking :"+e);
+                            socket.Send(outStream);
+                            Trace.WriteLine("[Networking] Data sent from server to client.");
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"[Networking] {e}");
                     }
                 }
             }
@@ -217,10 +203,12 @@ namespace Networking
         /// <summary>
         ///     This method is for stopping the thread
         /// </summary>
-        /// /// <returns> Void  </returns>
+        /// ///
+        /// <returns> Void  </returns>
         public void Stop()
         {
             _listenRun = false;
+            Console.WriteLine("[Networking] Stopped SendSocketListenerServer thread.");
         }
     }
 }

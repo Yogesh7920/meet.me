@@ -1,10 +1,8 @@
-/*
- * Author: Tausif Iqbal
- * Created on: 13/10/2021
- * Modified on: 16/11/2021
- * Summary: This file contains the class definition of
- *          ReceiveSocketListener.
- */
+/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// This file contains the class definition of ReceiveSocketListener.
+/// </summary>
 
 using System;
 using System.Diagnostics;
@@ -17,7 +15,7 @@ namespace Networking
     public class ReceiveSocketListener
     {
         // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 1025;
+        private const int Threshold = 500 * 1024;
 
         // Declare the TcpClient  variable 
         private readonly TcpClient _clientSocket;
@@ -51,6 +49,7 @@ namespace Networking
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            Trace.WriteLine("[Networking] ReceiveSocketListener thread started.");
         }
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace Networking
             var data = string.Join(":", msg[1..]);
 
             // search of EOF to get  end of the message
-            packet.SerializedData = data[..data.LastIndexOf("EOF", StringComparison.Ordinal)];
+            packet.SerializedData = data;
             return packet;
         }
 
@@ -92,25 +91,25 @@ namespace Networking
                     while (networkStream.DataAvailable)
                     {
                         var inStream = new byte[Threshold];
-                        networkStream.Read(inStream, 0, inStream.Length);
+                        _clientSocket.Client.Receive(inStream);
                         var buffer = Encoding.ASCII.GetString(inStream);
-                        for (var i = 0; i < Threshold; i++)
-                            if (buffer[i] != '\u0000')
-                            {
-                                message += buffer[i];
-                                if (!message.Contains("EOF")) continue;
-                                //Calls GetPacket method to form packet object out of received message
-                                var packet = GetPacket(message.Split(":"));
-                                //Calls the PushToQueue method to push packet into queue
-                                PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
-                                message = "";
-                            }
+                        buffer = buffer.Trim('\u0000');
+                        message += buffer;
+                        var endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
+                        while (endIdx != -1)
+                        {
+                            var packetString = message[..endIdx];
+                            message = message[(endIdx + 3)..];
+                            endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
+                            var packet = GetPacket(packetString.Split(":"));
+                            PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     Trace.WriteLine(
-                        "Networking: An Exception has been raised in ReceiveSocketListenerClientThread "
+                        "[Networking] An Exception has been raised in ReceiveSocketListenerClient thread "
                         + ex.Message);
                 }
         }
@@ -122,6 +121,7 @@ namespace Networking
         public void Stop()
         {
             _listenRun = false;
+            Console.WriteLine("[Networking] Stopped ReceiveSocketListener thread.");
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Networking
         private void PushToQueue(string data, string moduleIdentifier)
         {
             var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = data};
-            Trace.WriteLine("SERVER/CLIENT : " + data);
+            Trace.WriteLine("[Networking] Received data: " + data);
             _queue.Enqueue(packet);
         }
     }
