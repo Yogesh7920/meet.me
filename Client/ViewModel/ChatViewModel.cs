@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// <author>Suchitra Yechuri</author>
+/// <created>12/11/2021</created>
+/// <summary>
+///     This file contains some mock objects which can
+///     be used to simulate tests for the networking module.
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
@@ -15,9 +22,10 @@ namespace Client.ViewModel
         IClientSessionNotifications
     {
 
-        IDictionary<int, string> _messages;
-        private readonly IDictionary<int, string> _users;
-        public int UserId
+        public IDictionary<int, string> Messages;
+        public IDictionary<int, string> Users;
+        public IDictionary<int, int> ThreadIds;
+        public static int UserId
         {
             get; private set;
         }
@@ -30,10 +38,12 @@ namespace Client.ViewModel
         }
         public ChatViewModel()
         {
-            _messages = new Dictionary<int, string>();
+            Messages = new Dictionary<int, string>();
+            Users = new Dictionary<int, string>();
+            ThreadIds = new Dictionary<int, int>();
             _model = ContentClientFactory.GetInstance();
             _model.CSubscribe(this);
-            this.UserId = _model.GetUserId();
+            UserId = _model.GetUserId();
 
             _modelDb = SessionManagerFactory.GetClientSessionManager();
             _modelDb.SubscribeSession(this);
@@ -44,7 +54,17 @@ namespace Client.ViewModel
             SendMessageData msg = new SendMessageData();
             msg.Type = MessageType.Chat;
             msg.Message = message;
-            msg.ReplyThreadId = replyMsgId;
+            msg.ReplyMsgId = replyMsgId;
+            if (replyMsgId != -1)
+            {
+                msg.ReplyThreadId = ThreadIds[replyMsgId];
+            }
+            else
+            {
+                msg.ReplyThreadId = -1;
+            }
+            System.Diagnostics.Debug.WriteLine(msg.ReplyThreadId);
+            msg.ReceiverIds = new int[] { };
             _model.CSend(msg);
         }
 
@@ -53,7 +73,16 @@ namespace Client.ViewModel
             SendMessageData msg = new SendMessageData();
             msg.Type = MessageType.File;
             msg.Message = message;
-            msg.ReplyThreadId = replyMsgId;
+            msg.ReplyMsgId = replyMsgId;
+            if (replyMsgId != -1)
+            {
+                msg.ReplyThreadId = ThreadIds[replyMsgId];
+            }
+            else
+            {
+                msg.ReplyThreadId = -1;
+            }
+            msg.ReceiverIds = new int[] { };
             _model.CSend(msg);
         }
         public void StarChat(int msgId)
@@ -73,16 +102,20 @@ namespace Client.ViewModel
                             lock (this)
                             {
 
-                                if(messageData.Event == MessageEvent.NewMessage)
+                                if (messageData.Event == MessageEvent.NewMessage)
                                 {
-                                    _messages.Add(messageData.MessageId, messageData.Message);
+                                    Messages.Add(messageData.MessageId, messageData.Message);
+                                    ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
                                     ReceivedMsg = new Message();
                                     ReceivedMsg.MessageId = messageData.MessageId;
-                                    ReceivedMsg.UserName = _users[messageData.MessageId];
+                                    ReceivedMsg.UserName = Users[messageData.SenderId];
                                     ReceivedMsg.TextMessage = messageData.Message;
-                                    ReceivedMsg.Time = messageData.SentTime.ToString();
-                                    ReceivedMsg.ToFrom = UserId == messageData.MessageId;
-                                    ReceivedMsg.ReplyMessage = messageData.ReplyThreadId == -1 ? "" : _messages[messageData.ReplyThreadId];
+                                    ReceivedMsg.Time = messageData.SentTime.ToShortTimeString();
+                                    UserId = _model.GetUserId();
+                                    System.Diagnostics.Debug.WriteLine("userid: " + UserId);
+                                    System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
+                                    ReceivedMsg.ToFrom = UserId == messageData.SenderId;
+                                    ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                                     ReceivedMsg.Type = messageData.Type == MessageType.Chat;
                                     this.OnPropertyChanged("ReceivedMsg");
                                 }
@@ -99,10 +132,11 @@ namespace Client.ViewModel
                         {
                             lock (this)
                             {
-                                _users.Clear();
+                                Users.Clear();
                                 foreach (UserData user in session.users)
                                 {
-                                    _users.Add(user.userID, user.username);
+                                    //System.Diagnostics.Debug.WriteLine(user.username);
+                                    Users.Add(user.userID, user.username);
                                 }
                             }
                         }),
@@ -119,16 +153,19 @@ namespace Client.ViewModel
                             {
                                 foreach (ChatContext msgLst in allMessages)
                                 {
-                                    foreach(ReceiveMessageData messageData in msgLst.MsgList)
+                                    foreach (ReceiveMessageData messageData in msgLst.MsgList)
                                     {
-                                        _messages.Add(messageData.MessageId, messageData.Message);
+                                        Messages.Add(messageData.MessageId, messageData.Message);
                                         ReceivedMsg = new Message();
                                         ReceivedMsg.MessageId = messageData.MessageId;
-                                        ReceivedMsg.UserName = _users[messageData.MessageId];
+                                        ReceivedMsg.UserName = Users[messageData.SenderId];
                                         ReceivedMsg.TextMessage = messageData.Message;
-                                        ReceivedMsg.Time = messageData.SentTime.ToString();
-                                        ReceivedMsg.ToFrom = UserId == messageData.MessageId;
-                                        ReceivedMsg.ReplyMessage = messageData.ReplyThreadId == -1 ? "" : _messages[messageData.ReplyThreadId];
+                                        ReceivedMsg.Time = messageData.SentTime.ToShortTimeString();
+                                        UserId = _model.GetUserId();
+                                        System.Diagnostics.Debug.WriteLine("userid: " + UserId);
+                                        System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
+                                        ReceivedMsg.ToFrom = UserId == messageData.SenderId;
+                                        ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                                         ReceivedMsg.Type = messageData.Type == MessageType.Chat;
                                         this.OnPropertyChanged("ReceivedMsg");
                                     }
@@ -149,7 +186,7 @@ namespace Client.ViewModel
         /// Handles the property changed event raised on a component.
         /// </summary>
         /// <param name="property">The name of the property.</param>
-        private void OnPropertyChanged(string property)
+        public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }

@@ -47,5 +47,15 @@ namespace Whiteboard
         /// The initial state when whiteboard is clear.
         /// </summary>
         public const int INITIAL_CHECKPOINT_STATE = 0;
+
+        /// <summary>
+        /// Minimum Allowed Height of a shape.
+        /// </summary>
+        public const float MIN_HEIGHT = (float)0.1;
+
+        /// <summary>
+        /// Maximum Allowed Width for a shape.
+        /// </summary>
+        public const float MIN_WIDTH = (float)0.1;
     }
 }

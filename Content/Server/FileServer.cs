@@ -1,4 +1,9 @@
-﻿using System.Diagnostics;
+﻿/// <author>Sameer Dhiman</author>
+/// <created>27/10/2021</created>
+/// <summary>
+///     This file handles all the file messages
+/// </summary>
+using System.Diagnostics;
 
 namespace Content
 {
@@ -59,15 +64,21 @@ namespace Content
         {
             MessageData receiveMessageData = _contentDatabase.GetFiles(messageData.MessageId);
 
+            // If null is returned by contentDatabase that means it doesn't exist, return null
             if (receiveMessageData == null)
             {
                 Trace.WriteLine($"[FileServer] File not found messageId: {messageData.MessageId}.");
                 return null;
             }
 
+            // Clone the object and add the required fields
+            MessageData downloadMessageData = receiveMessageData.Clone();
+
             // store file path on which the file will be downloaded on the client's system
-            receiveMessageData.Message = messageData.Message;
-            return receiveMessageData;
+            downloadMessageData.Message = messageData.Message;
+            downloadMessageData.Event = MessageEvent.Download;
+            downloadMessageData.SenderId = messageData.SenderId;
+            return downloadMessageData;
         }
     }
 }

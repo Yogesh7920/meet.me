@@ -14,5 +14,10 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         /// <returns> A MeetingCredentials Object </returns>
         MeetingCredentials GetPortsAndIPAddress();
+
+        /// <summary>
+        /// Event to notify the UX Server about the end of the meeting.
+        /// </summary>
+        public event NotifyEndMeet MeetingEnded; 
     }
 }
