@@ -162,7 +162,7 @@ namespace Networking
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.WriteLine($"[Networking] {ex.Message}");
             }
         }
 
@@ -185,7 +185,7 @@ namespace Networking
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.WriteLine($"[Networking] {ex.Message}");
             }
         }
 
@@ -198,6 +198,7 @@ namespace Networking
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);
+            Trace.WriteLine($"[Networking] Module Registered with ModuleIdentifier: {identifier} and Priority: {priority.ToString()}");
         }
 
         /// <summary>
@@ -216,7 +217,7 @@ namespace Networking
                     if (address.Split(".")[3] != "1") return ip.ToString();
                 }
 
-            throw new Exception("No network adapters with an IPv4 address in the system!");
+            throw new Exception("[Networking] No network adapters with an IPv4 address in the system!");
         }
 
         /// <summary>
@@ -246,18 +247,22 @@ namespace Networking
                     var clientSocket = _serverSocket.AcceptTcpClient();
 
                     //notify subscribed Module handler
-                    foreach (var module in _subscribedModules) module.Value.OnClientJoined(clientSocket);
+                    foreach (var module in _subscribedModules)
+                    {
+                        module.Value.OnClientJoined(clientSocket);
+                    }
+                    Trace.WriteLine("[Networking] New client joined! Notified all modules.");
                 }
                 catch (SocketException e)
                 {
                     if (e.SocketErrorCode == SocketError.Interrupted)
-                        Trace.WriteLine("Socket blocking listener has been closed");
+                        Trace.WriteLine("[Networking] Socket listener has been closed");
                     else
-                        Trace.WriteLine("Networking: An Exception has been raised in AcceptRequest :" + e);
+                        Trace.WriteLine("[Networking] An Exception has been raised in AcceptRequest :" + e);
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("Networking: An Exception has been raised in AcceptRequest :" + e);
+                    Trace.WriteLine("[Networking] An Exception has been raised in AcceptRequest :" + e);
                 }
         }
     }

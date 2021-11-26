@@ -52,6 +52,7 @@ namespace Networking
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            Trace.WriteLine("[Networking] SendSocketListenerServer thread started.");
         }
 
         /// <summary>
@@ -141,7 +142,7 @@ namespace Networking
                         // check client is still connected or not
                         if (socket.Poll(1, SelectMode.SelectRead) && socket.Available == 0)
                         {
-                            Trace.WriteLine("Client lost connection ");
+                            Trace.WriteLine("[Networking] Client lost connection! Retrying...");
 
                             // client is disconnected try 3 times to send data
                             _ = Task.Run(() =>
@@ -157,7 +158,9 @@ namespace Networking
                                         Thread.Sleep(1000);
                                         if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
                                         {
+                                            Trace.WriteLine("[Networking] Client has reconnected!");
                                             sTry.Send(outStreamTry);
+                                            Trace.WriteLine("[Networking] Data sent from server to client.");
                                             isSent = true;
                                             break;
                                         }
@@ -165,7 +168,7 @@ namespace Networking
 
                                     if (isSent == false)
                                     {
-                                        Trace.WriteLine("client is disconnected");
+                                        Trace.WriteLine("[Networking] Client has disconnected! Removing Client...");
                                         var clientId = GetClientId(tcpSocketTry);
 
                                         // call notification handler for removing the client
@@ -174,23 +177,24 @@ namespace Networking
                                             if (clientId != null)
                                                 module.Value.OnClientLeft(clientId);
                                             else
-                                                Trace.WriteLine("ClientId is not present");
+                                                Trace.WriteLine("[Networking] ClientId is not present");
                                     }
                                 }
                                 catch (Exception e)
                                 {
-                                    Console.WriteLine("Networking :" + e);
+                                    Console.WriteLine($"[Networking] {e}");
                                 }
                             });
                         }
                         else
                         {
                             socket.Send(outStream);
+                            Trace.WriteLine("[Networking] Data sent from server to client.");
                         }
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Networking :" + e);
+                        Console.WriteLine($"[Networking] {e}");
                     }
                 }
             }
@@ -204,6 +208,7 @@ namespace Networking
         public void Stop()
         {
             _listenRun = false;
+            Console.WriteLine("[Networking] Stopped SendSocketListenerServer thread.");
         }
     }
 }

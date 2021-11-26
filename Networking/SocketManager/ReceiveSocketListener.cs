@@ -49,6 +49,7 @@ namespace Networking
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            Trace.WriteLine("[Networking] ReceiveSocketListener thread started.");
         }
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace Networking
                 catch (Exception ex)
                 {
                     Trace.WriteLine(
-                        "Networking: An Exception has been raised in ReceiveSocketListenerClientThread "
+                        "[Networking] An Exception has been raised in ReceiveSocketListenerClient thread "
                         + ex.Message);
                 }
         }
@@ -120,6 +121,7 @@ namespace Networking
         public void Stop()
         {
             _listenRun = false;
+            Console.WriteLine("[Networking] Stopped ReceiveSocketListener thread.");
         }
 
         /// <summary>
@@ -131,7 +133,7 @@ namespace Networking
         private void PushToQueue(string data, string moduleIdentifier)
         {
             var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = data};
-            Trace.WriteLine("SERVER/CLIENT : " + data);
+            Trace.WriteLine("[Networking] Received data: " + data);
             _queue.Enqueue(packet);
         }
     }

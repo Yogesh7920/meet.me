@@ -45,6 +45,7 @@ namespace Networking
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            Trace.WriteLine("[Networking] SendSocketListenerClient thread started.");
         }
 
         /// <summary>
@@ -83,11 +84,12 @@ namespace Networking
                 try
                 {
                     _tcpSocket.Client.Send(outStream);
+                    Trace.WriteLine("[Networking] Data sent from client to server.");
                 }
                 catch (Exception e)
                 {
                     Trace.WriteLine(
-                        "Networking: An Exception has been raised in SendSocketListenerClientThread "
+                        "[Networking] An Exception has been raised in SendSocketListenerClientThread "
                         + e.Message);
                 }
             }
@@ -100,6 +102,7 @@ namespace Networking
         public void Stop()
         {
             _listenRun = false;
+            Console.WriteLine("[Networking] Stopped SendSocketListenerClient thread.");
         }
     }
 }
