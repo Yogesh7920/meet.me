@@ -35,8 +35,53 @@ namespace Client
         {
             InitializeComponent();
 
+<<<<<<< HEAD
             ScreenShareViewModel SSviewModel = new ScreenShareViewModel();
             this.DataContext = SSviewModel;
+=======
+            ScreenShare screenviewmodel = new ScreenShare();
+            this.DataContext = screenviewmodel;
+
+            while (true)
+            {
+                // Problem in the network connection
+                if (screenviewmodel.messageType == -2)
+                {
+                    File.Delete("../../../Icons/screenshare.png");
+                    File.Copy("../../../Icons/meet.me_logo_no_bg.png", "../../../Icons/screenshare.png");
+
+                    this.ReceivedMessage.Text = "Network Problem";
+                }
+                else if (screenviewmodel.messageType == -1) // some one else is sharing so u can't share ur screen
+                {
+                    File.Delete("../../../Icons/screenshare.png");
+                    File.Copy("../../../Icons/meet.me_logo_no_bg.png", "../../../Icons/screenshare.png");
+
+                    this.ReceivedMessage.Text = "some one else is sharing so u can't share ur screen";
+                }
+                else if (screenviewmodel.messageType == 0)  // Stop the screen share
+                {
+                    File.Delete("../../../Icons/screenshare.png");
+                    File.Copy("../../../Icons/meet.me_logo_no_bg.png", "../../../Icons/screenshare.png");
+
+                    this.ReceivedMessage.Text = "No one is sharing the screen";
+                }
+                else if (screenviewmodel.messageType == 1)  // screen share is going now
+                {
+                    Bitmap img = screenviewmodel.sharedscreen;
+                    img.Save("../../../Icons/screenshare.png", ImageFormat.Png);
+
+                    this.ReceivedMessage.Text = string.Empty;
+                }
+                else
+                {
+                    File.Delete("../../../Icons/screenshare.png");
+                    File.Copy("../../../Icons/meet.me_logo_no_bg.png", "../../../Icons/screenshare.png");
+
+                    this.ReceivedMessage.Text = "No one is sharing the screen";
+                }
+            }
+>>>>>>> 9a56981ab0333a26bfe22ba6beb5678d2bdcaedc
         }
     }
 }
