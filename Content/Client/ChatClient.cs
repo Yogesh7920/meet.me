@@ -68,9 +68,15 @@ namespace Content
 			if(MessageIsvalid(toserver.Message)){
 				var tosend = SendToMessage(toserver, MessageEvent.NewMessage);
 				tosend.MessageId = -1;
-				var xml = _serializer.Serialize(tosend);
-				Trace.WriteLine("[ChatClient] Marking Event of chat as NewMessage and sending to server");
-				_communicator.Send(xml, _moduleIdentifier);
+				try{
+					var xml = _serializer.Serialize(tosend);
+					Trace.WriteLine("[ChatClient] Marking Event of chat as NewMessage and sending to server");
+					_communicator.Send(xml, _moduleIdentifier);
+				}
+				catch(Exception e)
+				{
+					Trace.WriteLine($"[ChatClient] Exception encountered during sending data: {e.GetType().Name}: {e.Message}");
+				}
 			}
 			else
 			{
@@ -91,9 +97,15 @@ namespace Content
 				toSend.SenderId = UserId;
 				toSend.Message = newMessage;
 				toSend.Type = MessageType.Chat;
-				var xml = _serializer.Serialize(toSend);
-				Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
-				_communicator.Send(xml, _moduleIdentifier);
+				try{
+					var xml = _serializer.Serialize(toSend);
+					Trace.WriteLine("[ChatClient] Marking Event of chat as update and sending to server");
+					_communicator.Send(xml, _moduleIdentifier);
+				}
+				catch(Exception e)
+				{
+					Trace.WriteLine($"[ChatClient] Exception encountered during sending data: {e.GetType().Name}: {e.Message}");
+				}
 			}
 			else
 			{
@@ -112,9 +124,15 @@ namespace Content
             toSend.Event = MessageEvent.Star;
             toSend.SenderId = UserId;
 			toSend.Type = MessageType.Chat;
-            var xml = _serializer.Serialize(toSend);
-			 Trace.WriteLine("[ChatClient] Marking Event of chat as star and sending to server");
-            _communicator.Send(xml, _moduleIdentifier);
+			try{
+				var xml = _serializer.Serialize(toSend);
+				Trace.WriteLine("[ChatClient] Marking Event of chat as star and sending to server");
+				_communicator.Send(xml, _moduleIdentifier);
+			}
+			catch(Exception e)
+			{
+					Trace.WriteLine($"[ChatClient] Exception encountered during sending data: {e.GetType().Name}: {e.Message}");
+			}
         }
     }
 }
