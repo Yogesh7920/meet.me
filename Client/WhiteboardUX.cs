@@ -1710,22 +1710,6 @@ namespace Client
         public ObservableCollection<string> _chk;
         private bool testing;
 
-        public void OnClientSessionChanged(SessionData session)
-        {
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<SessionData>((session) =>
-                        {
-                            lock (this)
-                            {
-                                //this.manager = ClientBoardStateManager.Instance;
-                                //this.manager.Start();
-                                this.manager.Subscribe(this, "whiteboard");
-                            }
-                        }),
-                        session);
-        }
-
         private void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
@@ -1802,7 +1786,7 @@ namespace Client
             if (!testing)
             {
                 this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
-                this.manager.Subscribe();
+                this.manager = ClientBoardStateManager.Instance;
             }
 
             this.shapeManager = new ShapeManager(testing : this.testing);
@@ -1815,6 +1799,23 @@ namespace Client
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
             //this.GlobCanvas.IsEnabled = false;
         }
+
+        public void OnClientSessionChanged(SessionData session)
+        {
+            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                        DispatcherPriority.Normal,
+                        new Action<SessionData>((session) =>
+                        {
+                            lock (this)
+                            {
+                                //this.manager = ClientBoardStateManager.Instance;
+                                //this.manager.Start();
+                                this.manager.Subscribe(this, "whiteboard");
+                            }
+                        }),
+                        session);
+        }
+
 
         public ObservableCollection<string> chckList
         {
