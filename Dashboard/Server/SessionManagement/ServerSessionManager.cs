@@ -36,7 +36,7 @@ namespace Dashboard.Server.SessionManagement
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
             
-            _ = new ServerBoardStateManager();
+            _ = ServerBoardCommunicator.Instance;
             _ = new ScreenShareServer();
             _contentServer = ContentServerFactory.GetInstance();
 
