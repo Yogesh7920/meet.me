@@ -4,7 +4,7 @@
 ///     It contains the ResponseEntity Class, which is required as the return type
 ///     of save functions implemeted 
 /// </summary>
-
+using System.Collections.Generic;
 
 namespace Dashboard.Server.Persistence
 {
@@ -19,6 +19,8 @@ namespace Dashboard.Server.Persistence
 
         // name of the file 
         public string FileName;
+
+        public List<string> TelemetryAnalyticsFiles;
     }
 
 }

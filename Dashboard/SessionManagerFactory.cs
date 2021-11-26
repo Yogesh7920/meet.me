@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Networking;
 using Content;
-
+using Whiteboard;
 
 namespace Dashboard
 {
@@ -31,9 +31,9 @@ namespace Dashboard
         /// </summary>
         /// <param name="communicator"> Test communicator to test functionality</param>
         /// <returns></returns>
-        public static ClientSessionManager GetClientSessionManager(ICommunicator communicator)
+        public static ClientSessionManager GetClientSessionManager(ICommunicator communicator, IClientBoardStateManager whiteBoardInstance = null)
         {
-            return new ClientSessionManager(communicator);
+            return new ClientSessionManager(communicator, whiteBoardInstance);
         }
 
         /// <summary>
