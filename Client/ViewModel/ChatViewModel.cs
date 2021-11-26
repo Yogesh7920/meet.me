@@ -70,6 +70,7 @@ namespace Client.ViewModel
 
         public void SendFile(string message, int replyMsgId)
         {
+            System.Diagnostics.Debug.WriteLine(message);
             SendMessageData msg = new SendMessageData();
             msg.Type = MessageType.File;
             msg.Message = message;
@@ -110,10 +111,11 @@ namespace Client.ViewModel
                                     ReceivedMsg.MessageId = messageData.MessageId;
                                     ReceivedMsg.UserName = Users[messageData.SenderId];
                                     ReceivedMsg.TextMessage = messageData.Message;
-                                    ReceivedMsg.Time = messageData.SentTime.ToShortTimeString();
+                                    System.Diagnostics.Debug.WriteLine(messageData.Message);
+                                    ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                                     UserId = _model.GetUserId();
-                                    System.Diagnostics.Debug.WriteLine("userid: " + UserId);
-                                    System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
+                                    //System.Diagnostics.Debug.WriteLine("userid: " + UserId);
+                                    //System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
                                     ReceivedMsg.ToFrom = UserId == messageData.SenderId;
                                     ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                                     ReceivedMsg.Type = messageData.Type == MessageType.Chat;
@@ -156,11 +158,12 @@ namespace Client.ViewModel
                                     foreach (ReceiveMessageData messageData in msgLst.MsgList)
                                     {
                                         Messages.Add(messageData.MessageId, messageData.Message);
+                                        ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
                                         ReceivedMsg = new Message();
                                         ReceivedMsg.MessageId = messageData.MessageId;
                                         ReceivedMsg.UserName = Users[messageData.SenderId];
                                         ReceivedMsg.TextMessage = messageData.Message;
-                                        ReceivedMsg.Time = messageData.SentTime.ToShortTimeString();
+                                        ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                                         UserId = _model.GetUserId();
                                         System.Diagnostics.Debug.WriteLine("userid: " + UserId);
                                         System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
