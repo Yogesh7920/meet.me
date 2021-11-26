@@ -1,14 +1,14 @@
-using NUnit.Framework;
-using Networking;
-using Testing.Dashboard.TestModels;
-using System.Collections.Generic;
-using Dashboard.Server.SessionManagement;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
-using System.Net.Sockets;
 using Dashboard.Server.Persistence;
-using System.IO;
+using Dashboard.Server.SessionManagement;
 using Dashboard.Server.Telemetry;
+using Networking;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Sockets;
+using Testing.Dashboard.TestModels;
 
 namespace Testing.Dashboard
 {
@@ -22,12 +22,12 @@ namespace Testing.Dashboard
             _testCommunicator.ipAddressAndPort = validIP + ":" + validPort;
             _testWhiteBoard = new TestWhiteBoard();
             clientSessionManagerA = SessionManagerFactory.GetClientSessionManager(_testCommunicator, _testWhiteBoard);
-            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager (_testCommunicator, _testWhiteBoard);
+            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager(_testCommunicator, _testWhiteBoard);
             newUX = new(clientSessionManagerB);
             oldUX = new(clientSessionManagerA);
             clientSessionManagerB.SubscribeSession(newUX);
             clientSessionManagerA.SubscribeSession(oldUX);
-            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator,_testContentServer);
+            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator, _testContentServer);
         }
 
         [Test]
@@ -42,9 +42,9 @@ namespace Testing.Dashboard
             Assert.AreEqual(testMeetCreds.ipAddress, returnedMeetCreds.ipAddress);
             Assert.AreEqual(testMeetCreds.port, returnedMeetCreds.port);
 
-            
+
         }
-        
+
         [Test]
         [TestCase(null)]
         [TestCase("")]
@@ -66,21 +66,19 @@ namespace Testing.Dashboard
         public void AddClient_ValidClientArrivalClientSide_ReturnsTrue()
         {
             IUXClientSessionManager _sessionManager = clientSessionManagerB;
-            
-           // Setting the IP address and Port for fake server
+
+            // Setting the IP address and Port for fake server
             bool isValid = _sessionManager.AddClient(validIP, int.Parse(validPort), "John");
             bool expectedValue = true;
             Assert.AreEqual(expectedValue, isValid);
-
-            // Testing for invalid IPs and usernames
         }
 
         [Test]
-        [TestCase("192.168.1.2",8080,"John")]
-        [TestCase("192.168.1.1",8080,"")]
-        [TestCase("192.168.1.1",8081,"John")]
-        [TestCase("192.168.1.1",8080,null)]
-        [TestCase("abced",8080,"John")]
+        [TestCase("192.168.1.2", 8080, "John")]
+        [TestCase("192.168.1.1", 8080, "")]
+        [TestCase("192.168.1.1", 8081, "John")]
+        [TestCase("192.168.1.1", 8080, null)]
+        [TestCase("abced", 8080, "John")]
         public void AddClient_InValidClientArrivalClientSide_ReturnsFalse(string ip, int port, string username)
         {
             IUXClientSessionManager _sessionManager = clientSessionManagerB;
@@ -107,7 +105,7 @@ namespace Testing.Dashboard
         }
 
         [Test]
-        public void AddClientProcedure_NewClientArrivalServerSide_BroadcastsSessionObjectToAllClientsAndUpdatesNetworkModule ()
+        public void AddClientProcedure_NewClientArrivalServerSide_BroadcastsSessionObjectToAllClientsAndUpdatesNetworkModule()
         {
             int sampleSize = 10;
             List<UserData> users = Utils.GenerateUserData(sampleSize);
@@ -219,7 +217,7 @@ namespace Testing.Dashboard
             clientSessionManagerB.OnDataReceived(_serializer.Serialize<ServerToClientData>(endMeetingMessage));
             Assert.IsTrue(newUX.meetingEndEvent);
         }
-        
+
         [Test]
         public void EndMeetingProcedure_MeetingEnds_SaveSummaryOfSession()
         {
@@ -244,7 +242,7 @@ namespace Testing.Dashboard
             serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
             string serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
             Assert.IsTrue(File.Exists(Path.Combine(serverDataPath, "GlobalServerData.xml")));
-            Directory.Delete("../../../Persistence",true);
+            Directory.Delete("../../../Persistence", true);
         }
 
         [Test]
@@ -349,7 +347,6 @@ namespace Testing.Dashboard
             Assert.NotNull(actualAnalytics.userCountAtAnyTime);
             Assert.NotNull(actualAnalytics.insincereMembers);
             Assert.AreEqual(actualAnalytics.userCountAtAnyTime.Count, expectedUsers);
-            Assert.Pass();
         }
 
         [Test]
@@ -381,7 +378,7 @@ namespace Testing.Dashboard
             IUXClientSessionManager _uxSessionManager = clientSessionManagerB;
             INotificationHandler _networkSessionManager = clientSessionManagerB;
             // Creating the user who joined
-            ServerToClientData serverToClientData = new("removeClient",new (), null, null, userData);
+            ServerToClientData serverToClientData = new("removeClient", new(), null, null, userData);
             string serialisedServerData = _serializer.Serialize(serverToClientData);
 
             // Adding the client to client first
@@ -410,7 +407,7 @@ namespace Testing.Dashboard
         private TestUX newUX, oldUX;
         private readonly ISerializer _serializer = new Serializer();
         private TestCommunicator _testCommunicator;
-        private readonly string validIP = "192.168.1.1", validPort ="8080";
+        private readonly string validIP = "192.168.1.1", validPort = "8080";
         private TestContentServer _testContentServer;
         private TestWhiteBoard _testWhiteBoard;
     }
