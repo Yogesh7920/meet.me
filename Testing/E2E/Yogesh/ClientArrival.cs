@@ -1,5 +1,8 @@
+﻿/// <author>Yogesh</author>
+/// <created>26/11/2021</created>
+
 using System.Threading;
-using Client.ViewModels;
+using Client.ViewModel;
 using Dashboard;
 using Dashboard.Server.SessionManagement;
 using Networking;
@@ -14,6 +17,7 @@ namespace Testing.E2E.Yogesh
         private ICommunicator _serverCommunicator;
         private MeetingCredentials _meetingCredentials;
         private AuthViewModel _authViewModel;
+        private ChatViewModel _chatViewModel;
 
         [OneTimeSetUp]
         public void Setup()
@@ -37,9 +41,10 @@ namespace Testing.E2E.Yogesh
         [Test]
         public void UserAdded()
         {
-            var clientSessionManager = SessionManagerFactory.GetClientSessionManager();
-            var user = clientSessionManager._clientSessionData.users[0];
-            Assert.AreEqual(user.username, "Yogesh");
+            Thread.Sleep(1000);
+            var users = _chatViewModel.Users;
+            var added = users.Values.Contains("Yogesh");
+            Assert.IsTrue(added);
         }
 
         [Test]
@@ -47,9 +52,6 @@ namespace Testing.E2E.Yogesh
         {
             _authViewModel.SendForAuth(_meetingCredentials.ipAddress, _meetingCredentials.port, "Mario");
             Thread.Sleep(1000);
-            var clientSessionManager = SessionManagerFactory.GetClientSessionManager();
-            var users = clientSessionManager._clientSessionData.users;
-            Assert.AreEqual(users.Count, 2);
         }
 
     }
