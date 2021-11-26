@@ -110,15 +110,17 @@ namespace Client
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
             _ssFlag = true;
-            ScreenShareClient _screenshareclient = new ScreenShareClient();
+            ScreenShareClient SSclient = new ScreenShareClient();
+            //ScreenShareClient SSclient = ScreenShareFactory.GetScreenSharer();
+
             if (!sharing)
             {
-                //_screenshareclient.startSharing();
+                //SSclient.startSharing();
                 sharing = true;
             }
             else
             {
-                _screenshareclient.stopSharing();
+                SSclient.stopSharing();
                 sharing = false;
             }
             //uncomment below line after respective User Controls are done
