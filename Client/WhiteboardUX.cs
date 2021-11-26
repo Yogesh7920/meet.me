@@ -53,13 +53,14 @@ namespace Client
         ShapeManager shapeManager;
         Canvas cn;
         private UIElement adornedShape;
+        private bool testing;
 
         Point dragStart, dragEnd, permissibleDragEnd;
         AdornerDragPos lastDraggedCorner;
 
         IWhiteBoardOperationHandler WbOp;
 
-        public BorderAdorner(UIElement element, ShapeManager shapeManager, Canvas cn, IWhiteBoardOperationHandler WbOp) : base(element)
+        public BorderAdorner(UIElement element, ShapeManager shapeManager, Canvas cn, IWhiteBoardOperationHandler WbOp, bool testing = false) : base(element)
         {
             visualChilderns = new VisualCollection(this);
             adornedShape = element as Shape;
@@ -70,6 +71,7 @@ namespace Client
             this.dragStart = new Point { X = 0, Y = 0 };
             this.dragEnd = new Point { X = 0, Y = 0 };
             this.permissibleDragEnd = new Point { X = 0, Y = 0 };
+            this.testing = testing;
 
             if (element is not System.Windows.Shapes.Line)
             {
@@ -263,20 +265,21 @@ namespace Client
 
         public List<string> selectedShapes = new List<string>();
         private Dictionary<string, string> BBmap = new Dictionary<string, string>();
-        private AdornerLayer adornerLayer;
-        private Shape underCreation;
+        public AdornerLayer adornerLayer;
+        public Shape underCreation;
         public System.Windows.Point selectMouseDownPos;
 
         //Variable to keep track of the Uid of the new shape that is currently under creation
         private string uidShapeCreate = null;
+        private bool testing;
 
 
         //THIS IS SUPPOSED TO BE A UNIQUE UID THAT IS NOT USED BY THE CLIENT MODULE
         //for assigning temporary UID to the shape being created
         int counter = 0;
-        public ShapeManager()
+        public ShapeManager(bool testing = false)
         {
-
+            this.testing = testing;
         }
 
         /// <summary>
@@ -291,9 +294,13 @@ namespace Client
         public Canvas CreateSelectionBB(Canvas cn, Shape sh, IWhiteBoardOperationHandler WBOp)
         {
             adornerLayer = AdornerLayer.GetAdornerLayer(sh);
-            BorderAdorner adr = new BorderAdorner(sh, this, cn, WBOp);
-            adr.IsClipEnabled = true;
-            adornerLayer.Add(adr);
+            BorderAdorner adr = new BorderAdorner(sh, this, cn, WBOp, testing: this.testing);
+
+            if (!this.testing)
+            {
+                adr.IsClipEnabled = true;
+                adornerLayer.Add(adr);
+            }
             return cn;
         }
 
@@ -320,9 +327,9 @@ namespace Client
 
                 //Check Condition 
                 int cnt = iterat.Count();
-                Debug.Assert(cnt == 1);
+                if (!testing) Debug.Assert(cnt == 1);
                 Shape sh = (iterat.ToList()[0]) as Shape;
-                cn = DeleteSelectionBB(cn, sh, WBOp);
+                if (!testing) cn = DeleteSelectionBB(cn, sh, WBOp);
             }
 
             selectedShapes.Clear();
@@ -340,7 +347,7 @@ namespace Client
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == item);
 
                 //Check Condition 
-                Debug.Assert(iterat.Count() == 1);
+                if(!testing) Debug.Assert(iterat.Count() == 1);
 
                 Shape sh = (iterat.ToList()[0]) as Shape;
                 cn.Children.Remove(sh);
@@ -412,35 +419,6 @@ namespace Client
             Trace.WriteLine("List of Uids of selected shapes at the end of Client.ShapeManager.SelectShape is: " + selectedShapes.ToString());
             return cn;
         }
-
-
-        /// <summary>
-        /// Sycronizes the border of selected shapes which are moved/rotated by user input or server updates
-        /// </summary>
-        /// <param name="cn"> Main Canvas instance to which the shape is to be added </param>
-        /// <param name="WBOp"> Shape operation handler class instance provided by the Whiteboard library </param>
-        /// <param name="shUID"> UID of Selected Shape in Canvas that is moved/rotated and needs to have updated dotted-selection boundary</param>
-        /// <returns> Updated Canvas instance with the updated boundary of moved/rotated shape </returns>
-        public Canvas SyncBorders(Canvas cn, IWhiteBoardOperationHandler WBOp, Shape sh)
-        {
-            //Finding bounding box
-            //Shape bbox = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == bbUID).ToList()[0];
-            //Setting the position of bounding box to be same as updated shape
-            //Canvas.SetLeft(bbox, Canvas.GetLeft(sh));
-            //Canvas.SetTop(bbox, Canvas.GetTop(sh));
-            //Setting the angular orientation of bounding box to be same as updated shape
-            //bbox.RenderTransform = sh.RenderTransform;
-
-            adornerLayer = AdornerLayer.GetAdornerLayer(sh);
-
-            BorderAdorner adr = new BorderAdorner(sh, this, cn, WBOp);
-            adr.IsClipEnabled = true;
-
-            adornerLayer.Add(adr);
-
-            return cn;
-        }
-
 
 
         /// <summary>
@@ -709,14 +687,14 @@ namespace Client
             }*/
 
 
-            Debug.Assert(selectedShapes.Count == 1);
+            if(!testing) Debug.Assert(selectedShapes.Count == 1);
             string shUID = selectedShapes[0];
 
             /* Temporary WB Module code to test functionality */
             IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
 
             //Check Condition 
-            Debug.Assert(iterat.Count() == 1);
+            if (!testing) Debug.Assert(iterat.Count() == 1);
 
             Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
@@ -835,7 +813,7 @@ namespace Client
             Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
             //Check Condition 
-            Debug.Assert(iterat.Count() == 1);
+            if (!testing) Debug.Assert(iterat.Count() == 1);
 
             if (sh is System.Windows.Shapes.Line)
             {
@@ -957,7 +935,7 @@ namespace Client
             Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
             //Check Condition 
-            Debug.Assert(iterat.Count() == 1);
+            if (!testing) Debug.Assert(iterat.Count() == 1);
 
             cn = UnselectAllBB(cn, WBOps);
 
@@ -1082,7 +1060,7 @@ namespace Client
                         IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
 
                         //Check Condition that the shape to be deleted actually exists within the Canvas and has unique Uid
-                        Debug.Assert(iterat.Count() == 1);
+                        if (!testing) Debug.Assert(iterat.Count() == 1);
 
                         cn.Children.Remove(iterat.ToList()[0]);
                         break;
@@ -1158,7 +1136,7 @@ namespace Client
             IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
 
             //Check Condition 
-            Debug.Assert(iterat.Count() == 1);
+            if (!testing) Debug.Assert(iterat.Count() == 1);
 
             //Convert the UI element to Shape type 
             Shape sh = (Shape)iterat.ToList()[0];
@@ -1474,15 +1452,17 @@ namespace Client
         string assgn_uid;
         Coordinate prev;
         Coordinate C_end;
+        private bool testing;
 
         //Consructor for the class 
-        public FreeHand()
+        public FreeHand(bool testing = false)
         {
             polyLineColor = new SolidColorBrush(Colors.Black);
             polyLineThickness = 5;
             assgn_uid = "-1";
             prev = new Coordinate(0, 0);
             C_end = new Coordinate(0, 0);
+            this.testing = testing;
         }
 
         public SolidColorBrush GetColor()
@@ -1726,6 +1706,7 @@ namespace Client
         private int _numCheckpoints;
         //private List<string> ckptList;
         public ObservableCollection<string> _chk;
+        private bool testing;
 
         private void OnPropertyChanged(string property)
         {
@@ -1794,19 +1775,25 @@ namespace Client
         /// <summary>
         /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
         /// </summary>
-        public WhiteBoardViewModel(Canvas GlobCanvas)
+        public WhiteBoardViewModel(Canvas GlobCanvas, bool testing = false)
         {
-            this.shapeManager = new ShapeManager();
-            this.freeHand = new FreeHand();
             this.activeTool = WBTools.Initial;
             this.GlobCanvas = GlobCanvas;
-            this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
-            this.manager = ClientBoardStateManager.Instance;
-            this.manager.Start();
+
+            this.testing = testing;
+            if (!testing)
+            {
+                this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
+                this.manager = ClientBoardStateManager.Instance;
+                this.manager.Start();
+            }
+
+            this.shapeManager = new ShapeManager(testing : this.testing);
+            this.freeHand = new FreeHand(testing: this.testing);
 
             this._numCheckpoints = 0;
             this._chk = new ObservableCollection<string>();
-
+            
 
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
             //this.GlobCanvas.IsEnabled = false;
@@ -2027,7 +2014,7 @@ namespace Client
         {
             //WE ASSUME that an update batch can only have a single Clear Canvas request 
             IEnumerable<UXShape> iterat = received.OfType<UXShape>().Where(x => x.OperationType == Operation.CLEAR_STATE);
-            Debug.Assert(iterat.Count() == 1);
+            if (!testing) Debug.Assert(iterat.Count() == 1);
             //additional flag to signify whether the Clear Canvas request in current batch has been registered
             //Ignores all the other CLEAR_STATE requests in current batch
             int clearCanFlag = 0;
@@ -2035,19 +2022,19 @@ namespace Client
 
             //WE ASSUME that an update batch can only have either no FETCH_STATE requests, or all FETCH_STATE requests
             IEnumerable<UXShape> iterat2 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_STATE);
-            Debug.Assert(iterat2.Count() == 0 || iterat2.Count() == received.Count());
+            if (!testing) Debug.Assert(iterat2.Count() == 0 || iterat2.Count() == received.Count());
             if (received[0].OperationType == Operation.FETCH_STATE)
             {
                 //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor
-                Debug.Assert(_numCheckpoints == 0);
-                Debug.Assert(GlobCanvas.IsEnabled == false);
+                if (!testing) Debug.Assert(_numCheckpoints == 0);
+                if (!testing) Debug.Assert(GlobCanvas.IsEnabled == false);
                 //Supposed to make the "Restore Checkpoint" dropdown with CheckPointNumber number of dropdown tiles
                 increaseCheckpointNum(received[0].CheckPointNumber);
             }
 
             //WE ASSUME that an update batch can only have either no FETCH_CHECKPOINT requests, or all FETCH_CHECKPOINT requests
             IEnumerable<UXShape> iterat3 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_CHECKPOINT);
-            Debug.Assert(iterat3.Count() == 0 || iterat3.Count() == received.Count());
+            if (!testing) Debug.Assert(iterat3.Count() == 0 || iterat3.Count() == received.Count());
             if (received[0].OperationType == Operation.FETCH_CHECKPOINT)
             {
                 //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO SAVE CHECKPOINT, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER

@@ -1049,9 +1049,9 @@ namespace Client
         {
             //MessageBox.Show("ClickedSaveFrame");
 
-            this.viewModel.NumCheckpoints += 1;
+            //this.viewModel.NumCheckpoints += 1;
             
-            //viewModel.SaveFrame();
+            viewModel.SaveFrame();
             return;
         }
 
