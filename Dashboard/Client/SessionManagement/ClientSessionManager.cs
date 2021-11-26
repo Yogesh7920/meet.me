@@ -57,7 +57,7 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="communicator">
         /// Test communicator to test the functionality
         /// </param>
-        public ClientSessionManager(ICommunicator communicator, IClientBoardStateManager whiteboardInstance=null)
+        public ClientSessionManager(ICommunicator communicator, IClientBoardStateManager whiteboardInstance = null)
         {
             TraceManager session = new();
             moduleIdentifier = "Dashboard";
@@ -137,9 +137,9 @@ namespace Dashboard.Client.SessionManagement
             return _clientSessionData;
         }
 
-        public string GetStoredAnalytics()
+        public SessionAnalytics GetStoredAnalytics()
         {
-            return _tempAnalytics;
+            return _sessionAnalytics;
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Dashboard.Client.SessionManagement
         private void SendDataToServer(string eventName, string username, int userID = -1)
         {
             ClientToServerData clientToServerData;
-            lock(this)
+            lock (this)
             {
                 clientToServerData = new(eventName, username, userID);
                 string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
@@ -275,12 +275,9 @@ namespace Dashboard.Client.SessionManagement
 
         private void UpdateAnalytics(ServerToClientData receivedData)
         {
-            SessionAnalytics receivedAnalytics = new();
-            //receivedData.sessionAnalytics;
-            //string receivedAnalytics = receivedData.sessionAnalytics;;
+            _sessionAnalytics = receivedData.sessionAnalytics;
             UserData receiveduser = receivedData.GetUser();
-            _tempAnalytics = receivedData.temp;
-            AnalyticsCreated?.Invoke(receivedAnalytics);
+            AnalyticsCreated?.Invoke(_sessionAnalytics);
         }
 
         /// <summary>
@@ -309,7 +306,7 @@ namespace Dashboard.Client.SessionManagement
             SummaryData receivedSummary = receivedData.summaryData;
             UserData receivedUser = receivedData.GetUser();
 
-            if(receivedSummary == null)
+            if (receivedSummary == null)
             {
                 Trace.WriteLine("Null summary received.");
             }
@@ -383,7 +380,7 @@ namespace Dashboard.Client.SessionManagement
         private readonly ISerializer _serializer;
         private readonly ICommunicator _communicator;
 
-        private string _tempAnalytics;
+        private SessionAnalytics _sessionAnalytics;
 
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
