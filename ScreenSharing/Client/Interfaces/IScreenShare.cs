@@ -16,7 +16,7 @@ namespace ScreenSharing
     public interface IScreenShare
     {
         /// <summary>
-        /// handles the reception of update from screen share client. 
+        /// handles the reception of update from screen share client.
         /// </summary>
         /// <param name="uid"> Stores the Id of the user sharing the screen.</param>
         /// <param name="uname"> Stores the username of the user sharing the screen.</param>

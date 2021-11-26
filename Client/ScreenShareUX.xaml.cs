@@ -44,7 +44,7 @@ namespace Client
                     File.Delete("./Icons/screenshare.png");
                     File.Copy("./Icons/meet.me_logo_no_bg.png", "./Icons/screenshare.png");
 
-                    this.ReceivedMessage.Text = "You have lost ur network connection";
+                    this.ReceivedMessage.Text = "Network Problem";
                 }
                 else if (screenviewmodel.messageType == -1) // some one else is sharing so u can't share ur screen
                 {
@@ -66,6 +66,13 @@ namespace Client
                     img.Save("./Icons/screenshare.png", ImageFormat.Png);
 
                     this.ReceivedMessage.Text = string.Empty;
+                }
+                else
+                {
+                    File.Delete("./Icons/screenshare.png");
+                    File.Copy("./Icons/meet.me_logo_no_bg.png", "./Icons/screenshare.png");
+
+                    this.ReceivedMessage.Text = "No one is sharing the screen";
                 }
             }
         }
