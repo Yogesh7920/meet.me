@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Generic;
 using Networking;
+using System.Threading;
+
 
 namespace Whiteboard
 {
@@ -45,36 +47,53 @@ namespace Whiteboard
                 return instance;
             }
         }
-        
+
         public void OnDataReceived(string data)
         {
             BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
-            foreach (var subscriber in subscribers) 
+            foreach (var subscriber in subscribers)
             {
+                /*_ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+                  DispatcherPriority.Normal,
+                  new Action<List<UXShape>>((ServerUpdate) =>
+                  {
+                      lock (this)
+                      {
+                          processServerUpdateBatch(ServerUpdate);
+                      }
+                  }
+
+              ),
+              ServerUpdate);
+                Thread thread = new Thread(() => subscriber.OnMessageReceived(deserializedShape));
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+                thread.Join();*/
+
                 subscriber.OnMessageReceived(deserializedShape);
             }
-            
+
         }
-        
+
         /// <summary>
         /// serializes the shape objects and passes it to communicator.send()
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
-        public void Send(BoardServerShape clientUpdate) 
+        public void Send(BoardServerShape clientUpdate)
         {
             string xml_obj = serializer.Serialize(clientUpdate);
             communicator.Send(xml_obj, moduleIdentifier);
-            
-        }   
+
+        }
         /// <summary>
         /// publishes deserialized objects to listeners
         /// </summary>
         /// <param name="listener">subscriber</param>
-        public void Subscribe(IServerUpdateListener listener) 
+        public void Subscribe(IServerUpdateListener listener)
         {
             subscribers.Add(listener);
         }
-        
+
 
 
     }

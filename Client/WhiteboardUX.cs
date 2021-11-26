@@ -1756,12 +1756,16 @@ namespace Client
         private Canvas GlobCanvas;
         private IClientBoardStateManager manager;
 
+        private bool isSubscribedToWBState;
+
         public IWhiteBoardOperationHandler WBOps;
 
         private Dispatcher ApplicationMainThreadDispatcher =>
             (Application.Current?.Dispatcher != null) ?
                 Application.Current.Dispatcher :
                 Dispatcher.CurrentDispatcher;
+
+        private IUXClientSessionManager _modelDb;
 
         /// <summary>
         /// Class to manage existing and new shapes by providing various methods by aggregating WhiteBoard Module  
@@ -1776,6 +1780,8 @@ namespace Client
             {
                 this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
                 this.manager = ClientBoardStateManager.Instance;
+                _modelDb = SessionManagerFactory.GetClientSessionManager();
+                _modelDb.SubscribeSession(this);
             }
 
             this.shapeManager = new ShapeManager(testing : this.testing);
@@ -1783,10 +1789,12 @@ namespace Client
 
             this._numCheckpoints = 0;
             this._chk = new ObservableCollection<string>();
-            
+
+            //Initially not subscribed to WBStateManager
+            this.isSubscribedToWBState = false;
 
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
-            //this.GlobCanvas.IsEnabled = false;
+            this.GlobCanvas.IsEnabled = false;
         }
 
         public void OnClientSessionChanged(SessionData session)
@@ -1797,9 +1805,14 @@ namespace Client
                         {
                             lock (this)
                             {
-                                //this.manager = ClientBoardStateManager.Instance;
-                                //this.manager.Start();
-                                this.manager.Subscribe(this, "whiteboard");
+                                if (!this.isSubscribedToWBState)
+                                {
+                                    //When this notification occurs, Dashboard has initialised the WhiteboardStateManager properly and we can finally subscribe to it
+                                    //It is essential that this .Subscribe() method is only called once for a Whiteboard UX ViewModel
+                                    this.manager.Subscribe(this, "whiteboard");
+                                    this.GlobCanvas.IsEnabled = false;
+                                    this.isSubscribedToWBState = true;
+                                }
                             }
                         }),
                         session);
@@ -1920,6 +1933,12 @@ namespace Client
             manager.SaveCheckpoint();
         }
 
+        public Canvas DeleteShape(Canvas cn)
+        {
+            cn = this.shapeManager.DeleteShape(cn, WBOps);
+            return cn;
+        }
+
         /// <summary>
         /// Restores the selected checkpoint  
         /// </summary>
@@ -1930,21 +1949,21 @@ namespace Client
             manager.FetchCheckpoint(CheckNum);
         }
 
-        public void OnUpdateFromStateManager(List<UXShape> ServerUpdate)
+        public void OnUpdateFromStateManager(List<UXShapeHelper> ServerUpdate)
         {
 
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                    DispatcherPriority.Normal,
-                    new Action<List<UXShape>>((received) =>
-                    {
-                        lock (this)
-                        {
-                            processServerUpdateBatch(received);
-                        }
-                    }
+                  DispatcherPriority.Normal,
+                  new Action<List<UXShapeHelper>>((ServerUpdate) =>
+                  {
+                      lock (this.shapeManager) lock (this.freeHand)
+                      {
+                          processServerUpdateBatch(ServerUpdate);
+                      }
+                  }
 
-                ),
-                ServerUpdate);
+              ),
+              ServerUpdate);
         }
 
         public void sendUndoRequest()
@@ -2017,8 +2036,10 @@ namespace Client
 
         }
 
-        private void processServerUpdateBatch(List<UXShape> received)
+        private void processServerUpdateBatch(List<UXShapeHelper> receivedHelper)
         {
+            List<UXShape> received = UXShape.ToUXShape(receivedHelper);
+
             //WE ASSUME that an update batch can only have a single Clear Canvas request 
             IEnumerable<UXShape> iterat = received.OfType<UXShape>().Where(x => x.OperationType == Operation.CLEAR_STATE);
             if (!testing) Debug.Assert(iterat.Count() == 1);
@@ -2034,10 +2055,9 @@ namespace Client
             {
                 //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor
                 if (!testing) Debug.Assert(_numCheckpoints == 0);
-                if (!testing) Debug.Assert(GlobCanvas.IsEnabled == false);
-
                 //ASSUMING that the user has already been SHOWN THE WARNING
                 GlobCanvas.Children.Clear();
+                if (!testing) Debug.Assert(GlobCanvas.IsEnabled == false);
                 //Supposed to make the "Restore Checkpoint" dropdown with CheckPointNumber number of dropdown tiles
                 increaseCheckpointNum(received[0].CheckPointNumber);
             }
@@ -2074,6 +2094,10 @@ namespace Client
                         /// ASSUMING that this batch of server update contains ONLY AND ONLY Operation.FETCH_STATE requests
                         /// VERIFY THE ABOVE ASSUMPTION FROM ASHISH
                         ///
+                        if (received[i].WindowsShape == null) {
+                            this.GlobCanvas.IsEnabled = true;
+                            continue; 
+                        }
                         if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
                         else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
 
@@ -2119,6 +2143,19 @@ namespace Client
                         else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
 
                         break;
+                    case Operation.CREATE:
+                        //If the operation is MODIFY, directly render it onto the Canvas
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        break;
+                    case Operation.DELETE:
+                        //If the operation is MODIFY, directly render it onto the Canvas
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+
+                        break;
+
                 }
             }
         }

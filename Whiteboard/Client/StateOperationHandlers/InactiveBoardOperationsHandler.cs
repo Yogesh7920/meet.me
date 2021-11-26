@@ -2,11 +2,12 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/25/2021
 **/
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Whiteboard
     /// <summary>
     /// Handler when Board is Inactive State.
     /// </summary>
-    class InactiveBoardOperationsHandler : BoardOperationsState
+    public class InactiveBoardOperationsHandler : BoardOperationsState
     {
         /// <summary>
         /// Constructor for InactiveBoardOperationsHandler
@@ -89,7 +90,21 @@ namespace Whiteboard
         public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start,
                                                           Coordinate end, string shapeId, DragPos dragpos, bool shapeComp = false)
         {
-            return new List<UXShape>();
+            try
+            {
+                // This requirement is very specified to the UX team.
+                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+                UXShape oldShape = new(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeId);
+                UXShape newShape = new(UXOperation.CREATE, shapeFromManager.MainShapeDefiner, shapeId);
+
+                List<UXShape> grey = new() { oldShape, newShape };
+                return grey;
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine(e.Message);
+                return null;
+            }
         }
 
 

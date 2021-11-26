@@ -45,6 +45,7 @@ namespace Testing.UX.Whiteboard
             _globCanvas = _viewModel.shapeManager.UnselectAllBB(_globCanvas, _WBOps);
             Assert.AreEqual(_viewModel.shapeManager.selectedShapes.Count, 0);
 
+            _globCanvas.Children.Clear();
         }
 
         [Test]
