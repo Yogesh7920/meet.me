@@ -67,11 +67,11 @@ namespace ScreenSharing
 		/// </summary>
 		public ScreenShareClient()
 		{
-			Timer = new System.Timers.Timer(2000);
-			Timer.Elapsed += OnTimeout;
+            Timer = new System.Timers.Timer(2000);
+            Timer.Elapsed += OnTimeout;
 			Timer.AutoReset = true;
-
-			Communicator = CommunicationFactory.GetCommunicator();
+            FrameQueue = new Queue<SharedScreen>();
+            Communicator = CommunicationFactory.GetCommunicator();
 			Communicator.Subscribe(this.GetType().Namespace, this);
 			Serializer = new Serializer();
 

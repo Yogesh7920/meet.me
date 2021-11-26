@@ -49,9 +49,9 @@ namespace ScreenSharing
 			Timer = new System.Timers.Timer(2000);
 			Timer.Elapsed += OnTimeout;
 			Timer.AutoReset = true;
+            FrameQueue = new Queue<SharedScreen>();
 
-
-			Communicator = CommunicationFactory.GetCommunicator();
+            Communicator = CommunicationFactory.GetCommunicator();
 			Communicator.Subscribe(this.GetType().Namespace, this);
 			Serializer = new Serializer();
 
