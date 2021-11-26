@@ -10,18 +10,34 @@ namespace Content
         /// </summary>
         public SendFileData FileData;
 
-        /// <summary>
-        /// Clones the messageData object
-        /// </summary>
-        /// <returns>Returns the cloned instance of the object</returns>
-
         public MessageData()
         {
         }
 
+        /// <summary>
+        /// Clones the messageData object
+        /// </summary>
+        /// <returns>Returns the cloned instance of the object</returns>
         public MessageData Clone()
         {
             return (MessageData)MemberwiseClone();
+        }
+
+        /// <summary>
+        /// Contructor for MessageData from ReceiveMessageData
+        /// </summary>
+        /// <param name="msgData"></param>
+        /// <returns></returns>
+        public MessageData(ReceiveMessageData msgData)
+        {
+            Event = msgData.Event;
+            Message = msgData.Message;
+            MessageId = msgData.MessageId;
+            ReceiverIds = msgData.ReceiverIds;
+            SenderId = msgData.SenderId;
+            ReplyThreadId = msgData.ReplyThreadId;
+            Starred = msgData.Starred;
+            Type = msgData.Type;
         }
     }
 }

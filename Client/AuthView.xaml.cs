@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/**
+ * owned by: Irene Casmir
+ * created by: Irene Casmir
+ * date created: 25/10/2021
+ * date modified: 23/11/2021
+**/
+
+using Client.ViewModel;
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Client.ViewModels;
 
 namespace Client
 {
@@ -38,6 +34,45 @@ namespace Client
             double windowHeight = this.Height;
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
+        }
+        private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+        /// <summary>
+        /// Minimize button functionality
+        /// </summary>  
+        private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal || this.WindowState == WindowState.Maximized)
+            {
+                this.WindowState = WindowState.Minimized;
+            }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
+        /// Maximize button functionality
+        /// </summary>
+        private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Normal)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = WindowState.Normal;
+            }
+        }
+        /// <summary>
+        /// Close button functionality
+        /// </summary>
+        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
         /// <summary>
         /// Handler method for Join Room button click

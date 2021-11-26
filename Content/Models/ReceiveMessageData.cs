@@ -53,11 +53,28 @@ namespace Content
         public ReceiveMessageData()
         {
             MessageId = -1;
-            ReceiverIds = new int[0];
+            ReceiverIds = null;
             ReplyThreadId = -1;
             SenderId = -1;
             SentTime = new DateTime();
             Starred = false;
+        }
+
+        /// <summary>
+        /// Contructor for ReceiveMessageData from MessageData
+        /// </summary>
+        /// <param name="msgData"></param>
+        /// <returns></returns>
+        public ReceiveMessageData(MessageData msgData)
+        {
+            Event = msgData.Event;
+            Message = msgData.Message;
+            MessageId = msgData.MessageId;
+            ReceiverIds = msgData.ReceiverIds;
+            SenderId = msgData.SenderId;
+            ReplyThreadId = msgData.ReplyThreadId;
+            Starred = msgData.Starred;
+            Type = msgData.Type;
         }
     }
 }
