@@ -9,7 +9,6 @@ using System.Net.Sockets;
 using Dashboard.Server.Persistence;
 using System.IO;
 using Dashboard.Server.Telemetry;
-using Whiteboard;
 
 namespace Testing.Dashboard
 {
@@ -170,6 +169,7 @@ namespace Testing.Dashboard
 
             ClientToServerData deserialisedObject = _serializer.Deserialize<ClientToServerData>(_testCommunicator.sentData);
             Assert.NotNull(deserialisedObject);
+            Assert.AreEqual("removeClient", deserialisedObject.eventType);
             Assert.AreEqual(username, deserialisedObject.username);
             Assert.AreEqual(userId, deserialisedObject.userID);
         }
@@ -276,7 +276,7 @@ namespace Testing.Dashboard
         [TestCase("This is sample summary")]
         [TestCase("")]
         [Test]
-        public void GetSummary_GetSummaryClientSide_ReturnsSummary(string testSummary)
+        public void GetSummary_GetSummaryClientSide_UpdatesUXWithModifiedSummary(string testSummary)
         {
             UserData user = new("John", 1);
             // Adding a user at client
@@ -335,36 +335,36 @@ namespace Testing.Dashboard
             Assert.IsNotEmpty(actualSummary);
         }
 
-        //[Test]
-        //public void GetAnalyticsProcedure_GetAnalyticsServerSide_SendsSessionAnalyticsObjectOnNetwork()
-        //{
-        //    int expectedUsers = 10;
-        //    List<UserData> users =  Utils.GenerateUserData(expectedUsers);
-        //    AddUsersAtServer(users);
-        //    _testContentServer.chats = Utils.GetSampleChatContextForUsers(users);
-        //    ClientToServerData sampleClientRequest = new("getAnalytics", "John", 1);
-        //    serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
-        //    SessionAnalytics actualAnalytics = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData).sessionAnalytics;
-        //    Assert.NotNull(actualAnalytics.chatCountForEachUser);
-        //    Assert.NotNull(actualAnalytics.userCountAtAnyTime);
-        //    Assert.NotNull(actualAnalytics.insincereMembers);
-        //    Assert.AreEqual(actualAnalytics.userCountAtAnyTime.Count, expectedUsers);
-        //    Assert.Pass();
-        //}
+        [Test]
+        public void GetAnalyticsProcedure_GetAnalyticsServerSide_SendsSessionAnalyticsObjectOnNetwork()
+        {
+            int expectedUsers = 10;
+            List<UserData> users = Utils.GenerateUserData(expectedUsers);
+            AddUsersAtServer(users);
+            _testContentServer.chats = Utils.GetSampleChatContextForUsers(users);
+            ClientToServerData sampleClientRequest = new("getAnalytics", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            SessionAnalytics actualAnalytics = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData).sessionAnalytics;
+            Assert.NotNull(actualAnalytics.chatCountForEachUser);
+            Assert.NotNull(actualAnalytics.userCountAtAnyTime);
+            Assert.NotNull(actualAnalytics.insincereMembers);
+            Assert.AreEqual(actualAnalytics.userCountAtAnyTime.Count, expectedUsers);
+            Assert.Pass();
+        }
 
-        //[Test]
-        //public void GetAnalytics_TelemetryAnalyticsRetrievalClientSide_UpdatesUXWithTelemetryAnalytics()
-        //{
-        //    UserData user = new("John", 1);
-        //    SessionAnalytics expectedData = Utils.GenerateSessionAnalyticsData();
-        //    // Adding a user at client
-        //    ServerToClientData sampleServerResponse = new("getSummary", null, null, expectedData, user);
-        //    clientSessionManagerB.OnDataReceived(_serializer.Serialize(sampleServerResponse));
-        //    SessionAnalytics actualData = newUX.sessionAnalytics;
-        //    CollectionAssert.AreEqual(expectedData.chatCountForEachUser,actualData.chatCountForEachUser);
-        //    CollectionAssert.AreEqual(expectedData.insincereMembers, actualData.chatCountForEachUser);
-        //    CollectionAssert.AreEqual(expectedData.userCountAtAnyTime, actualData.userCountAtAnyTime);
-        //}
+        [Test]
+        public void GetAnalytics_TelemetryAnalyticsRetrievalClientSide_UpdatesUXWithTelemetryAnalytics()
+        {
+            UserData user = new("John", 1);
+            SessionAnalytics expectedData = Utils.GenerateSessionAnalyticsData();
+            // Adding a user at client
+            ServerToClientData sampleServerResponse = new("getAnalytics", null, null, expectedData, user);
+            clientSessionManagerB.OnDataReceived(_serializer.Serialize(sampleServerResponse));
+            SessionAnalytics actualData = newUX.sessionAnalytics;
+            CollectionAssert.AreEqual(expectedData.chatCountForEachUser, actualData.chatCountForEachUser);
+            CollectionAssert.AreEqual(expectedData.insincereMembers, actualData.insincereMembers);
+            CollectionAssert.AreEqual(expectedData.userCountAtAnyTime, actualData.userCountAtAnyTime);
+        }
 
         [Test]
         public void ModuleInitialisations_ClientModuleInitialisations_InitialisesRequiredModules()
