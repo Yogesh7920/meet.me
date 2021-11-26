@@ -30,6 +30,10 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
 
         <Style TargetType="TextBox">
             <Style.Triggers>
