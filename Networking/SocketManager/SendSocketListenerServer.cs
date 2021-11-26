@@ -17,9 +17,6 @@ namespace Networking
 {
     public class SendSocketListenerServer
     {
-        // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 1025;
-
         // Declare the dictionary variable which stores client_ID and corresponding socket object 
         private readonly Dictionary<string, TcpClient> _clientIdSocket;
         
@@ -135,80 +132,72 @@ namespace Networking
                 // Call GetDestination function to know destination from the packet object
                 var tcpSockets = GetDestination(packet);
 
-                // Send the message in chunks of threshold number of characters, 
-                // if the data size is greater than threshold value
-                 for (var i = 0; i < msg.Length; i += Threshold)
+                foreach (var tcpSocket in tcpSockets)
                 {
-                    var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
-                    foreach (var tcpSocket in tcpSockets)
+                    var outStream = Encoding.ASCII.GetBytes(msg);
+                    try
                     {
-                        var outStream = Encoding.ASCII.GetBytes(chunk);
-                        try
+                        Socket socket = tcpSocket.Client;
+                        
+                        // check client is still connected or not
+                        if ( socket.Poll(1, SelectMode.SelectRead) && socket.Available == 0 )
                         {
-                            var networkStream = tcpSocket.GetStream();
-                            Socket s = tcpSocket.Client;
+                            Trace.WriteLine("Client lost connection ");
                             
-                            // check client is still connected or not
-                            if ( s.Poll(1, SelectMode.SelectRead) && s.Available == 0 )
+                            // client is disconnected try 3 times to send data
+                            _ = Task.Run(() =>
                             {
-                                Trace.WriteLine("Client lost connection ");
-                                
-                                // client is disconnected try 3 times to send data
-                                _ = Task.Run(() =>
+                                var tcpSocketTry = tcpSocket;
+                                var outStreamTry = outStream;
+                                var isSent = false;
+                                Socket sTry = tcpSocketTry.Client;
+                                try
                                 {
-                                    var tcpSocketTry = tcpSocket;
-                                    var outStreamTry = outStream;
-                                    var isSent = false;
-                                    Socket sTry = tcpSocketTry.Client;
-                                    try
+                                    for (int t = 0; t < 3; t++)
                                     {
-                                        for (int t = 0; t < 3; t++)
+                                        Thread.Sleep(1000);
+                                        if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
                                         {
-                                            Thread.Sleep(1);
-                                            if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
+                                            sTry.Send(outStreamTry);
+                                            isSent = true;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (isSent == false)
+                                    {
+                                        Trace.WriteLine("client is disconnected");
+                                        var clientId = GetClientId(tcpSocketTry);
+                                        
+                                        // call notification handler for removing the client
+                                        foreach (var module in
+                                            _subscribedModules)
+                                            if (clientId != null)
                                             {
-                                                var networkStreamTry = tcpSocketTry.GetStream();
-                                                networkStreamTry.Write(outStreamTry, 0, outStream.Length);
-                                                networkStreamTry.Flush();
-                                                isSent = true;
-                                                break;
+                                                module.Value.OnClientLeft(clientId); 
                                             }
-                                        }
-                                        
-                                        if (isSent == false)
-                                        {
-                                            Trace.WriteLine("client is disconnected");
-                                            var clientId = GetClientId(tcpSocketTry);
-                                            
-                                            // call notification handler for removing the client
-                                            foreach (var module in
-                                                _subscribedModules)
-                                                if (clientId != null)
-                                                {
-                                                    module.Value.OnClientLeft(clientId); 
-                                                }
-                                                else
-                                                {
-                                                    Trace.WriteLine("ClientId is not present");
-                                                }
-                                        }
+                                            else
+                                            {
+                                                Trace.WriteLine("ClientId is not present");
+                                            }
                                     }
-                                    catch (Exception e)
-                                    {
-                                        Console.WriteLine("Networking :"+e);
-                                        
-                                    }
-                                });
-                                
-                            }else{
-                                networkStream.Write(outStream, 0, outStream.Length);
-                                networkStream.Flush();
-                            }
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine("Networking :"+e);
+                                    
+                                }
+                            });
+                            
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Console.WriteLine("Networking :"+e);
+                            socket.Send(outStream);
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Networking :"+e);
                     }
                 }
             }

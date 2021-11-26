@@ -51,7 +51,14 @@ namespace Content
             // subscribe to the network
             _notifHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
-            _communicator.Subscribe("Content", _notifHandler);
+            try
+            {
+                _communicator.Subscribe("Content", _notifHandler);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentClient] Exception encountered during subscribing to networking module: {e.GetType().Name}: {e.Message}");
+            }
 
             // initialize file handler and chat handler
             _fileHandler = new FileClient(_communicator);
@@ -65,7 +72,14 @@ namespace Content
             set
             {
                 _communicator = value;
-                _communicator.Subscribe("Content", _notifHandler);
+                try
+                {
+                    _communicator.Subscribe("Content", _notifHandler);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine($"[ContentClient] Exception encountered when using networking module: {e.GetType().Name}: {e.Message}");
+                }
                 _fileHandler.Communicator = value;
                 _chatHandler.Communicator = value;
             }
