@@ -16,7 +16,7 @@ namespace Client
     {
         public int ReplyMsgId { get; set; }
         
-        ObservableCollection<Message> allmessages;
+        public ObservableCollection<Message> AllMessages;
         public ChatView()
         {
             InitializeComponent();
@@ -26,12 +26,8 @@ namespace Client
             viewModel.PropertyChanged += Listner;
             this.DataContext = viewModel;
 
-            allmessages = new ObservableCollection<Message>();
-            //allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
-            //allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
-            //allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
-            //allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
-            this.myChat.ItemsSource = allmessages;
+            AllMessages = new ObservableCollection<Message>();
+            this.myChat.ItemsSource = AllMessages;
         }
         private void Listner(object sender, PropertyChangedEventArgs e)
         {
@@ -39,13 +35,12 @@ namespace Client
             ChatViewModel viewModel = this.DataContext as ChatViewModel;
             if (propertyName == "ReceivedMsg")
             {
-                allmessages.Add(viewModel.ReceivedMsg);
+                AllMessages.Add(viewModel.ReceivedMsg);
+                //UpdateScrollBar(myChat);
             }
-            UpdateScrollBar(myChat);
         }
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
-            //System.Diagnostics.Debug.WriteLine(this.SendTextBox.Text);
             if (!string.IsNullOrEmpty(this.SendTextBox.Text))
             {
                 ChatViewModel viewModel = this.DataContext as ChatViewModel;
