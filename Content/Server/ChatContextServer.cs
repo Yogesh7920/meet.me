@@ -57,8 +57,10 @@ namespace Content
                 return null;
             }
 
-            // Else create a MessageData object from ReceiveMessageData and return that
-            return new MessageData(receiveMessageData);
+            // Else create a MessageData object from ReceiveMessageData and return that to be notified to clients
+            MessageData notifyMessageData = new MessageData(receiveMessageData);
+            notifyMessageData.Event = messageData.Event;
+            return notifyMessageData;
         }
 
         /// <summary>
@@ -88,7 +90,6 @@ namespace Content
 
             // Star the message and return the starred message
             message.Starred = !message.Starred;
-            message.Event = MessageEvent.Star;
             return message;
         }
 
@@ -110,7 +111,6 @@ namespace Content
 
             // Update the message and return the updated message
             message.Message = msgString;
-            message.Event = MessageEvent.Update;
             return message;
         }
     }
