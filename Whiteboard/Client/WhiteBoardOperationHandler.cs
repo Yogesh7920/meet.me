@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
@@ -238,7 +238,7 @@ namespace Whiteboard
 
         public void SetUserLevel(int userlevel)
         {
-            _boardState.UserLevel = userlevel;
+            _boardState.SetUserLevel(userlevel);
         }
     }
 }

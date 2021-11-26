@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/25/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
@@ -25,6 +25,7 @@ namespace Whiteboard
         public InactiveBoardOperationsHandler()
         {
             UserLevel = 0;
+            StateManager = ClientBoardStateManager.Instance;
         }
 
         /// <summary>
