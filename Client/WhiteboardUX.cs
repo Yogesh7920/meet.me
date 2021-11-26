@@ -1765,7 +1765,10 @@ namespace Client
         public ShapeManager shapeManager;
         public FreeHand freeHand;
         private Canvas GlobCanvas;
+
         private IClientBoardStateManager manager;
+
+        private IUXClientSessionManager _modelDb;
 
         public IWhiteBoardOperationHandler WBOps;
 
@@ -1787,6 +1790,8 @@ namespace Client
             {
                 this.WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)GlobCanvas.Height), ((int)GlobCanvas.Width)));
                 this.manager = ClientBoardStateManager.Instance;
+                _modelDb = SessionManagerFactory.GetClientSessionManager();
+                _modelDb.SubscribeSession(this);
             }
 
             this.shapeManager = new ShapeManager(testing : this.testing);
@@ -1798,6 +1803,7 @@ namespace Client
 
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
             this.GlobCanvas.IsEnabled = false;
+
         }
 
         public void OnClientSessionChanged(SessionData session)
@@ -1811,6 +1817,7 @@ namespace Client
                                 //this.manager = ClientBoardStateManager.Instance;
                                 //this.manager.Start();
                                 this.manager.Subscribe(this, "whiteboard");
+                                GlobCanvas.IsEnabled = false;
                             }
                         }),
                         session);
