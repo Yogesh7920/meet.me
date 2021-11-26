@@ -1,4 +1,6 @@
-﻿namespace Client
+﻿using System;
+
+namespace Client
 {
     public class Message
     {
@@ -9,5 +11,16 @@
         public string Time { get; set; }
         public string ReplyMessage { get; set; }
         public bool ToFrom { get; set; } //true-sent
+
+        public Message()
+        {
+            MessageId = -1;
+            UserName = null;
+            Type = true;
+            TextMessage = null;
+            Time = DateTime.Now.ToShortTimeString();
+            ReplyMessage = null;
+            ToFrom = false;
+        }
     }
 }
