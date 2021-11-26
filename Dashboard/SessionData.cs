@@ -10,7 +10,7 @@ namespace Dashboard
     /// This class is used to store the data about the 
     /// current session 
     /// </summary>
-    public class SessionData : IEquatable<SessionData>
+    public class SessionData 
     {
         /// <summary>
         /// Constructor to initialise and empty list of users
@@ -33,69 +33,21 @@ namespace Dashboard
         }
 
         /// <summary>
-        /// Helps to compare two session objects by overriding the 
-        /// Equals function of the IEquatable class.
+        /// Overrides the ToString() method to pring the sessionData object for testing, debugging and logging.
         /// </summary>
-        /// <param name="obj"> </param>
-        /// <returns></returns>
-        public override bool Equals(object obj)
+        /// <returns> Returns a string which contains the data of each user separated by a newline character </returns>
+        public override string ToString()
         {
-            return base.Equals(obj as SessionData);
-        }
-
-        /// <summary>
-        /// Function for comparing two SessionData Objects 
-        /// </summary>
-        /// <param name="other"> A bool to signify whether the two objects were equal or not </param>
-        /// <returns></returns>
-        public bool Equals(SessionData other)
-        {
-            return ScrambledEquals<UserData>(users, other.users);
-        }
-
-        /// <summary>
-        /// Compare the equality of two lists of objects ignoring the 
-        /// order of objects in both of the lists
-        /// </summary>
-        /// <typeparam name="T"> The type of object the list is made up of </typeparam>
-        /// <param name="list1"> The first list of objects </param>
-        /// <param name="list2"> The second list of objects </param>
-        /// <returns></returns>
-        public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2)
-        {
-            var cnt = new Dictionary<T, int>();
-            foreach (T s in list1)
+            string output = "";
+            for(int i = 0; i < users.Count; ++i)
             {
-                if (cnt.ContainsKey(s))
-                {
-                    cnt[s]++;
-                }
-                else
-                {
-                    cnt.Add(s, 1);
-                }
+                output += users[i].ToString();
+                output += "\n";
             }
-            foreach (T s in list2)
-            {
-                if (cnt.ContainsKey(s))
-                {
-                    cnt[s]--;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            return cnt.Values.All(c => c == 0);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            return output;
         }
 
         // the List of users in the meeting 
-        
         public List<UserData> users;
     }
 }

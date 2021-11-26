@@ -1,3 +1,11 @@
+/*
+ * Author: Tausif Iqbal
+ * Created on: 13/10/2021
+ * Modified on: 16/11/2021
+ * Summary: This file contains the class definition of
+ *          SendSocketListenerClient.
+ */
+
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -8,9 +16,6 @@ namespace Networking
 {
     public class SendSocketListenerClient
     {
-        // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 1025;
-
         // Declare the queue variable which is used to dequeue the required the packet 
         private readonly IQueue _queue;
 
@@ -36,6 +41,7 @@ namespace Networking
         /// <summary>
         ///     This method is for starting the thread
         /// </summary>
+        /// <returns> Void  </returns>
         public void Start()
         {
             _listen = new Thread(Listen);
@@ -48,7 +54,7 @@ namespace Networking
         ///     it also adds EOF to indicate that the message
         ///     that has been popped out from the queue is finished
         /// </summary>
-        /// ///
+        /// <param name="packet">Packet Object.</param>
         /// <returns>String </returns>
         private static string GetMessage(Packet packet)
         {
@@ -62,6 +68,7 @@ namespace Networking
         /// <summary>
         ///     This method is for listen to queue and send to server if some packet comes in queue
         /// </summary>
+        /// <returns> Void  </returns>
         private void Listen()
         {
             while (_listenRun)
@@ -75,24 +82,16 @@ namespace Networking
 
                     //Call GetMessage function to form string msg from the packet object 
                     var msg = GetMessage(packet);
-                    // Send the message in chunks of threshold number of characters, 
-                    // if the data size is greater than threshold value
-                    for (var i = 0; i < msg.Length; i += Threshold)
+                    var outStream = Encoding.ASCII.GetBytes(msg);
+                    try
                     {
-                        var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
-                        var outStream = Encoding.ASCII.GetBytes(chunk);
-                        try
-                        {
-                            var networkStream = _tcpSocket.GetStream();
-                            networkStream.Write(outStream, 0, outStream.Length);
-                            networkStream.Flush();
-                        }
-                        catch (Exception e)
-                        {
-                            Trace.WriteLine(
-                                "Networking: Error in SendSocketListenerClientThread "
-                                + e.Message);
-                        }
+                        _tcpSocket.Client.Send(outStream);
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine(
+                            "Networking: An Exception has been raised in SendSocketListenerClientThread "
+                            + e.Message);
                     }
                 }
             }
@@ -101,6 +100,7 @@ namespace Networking
         /// <summary>
         ///     This method is for stopping the thread
         /// </summary>
+        /// <returns> Void  </returns>
         public void Stop()
         {
             _listenRun = false;

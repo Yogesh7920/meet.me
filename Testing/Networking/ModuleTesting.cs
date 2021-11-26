@@ -136,6 +136,7 @@ namespace Testing.Networking
 
             // Whiteboard module exists, so shouldn't throw an error
             Assert.DoesNotThrow(() => _clientA.Communicator.Send(message, Modules.WhiteBoard));
+            _server.WbHandler.Wait();
         }
 
         [Test]
@@ -195,7 +196,7 @@ namespace Testing.Networking
         }
 
         [Test]
-        public void Serialize_SerializerShouldReturnValidXmlString()
+        public void Serialize_SerializerShouldReturnValidString()
         {
             var fakeChat = FakeChat.GetFakeChat();
             // Serializing and deserializing should give the same object.

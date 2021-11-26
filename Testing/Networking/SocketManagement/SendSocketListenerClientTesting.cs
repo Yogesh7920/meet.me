@@ -1,3 +1,10 @@
+/*
+* Author: Tausif Iqbal
+* Created on: 01/11/2021
+* Summary: This file covers the unit tests
+*           for the class SendSocketListenerClient.
+*/
+
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -103,7 +110,10 @@ namespace Testing.Networking.SocketManagement
             }
 
 
-            Thread.Sleep(100);
+            while (_queueR.Size() != 10)
+            {
+                Thread.Sleep(10);
+            }
             for (var i = 1; i <= 10; i++)
             {
                 var whiteBoardData = "packet" + i;

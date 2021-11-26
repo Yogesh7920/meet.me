@@ -9,10 +9,13 @@ using Whiteboard;
 using Content;
 
 
-namespace Dashboard.Client.SessionManagement 
+namespace Dashboard.Client.SessionManagement
 {
     using Dashboard.Server.Telemetry;
+    using System.Diagnostics;
+
     public delegate void NotifyEndMeet();
+    public delegate void NotifyAnalyticsCreated(SessionAnalytics analytics);
     public delegate void NotifySummaryCreated(string summary);
 
     /// <summary>
@@ -22,9 +25,10 @@ namespace Dashboard.Client.SessionManagement
     /// </summary>
     public class ClientSessionManager : IUXClientSessionManager, INotificationHandler
     {
+
         /// <summary>
-        /// Default constructor that will create a new SessionData object,
-        /// trace listener and the list for maintaining the subscribers for SessionData
+        /// Default constructor that will initialize communicator, contentclient,
+        /// clientBoardStateManager and user side client data.
         /// </summary>
         public ClientSessionManager()
         {
@@ -44,23 +48,26 @@ namespace Dashboard.Client.SessionManagement
             }
             _clientSessionData = null;
             _user = null;
-            chatSummary = null;
+            _chatSummary = null;
         }
 
         /// <summary>
-        /// Added for testing the Module
+        /// Added for testing the Module. The communicator can be set manually.
         /// </summary>
         /// <param name="communicator">
         /// Test communicator to test the functionality
         /// </param>
-        public ClientSessionManager(ICommunicator communicator)
+        public ClientSessionManager(ICommunicator communicator, IClientBoardStateManager whiteboardInstance = null)
         {
             TraceManager session = new();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
-            clientBoardStateManager = ClientBoardStateManager.Instance;
+            if (whiteboardInstance != null)
+                clientBoardStateManager = whiteboardInstance;
+            else
+                clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
 
 
@@ -69,7 +76,7 @@ namespace Dashboard.Client.SessionManagement
                 _clients = new List<IClientSessionNotifications>();
             }
             _clientSessionData = new SessionData();
-            chatSummary = null;
+            _chatSummary = null;
         }
 
         /// <summary>
@@ -81,15 +88,15 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Boolean denoting the success or failure whether the user was added. </returns>
         public bool AddClient(string ipAddress, int port, string username)
         {
+            // Null or whitespace named users are not allowed
             if (String.IsNullOrWhiteSpace(username))
             {
                 return false;
             }
 
-            string serializedClientName;
-            
             lock (this)
             {
+                // trying to connect
                 string connectionStatus = _communicator.Start(ipAddress, port.ToString());
 
                 // if the IP address and/or the port number are incorrect
@@ -99,21 +106,10 @@ namespace Dashboard.Client.SessionManagement
                 }
 
             }
-            ClientToServerData clientName = new("addClient", username);
-            serializedClientName = _serializer.Serialize<ClientToServerData>(clientName);
-            _communicator.Send(serializedClientName,moduleIdentifier);
-            return true;
-        }
 
-        /// <summary>
-        /// Removes the user from the meeting by deleting their 
-        /// data from the session.
-        /// </summary>
-        public void RemoveClient()
-        {
-            ClientToServerData clientToServerData = new("removeClient", _user.username, _user.userID);
-            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
-            _communicator.Send(serializedData, moduleIdentifier);
+            // upon successfull connection, the request to add the client is sent to the server side.
+            SendDataToServer("addClient", username);
+            return true;
         }
 
         /// <summary>
@@ -121,9 +117,38 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void EndMeet()
         {
-            ClientToServerData clientToServerData = new("endMeet", _user.username, _user.userID);
-            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
-            _communicator.Send(serializedData, moduleIdentifier);
+            SendDataToServer("endMeet", _user.username, _user.userID);
+        }
+
+        /// <summary>
+        /// Gather analytics of the users and messages.
+        /// </summary>
+        public void GetAnalytics()
+        {
+            SendDataToServer("getAnalytics", _user.username, _user.userID);
+        }
+
+        /// <summary>
+        /// Used to fetch the sessionData for the client. Helpful for testing and debugging.
+        /// </summary>
+        /// <returns>A SessionData object containing the list of users in the session.</returns>
+        public SessionData GetSessionData()
+        {
+            return _clientSessionData;
+        }
+
+        public SessionAnalytics GetStoredAnalytics()
+        {
+            return _sessionAnalytics;
+        }
+
+        /// <summary>
+        /// Used to fetch the stored summary for the client. Helpful for testing and debugging.
+        /// </summary>
+        /// <returns>The summary of the session as a string.</returns>
+        public string GetStoredSummary()
+        {
+            return _chatSummary;
         }
 
         /// <summary>
@@ -133,32 +158,16 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Summary of the chats as a string. </returns>
         public void GetSummary()
         {
-            ClientToServerData clientToServerData = new("getSummary", _user.username, _user.userID);
-            string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
-            _communicator.Send(serializedData, moduleIdentifier);
+            SendDataToServer("getSummary", _user.username, _user.userID);
         }
 
         /// <summary>
-        /// Used to subcribe for any changes in the 
-        /// Session object.
+        /// Fetches the Userdata object of the client.
         /// </summary>
-        /// <param name="listener"> The subscriber. </param>
-        /// <param name="identifier"> The identifier of the subscriber. </param>
-        public void SubscribeSession(IClientSessionNotifications listener)
+        /// <returns>Returns the userData object of the client.</returns>
+        public UserData GetUser()
         {
-            lock(this)
-            {
-                _clients.Add(listener);
-            }
-        }
-
-        /// <summary>
-        /// Gather analytics of the users and messages.
-        /// </summary>
-        public SessionAnalytics GetAnalytics()
-        {
-            // the return type will be an analytics object yet to be decided.
-            throw new NotImplementedException();
+            return _user;
         }
 
         /// <summary>
@@ -166,9 +175,9 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void NotifyUXSession()
         {
-            for(int i=0;i<_clients.Count;++i)
+            for (int i = 0; i < _clients.Count; ++i)
             {
-                lock(this)
+                lock (this)
                 {
                     _clients[i].OnClientSessionChanged(_clientSessionData);
                 }
@@ -189,7 +198,7 @@ namespace Dashboard.Client.SessionManagement
             string eventType = deserializedObject.eventType;
 
             // based on the type of event, calling the appropriate functions 
-            switch(eventType)
+            switch (eventType)
             {
                 case "addClient":
                     UpdateClientSessionData(deserializedObject);
@@ -197,6 +206,10 @@ namespace Dashboard.Client.SessionManagement
 
                 case "getSummary":
                     UpdateSummary(deserializedObject);
+                    return;
+
+                case "getAnalytics":
+                    UpdateAnalytics(deserializedObject);
                     return;
 
                 case "removeClient":
@@ -208,10 +221,78 @@ namespace Dashboard.Client.SessionManagement
                     return;
 
                 default:
-                    throw new NotImplementedException();
+                    Trace.WriteLine("Received Invalid event type from the server");
+                    return;
             }
         }
 
+        /// <summary>
+        /// Removes the user from the meeting by deleting their 
+        /// data from the session.
+        /// </summary>
+        public void RemoveClient()
+        {
+            SendDataToServer("removeClient", _user.username, _user.userID);
+        }
+
+        /// <summary>
+        /// A helper function that sends data from Client to the server side. The data consists
+        /// of the event type and the user who requested for that event.
+        /// </summary>
+        /// <param name="eventName"> The type of the event. </param>
+        /// <param name="username"> The username of the user who requested</param>
+        /// <param name="userID"> The user ID of the user, if the user has not yet beend created then the default value is -1. </param>
+        private void SendDataToServer(string eventName, string username, int userID = -1)
+        {
+            ClientToServerData clientToServerData;
+            lock (this)
+            {
+                clientToServerData = new(eventName, username, userID);
+                string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);
+                _communicator.Send(serializedData, moduleIdentifier);
+            }
+
+        }
+
+        /// <summary>
+        /// Used to set/change the Client side UserData Object for testing and deubgging purposes.
+        /// </summary>
+        /// <param name="userName"> The username of the user.</param>
+        /// <param name="userID"> The user ID of the user, the default value is -1. </param>
+        public void SetUser(string userName, int userID = 1)
+        {
+            _user = new UserData(userName, userID);
+        }
+
+        /// <summary>
+        /// Used to set/change the users list for testing and deubgging purposes.
+        /// </summary>
+        /// <param name="users">The list of UserData object that the sessionData will be asssignet to.</param>
+        public void SetSessionUsers(List<UserData> users)
+        {
+            _clientSessionData.users = users;
+        }
+
+        private void UpdateAnalytics(ServerToClientData receivedData)
+        {
+            _sessionAnalytics = receivedData.sessionAnalytics;
+            UserData receiveduser = receivedData.GetUser();
+            AnalyticsCreated?.Invoke(_sessionAnalytics);
+        }
+
+        /// <summary>
+        /// Used to subcribe for any changes in the 
+        /// Session object.
+        /// </summary>
+        /// <param name="listener"> The subscriber. </param>
+        /// <param name="identifier"> The identifier of the subscriber. </param>
+        public void SubscribeSession(IClientSessionNotifications listener)
+        {
+            lock (this)
+            {
+                _clients.Add(listener);
+            }
+        }
 
         /// <summary>
         /// Updates the locally stored summary at the client side to the summary received from the 
@@ -225,14 +306,18 @@ namespace Dashboard.Client.SessionManagement
             SummaryData receivedSummary = receivedData.summaryData;
             UserData receivedUser = receivedData.GetUser();
 
-            // check if the current user is the one who requested to get the 
-            // summary
-            if(receivedUser.userID == _user.userID)
+            if (receivedSummary == null)
             {
-                lock(this)
+                Trace.WriteLine("Null summary received.");
+            }
+
+            // check if the current user is the one who requested to get the summary
+            if (receivedUser.userID == _user.userID)
+            {
+                lock (this)
                 {
-                    chatSummary = receivedSummary.summary;
-                    SummaryCreated?.Invoke(chatSummary);
+                    _chatSummary = receivedSummary.summary;
+                    SummaryCreated?.Invoke(_chatSummary);
                 }
             }
         }
@@ -245,24 +330,22 @@ namespace Dashboard.Client.SessionManagement
         private void UpdateClientSessionData(ServerToClientData receivedData)
         {
             // fetching the session data and user received from the server side
-            SessionData recievedSessionData = receivedData.sessionData;
+            SessionData receivedSessionData = receivedData.sessionData;
             UserData user = receivedData.GetUser();
 
-            //try
-            //{
-            //    if(user.username.Equals(null))
-            //    {
+            //Debug.Assert(receivedSessionData.users != null);
 
-            //    }
-            //}
-            
             // if there was no change in the data then nothing needs to be done
-            if (recievedSessionData == _clientSessionData)
+            if (receivedSessionData != null && _clientSessionData != null && receivedSessionData.users.Equals(_clientSessionData.users))
                 return;
+
+            //Console.WriteLine("The numbers of users are :" + receivedSessionData.users.Count);
+            //if(receivedSessionData.users.Count > 0)
+            //Console.WriteLine(receivedSessionData.users[0]);
 
             // a null _user denotes that the user is new and has not be set because all 
             // the old user (already present in the meeting) have their _user set.
-            if(_user == null)
+            if (_user == null)
             {
                 _user = user;
                 clientBoardStateManager.SetUser(user.userID.ToString());
@@ -271,31 +354,37 @@ namespace Dashboard.Client.SessionManagement
 
             // The user received from the server side is equal to _user only in the case of 
             // client departure. So, the _user and received session data are set to null to indicate this departure
-            else if(_user == user)
+            else if (_user.Equals(user))
             {
                 _user = null;
-                recievedSessionData = null;
+                receivedSessionData = null;
                 _communicator.Stop();
             }
 
             // update the sesseon data on the client side and notify the UX about it.
-            lock(this)
+            lock (this)
             {
-                _clientSessionData = (SessionData)recievedSessionData;
+                _clientSessionData = (SessionData)receivedSessionData;
+                //Console.WriteLine(recievedSessionData.users[0]);
             }
             NotifyUXSession();
         }
 
-        public SessionData _clientSessionData;
-        private readonly ICommunicator _communicator;
-        private readonly ISerializer _serializer;
+        private UserData _user;
+        private SessionData _clientSessionData;
         private readonly string moduleIdentifier;
         private readonly List<IClientSessionNotifications> _clients;
-        private string chatSummary;
-        private UserData _user;
+
+        private string _chatSummary;
+        private IContentClient _contentClient;
+        private readonly ISerializer _serializer;
+        private readonly ICommunicator _communicator;
+
+        private SessionAnalytics _sessionAnalytics;
+
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
-        private IContentClient _contentClient;
+        public event NotifyAnalyticsCreated AnalyticsCreated;
         private IClientBoardStateManager clientBoardStateManager;
     }
 }
