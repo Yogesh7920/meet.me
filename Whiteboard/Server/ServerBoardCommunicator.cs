@@ -67,11 +67,14 @@ namespace Whiteboard
                 }
                 else if (deserializedObject.OperationFlag == Operation.CREATE_CHECKPOINT)
                 {
-                    stateManager.SaveCheckpoint(userId);
+                    BoardServerShape shape = stateManager.SaveCheckpoint(userId);
+                    this.Send(shape);
                 }
                 else if (deserializedObject.OperationFlag == Operation.CREATE ||
                         deserializedObject.OperationFlag == Operation.DELETE ||
-                        deserializedObject.OperationFlag == Operation.MODIFY)
+                        deserializedObject.OperationFlag == Operation.MODIFY ||
+                        deserializedObject.OperationFlag == Operation.CLEAR_STATE 
+                        )
                 {
                     bool resp = stateManager.SaveUpdate(deserializedObject);
                     if (resp == true)
