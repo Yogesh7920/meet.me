@@ -20,6 +20,7 @@ namespace Content
 
         public FileClient(ICommunicator communicator)
         {
+
             _serializer = new Serializer();
             _communicator = communicator;
         }
@@ -61,11 +62,19 @@ namespace Content
 
             // serialize the message
             Trace.WriteLine("[FileClient] Serializing the file data");
-            var toSendSerialized = _serializer.Serialize(toSend);
 
-            // send the message
-            Trace.WriteLine("[FileClient] Sending the file to server");
-            _communicator.Send(toSendSerialized, "Content");
+            try
+            {
+                var toSendSerialized = _serializer.Serialize(toSend);
+
+                // send the message
+                Trace.WriteLine("[FileClient] Sending the file to server");
+                _communicator.Send(toSendSerialized, "Content");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[FileClient] Exception encountered during sending data: {e.GetType().Name}: {e.Message}");
+            }
         }
 
         public void Download(int messageId, string savepath)
@@ -78,10 +87,19 @@ namespace Content
             toSend.Message = savepath;
             toSend.FileData = null;
             toSend.SenderId = UserId;
-            // serialize the message and send via network
-            var toSendSerialized = _serializer.Serialize(toSend);
-            Trace.WriteLine("[FileClient] Sending file download request to server");
-            _communicator.Send(toSendSerialized, "Content");
+
+            try
+            {
+                // serialize the message and send via network
+                var toSendSerialized = _serializer.Serialize(toSend);
+                Trace.WriteLine("[FileClient] Sending file download request to server");
+                _communicator.Send(toSendSerialized, "Content");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[FileClient] Exception encountered during sending download request: {e.GetType().Name}: {e.Message}");
+            }
+
         }
     }
 }
