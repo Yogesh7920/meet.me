@@ -31,7 +31,7 @@ namespace Client
             _userslist = new UsersList(this);
             this.UsersListControl.Content = _userslist;
 
-            //SSClient = ScreenShareFactory.GetScreenSharer();
+            SSClient = ScreenShareFactory.GetScreenSharer();
         }
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
         /// <summary>
@@ -115,12 +115,12 @@ namespace Client
             _ssFlag = true;
             if (!sharing)
             {
-                //SSclient.startSharing();
+                SSClient.StartSharing();
                 sharing = true;
             }
             else
             {
-                //SSclient.StopSharing();
+                SSClient.StopSharing();
                 sharing = false;
             }
             //uncomment below line after respective User Controls are done

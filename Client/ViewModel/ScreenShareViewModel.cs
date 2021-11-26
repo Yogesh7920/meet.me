@@ -17,13 +17,14 @@ using System.ComponentModel;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace Client.ViewModel
 {
     class ScreenShareViewModel : IScreenShare
     {
         /// <summary>
-        /// The received caption.
+        /// The received message.
         /// </summary>
         public string ReceivedMessage
         {
@@ -32,13 +33,10 @@ namespace Client.ViewModel
 
         public ScreenShareViewModel()
         {
-            //screenshareclient _model =  screensharefactory.getscreensharer();
-            //_model.subscribe(this);
+            ScreenShareClient model = ScreenShareFactory.GetScreenSharer();
+            model.Subscribe(this);
 
-            File.Delete("./Icons/screenshare.png");
-            File.Copy("./Icons/meet.me_logo_no_bg.png", "./Icons/screenshare.png");
-
-            this.ReceivedMessage = "No one is sharing the screen";
+            this.ReceivedMessage = "No one is sharing the screen(Default)";
         }
 
         /// <summary>
@@ -48,6 +46,7 @@ namespace Client.ViewModel
         {
             string home = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string path = String.Join(@"\", home.Split('\\').Reverse().Skip(3).Reverse());
+            //Debug.WriteLine(path);
             // Problem in the network connection
             if (mtype == -2)
             {
