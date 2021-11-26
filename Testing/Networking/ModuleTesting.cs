@@ -126,7 +126,7 @@ namespace Testing.Networking
         {
             var message = RandomMessage;
             // Networking module does not exist, so must throw an error.
-            const string expectedMessage = "Key Error: Packet holds invalid module identifier";
+            const string expectedMessage = "[Networking] Key Error: Packet holds invalid module identifier";
 
             Assert.That(() => _clientA.Communicator.Send(Modules.Networking, message),
                 Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));
