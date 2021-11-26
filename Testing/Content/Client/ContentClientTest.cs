@@ -156,10 +156,45 @@ namespace Testing.Content
         }
 
         [Test]
-        public void CSend_ValidChatMessage_ShouldSendDataToServer()
+        public void CSend_NewMessage_ReplyToNonExistentMessage_ShouldThrowException()
+        {
+            // create a message that replies to a non existent message
+            SendMessageData msg = new SendMessageData();
+            msg.Message = "Hello there!";
+            msg.ReplyMsgId = ++maxValidMsgId; // no message with this id exists
+            msg.Type = MessageType.Chat;
+            msg.ReceiverIds = new int[0];
+
+            ArgumentException e = Assert.Throws<ArgumentException>(() => cClient.CSend(msg));
+            Assert.That(Contains(e.Message, "reply message id"));
+        }
+
+        /// <summary>
+        /// A reply to a message should be either part of the same thread as
+        /// that message or part of an entirely new thread
+        /// </summary>
+        [Test]
+        public void CSend_NewMessage_ReplyInDifferentThread_ShouldThrowException()
+        {
+            // create a message that replies to a non existent message
+            SendMessageData msg = new SendMessageData();
+            msg.Message = "Hello there!";
+            msg.ReplyMsgId = chatmsg.MessageId;
+            msg.Type = MessageType.Chat;
+            msg.ReceiverIds = new int[0];
+            // thread id of an existing thread that is different than that of the replied to message
+            msg.ReplyThreadId = userchatmsg.ReplyThreadId;
+
+            ArgumentException e = Assert.Throws<ArgumentException>(() => cClient.CSend(msg));
+            // see that the exception message contains mention of both reply message id and thread id
+            Assert.That(Contains(e.Message, "reply message id"));
+            Assert.That(Contains(e.Message, "thread id"));
+        }
+
+        [Test]
+        public void CSend_ValidChatMessageNotAReply_ShouldSendDataToServer()
         {
             SendMessageData msg = u.GenerateChatSendMsgData();
-            msg.ReceiverIds = new int[0];
 
             // send msg via CSend and capture sent data via fake communicator
             cClient.CSend(msg);
@@ -168,6 +203,75 @@ namespace Testing.Content
 
             Assert.AreEqual(msg.Type, sentMsg.Type);
             Assert.AreEqual(msg.Message, sentMsg.Message);
+            Assert.AreEqual(msg.ReplyMsgId, sentMsg.ReplyMsgId);
+            Assert.AreEqual(msg.ReceiverIds, sentMsg.ReceiverIds);
+            Assert.IsNull(sentMsg.FileData);
+            Assert.AreEqual(sentMsg.Event, MessageEvent.NewMessage);
+            Assert.AreEqual(sentMsg.Starred, false);
+            Assert.AreEqual(sentMsg.SenderId, cClient.UserId);
+        }
+
+        [Test]
+        public void CSend_ValidReplyExistingThread_ShouldSendDataToServer()
+        {
+            SendMessageData msg = u.GenerateChatSendMsgData();
+            msg.ReplyMsgId = chatmsg.MessageId;
+            msg.ReplyThreadId = chatmsg.ReplyThreadId; // replying to chatmsg in its thread
+
+            // send msg via CSend and capture sent data via fake communicator
+            cClient.CSend(msg);
+            string sentData = fakeComm.GetSentData();
+            MessageData sentMsg = serializer.Deserialize<MessageData>(sentData);
+
+            Assert.AreEqual(msg.Type, sentMsg.Type);
+            Assert.AreEqual(msg.Message, sentMsg.Message);
+            Assert.AreEqual(msg.ReplyMsgId, sentMsg.ReplyMsgId);
+            Assert.AreEqual(msg.ReceiverIds, sentMsg.ReceiverIds);
+            Assert.IsNull(sentMsg.FileData);
+            Assert.AreEqual(sentMsg.Event, MessageEvent.NewMessage);
+            Assert.AreEqual(sentMsg.Starred, false);
+            Assert.AreEqual(sentMsg.SenderId, cClient.UserId);
+        }
+
+        [Test]
+        public void CSend_ValidReplyNewThread_ShouldSendDataToServer()
+        {
+            SendMessageData msg = u.GenerateChatSendMsgData();
+            msg.ReplyMsgId = chatmsg.MessageId;
+            msg.ReplyThreadId = -1;
+
+            // send msg via CSend and capture sent data via fake communicator
+            cClient.CSend(msg);
+            string sentData = fakeComm.GetSentData();
+            MessageData sentMsg = serializer.Deserialize<MessageData>(sentData);
+
+            Assert.AreEqual(msg.Type, sentMsg.Type);
+            Assert.AreEqual(msg.Message, sentMsg.Message);
+            Assert.AreEqual(msg.ReplyMsgId, sentMsg.ReplyMsgId);
+            Assert.AreEqual(msg.ReceiverIds, sentMsg.ReceiverIds);
+            Assert.IsNull(sentMsg.FileData);
+            Assert.AreEqual(sentMsg.Event, MessageEvent.NewMessage);
+            Assert.AreEqual(sentMsg.Starred, false);
+            Assert.AreEqual(sentMsg.SenderId, cClient.UserId);
+        }
+
+        [Test]
+        public void CSend_ValidReplyNotBroadcast_ShouldSendDataToServer()
+        {
+            SendMessageData msg = u.GenerateChatSendMsgData();
+            msg.ReplyMsgId = chatmsg.MessageId;
+            msg.ReceiverIds = new int[] { 1, 2, 5}; // reply only to these users
+            // doesn't really matter if users exist or not, that's not content module's job to verify
+
+            // send msg via CSend and capture sent data via fake communicator
+            cClient.CSend(msg);
+            string sentData = fakeComm.GetSentData();
+            MessageData sentMsg = serializer.Deserialize<MessageData>(sentData);
+
+            Assert.AreEqual(msg.Type, sentMsg.Type);
+            Assert.AreEqual(msg.Message, sentMsg.Message);
+            Assert.AreEqual(msg.ReplyMsgId, sentMsg.ReplyMsgId);
+            // receiver ids should match since the precursor message was broadcast
             Assert.AreEqual(msg.ReceiverIds, sentMsg.ReceiverIds);
             Assert.IsNull(sentMsg.FileData);
             Assert.AreEqual(sentMsg.Event, MessageEvent.NewMessage);
@@ -516,13 +620,87 @@ namespace Testing.Content
         }
 
         [Test]
-        public void OnReceive_ValidNewMessage_NewThread_ShouldStoreMessageAndInformSubscribers()
+        public void OnReceive_NewMessage_InvalidReplyMsgId_ShouldThrowException()
         {
             MessageData msg = new MessageData();
             msg.Event = MessageEvent.NewMessage;
             msg.Type = MessageType.Chat;
             msg.MessageId = ++maxValidMsgId;
+            msg.ReplyMsgId = ++maxValidMsgId;
+            msg.ReplyThreadId = ++maxValidThreadId;
+            msg.Message = null;
+
+            ArgumentException e = Assert.Throws<ArgumentException>(() => cClient.OnReceive(msg));
+            Assert.That(Contains(e.Message, "reply message id"));
+        }
+
+        [Test]
+        public void OnReceive_NewMessage_ReplyToNonExistentMessage_ShouldThrowException()
+        {
+            MessageData msg = new MessageData();
+            msg.Event = MessageEvent.NewMessage;
+            msg.Type = MessageType.Chat;
+            msg.MessageId = ++maxValidMsgId;
+            msg.ReplyMsgId = ++maxValidMsgId; // reply to a message that doesn't exist
+            msg.ReplyThreadId = ++maxValidThreadId;
+            msg.Message = null;
+
+            ArgumentException e = Assert.Throws<ArgumentException>(() => cClient.OnReceive(msg));
+            Assert.That(Contains(e.Message, "reply message id"));
+        }
+
+        [Test]
+        public void OnReceive_NewMessage_ReplyInInvalidThread_ShouldThrowException()
+        {
+            MessageData msg = new MessageData();
+            msg.Event = MessageEvent.NewMessage;
+            msg.Type = MessageType.Chat;
+            msg.MessageId = ++maxValidMsgId;
+            msg.ReplyMsgId = chatmsg.MessageId; // reply to existing message
+            msg.ReplyThreadId = userchatmsg.ReplyThreadId; // but be part of a different existing thread
+            msg.Message = null;
+
+            ArgumentException e = Assert.Throws<ArgumentException>(() => cClient.OnReceive(msg));
+            Assert.That(Contains(e.Message, "reply message id"));
+            Assert.That(Contains(e.Message, "thread id"));
+        }
+
+        [Test]
+        public void OnReceive_ValidNewMessageNotReply_NewThread_ShouldStoreMessageAndInformSubscribers()
+        {
+            MessageData msg = new MessageData();
+            msg.Event = MessageEvent.NewMessage;
+            msg.Type = MessageType.Chat;
+            msg.MessageId = ++maxValidMsgId;
+            msg.ReplyMsgId = -1;
             msg.ReplyThreadId = ++maxValidThreadId; // new message thread
+            msg.Message = "Hello";
+            msg.SenderId = 42; // doesn't really matter
+
+            cClient.OnReceive(msg);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
+
+            // validate that the message has been stored
+            ChatContext msgContext = cClient.CGetThread(msg.ReplyThreadId);
+            int index = msgContext.RetrieveMessageIndex(msg.MessageId);
+            ReceiveMessageData storedMsg = msgContext.MsgList[index];
+            AssertAreEqualDeep(msg, storedMsg);
+
+            // validate that the subscribers have also received data
+            ReceiveMessageData recvdMsg = listener.GetOnMessageData();
+            AssertAreEqualDeep(msg, recvdMsg);
+        }
+
+        [Test]
+        public void OnReceive_ValidNewMessageNotReply_ExistingThread_ShouldStoreMessageAndInformSubscribers()
+        {
+            MessageData msg = new MessageData();
+            msg.Event = MessageEvent.NewMessage;
+            msg.Type = MessageType.File; // shouldn't matter if file or chat
+            msg.MessageId = ++maxValidMsgId;
+            msg.ReplyMsgId = -1;
+            msg.ReplyThreadId = chatmsg.ReplyThreadId; // existing message thread id
             msg.Message = "Hello";
             msg.SenderId = 401; // doesn't really matter
 
@@ -542,15 +720,43 @@ namespace Testing.Content
         }
 
         [Test]
-        public void OnReceive_ValidNewMessage_ExistingThread_ShouldStoreMessageAndInformSubscribers()
+        public void OnReceive_ValidNewReplyMessage_ExistingThread_ShouldStoreMessageAndInformSubscribers()
         {
             MessageData msg = new MessageData();
             msg.Event = MessageEvent.NewMessage;
-            msg.Type = MessageType.File; // shouldn't matter if file or chat
+            msg.Type = MessageType.Chat;
             msg.MessageId = ++maxValidMsgId;
-            msg.ReplyThreadId = chatmsg.ReplyThreadId; // existing message thread id
+            msg.ReplyMsgId = chatmsg.ReplyMsgId;
+            msg.ReplyThreadId = chatmsg.ReplyThreadId; // same thread id as the message replied to
             msg.Message = "Hello";
-            msg.SenderId = 401; // doesn't really matter
+            msg.SenderId = 69; // doesn't really matter
+
+            cClient.OnReceive(msg);
+            // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
+            Thread.Sleep(sleeptime);
+
+            // validate that the message has been stored
+            ChatContext msgContext = cClient.CGetThread(msg.ReplyThreadId);
+            int index = msgContext.RetrieveMessageIndex(msg.MessageId);
+            ReceiveMessageData storedMsg = msgContext.MsgList[index];
+            AssertAreEqualDeep(msg, storedMsg);
+
+            // validate that the subscribers have also received data
+            ReceiveMessageData recvdMsg = listener.GetOnMessageData();
+            AssertAreEqualDeep(msg, recvdMsg);
+        }
+
+        [Test]
+        public void OnReceive_ValidNewReplyMessage_NewThread_ShouldStoreMessageAndInformSubscribers()
+        {
+            MessageData msg = new MessageData();
+            msg.Event = MessageEvent.NewMessage;
+            msg.Type = MessageType.Chat;
+            msg.MessageId = ++maxValidMsgId;
+            msg.ReplyMsgId = chatmsg.ReplyMsgId;
+            msg.ReplyThreadId = ++maxValidMsgId; // new thread
+            msg.Message = "Hello";
+            msg.SenderId = 420; // doesn't really matter
 
             cClient.OnReceive(msg);
             // sleep for a few ms as the subscriber may take a few ms to notify the client because it creates a new thread for each notification
@@ -681,6 +887,7 @@ namespace Testing.Content
             Assert.AreEqual(msg1.ReceiverIds, msg2.ReceiverIds);
             Assert.AreEqual(msg1.Type, msg2.Type);
             Assert.AreEqual(msg1.ReplyThreadId, msg2.ReplyThreadId);
+            Assert.AreEqual(msg1.ReplyMsgId, msg2.ReplyMsgId);
         }
 
         public static void AssertAreEqualDeep(ReceiveMessageData msg1, ReceiveMessageData msg2)
@@ -691,6 +898,7 @@ namespace Testing.Content
             Assert.AreEqual(msg1.Message, msg2.Message);
             Assert.AreEqual(msg1.ReceiverIds, msg2.ReceiverIds);
             Assert.AreEqual(msg1.ReplyThreadId, msg2.ReplyThreadId);
+            Assert.AreEqual(msg1.ReplyMsgId, msg2.ReplyMsgId);
             Assert.AreEqual(msg1.SenderId, msg2.SenderId);
             Assert.AreEqual(msg1.SentTime, msg2.SentTime);
             Assert.AreEqual(msg1.Starred, msg2.Starred);
