@@ -28,7 +28,7 @@ namespace Testing.Dashboard.SessionManagement
         public void Setup()
         {
             _communicatorTest = new();
-            _contentServerTest = new ();
+            _contentServerTest = new();
             _serializer = new Serializer();
             _clientSessionManager = SessionManagerFactory.GetClientSessionManager(_communicatorTest);
             _serverSessionManager = SessionManagerFactory.GetServerSessionManager(_communicatorTest, _contentServerTest);
@@ -156,14 +156,14 @@ namespace Testing.Dashboard.SessionManagement
             Assert.AreEqual(receiveduser.username, username);
             Assert.NotNull(receiveduser.userID);
         }
-        
+
         [Test]
         public void AddClientProcedureServerSide_MultipleClientsArrives_UsersAddedToServerSession()
         {
             // Clients that arrives are added to the server side
             List<UserData> users = Utils.GetUsers();
             AddUsersToServerSession(users);
-            
+
             // The updated session data which includes new users is now sent from server to the client side
             // the deserializedData.sessionData is the updated session received from the server 
             ServerToClientData deserializedData = _serializer.Deserialize<ServerToClientData>(_communicatorTest.transferredData);
@@ -172,7 +172,7 @@ namespace Testing.Dashboard.SessionManagement
             // The recieved session must not be null and have the same users that were added
             Assert.NotNull(returnedSessionData);
             CollectionAssert.AreEqual(returnedSessionData.users, users);
-            Assert.AreEqual("addClient",deserializedData.eventType);
+            Assert.AreEqual("addClient", deserializedData.eventType);
             Assert.AreEqual(users.Count, _communicatorTest.userCount);
         }
 
@@ -185,7 +185,7 @@ namespace Testing.Dashboard.SessionManagement
 
             SessionData serverSession = Utils.GetSessionData();
             // nth user
-            int indexLastUser = serverSession.users.Count-1;
+            int indexLastUser = serverSession.users.Count - 1;
             UserData lastUser = serverSession.users[indexLastUser];
 
             // Till now, the nth user has arrived and the server session data has been updated
@@ -201,7 +201,7 @@ namespace Testing.Dashboard.SessionManagement
             serverSession.AddUser(newUser);
 
             // Server Notifies the Client side about the addition of the new user
-            ServerToClientData serverToClientDataNew = new("addClient",serverSession, null, null, newUser);
+            ServerToClientData serverToClientDataNew = new("addClient", serverSession, null, null, newUser);
             string serializedDataNew = _serializer.Serialize(serverToClientDataNew);
 
             // Updating the already present nth users session
@@ -227,8 +227,8 @@ namespace Testing.Dashboard.SessionManagement
 
             UserData user = new("Jake Vickers", 1);
 
-            _clientSessionManager.SetUser(user.username,user.userID);
-            _clientSessionManager.SetSessionUsers(new List<UserData>(){ user });
+            _clientSessionManager.SetUser(user.username, user.userID);
+            _clientSessionManager.SetSessionUsers(new List<UserData>() { user });
             AddUsersToServerSession(new List<UserData>() { user });
 
             _clientSessionManager.GetSummary();
@@ -256,10 +256,10 @@ namespace Testing.Dashboard.SessionManagement
             AddUsersToServerSession(new List<UserData>() { user });
 
             _clientSessionManager.GetAnalytics();
+            ServerToClientData serverToClientData = new ServerToClientData("getAnalytics", null, null, new(), user);
             _serverSessionManager.OnDataReceived(_communicatorTest.transferredData);
             _clientSessionManager.OnDataReceived(_communicatorTest.transferredData);
-
-            Assert.AreEqual(_clientSessionManager.GetStoredAnalytics(), "sampleString");
+            Assert.NotNull(_clientSessionManager.GetStoredAnalytics());
             Assert.NotNull(fakeClientUX.sessionAnalytics);
         }
 
@@ -276,11 +276,11 @@ namespace Testing.Dashboard.SessionManagement
             _clientSessionManager.RemoveClient();
             _serverSessionManager.OnDataReceived(_communicatorTest.transferredData);
             _clientSessionManager.OnDataReceived(_communicatorTest.transferredData);
-            
+
             ServerToClientData recData = _serializer.Deserialize<ServerToClientData>(_communicatorTest.transferredData);
             Console.WriteLine("USERS: " + recData.sessionData.ToString());
             Console.WriteLine("SUSERS: " + _serverSessionManager.GetSessionData().ToString());
-            
+
             Assert.Null(_clientSessionManager.GetUser());
             Assert.Null(_clientSessionManager.GetSessionData());
             CollectionAssert.AreEqual(users, _serverSessionManager.GetSessionData().users);
@@ -325,7 +325,7 @@ namespace Testing.Dashboard.SessionManagement
 
         public void AddUsersToServerSession(List<UserData> users)
         {
-            for(int i=0; i<users.Count; ++i)
+            for (int i = 0; i < users.Count; ++i)
             {
                 ClientToServerData clientToServerData = new("addClient", users[i].username);
                 string serializedData = _serializer.Serialize<ClientToServerData>(clientToServerData);

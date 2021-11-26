@@ -16,9 +16,6 @@ namespace Networking
 {
     public class SendSocketListenerClient
     {
-        // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 1025;
-
         // Declare the queue variable which is used to dequeue the required the packet 
         private readonly IQueue _queue;
 
@@ -85,24 +82,16 @@ namespace Networking
 
                     //Call GetMessage function to form string msg from the packet object 
                     var msg = GetMessage(packet);
-                    // Send the message in chunks of threshold number of characters, 
-                    // if the data size is greater than threshold value
-                    for (var i = 0; i < msg.Length; i += Threshold)
+                    var outStream = Encoding.ASCII.GetBytes(msg);
+                    try
                     {
-                        var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
-                        var outStream = Encoding.ASCII.GetBytes(chunk);
-                        try
-                        {
-                            var networkStream = _tcpSocket.GetStream();
-                            networkStream.Write(outStream, 0, outStream.Length);
-                            networkStream.Flush();
-                        }
-                        catch (Exception e)
-                        {
-                            Trace.WriteLine(
-                                "Networking: An Exception has been raised in SendSocketListenerClientThread "
-                                + e.Message);
-                        }
+                        _tcpSocket.Client.Send(outStream);
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine(
+                            "Networking: An Exception has been raised in SendSocketListenerClientThread "
+                            + e.Message);
                     }
                 }
             }
