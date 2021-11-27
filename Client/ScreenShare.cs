@@ -24,16 +24,16 @@ namespace Client
         public Bitmap sharedscreen;
 
         //Stores the user Id of the user sharing the screen
-        public int userId;
+        public string userId;
 
         //Stores the user name of the user sharing the screen
         public string username;
-        public void onScreenRecieved(SharedScreen screen)
+        public void OnScreenRecieved(string uid, string uname, int mtype, Bitmap screen)
         {
-            messageType = screen.messageType;
-            sharedscreen = screen.screen;
-            userId = screen.userId;
-            username = screen.username;
+            messageType = mtype;
+            sharedscreen = screen;
+            userId = uid;
+            username = uname;
         }
     }
 }

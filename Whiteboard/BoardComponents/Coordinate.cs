@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 10/13/2021
+ * Date Modified: 10/25/2021
 **/
 
 using System;
@@ -46,8 +46,9 @@ namespace Whiteboard
         /// <returns>True if equal, else false.</returns>
         public bool Equals( Coordinate otherCord)
         {
-            return (this.R == otherCord.R && this.C == otherCord.C);
+            return ((Math.Abs(this.R - otherCord.R) < BoardConstants.ALLOWED_DELTA) && (Math.Abs(this.C - otherCord.C) < BoardConstants.ALLOWED_DELTA));
         }
+
 
         /// <summary>
         /// Creates clone for object.

@@ -4,13 +4,17 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:local="clr-namespace:Client">
     <Color x:Key="Color1">#21094E</Color>
-    <Color x:Key="Color2">#511281</Color>
+    <Color x:Key="Color2">#635283</Color>
     <Color x:Key="Color3">#4CA1A3</Color>
-    <Color x:Key="Color4">#A5E1AD</Color>
+    <Color x:Key="Color4">#7fd48a</Color>
+    <Color x:Key="Color5">White</Color>
+    <Color x:Key="Color6">#46c156</Color>
 
     <SolidColorBrush x:Key="Color1Bg" Color="#21094E"></SolidColorBrush>
-    <SolidColorBrush x:Key="Color2Bg" Color="#511281"></SolidColorBrush>
+    <SolidColorBrush x:Key="Color2Bg" Color="#635283"></SolidColorBrush>
     <SolidColorBrush x:Key="Color3Bg" Color="#4CA1A3"></SolidColorBrush>
-    <SolidColorBrush x:Key="Color4Bg" Color="#A5E1AD"></SolidColorBrush>
+    <SolidColorBrush x:Key="Color4Bg" Color="#7fd48a"></SolidColorBrush>
+    <SolidColorBrush x:Key="Color5Bg" Color="White"></SolidColorBrush>
+    <SolidColorBrush x:Key="Color6Bg" Color="#46c156"></SolidColorBrush>
     
 </ResourceDictionary>

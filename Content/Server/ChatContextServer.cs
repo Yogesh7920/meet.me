@@ -58,8 +58,10 @@ namespace Content
             }
 
             // Else create a MessageData object from ReceiveMessageData and return that to be notified to clients
-            MessageData notifyMessageData = new MessageData(receiveMessageData);
-            notifyMessageData.Event = messageData.Event;
+            MessageData notifyMessageData = new MessageData(receiveMessageData)
+            {
+                Event = messageData.Event
+            };
             return notifyMessageData;
         }
 

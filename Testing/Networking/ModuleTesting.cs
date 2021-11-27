@@ -1,7 +1,5 @@
-/*
- * Author: Subhash S
- * Created on: 12/11/2021
- */
+/// <author>Subhash S</author>
+/// <created>12/11/2021</created>
 
 using System;
 using Networking;
@@ -14,14 +12,6 @@ namespace Testing.Networking
     [TestFixture]
     public class ModuleTesting
     {
-        
-        private readonly ISerializer _serializer = new Serializer();
-        private static string RandomMessage => GetRandomString();
-        private string _serverIp, _serverPort;
-        private readonly FakeServer _server = new();
-        private readonly FakeClientA _clientA = new();
-        private readonly FakeClientB _clientB = new();
-        
         [OneTimeSetUp]
         public void Init_StartServerAndClients_ServerIsNotifiedAboutClients()
         {
@@ -69,6 +59,13 @@ namespace Testing.Networking
             _clientA.Reset();
             _clientB.Reset();
         }
+
+        private readonly ISerializer _serializer = new Serializer();
+        private static string RandomMessage => GetRandomString();
+        private string _serverIp, _serverPort;
+        private readonly FakeServer _server = new();
+        private readonly FakeClientA _clientA = new();
+        private readonly FakeClientB _clientB = new();
 
         [Test]
         public void RemoveClient_ClientLeavesRoom_ServerIsNotifiedAndCannotSendMessage()
@@ -129,7 +126,7 @@ namespace Testing.Networking
         {
             var message = RandomMessage;
             // Networking module does not exist, so must throw an error.
-            const string expectedMessage = "Key Error: Packet holds invalid module identifier";
+            const string expectedMessage = "[Networking] Key Error: Packet holds invalid module identifier";
 
             Assert.That(() => _clientA.Communicator.Send(Modules.Networking, message),
                 Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));

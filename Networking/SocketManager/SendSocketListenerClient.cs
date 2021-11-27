@@ -1,10 +1,8 @@
-/*
- * Author: Tausif Iqbal
- * Created on: 13/10/2021
- * Modified on: 16/11/2021
- * Summary: This file contains the class definition of
- *          SendSocketListenerClient.
- */
+/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// This file contains the class definition of SendSocketListenerClient.
+/// </summary>
 
 using System;
 using System.Diagnostics;
@@ -47,6 +45,7 @@ namespace Networking
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            Trace.WriteLine("[Networking] SendSocketListenerClient thread started.");
         }
 
         /// <summary>
@@ -72,27 +71,26 @@ namespace Networking
         private void Listen()
         {
             while (_listenRun)
-            {
                 // If the queue is not empty, get a packet from the front of the queue
                 // and remove that packet from the queue
-                while (!_queue.IsEmpty())
-                {
-                    // Dequeue the front packet of the queue
-                    var packet = _queue.Dequeue();
+            while (!_queue.IsEmpty())
+            {
+                // Dequeue the front packet of the queue
+                var packet = _queue.Dequeue();
 
-                    //Call GetMessage function to form string msg from the packet object 
-                    var msg = GetMessage(packet);
-                    var outStream = Encoding.ASCII.GetBytes(msg);
-                    try
-                    {
-                        _tcpSocket.Client.Send(outStream);
-                    }
-                    catch (Exception e)
-                    {
-                        Trace.WriteLine(
-                            "Networking: An Exception has been raised in SendSocketListenerClientThread "
-                            + e.Message);
-                    }
+                //Call GetMessage function to form string msg from the packet object 
+                var msg = GetMessage(packet);
+                var outStream = Encoding.ASCII.GetBytes(msg);
+                try
+                {
+                    _tcpSocket.Client.Send(outStream);
+                    Trace.WriteLine("[Networking] Data sent from client to server.");
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(
+                        "[Networking] An Exception has been raised in SendSocketListenerClientThread "
+                        + e.Message);
                 }
             }
         }
@@ -104,6 +102,7 @@ namespace Networking
         public void Stop()
         {
             _listenRun = false;
+            Console.WriteLine("[Networking] Stopped SendSocketListenerClient thread.");
         }
     }
 }
