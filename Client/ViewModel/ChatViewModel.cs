@@ -1,8 +1,7 @@
 ﻿/// <author>Suchitra Yechuri</author>
-/// <created>12/11/2021</created>
+/// <created>2/11/2021</created>
 /// <summary>
-///     This file contains some mock objects which can
-///     be used to simulate tests for the networking module.
+/// ViewModel for the Chat page.
 /// </summary>
 
 using System;
@@ -17,105 +16,145 @@ using Content;
 namespace Client.ViewModel
 {
     public class ChatViewModel :
-        INotifyPropertyChanged, // Notifies clients that a property value has changed.
-        IContentListener, // Notifies clients that has a message has been received.
+        INotifyPropertyChanged, 
+        IContentListener, 
         IClientSessionNotifications
     {
-
+        /// <summary>
+        /// Message ids along with corresponding message strings.
+        /// </summary>
         public IDictionary<int, string> Messages;
+
+        /// <summary>
+        /// User ids along with user names.
+        /// </summary>
         public IDictionary<int, string> Users;
+
+        /// <summary>
+        /// Message ids and their corresponding thread ids.
+        /// </summary>
         public IDictionary<int, int> ThreadIds;
+
+        /// <summary>
+        /// Current user id.
+        /// </summary>
         public static int UserId
         {
             get; private set;
         }
+
         /// <summary>
-        /// The received caption.
+        /// Message to send.
+        /// </summary>
+        public SendMessageData MsgToSend
+        {
+            get; private set;
+        }
+        /// <summary>
+        /// Received message.
         /// </summary>
         public Message ReceivedMsg
         {
             get; private set;
         }
+
+        /// <summary>
+        /// Creates an instance of the Chat ViewModel.
+        /// </summary>
         public ChatViewModel()
         {
             Messages = new Dictionary<int, string>();
             Users = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
+
             _model = ContentClientFactory.GetInstance();
             _model.CSubscribe(this);
-            UserId = _model.GetUserId();
 
             _modelDb = SessionManagerFactory.GetClientSessionManager();
             _modelDb.SubscribeSession(this);
         }
 
+        /// <summary>
+        /// Send chat message to the content module.
+        /// </summary>
+        /// <param name="message"> The message string </param>
+        /// <param name="replyMsgId"> Reply id of the message replied to, -1 if not a reply </param>
         public void SendChat(string message, int replyMsgId)
         {
-            SendMessageData msg = new SendMessageData();
-            msg.Type = MessageType.Chat;
-            msg.Message = message;
-            msg.ReplyMsgId = replyMsgId;
-            if (replyMsgId != -1)
-            {
-                msg.ReplyThreadId = ThreadIds[replyMsgId];
-            }
-            else
-            {
-                msg.ReplyThreadId = -1;
-            }
-            System.Diagnostics.Debug.WriteLine(msg.ReplyThreadId);
-            msg.ReceiverIds = new int[] { };
-            _model.CSend(msg);
+            MsgToSend = new SendMessageData();
+            MsgToSend.Type = MessageType.Chat;
+            MsgToSend.Message = message;
+            MsgToSend.ReplyMsgId = replyMsgId;
+            MsgToSend.ReplyThreadId = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
+
+            // Empty, as its a broadcast message
+            MsgToSend.ReceiverIds = new int[] { };
+
+            _model.CSend(MsgToSend);
         }
 
+        /// <summary>
+        /// Send file message to the content module.
+        /// </summary>
+        /// <param name="message"> The message string containing the file path </param>
+        /// <param name="replyMsgId"> Reply id of the message replied to, -1 if not a reply </param>
         public void SendFile(string message, int replyMsgId)
         {
-            System.Diagnostics.Debug.WriteLine(message);
-            SendMessageData msg = new SendMessageData();
-            msg.Type = MessageType.File;
-            msg.Message = message;
-            msg.ReplyMsgId = replyMsgId;
-            if (replyMsgId != -1)
-            {
-                msg.ReplyThreadId = ThreadIds[replyMsgId];
-            }
-            else
-            {
-                msg.ReplyThreadId = -1;
-            }
-            msg.ReceiverIds = new int[] { };
-            _model.CSend(msg);
+            MsgToSend = new SendMessageData();
+            MsgToSend.Type = MessageType.File;
+            MsgToSend.Message = message;
+            MsgToSend.ReplyMsgId = replyMsgId;
+            MsgToSend.ReplyThreadId = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
+
+            // Empty, as its a broadcast message
+            MsgToSend.ReceiverIds = new int[] { };
+
+            _model.CSend(MsgToSend);
         }
+
+        /// <summary>
+        /// Inform content module that a message is starred.
+        /// </summary>
+        /// <param name="msgId"> The message id of the message </param>
         public void StarChat(int msgId)
         {
             _model.CMarkStar(msgId);
         }
+
+        /// <summary>
+        /// Inform content module that a file needs to be downloaded.
+        /// </summary>
+        /// <param name="msgId"> The message id of the message </param>
+        /// <param name="path"> The path to store the downloaded file in </param>
         public void DownloadFile(int msgId, string path)
         {
             _model.CDownload(msgId, path);
         }
+
+        /// <summary>
+        /// Handles an incoming message.
+        /// </summary>
+        /// <param name="messageData">The message object</param>
         public void OnMessage(ReceiveMessageData messageData)
         {
+            // Execute the call on the application's main thread.
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<ReceiveMessageData>(messageData =>
                         {
                             lock (this)
                             {
-
                                 if (messageData.Event == MessageEvent.NewMessage)
                                 {
                                     Messages.Add(messageData.MessageId, messageData.Message);
                                     ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
+
                                     ReceivedMsg = new Message();
                                     ReceivedMsg.MessageId = messageData.MessageId;
                                     ReceivedMsg.UserName = Users[messageData.SenderId];
                                     ReceivedMsg.TextMessage = messageData.Message;
-                                    System.Diagnostics.Debug.WriteLine(messageData.Message);
                                     ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                                     UserId = _model.GetUserId();
-                                    //System.Diagnostics.Debug.WriteLine("userid: " + UserId);
-                                    //System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
                                     ReceivedMsg.ToFrom = UserId == messageData.SenderId;
                                     ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                                     ReceivedMsg.Type = messageData.Type == MessageType.Chat;
@@ -137,7 +176,6 @@ namespace Client.ViewModel
                                 Users.Clear();
                                 foreach (UserData user in session.users)
                                 {
-                                    //System.Diagnostics.Debug.WriteLine(user.username);
                                     Users.Add(user.userID, user.username);
                                 }
                             }
@@ -145,8 +183,13 @@ namespace Client.ViewModel
                         session);
         }
 
+        /// <summary>
+        /// Handles incoming list of messages when a new user joins.
+        /// </summary>
+        /// <param name="allMessages">The list of all messages</param>
         public void OnAllMessages(List<ChatContext> allMessages)
         {
+            // Execute the call on the application's main thread.
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<List<ChatContext>>(allMessages =>
@@ -167,19 +210,15 @@ namespace Client.ViewModel
                                         ReceivedMsg.TextMessage = messageData.Message;
                                         ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                                         UserId = _model.GetUserId();
-                                        System.Diagnostics.Debug.WriteLine("userid: " + UserId);
-                                        System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
                                         ReceivedMsg.ToFrom = UserId == messageData.SenderId;
                                         ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                                         ReceivedMsg.Type = messageData.Type == MessageType.Chat;
-                                        this.OnPropertyChanged("ReceivedMsg");
+                                        this.OnPropertyChanged("ReceivedMsgs");
                                     }
                                 }
                             }
                         }),
                         allMessages);
-
-            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -207,7 +246,7 @@ namespace Client.ViewModel
                     Dispatcher.CurrentDispatcher;
 
         /// <summary>
-        /// Underlying data model.
+        /// Underlying data models.
         /// </summary>
         private IContentClient _model;
         private IUXClientSessionManager _modelDb;

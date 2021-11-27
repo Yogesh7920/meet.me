@@ -25,6 +25,8 @@ namespace Networking
         // Declare dictionary variable to get handler
         private readonly Dictionary<string, INotificationHandler> _subscribedModules;
 
+        private bool _isTesting;
+
         // Declare the thread variable of SendSocketListenerServer 
         private Thread _listen;
 
@@ -52,23 +54,9 @@ namespace Networking
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            var testMode = Environment.GetEnvironmentVariable("TEST_MODE");
+            _isTesting = testMode is "MODULE" or "UNIT";
             Trace.WriteLine("[Networking] SendSocketListenerServer thread started.");
-        }
-
-        /// <summary>
-        ///     This method form string from packet object
-        ///     it also adds EOF to indicate that the message
-        ///     that has been popped out from the queue is finished
-        /// </summary>
-        /// <param name="packet">Packet Object.</param>
-        /// <returns>String </returns>
-        private static string GetMessage(Packet packet)
-        {
-            var msg = packet.ModuleIdentifier;
-            msg += ":";
-            msg += packet.SerializedData;
-            msg += "EOF";
-            return msg;
         }
 
         /// <summary>
@@ -127,7 +115,7 @@ namespace Networking
                 var packet = _queue.Dequeue();
 
                 // Call GetMessage function to form string msg from the packet object 
-                var msg = GetMessage(packet);
+                var msg = Utils.GetMessage(packet);
 
                 // Call GetDestination function to know destination from the packet object
                 var tcpSockets = GetDestination(packet);
@@ -155,12 +143,13 @@ namespace Networking
                                 {
                                     for (var t = 0; t < 3; t++)
                                     {
-                                        Thread.Sleep(1000);
+                                        Thread.Sleep(_isTesting ? 1 : 100);
                                         if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
                                         {
                                             Trace.WriteLine("[Networking] Client has reconnected!");
                                             sTry.Send(outStreamTry);
-                                            Trace.WriteLine("[Networking] Data sent from server to client.");
+                                            Trace.WriteLine(
+                                                $"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
                                             isSent = true;
                                             break;
                                         }
@@ -182,19 +171,20 @@ namespace Networking
                                 }
                                 catch (Exception e)
                                 {
-                                    Console.WriteLine($"[Networking] {e}");
+                                    Trace.WriteLine($"[Networking] {e}");
                                 }
                             });
                         }
                         else
                         {
                             socket.Send(outStream);
-                            Trace.WriteLine("[Networking] Data sent from server to client.");
+                            Trace.WriteLine(
+                                $"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
                         }
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"[Networking] {e}");
+                        Trace.WriteLine($"[Networking] {e}");
                     }
                 }
             }
@@ -208,7 +198,7 @@ namespace Networking
         public void Stop()
         {
             _listenRun = false;
-            Console.WriteLine("[Networking] Stopped SendSocketListenerServer thread.");
+            Trace.WriteLine("[Networking] Stopped SendSocketListenerServer thread.");
         }
     }
 }

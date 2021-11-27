@@ -52,21 +52,12 @@ namespace Testing.Networking.SocketManagement
         private TcpClient _serverSocket;
         private TcpClient _clientSocket;
 
-        private static string GetMessage(Packet packet)
-        {
-            var msg = packet.ModuleIdentifier;
-            msg += ":";
-            msg += packet.SerializedData;
-            msg += "EOF";
-            return msg;
-        }
-
         [Test]
         public void SinglePacketReceiveTesting()
         {
             const string whiteBoardData = "hello ";
             var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
-            var msg1 = GetMessage(whiteBoardPacket);
+            var msg1 = Utils.GetMessage(whiteBoardPacket);
             var stream = _clientSocket.GetStream();
             stream.Write(Encoding.ASCII.GetBytes(msg1), 0, msg1.Length);
             stream.Flush();
@@ -87,7 +78,7 @@ namespace Testing.Networking.SocketManagement
         {
             var whiteBoardData = NetworkingGlobals.GetRandomString(4000);
             var whiteBoardPacket = new Packet {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
-            var message = GetMessage(whiteBoardPacket);
+            var message = Utils.GetMessage(whiteBoardPacket);
             var stream = _clientSocket.GetStream();
             stream.Write(Encoding.ASCII.GetBytes(message), 0, message.Length);
             stream.Flush();
@@ -112,7 +103,7 @@ namespace Testing.Networking.SocketManagement
                 var whiteBoardData = "packet" + i;
                 var whiteBoardPacket = new Packet
                     {ModuleIdentifier = Modules.WhiteBoard, SerializedData = whiteBoardData};
-                var msg = GetMessage(whiteBoardPacket);
+                var msg = Utils.GetMessage(whiteBoardPacket);
                 _clientSocket.Client.Send(Encoding.ASCII.GetBytes(msg));
             }
 
