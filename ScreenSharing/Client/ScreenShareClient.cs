@@ -2,7 +2,7 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 25/11/2021
+ * date modified: 26/11/2021
 **/
 
 using System;
@@ -67,12 +67,12 @@ namespace ScreenSharing
 		/// </summary>
 		public ScreenShareClient()
 		{
-			Timer = new System.Timers.Timer(2000);
-			Timer.Elapsed += OnTimeout;
+            Timer = new System.Timers.Timer(2000);
+            Timer.Elapsed += OnTimeout;
 			Timer.AutoReset = true;
-
-			Communicator = CommunicationFactory.GetCommunicator();
-			Communicator.Subscribe(this.GetType().Namespace, this);
+            FrameQueue = new Queue<SharedScreen>();
+            Communicator = CommunicationFactory.GetCommunicator();
+			Communicator.Subscribe("ScreenSharing", this);
 			Serializer = new Serializer();
 
 			// creating a thread to capture and send the screen
@@ -121,8 +121,7 @@ namespace ScreenSharing
             {
 				ThisSharing = false;
 				SharedScreen message = new SharedScreen(UserId, UserName, 0, null);
-				string scrn = Serializer.Serialize<SharedScreen>(message);
-				Communicator.Send(scrn, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+				Send(message);
 				return;
 			}
 			catch(Exception e)
@@ -219,15 +218,17 @@ namespace ScreenSharing
 					byte[] data = GetBytes(bitmap480p);
 
 					SharedScreen message;
-					if (ThisSharing)
-					{
-						message = new SharedScreen(UserId, UserName, 1, data);
+					
+					message = new SharedScreen(UserId, UserName, 1, data);
+					if(ThisSharing)
+                    { 
+						Send(message);
 					}
 					else
-					{
+                    {
 						return;
-					}
-					Send(message);
+                    }
+
 					Thread.Sleep(30);
 				}
 			}
@@ -246,7 +247,7 @@ namespace ScreenSharing
 			try
             {
 				string scrn = Serializer.Serialize<SharedScreen>(message);
-				Communicator.Send(scrn, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+				Communicator.Send(scrn, "ScreenSharing");
 			}
 			catch(Exception e)
             {
@@ -276,43 +277,45 @@ namespace ScreenSharing
 		/// </summary>
 		public void NotifyUx()
 		{
-			while (IsNotifying)
-			{
-				while (FrameQueue.Count == 0) ;
-				try
-                {
-					// if the queue is not empty take the screen from the queue and pass it to the ux
-					Timer.Interval = 2000;
-					if (Timer.Enabled == false)
-						Timer.Start();
-					OtherSharing = true;
-					SharedScreen currScreen = FrameQueue.Dequeue();
-					int mtype = currScreen.MessageType;
-					string uid = currScreen.UserId;
-					string uname = currScreen.Username;
-					if (mtype == 0)
-					{
-						Timer.Stop();
-						Timer.Interval = 2000;
-						OtherSharing = false;
-						Ux.OnScreenRecieved(uid, uname, mtype, null);
-					}
-					else
-					{
-						Bitmap screen = GetImage(currScreen.Screen);
-						Ux.OnScreenRecieved(uid, uname, mtype, screen);
-					}
-					if (ThisSharing && uid != UserId)
-					{
-						ThisSharing = false;
-						Ux.OnScreenRecieved(UserId, UserName, -1, null);
-					}
-				}
-				catch(Exception e)
+			try
+            {
+				while (IsNotifying)
 				{
-					Trace.WriteLine("ScreenSharing: Unable to Notify UX");
-					Trace.WriteLine(e.Message);
+					while (FrameQueue.Count == 0) ;
+				
+						// if the queue is not empty take the screen from the queue and pass it to the ux
+						Timer.Interval = 2000;
+						if (Timer.Enabled == false)
+							Timer.Start();
+						OtherSharing = true;
+						SharedScreen currScreen = FrameQueue.Dequeue();
+						int mtype = currScreen.MessageType;
+						string uid = currScreen.UserId;
+						string uname = currScreen.Username;
+						if (mtype == 0)
+						{
+							Timer.Stop();
+							Timer.Interval = 2000;
+							OtherSharing = false;
+							Ux.OnScreenRecieved(uid, uname, mtype, null);
+						}
+						else
+						{
+							Bitmap screen = GetImage(currScreen.Screen);
+							Ux.OnScreenRecieved(uid, uname, mtype, screen);
+						}
+						if (ThisSharing && uid != UserId)
+						{
+							ThisSharing = false;
+							Ux.OnScreenRecieved(UserId, UserName, -1, null);
+						}
+				
 				}
+			}
+			catch(Exception e)
+			{
+				Trace.WriteLine("ScreenSharing: Unable to Notify UX");
+				Trace.WriteLine(e.Message);
 			}
 		}
 

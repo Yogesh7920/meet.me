@@ -13,7 +13,15 @@ namespace ScreenSharing
     public static class ScreenShareFactory
     {
         // Singleton ScreenShareClient instance.
-        private static ScreenShareClient ScreenSharer = new ScreenShareClient();
+        private static ScreenShareClient ScreenSharer;
+
+        /// <summary>
+        /// Static constructor for the factory.
+        /// </summary>
+        static ScreenShareFactory()
+        {
+            ScreenSharer = new ScreenShareClient();
+        }
 
         /// <summary>
         /// Gets an instance of the ScreenShareClient.
