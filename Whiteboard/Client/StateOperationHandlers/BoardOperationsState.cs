@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/26/2021
+ * Date Modified: 11/27/2021
 **/
 
 using System;
@@ -47,6 +47,10 @@ namespace Whiteboard
 
         }
 
+        /// <summary>
+        /// Sets user level of itself and state manager.
+        /// </summary>
+        /// <param name="userLevel">user level.</param>
         public void SetUserLevel(int userLevel)
         {
             UserLevel = userLevel;
