@@ -72,7 +72,7 @@ namespace ScreenSharing
 			Timer.AutoReset = true;
             FrameQueue = new Queue<SharedScreen>();
             Communicator = CommunicationFactory.GetCommunicator();
-			Communicator.Subscribe(this.GetType().Namespace, this);
+			Communicator.Subscribe("ScreenSharing", this);
 			Serializer = new Serializer();
 
 			// creating a thread to capture and send the screen
@@ -247,7 +247,7 @@ namespace ScreenSharing
 			try
             {
 				string scrn = Serializer.Serialize<SharedScreen>(message);
-				Communicator.Send(scrn, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+				Communicator.Send(scrn, "ScreenSharing");
 			}
 			catch(Exception e)
             {
