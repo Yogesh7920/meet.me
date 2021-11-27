@@ -265,10 +265,6 @@ namespace Testing.Content
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
-
-            Assert.IsNull(currentMessageToSubscribers);
-
             string sentData = communicator.GetSentData();
 
             MessageData deserializedSentData = serializer.Deserialize<MessageData>(sentData);
@@ -350,9 +346,6 @@ namespace Testing.Content
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
-
-            Assert.IsNull(currentMessageToSubscribers);
             //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
@@ -378,9 +371,6 @@ namespace Testing.Content
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
-
-            Assert.IsNull(currentMessageToSubscribers);
             //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
 
@@ -398,9 +388,6 @@ namespace Testing.Content
 
             Thread.Sleep(sleeptime);
 
-            currentMessageToSubscribers = listener.GetOnMessageData();
-
-            Assert.IsNull(currentMessageToSubscribers);
             //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
@@ -426,9 +413,6 @@ namespace Testing.Content
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
-
-            Assert.IsNull(currentMessageToSubscribers);
             //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
@@ -455,9 +439,6 @@ namespace Testing.Content
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
-
-            Assert.IsNull(currentMessageToSubscribers);
             //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
@@ -474,9 +455,6 @@ namespace Testing.Content
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
-
-            Assert.IsNull(currentMessageToSubscribers);
             //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
