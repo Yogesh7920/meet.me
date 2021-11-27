@@ -453,9 +453,11 @@ namespace Testing.Content
         {
             communicator.Reset();
 
-            MessageData messageData = new MessageData();
-            messageData.Type = MessageType.HistoryRequest;
-            messageData.SenderId = 10;
+            MessageData messageData = new MessageData
+            {
+                Type = MessageType.HistoryRequest,
+                SenderId = 10
+            };
 
             string serializedMessageData = serializer.Serialize(messageData);
 
