@@ -1077,12 +1077,12 @@ namespace Client
             if (Bu.Toggled1 == true)
             {
                 viewModel.ChangePrivilegeSwitch();
-                MessageBox.Show("Toggled On");
+                MessageBox.Show("Changed Privilege Switch to On");
             }
             else
             {
                 viewModel.ChangePrivilegeSwitch();
-                MessageBox.Show("Toggled Off");
+                MessageBox.Show("Changed Privilege Switch to Off");
             }
         }
 

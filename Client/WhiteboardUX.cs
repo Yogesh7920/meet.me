@@ -266,7 +266,6 @@ namespace Client
     {
 
         public List<string> selectedShapes = new List<string>();
-        private Dictionary<string, string> BBmap = new Dictionary<string, string>();
         public AdornerLayer adornerLayer;
         public Shape underCreation;
         public System.Windows.Point selectMouseDownPos;
@@ -315,21 +314,13 @@ namespace Client
 
         public Canvas UnselectAllBB(Canvas cn, IWhiteBoardOperationHandler WBOp)
         {
-            /*foreach (var item in BBmap.Keys)
-            {
-                IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == item);
-                Shape sh = (iterat.ToList()[0]) as Shape;
-                cn = DeleteSelectionBB(cn, sh, WBOp);
-                selectedShapes.Remove(sh.Uid.ToString());
-            }*/
-
             foreach (var item in selectedShapes)
             {
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == item);
 
                 //Check Condition 
                 int cnt = iterat.Count();
-                if (!testing) Debug.Assert(cnt == 1);
+                //if (testing) Debug.Assert(cnt == 1);
                 Shape sh = (iterat.ToList()[0]) as Shape;
                 if (!testing) cn = DeleteSelectionBB(cn, sh, WBOp);
             }
@@ -353,7 +344,7 @@ namespace Client
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == item);
 
                 //Check Condition 
-                if(!testing) Debug.Assert(iterat.Count() == 1);
+                //if(testing) Debug.Assert(iterat.Count() == 1);
 
                 Shape sh = (iterat.ToList()[0]) as Shape;
                 cn.Children.Remove(sh);
@@ -378,11 +369,7 @@ namespace Client
                 //single shape selection case
                 case 0:
                     Trace.WriteLine("Selection of shape with Uid = " + sh.Uid.ToString() + "requested by user with Ctrl NOT pressed");
-                    //If selected shape is the selection box rectangle 
-                    if (BBmap.ContainsValue(sh.Uid))
-                    {
-                        cn = UnselectAllBB(cn, WBOp);
-                    }
+
                     //If selected shape is already selected or we select a different shape  
                     if (selectedShapes.Count > 0)
                     {
@@ -410,10 +397,6 @@ namespace Client
                     {
                         cn = DeleteSelectionBB(cn, sh, WBOp);
                         selectedShapes.Remove(sh.Uid.ToString());
-                    }
-                    else if (BBmap.ContainsValue(sh.Uid))
-                    {
-                        cn = UnselectAllBB(cn, WBOp);
                     }
                     else
                     {
@@ -733,7 +716,7 @@ namespace Client
         public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
 
-            if (mouseDownSh == null || BBmap.ContainsValue(mouseDownSh.Uid))
+            if (mouseDownSh == null )
             {
                 return cn;
             }
@@ -754,14 +737,15 @@ namespace Client
             if (shapeComp != true || testing == true)
             {
 
-                if (!testing) Debug.Assert(selectedShapes.Count == 1);
-                string shUID = selectedShapes[0];
+
+            //if(!testing) Debug.Assert(selectedShapes.Count == 1);
+            string shUID = selectedShapes[0];
 
                 /* Temporary WB Module code to test functionality */
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
 
-                //Check Condition 
-                if (!testing) Debug.Assert(iterat.Count() == 1);
+            //Check Condition 
+            //if (!testing) Debug.Assert(iterat.Count() == 1);
 
                 Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
@@ -844,7 +828,7 @@ namespace Client
         public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
 
-            if (mouseDownSh == null || BBmap.ContainsValue(mouseDownSh.Uid))
+            if (mouseDownSh == null)
             {
                 return cn;
             }
@@ -875,7 +859,7 @@ namespace Client
             Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
             //Check Condition 
-            if (!testing) Debug.Assert(iterat.Count() == 1);
+            //if (!testing) Debug.Assert(iterat.Count() == 1);
 
             if (sh is System.Windows.Shapes.Line)
             {
@@ -997,7 +981,7 @@ namespace Client
             Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
             //Check Condition 
-            if (!testing) Debug.Assert(iterat.Count() == 1);
+            //if (!testing) Debug.Assert(iterat.Count() == 1);
 
             cn = UnselectAllBB(cn, WBOps);
 
@@ -1043,6 +1027,8 @@ namespace Client
         /// </summary>
         public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
         {
+            if (shps == null || shps.Count() == 0) return cn;
+
             //UXShape has attribute
             foreach (UXShape shp in shps)
             {
@@ -1122,30 +1108,10 @@ namespace Client
                         IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
 
                         //Check Condition that the shape to be deleted actually exists within the Canvas and has unique Uid
-                        if (!testing) Debug.Assert(iterat.Count() == 1);
+                        //if (!testing) Debug.Assert(iterat.Count() == 1);
 
                         cn.Children.Remove(iterat.ToList()[0]);
                         break;
-                }
-                switch (shp.OperationType)
-                {
-                    case (Operation.CREATE_CHECKPOINT):
-                        break;
-                    case (Operation.FETCH_CHECKPOINT):
-                        break;
-                    case (Operation.FETCH_STATE):
-                        break;
-                    case (Operation.MODIFY):
-                        break;
-                        //case (Operation.CLEAR_STATE ):
-                        //In the `Clear Canvas` button on View, remember to display a warning message that the new shapes since last checkpoint would be lost forever
-                        //cn.Children.Clear()
-
-                        //Clearing pending rendering of the listened items from server, as the canvas would be cleared anyway
-                        //renderQueue.Clear()
-
-
-
                 }
 
             }
@@ -1198,7 +1164,7 @@ namespace Client
             IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
 
             //Check Condition 
-            if (!testing) Debug.Assert(iterat.Count() == 1);
+            //if (!testing) Debug.Assert(iterat.Count() == 1);
 
             //Convert the UI element to Shape type 
             Shape sh = (Shape)iterat.ToList()[0];
@@ -1582,6 +1548,8 @@ namespace Client
         /// </summary>
         public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
         {
+            if (shps == null || shps.Count() == 0) return cn;
+
             //UXShape has attribute
             foreach (UXShape shp in shps)
             {
@@ -1591,7 +1559,7 @@ namespace Client
                         cn.Children.Add(shp.WindowsShape);
                         break;
                     case (UXOperation.DELETE):
-                        //IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
+                        IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
 
 
 
@@ -1600,7 +1568,7 @@ namespace Client
 
 
 
-                        //cn.Children.Remove(iterat.ToList()[0]);
+                        cn.Children.Remove(iterat.ToList()[0]);
                         break;
                 }
             }
@@ -1619,8 +1587,7 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas DrawPolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, Point pt, bool creation = false, bool isEraser = false, bool shapeComp = false)
         {
-            SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
-            BoardColor stroke = new BoardColor(blackBrush.Color.R, blackBrush.Color.G, blackBrush.Color.B);
+            BoardColor stroke = new BoardColor(polyLineColor.Color.R, polyLineColor.Color.G, polyLineColor.Color.B);
 
             //SERVER REQUEST TO CREATE FINAL SHAPE
             List<UXShape> toRender = new List<UXShape>();
@@ -1652,7 +1619,6 @@ namespace Client
                 else
                 {
                     poly.Tag = "FREEHAND";
-
                     if (!testing)
                     {
                         C_end = new Coordinate((float)pt.X, (float)pt.Y);
@@ -1666,9 +1632,8 @@ namespace Client
                         assgn_uid = "auniquepoly";
                         poly.Uid = assgn_uid;
                     }
-                }
 
-                cn.Children.Add(poly);
+                    cn.Children.Add(poly);
             }
             else
             {
@@ -1696,13 +1661,13 @@ namespace Client
                             if (assgn_uid != "-1")
                             {
                                 poly.Points.Add(pt);
-                                
-                                if (!testing)
-                                {
-                                    C_end = new Coordinate((float)pt.X, (float)pt.Y);
-                                    toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
-                                    prev = C_end;
-                                }
+                                    if (!testing)
+                                    {
+                                        C_end = new Coordinate((float)pt.X, (float)pt.Y);
+                                        toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
+                                        prev = C_end;
+                                    }
+
                             }
                             else
                             {
@@ -1721,25 +1686,21 @@ namespace Client
                     //Sending final point with shapeComp=true
                     if (assgn_uid != "-1")
                     {
-                        if (!testing)
-                        {
-                            C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
-                            toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: true);
+                        C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
+                        toRender = WBOps.CreatePolyline(C_end, C_end, polyLineThickness, stroke, shapeId: assgn_uid, shapeComp: true);
 
                             //Since the WBOps.CreatePolyline sends render requests of form DELETE then CREATE,
                             //we choose to ignore DELETE as we are doing temporary rendering
                             System.Windows.Shapes.Polyline pl = (System.Windows.Shapes.Polyline)toRender[1].WindowsShape;
-
                             //Removing temporary render from Canvas
                             cn.Children.Remove(poly);
 
-                            //Adjusting the polyline render request to the user preference during Create Polyline operation
-                            ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).Stroke = polyLineColor;
-                            ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeThickness = polyLineThickness;
-                            ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
-                            ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
+                        //Adjusting the polyline render request to the user preference during Create Polyline operation
+ 
+                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
+                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
 
-                            //Rendering the Polyline onto the Canvas
+                           //Rendering the Polyline onto the Canvas
                             cn = RenderUXElement(toRender, cn);
 
                             assgn_uid = "-1";
@@ -1762,9 +1723,8 @@ namespace Client
         public Canvas DeletePolyline(Canvas cn, IWhiteBoardOperationHandler WBops, System.Windows.Shapes.Polyline selectedLine)
         {
             //Call : Render UX element to delete the polyline 
-
-            cn.Children.Remove(selectedLine);
-
+            List<UXShape> toRender = WBops.DeleteShape(selectedLine.Uid);
+            cn = RenderUXElement(toRender, cn);
             return cn;
         }
     }
@@ -1781,12 +1741,28 @@ namespace Client
         public ObservableCollection<string> _chk;
         private bool testing;
 
-        private void OnPropertyChanged(string property)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-
+        
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public ObservableCollection<string> chckList
+        {
+            get
+            {
+                return _chk;
+            }
+            set
+            {
+
+                int n = this.NumCheckpoints;
+                ObservableCollection<string> temp = new ObservableCollection<string>();
+                for (int i = 0; i < n; i++)
+                {
+                    temp.Add("Checkpoint #" + (i + 1));
+                }
+                _chk = temp;
+                OnPropertyChanged(nameof(chckList));
+            }
+        }
 
         public int NumCheckpoints
         {
@@ -1813,6 +1789,7 @@ namespace Client
                 }
             }
         }
+
 
 
 
@@ -1877,14 +1854,15 @@ namespace Client
 
             //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
             this.GlobCanvas.IsEnabled = false;
+
         }
+
 
         public void OnClientSessionChanged(SessionData session)
         {
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<SessionData>((session) =>
-                        {
                             lock (this)
                             {
                                 if (!this.isSubscribedToWBState)
@@ -1901,25 +1879,7 @@ namespace Client
         }
 
 
-        public ObservableCollection<string> chckList
-        {
-            get
-            {
-                return _chk;
-            }
-            set
-            {
-
-                int n = this.NumCheckpoints;
-                ObservableCollection<string> temp = new ObservableCollection<string>();
-                for (int i = 0; i < n; i++)
-                {
-                    temp.Add("Checkpoint #" + (i + 1));
-                }
-                _chk = temp;
-                OnPropertyChanged(nameof(chckList));
-            }
-        }
+        
 
         /// <summary>
         /// Changes the Background color of Canvas in View 
@@ -2050,6 +2010,8 @@ namespace Client
 
         public void sendUndoRequest()
         {
+            if(this.shapeManager.selectedShapes.Count > 0) this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
+
             List<UXShape> renderUndo = WBOps.Undo();
             for (int i = 0; i < renderUndo.Count(); i++)
             {
@@ -2067,6 +2029,8 @@ namespace Client
 
         public void sendRedoRequest()
         {
+            if (this.shapeManager.selectedShapes.Count > 0) this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
+
             List<UXShape> renderUndo = WBOps.Redo();
             for (int i = 0; i < renderUndo.Count(); i++)
             {
@@ -2091,32 +2055,13 @@ namespace Client
             }
             else
             {
-                //Write code to update the dropdown in "Restore Checkpoint" on .xaml, can use binding to viewModel.numCheckpoints
+                //Changing the bound element to the 'Load Checkpoint' dropdown
+                this.NumCheckpoints = latestNumCheckpoints;
                 return;
             }
         }
 
-        //To be called when drop downs in 'Load Checkpoint' button on view is clicked, if this returns false, ignore user's click, else call manager.LoadCheckpoint(num)
-        public bool ShowWarningFetchCheckpoint(int checkpointNumLoad)
-        {
-            //Write code such that
-            //if user accepts warning, return true
-            //else return false
 
-            return false;
-
-        }
-
-        //To be called when drop downs in 'Clear Board' button on view is called, if this returns false, ignore user's click, else call manager.ClearFrame(num)
-        public bool ShowWarningClearBoard()
-        {
-            //Write code such that
-            //if user accepts warning, return true
-            //else return false
-
-            return false;
-
-        }
 
         private void processServerUpdateBatch(List<UXShapeHelper> receivedHelper)
         {
@@ -2124,7 +2069,7 @@ namespace Client
 
             //WE ASSUME that an update batch can only have a single Clear Canvas request 
             IEnumerable<UXShape> iterat = received.OfType<UXShape>().Where(x => x.OperationType == Operation.CLEAR_STATE);
-            if (!testing) Debug.Assert(iterat.Count() == 1);
+            //if (testing) Debug.Assert(iterat.Count() == 1);
             //additional flag to signify whether the Clear Canvas request in current batch has been registered
             //Ignores all the other CLEAR_STATE requests in current batch
             int clearCanFlag = 0;
@@ -2132,21 +2077,22 @@ namespace Client
 
             //WE ASSUME that an update batch can only have either no FETCH_STATE requests, or all FETCH_STATE requests
             IEnumerable<UXShape> iterat2 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_STATE);
-            if (!testing) Debug.Assert(iterat2.Count() == 0 || iterat2.Count() == received.Count());
+            //if (testing) Debug.Assert(iterat2.Count() == 0 || iterat2.Count() == received.Count());
             if (received[0].OperationType == Operation.FETCH_STATE)
             {
+
                 //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor
-                if (!testing) Debug.Assert(_numCheckpoints == 0);
+                //if (testing) Debug.Assert(_numCheckpoints == 0);
                 //ASSUMING that the user has already been SHOWN THE WARNING
                 GlobCanvas.Children.Clear();
-                if (!testing) Debug.Assert(GlobCanvas.IsEnabled == false);
+                //if (testing) Debug.Assert(GlobCanvas.IsEnabled == false);
                 //Supposed to make the "Restore Checkpoint" dropdown with CheckPointNumber number of dropdown tiles
                 increaseCheckpointNum(received[0].CheckPointNumber);
             }
 
             //WE ASSUME that an update batch can only have either no FETCH_CHECKPOINT requests, or all FETCH_CHECKPOINT requests
             IEnumerable<UXShape> iterat3 = received.OfType<UXShape>().Where(x => x.OperationType == Operation.FETCH_CHECKPOINT);
-            if (!testing) Debug.Assert(iterat3.Count() == 0 || iterat3.Count() == received.Count());
+            //if (testing) Debug.Assert(iterat3.Count() == 0 || iterat3.Count() == received.Count());
             if (received[0].OperationType == Operation.FETCH_CHECKPOINT)
             {
                 //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO SAVE CHECKPOINT, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
@@ -2221,19 +2167,22 @@ namespace Client
 
                     case Operation.MODIFY:
                         //If the operation is MODIFY, directly render it onto the Canvas
-                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        if (received[i].WindowsShape == null) Trace.WriteLine("RenderUXElement received null");
+                        else if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
                         else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
 
                         break;
                     case Operation.CREATE:
                         //If the operation is MODIFY, directly render it onto the Canvas
-                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        if (received[i].WindowsShape == null) Trace.WriteLine("RenderUXElement received null");
+                        else if(received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
                         else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
 
                         break;
                     case Operation.DELETE:
                         //If the operation is MODIFY, directly render it onto the Canvas
-                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        if (received[i].WindowsShape == null) Trace.WriteLine("RenderUXElement received null");
+                        else if(received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
                         else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
 
                         break;
@@ -2241,13 +2190,6 @@ namespace Client
                 }
             }
         }
-
-        /*private void OnPropertyChanged(string property)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-        //RestorFrameDropDown
-        public event PropertyChangedEventHandler PropertyChanged;*/
 
     }
 }
