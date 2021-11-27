@@ -46,14 +46,20 @@ namespace Testing.E2E.Yogesh
             chatViewModel.SendChat(message, replyId);
             var serializedData = File.ReadAllText("networking_output.json");
             var data = _serializer.Deserialize<MessageData>(serializedData);
-            Assert.AreEqual(data.Message, "Hi, I am Yogesh");
+            Assert.AreEqual(data.Message, message);
             Assert.AreEqual(data.ReplyMsgId, replyId);
         }
 
         [Test]
-        public void SendFile()
+        [TestCase("../../../../DesignSpec.pdf", "DesignSpec.pdf", -1)]
+        public void SendFile(string filepath, string filename, int replyId)
         {
             var chatViewModel = new ChatViewModel();
+            chatViewModel.SendFile(filepath, replyId);
+            var serializedData = File.ReadAllText("networking_output.json");
+            var data = _serializer.Deserialize<MessageData>(serializedData);
+            Assert.AreEqual(data.Message, filename);
+            Assert.AreEqual(data.ReplyMsgId, replyId);
         }
 
         [Test]
