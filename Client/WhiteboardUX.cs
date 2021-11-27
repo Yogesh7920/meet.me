@@ -695,7 +695,6 @@ namespace Client
                     //select the shape 
                     SelectShape(cn, toRender.ElementAt(0).WindowsShape, WBOps, 0);
                 }
-               
             }
 
             return cn;
@@ -1561,13 +1560,6 @@ namespace Client
                     case (UXOperation.DELETE):
                         IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
 
-
-
-                        //Check Condition that the shape to be deleted actually exists within the Canvas and has unique Uid
-                        //Debug.Assert(iterat.Count() == 1);
-
-
-
                         cn.Children.Remove(iterat.ToList()[0]);
                         break;
                 }
@@ -1619,10 +1611,11 @@ namespace Client
                 else
                 {
                     poly.Tag = "FREEHAND";
+
                     if (!testing)
                     {
                         C_end = new Coordinate((float)pt.X, (float)pt.Y);
-                        toRender = WBOps.CreatePolyline(C_end, C_end, 2, stroke, shapeId: null, shapeComp: false);
+                        toRender = WBOps.CreatePolyline(C_end, C_end, polyLineThickness, stroke, shapeId: null, shapeComp: false);
                         prev = C_end;
 
                         assgn_uid = toRender[0].WindowsShape.Uid;
@@ -1632,8 +1625,9 @@ namespace Client
                         assgn_uid = "auniquepoly";
                         poly.Uid = assgn_uid;
                     }
+                }
 
-                    cn.Children.Add(poly);
+                cn.Children.Add(poly);
             }
             else
             {
@@ -1661,13 +1655,13 @@ namespace Client
                             if (assgn_uid != "-1")
                             {
                                 poly.Points.Add(pt);
-                                    if (!testing)
-                                    {
-                                        C_end = new Coordinate((float)pt.X, (float)pt.Y);
-                                        toRender = WBOps.CreatePolyline(prev, C_end, 2, stroke, shapeId: assgn_uid, shapeComp: false);
-                                        prev = C_end;
-                                    }
 
+                                if (!testing)
+                                {
+                                    C_end = new Coordinate((float)pt.X, (float)pt.Y);
+                                    toRender = WBOps.CreatePolyline(prev, C_end, polyLineThickness, stroke, shapeId: assgn_uid, shapeComp: false);
+                                    prev = C_end;
+                                }
                             }
                             else
                             {
@@ -1686,25 +1680,27 @@ namespace Client
                     //Sending final point with shapeComp=true
                     if (assgn_uid != "-1")
                     {
-                        C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
-                        toRender = WBOps.CreatePolyline(C_end, C_end, polyLineThickness, stroke, shapeId: assgn_uid, shapeComp: true);
+                        if (!testing)
+                        {
+                            C_end = new Coordinate((float)poly.Points.Last().X, (float)poly.Points.Last().Y);
+                            toRender = WBOps.CreatePolyline(C_end, C_end, polyLineThickness, stroke, shapeId: assgn_uid, shapeComp: true);
 
                             //Since the WBOps.CreatePolyline sends render requests of form DELETE then CREATE,
                             //we choose to ignore DELETE as we are doing temporary rendering
                             System.Windows.Shapes.Polyline pl = (System.Windows.Shapes.Polyline)toRender[1].WindowsShape;
+
                             //Removing temporary render from Canvas
                             cn.Children.Remove(poly);
 
-                        //Adjusting the polyline render request to the user preference during Create Polyline operation
- 
-                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
-                        ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
+                            //Adjusting the polyline render request to the user preference during Create Polyline operation
+                            ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
+                            ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
 
-                           //Rendering the Polyline onto the Canvas
-                            cn = RenderUXElement(toRender, cn);
+                            //Rendering the Polyline onto the Canvas
+                            cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
 
                             assgn_uid = "-1";
-                        }    
+                        }
                     }
                     else
                     {
@@ -1715,16 +1711,19 @@ namespace Client
             return cn;
         }
 
-        public Canvas CustomizePolyline(Canvas cn, IWhiteBoardOperationHandler WBOps)
-        {
-            return cn;
-        }
-
         public Canvas DeletePolyline(Canvas cn, IWhiteBoardOperationHandler WBops, System.Windows.Shapes.Polyline selectedLine)
         {
             //Call : Render UX element to delete the polyline 
-            List<UXShape> toRender = WBops.DeleteShape(selectedLine.Uid);
-            cn = RenderUXElement(toRender, cn);
+            if (!testing)
+            {
+                List<UXShape> toRender = WBops.DeleteShape(selectedLine.Uid);
+                cn = RenderUXElement(toRender, cn);
+            }
+            else
+            {
+                cn.Children.Remove(selectedLine);
+            }
+
             return cn;
         }
     }
@@ -1741,7 +1740,11 @@ namespace Client
         public ObservableCollection<string> _chk;
         private bool testing;
 
-        
+        private void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableCollection<string> chckList
@@ -1850,11 +1853,13 @@ namespace Client
             this._chk = new ObservableCollection<string>();
 
             //Initially not subscribed to WBStateManager
-            this.isSubscribedToWBState = false;
+            if (!testing)
+            {
+                this.isSubscribedToWBState = false;
 
-            //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
-            this.GlobCanvas.IsEnabled = false;
-
+                //Canvas initialised as non-responsive until FETCH_STATE requests are fully completed
+                this.GlobCanvas.IsEnabled = false;
+            }
         }
 
 
@@ -1863,6 +1868,7 @@ namespace Client
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<SessionData>((session) =>
+                        {
                             lock (this)
                             {
                                 if (!this.isSubscribedToWBState)
@@ -1879,7 +1885,7 @@ namespace Client
         }
 
 
-        
+
 
         /// <summary>
         /// Changes the Background color of Canvas in View 
@@ -1949,7 +1955,7 @@ namespace Client
         /// <summary>
         /// Changes the Privilege level of the current user  
         /// </summary>
-        public void ChangePrivilegeSwitch()
+        public void ChangeActivityState()
         {
             WBOps.SwitchState();
             return;
@@ -2098,8 +2104,8 @@ namespace Client
                 //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO SAVE CHECKPOINT, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
                 //IN THE WARNING, MENTION THAT THIS CHANGE CANNOT BE UNDOED
 
-                //To verify above thing, trace 'ShowWarningFetchCheckpoint'
-
+                //Unselecting all before clearing canvas 
+                if (this.shapeManager.selectedShapes.Count > 0) this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
 
                 //ASSUMING that the user has already been SHOWN THE WARNING
                 GlobCanvas.Children.Clear();

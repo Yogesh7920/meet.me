@@ -294,12 +294,12 @@
             </Button>
 
             <!--Toggle State Button-->
-            <TextBlock Text="Toggle State"
+            <TextBlock Name="ActivityBlock" Text="Active"
                 Foreground="LightGray"
                 Grid.Column="3"
                 FontSize="10"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="114,0,0,0"
+                HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="140,0,0,0"
              >
             </TextBlock>
 
@@ -944,7 +944,7 @@
                                                            VerticalAlignment="Center"
                                                            Margin="10 0 0 0"
                                                 ></TextBlock>
-                                                <Slider x:Name="StrokeThicknessSlider" Foreground="Black" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="StrokeThicknessSlider_ValueChanged"></Slider>
+                                                <Slider x:Name="StrokeThicknessSlider" Foreground="Black" Minimum="1" Maximum="20" TickPlacement="BottomRight" TickFrequency="5" Margin="5 5 5 5" ValueChanged="StrokeThicknessSlider_ValueChanged" IsSnapToTickEnabled="True"></Slider>
                                             </StackPanel>
                                         </Grid>
                                     </Popup>
