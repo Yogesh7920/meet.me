@@ -447,7 +447,7 @@ namespace Whiteboard
                     BoardShape newBoardShape = _lastDrawn.LastShape.Clone();
                     newBoardShape.LastModifiedTime = DateTime.Now;
 
-                    if (!StateManager.SaveOperation(newBoardShape) ||  !UserLevelHandler.IsAccessible(UserLevel, _lastDrawn.LastShape.UserLevel))
+                    if (!UserLevelHandler.IsAccessible(UserLevel, _lastDrawn.LastShape.UserLevel) || !StateManager.SaveOperation(newBoardShape))
                     {
                         _lastDrawn = null;
                         return UndoRealTimeRenderingModify(shapeId, operations);
@@ -520,7 +520,7 @@ namespace Whiteboard
         /// <param name="boardShape">Shape to update in stateManager.</param>
         private void UpdateStateManager(BoardShape boardShape)
         {
-            if (!StateManager.SaveOperation(boardShape) || !UserLevelHandler.IsAccessible(UserLevel, boardShape.UserLevel))
+            if (!UserLevelHandler.IsAccessible(UserLevel, boardShape.UserLevel) || !StateManager.SaveOperation(boardShape))
             {
                 throw new Exception("Couldn't update state of state Manager.");
             }
