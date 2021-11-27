@@ -15,7 +15,7 @@ namespace Networking
     public class ReceiveSocketListener
     {
         // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 500 * 1024;
+        private const int Threshold = 1024 * 1024;
 
         // Declare the TcpClient  variable 
         private readonly TcpClient _clientSocket;
