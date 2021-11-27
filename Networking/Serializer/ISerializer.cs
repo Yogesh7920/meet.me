@@ -1,4 +1,10 @@
-﻿namespace Networking
+﻿/*
+ * Author: Abdullah Khan
+ * Created on: 14/10/2021
+ * Summary: This file contains the interface details of ISerializer.
+ */
+
+namespace Networking
 {
     public interface ISerializer
     {

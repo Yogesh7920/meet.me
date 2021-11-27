@@ -1,9 +1,18 @@
-﻿using System;
+﻿/*
+ * Author: Abdullah Khan
+ * Created on: 14/10/2021
+ * Summary: This file contains the class definitions of the serializer submodule.
+ */
+
+using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace Networking
 {
+    /// <summary>
+    /// Wrapper object to store serilized object's type and serilized string representation.
+    /// </summary>
     public class MetaObject
     {
         public string typ;
@@ -17,6 +26,12 @@ namespace Networking
     }
     public class Serializer : ISerializer
     {
+        /// <summary>
+        /// JSON supported serialization
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objectToSerialize"></param>
+        /// <returns></returns>
         string SerializeJSON<T>(T objectToSerialize)
         {
             var jset = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
@@ -51,6 +66,12 @@ namespace Networking
                 throw;
             }
         }
+        /// <summary>
+        /// JSON supoorted deserialization.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="json"></param>
+        /// <returns></returns>
         T deserializeJSON<T>(string json)
         {
             var jset = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
