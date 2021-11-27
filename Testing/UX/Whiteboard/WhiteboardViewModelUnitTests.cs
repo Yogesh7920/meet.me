@@ -342,7 +342,7 @@ namespace Testing.UX.Whiteboard
         }
 
         [Test]
-        public void testCreateaPolyline1()
+        public void testCreatePolyline1()
         {
             //Without calling DispatcherUtil.DoEvents() the test will fail
             //DispatcherUtil.DoEvents();
@@ -386,6 +386,60 @@ namespace Testing.UX.Whiteboard
             Assert.AreEqual(((SolidColorBrush)line.Stroke).Color, ((SolidColorBrush)(new BrushConverter().ConvertFrom(Red))).Color);
 
             Assert.AreEqual(line.Points, drawingPoints);
+
+            _globCanvas.Children.Clear();
+        }
+
+        [Test]
+        public void testDeletePolyline1()
+        {
+            //Without calling DispatcherUtil.DoEvents() the test will fail
+            //DispatcherUtil.DoEvents();
+
+            Random r = new Random();
+            //Mouse points 
+            Point strt;
+            Point end;
+            PointCollection drawingPoints = new PointCollection();
+
+            strt.X = r.Next(1, (int)_globCanvas.Width - 1);
+            strt.Y = r.Next(1, (int)_globCanvas.Height - 1);
+            drawingPoints.Add(strt);
+
+            _viewModel.freeHand.SetColor(Red);
+            _viewModel.freeHand.SetThickness(2);
+            _globCanvas = _viewModel.freeHand.DrawPolyline(_globCanvas, _WBOps, strt, true, false, false);
+
+            //set mouse down i.e. starting point  
+            end = strt;
+
+            //mouse move 
+            for (int i = 1; i <= 20; i++)
+            {
+                end.X = strt.X + i;
+                end.Y = strt.Y + i;
+                drawingPoints.Add(end);
+
+                _globCanvas = _viewModel.freeHand.DrawPolyline(_globCanvas, _WBOps, end, false, false, false);
+            }
+
+            //mouse up 
+            _globCanvas = _viewModel.freeHand.DrawPolyline(_globCanvas, _WBOps, end, false, false, true);
+
+            //get the created Line
+            Shape sh = (Shape)_globCanvas.Children.OfType<UIElement>().Where(x => x.Uid == "auniquepoly").ToList()[0];
+            System.Windows.Shapes.Polyline line = ((System.Windows.Shapes.Polyline)sh);
+
+            Assert.AreEqual(line.StrokeThickness, 2);
+            Assert.AreEqual(((SolidColorBrush)line.Stroke).Color, ((SolidColorBrush)(new BrushConverter().ConvertFrom(Red))).Color);
+
+            Assert.AreEqual(line.Points, drawingPoints);
+
+            //call the delete polyline function 
+            _viewModel.freeHand.DeletePolyline(_globCanvas, _WBOps, line);
+
+            //check if line is removed from canvas 
+            Assert.AreEqual(_globCanvas.Children.Count, 0);
 
             _globCanvas.Children.Clear();
         }
