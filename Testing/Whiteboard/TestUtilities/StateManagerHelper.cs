@@ -90,7 +90,7 @@ namespace Testing.Whiteboard
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public static bool CompareUXShapeOrder(List<UXShape> uXShapes, List<BoardShape> boardShapes)
+        public static bool CompareUXShapeOrder(List<UXShapeHelper> uXShapes, List<BoardShape> boardShapes)
         {
             if(uXShapes == null && boardShapes == null)
             {
@@ -106,7 +106,7 @@ namespace Testing.Whiteboard
             }
             for(int i = 0; i < uXShapes.Count; i++)
             {
-                if(uXShapes[i].WindowsShape.Uid != boardShapes[i].Uid)
+                if(uXShapes[i].ShapeId != boardShapes[i].Uid)
                 {
                     return false;
                 }

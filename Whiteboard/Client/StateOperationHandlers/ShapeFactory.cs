@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/02/2021
+ * Date Modified: 11/25/2021
 **/
 
 using System;
@@ -16,7 +16,7 @@ namespace Whiteboard
     /// <summary>
     /// Factory for creating mainshape.
     /// </summary>
-    static class ShapeFactory
+    public static class ShapeFactory
     {
         /// <summary>
         /// MainShape object to use the functionalites provided by the class.
