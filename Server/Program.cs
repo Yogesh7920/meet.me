@@ -7,7 +7,6 @@
 
 using System;
 using Dashboard;
-using Dashboard.Server.SessionManagement;
 
 namespace Server
 {
@@ -16,6 +15,7 @@ namespace Server
         private static void Main(string[] args)
         {
             var ServerSM = SessionManagerFactory.GetServerSessionManager();
+
             // if the input command entered is startMeet, will call the GetPortsAndIPAddress function which creates the meeting and 
             // returns the object which contains IPAddress and Port of the meeting
             var Meeting = ServerSM.GetPortsAndIPAddress();

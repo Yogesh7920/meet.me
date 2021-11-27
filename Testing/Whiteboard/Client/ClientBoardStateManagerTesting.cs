@@ -312,7 +312,7 @@ namespace Testing.Whiteboard
             BoardServerShape update = new(boardShapes, Operation.FETCH_STATE, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
 
             // Act 
@@ -328,8 +328,8 @@ namespace Testing.Whiteboard
             }
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShape>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) && 
-                obj[0].OperationType == Operation.FETCH_STATE && obj[0].CheckPointNumber == 2)
+                It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) && 
+                obj[0].OperationType == Operation.FETCH_STATE && obj[0].CheckpointNumber == 2)
                 ), Times.Once());
         }
 
@@ -342,7 +342,7 @@ namespace Testing.Whiteboard
             BoardServerShape update = new(boardShapes, Operation.FETCH_CHECKPOINT, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
 
             // Act 
@@ -358,7 +358,7 @@ namespace Testing.Whiteboard
             }
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShape>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) &&
+                It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) &&
                 obj[0].OperationType == Operation.FETCH_CHECKPOINT)
                 ), Times.Once());
         }
@@ -373,7 +373,7 @@ namespace Testing.Whiteboard
             BoardServerShape update = new(boardShapes, Operation.FETCH_CHECKPOINT, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
 
             // Act 
@@ -383,7 +383,7 @@ namespace Testing.Whiteboard
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(update.ShapeUpdates[0].Uid));
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(update.ShapeUpdates[1].Uid));
             listener.Verify(m => m.OnUpdateFromStateManager(
-               It.Is<List<UXShape>>(obj => obj == null)
+               It.Is<List<UXShapeHelper>>(obj => obj == null)
                ), Times.Once());
         }
 
@@ -395,7 +395,7 @@ namespace Testing.Whiteboard
             BoardServerShape update = new(null, Operation.CREATE_CHECKPOINT, "user-id", 2, 0);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
 
             // Act 
@@ -404,7 +404,7 @@ namespace Testing.Whiteboard
             // Assert
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShape>>(obj => obj.Count == 1 && obj[0].CheckPointNumber == 2 &&
+                It.Is<List<UXShapeHelper>>(obj => obj.Count == 1 && obj[0].CheckpointNumber == 2 &&
                 obj[0].OperationType == Operation.CREATE_CHECKPOINT)
                 ), Times.Once());
         }
@@ -417,14 +417,14 @@ namespace Testing.Whiteboard
             BoardServerShape update = new(null, Operation.CREATE_CHECKPOINT, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
 
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
 
             // Assert
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()), Times.Never);
+            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -438,14 +438,14 @@ namespace Testing.Whiteboard
             BoardServerShape update = new(StateManagerHelper.GetListCompleteBoardShapes(1, operation), operation, "user-1", 2, 0);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
 
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
 
             // Assert
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()), Times.Never);
+            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -459,14 +459,14 @@ namespace Testing.Whiteboard
             BoardServerShape update = new(StateManagerHelper.GetListCompleteBoardShapes(2, operation), operation, "user-2", 2, 0);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
 
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
 
             // Assert
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()), Times.Never);
+            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -480,14 +480,14 @@ namespace Testing.Whiteboard
             BoardServerShape update = new(StateManagerHelper.GetListCompleteBoardShapes(1, operation), operation, "user-2", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
 
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
 
             // Assert
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()), Times.Never);
+            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -497,7 +497,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-1");
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
@@ -527,7 +527,7 @@ namespace Testing.Whiteboard
             }
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShape>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, expected))
+                It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, expected))
                 ), Times.Once());
         }
 
@@ -538,7 +538,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-1");
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
@@ -566,7 +566,7 @@ namespace Testing.Whiteboard
             {
                 Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             }
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()), Times.Never);
+            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -578,7 +578,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-1");
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
@@ -610,7 +610,7 @@ namespace Testing.Whiteboard
             }
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShape>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, expected))
+                It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, expected))
                 ), Times.Once());
         }
 
@@ -621,7 +621,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-1");
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
@@ -647,7 +647,7 @@ namespace Testing.Whiteboard
                 Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             }
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShape>>(obj => obj.Count==1 && obj[0].OperationType == Operation.DELETE && obj[0].WindowsShape.Uid==boardShapes[0].Uid)
+                It.Is<List<UXShapeHelper>>(obj => obj.Count==1 && obj[0].OperationType == Operation.DELETE && obj[0].ShapeId==boardShapes[0].Uid)
                 ), Times.Once());
         }
 
@@ -660,7 +660,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-1");
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
@@ -673,7 +673,7 @@ namespace Testing.Whiteboard
 
             // Assert
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(boardShapes[0].Uid));
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()), Times.Never);
+            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -689,7 +689,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-1");
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
@@ -702,7 +702,7 @@ namespace Testing.Whiteboard
 
             // Assert
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(boardShapes[0].Uid));
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()), Times.Never);
+            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -712,7 +712,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-1");
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
@@ -735,7 +735,7 @@ namespace Testing.Whiteboard
                 Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             }
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShape>>(obj => obj.Count == 1 && obj[0].OperationType == Operation.CLEAR_STATE)
+                It.Is<List<UXShapeHelper>>(obj => obj.Count == 1 && obj[0].OperationType == Operation.CLEAR_STATE)
                 ), Times.Once());
         }
 
@@ -746,7 +746,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-1");
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()));
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
             _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
@@ -768,7 +768,7 @@ namespace Testing.Whiteboard
             {
                 Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             }
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShape>>()), Times.Never);
+            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -933,6 +933,176 @@ namespace Testing.Whiteboard
             Assert.IsTrue(StateManagerHelper.CompareBoardShapes(expected, _clientBoardStateManager.GetBoardShape(createShape.Uid)));
             Assert.IsTrue(ret.Count == 2 && ret[0].WindowsShape.Uid == ret[1].WindowsShape.Uid && ret[0].UxOperation == UXOperation.DELETE && ret[1].UxOperation == UXOperation.CREATE
                 && ret[0].WindowsShape.Uid == createShape.Uid);
+        }
+
+        [Test]
+        public void OnMessageReceived_FetchCheckpointWhenShapesInState_UXNotified()
+        {
+            // Arrange
+            _clientBoardStateManager.SetUser("user-id");
+            List<BoardShape> boardShapes = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
+            BoardServerShape update = new(boardShapes, Operation.FETCH_CHECKPOINT, "user-id", 2, 1);
+            Mock<IClientBoardStateListener> listener = new();
+            _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
+            _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
+            _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
+
+            // creating previous state
+            List<BoardShape> prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
+            for (int i = 0; i < prevState.Count; i++)
+            {
+                _clientBoardStateManager.SaveOperation(prevState[i]);
+            }
+
+            // Act
+            _mockCommunicator.Reset();
+            _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
+            _clientBoardStateManager.OnMessageReceived(update);
+
+            // Assert
+            for(int i = 0; i < prevState.Count; i++)
+            {
+                Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
+            }
+            for (int i = 0; i < boardShapes.Count; i++)
+            {
+                // asserting on state
+                BoardShape shapeStored = _clientBoardStateManager.GetBoardShape(boardShapes[i].Uid);
+                Assert.IsNotNull(shapeStored);
+                Assert.IsTrue(StateManagerHelper.CompareBoardShapes(boardShapes[i], shapeStored));
+            }
+            // asserting on UX update
+            listener.Verify(m => m.OnUpdateFromStateManager(
+                It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) &&
+                obj[0].OperationType == Operation.FETCH_CHECKPOINT)
+                ), Times.Once());
+        }
+
+        [Test]
+        public void CombinedCases_ClientServerOperations_MultipleAsserts()
+        {
+            // Arrange
+            _clientBoardStateManager.SetUser("user-id");
+            Mock<IClientBoardStateListener> listener = new();
+            _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
+            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
+            _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
+            _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
+
+            // creating previous state
+            List<BoardShape> prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
+            for (int i = 0; i < prevState.Count; i++)
+            {
+                prevState[i].Uid = i.ToString();
+                _clientBoardStateManager.SaveOperation(prevState[i]);
+            }
+
+            // Multiple Acts and asserts
+
+            // server update to delete first shape
+            BoardShape deleteShape = prevState[0].Clone();
+            deleteShape.RecentOperation = Operation.DELETE;
+            BoardServerShape boardServerShape = new(new List<BoardShape>() { deleteShape }, Operation.DELETE, "user-2");
+            _clientBoardStateManager.OnMessageReceived(boardServerShape);
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[0].Uid));
+
+            // client undo (fifth shape inserted must be deleted)
+            var ret = _clientBoardStateManager.DoUndo();
+            Assert.IsNotNull(ret);
+            Assert.IsTrue(ret[0].WindowsShape.Uid == prevState[4].Uid && ret[0].UxOperation == UXOperation.DELETE);
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[4].Uid));
+
+            // server modify 
+            BoardShape modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            modifyShape.Uid = prevState[3].Uid;
+            modifyShape.LastModifiedTime = prevState[3].LastModifiedTime;
+            BoardServerShape modifyUpdate = new(new List<BoardShape>() { modifyShape }, Operation.MODIFY, "user-2");
+            _clientBoardStateManager.OnMessageReceived(modifyUpdate);
+            var ret2 = _clientBoardStateManager.GetBoardShape(prevState[3].Uid);
+            Assert.IsNotNull(ret2);
+            Assert.IsTrue(ret2.LastModifiedTime == modifyShape.LastModifiedTime && ret2.ShapeOwnerId == modifyShape.ShapeOwnerId);
+
+            // client undo (fourth shape inserted must be deleted)
+            var ret3 = _clientBoardStateManager.DoUndo();
+            Assert.IsNotNull(ret3);
+            Assert.IsTrue(ret3[0].WindowsShape.Uid == prevState[3].Uid && ret3[0].UxOperation == UXOperation.DELETE);
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[3].Uid));
+
+            // server modify again on fourth shape won't work
+            _clientBoardStateManager.OnMessageReceived(modifyUpdate);
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(modifyShape.Uid));
+
+            // server delete third shape
+            BoardShape deleteShape2 = prevState[2].Clone();
+            deleteShape2.RecentOperation = Operation.DELETE;
+            BoardServerShape deleteUpdate = new(new List<BoardShape>() { deleteShape2 }, Operation.DELETE, "user-2");
+            _clientBoardStateManager.OnMessageReceived(deleteUpdate);
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[0].Uid));
+
+            // undo will not work for third shape (already deleted) [second one will be deleted]
+            var ret4 = _clientBoardStateManager.DoUndo();
+            Assert.IsNotNull(ret4);
+            Assert.IsTrue(ret4[0].WindowsShape.Uid == prevState[1].Uid && ret4[0].UxOperation == UXOperation.DELETE);
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[1].Uid));
+
+            // redo (second one will be recreated)
+            var ret5 = _clientBoardStateManager.DoRedo();
+            Assert.IsNotNull(ret5);
+            Assert.IsTrue(ret5[0].WindowsShape.Uid == prevState[1].Uid && ret5[0].UxOperation == UXOperation.CREATE);
+            Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[1].Uid));
+
+            // Client creates a shape
+            BoardShape createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            Assert.IsTrue(_clientBoardStateManager.SaveOperation(createShape));
+            Assert.NotNull(_clientBoardStateManager.GetBoardShape(createShape.Uid));
+
+            // Client deletes shape
+            BoardShape deleteShape3 = prevState[1].Clone();
+            deleteShape3.RecentOperation = Operation.DELETE;
+            Assert.IsTrue(_clientBoardStateManager.SaveOperation(deleteShape3));
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(deleteShape3.Uid));
+
+            // Client modifies shape
+            BoardShape modifyShape2 = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            modifyShape2.Uid = createShape.Uid;
+            modifyShape2.LastModifiedTime = createShape.LastModifiedTime.AddMinutes(2);
+            Assert.IsTrue(_clientBoardStateManager.SaveOperation(modifyShape2));
+            Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(modifyShape2.Uid));
+
+            // Client modifies deleted shape
+            BoardShape modifyShape3 = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            modifyShape3.Uid = deleteShape3.Uid;
+            modifyShape3.LastModifiedTime = createShape.LastModifiedTime.AddMinutes(2);
+            Assert.IsFalse(_clientBoardStateManager.SaveOperation(modifyShape3));
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(modifyShape3.Uid));
+
+            // Client deletes a deleted shape
+            Assert.IsFalse(_clientBoardStateManager.SaveOperation(deleteShape3));
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(deleteShape3.Uid));
+
+            // Server update delete a deleted shape
+            _clientBoardStateManager.OnMessageReceived(new(new List<BoardShape>() { deleteShape3 }, Operation.DELETE, "user-2"));
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(deleteShape3.Uid));
+
+            // Server update deletes modifyShape2
+            modifyShape2.RecentOperation = Operation.DELETE;
+            BoardServerShape update = new(new List<BoardShape>() { modifyShape2 }, Operation.DELETE, "user-2");
+            _clientBoardStateManager.OnMessageReceived(update);
+            Assert.IsNull(_clientBoardStateManager.GetBoardShape(modifyShape2.Uid));
+
+            // Client tries to undo but this won't happen
+            var ret6 = _clientBoardStateManager.DoUndo();
+            Assert.IsNotNull(ret6);
+            Assert.IsTrue(UXOperation.CREATE == ret6[0].UxOperation && prevState[1].Uid == ret6[0].WindowsShape.Uid && ret.Count == 1);
+
+            // Fetch Checkpoint server update
+            BoardServerShape fetchCheckpoint = new(prevState, Operation.FETCH_CHECKPOINT, "user-4", 2, 1);
+            _clientBoardStateManager.OnMessageReceived(fetchCheckpoint);
+            for(int i = 0; i < prevState.Count; i++)
+            {
+                Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
+            }
         }
 
         private static List<BoardShape> GetExpectedOrder(List<BoardShape> prevState, List<BoardShape> boardShapes, Operation operation=Operation.CREATE, int indexOfModify=0)
