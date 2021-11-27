@@ -298,7 +298,7 @@ namespace Testing.Content
             sampleData.ReplyMsgId = listenedData.MessageId;
             sampleData.ReplyThreadId = listenedData.ReplyThreadId;
             iContentClient.CSend(sampleData);
-            var sendSerializedMsg = fakeCommunicator.GetSentData();
+            var sendSerializedMsg = newFakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
             Assert.AreEqual(deserialized.Message, sampleData.Message);
             Assert.AreEqual(deserialized.ReceiverIds, sampleData.ReceiverIds);
@@ -322,7 +322,7 @@ namespace Testing.Content
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
             // Generating private message where user 2001 sending hello to user 1001, 1002 and 1003
-            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 490, ReplyThreadId: 6, rcvIds: new int[] { userId, 1002, 1003 }, SenderId: 2001);
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 491, ReplyThreadId: 5, rcvIds: new int[] { userId, 1002, 1003 }, SenderId: 2001);
 
             // Notifying client with msg
             newFakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
@@ -336,7 +336,7 @@ namespace Testing.Content
             sampleData.ReplyMsgId = listenedData.MessageId;
             sampleData.ReplyThreadId = listenedData.ReplyThreadId;
             iContentClient.CSend(sampleData);
-            var sendSerializedMsg = fakeCommunicator.GetSentData();
+            var sendSerializedMsg = newFakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
             Assert.AreEqual(deserialized.Message, sampleData.Message);
             Assert.AreEqual(deserialized.ReceiverIds, sampleData.ReceiverIds);
