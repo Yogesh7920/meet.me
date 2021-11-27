@@ -9,6 +9,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace Testing.Content
 {
@@ -19,6 +20,7 @@ namespace Testing.Content
         private FakeContentListener listener;
         private FakeCommunicator communicator;
         private ISerializer serializer;
+        private int sleeptime;
 
         [SetUp]
         public void Setup()
@@ -32,6 +34,7 @@ namespace Testing.Content
             communicator = new FakeCommunicator();
             contentServer.Communicator = communicator;
             serializer = new Serializer();
+            sleeptime = 50;
 
             MessageData messageData = utils.GenerateNewMessageData("First Message");
             string serializedMessage = serializer.Serialize(messageData);
@@ -66,6 +69,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializesMessage);
 
+            Thread.Sleep(sleeptime);
+
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Hello", notifiedMessage.Message);
@@ -84,6 +89,8 @@ namespace Testing.Content
             string serializesMessage = serializer.Serialize(messageData);
 
             contentServer.Receive(serializesMessage);
+
+            Thread.Sleep(sleeptime);
 
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
@@ -129,6 +136,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializesMessage);
 
+            Thread.Sleep(sleeptime);
+
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Test_File.pdf", notifiedMessage.Message);
@@ -165,6 +174,8 @@ namespace Testing.Content
             string serializedStarMessage = serializer.Serialize(starMessage);
 
             contentServer.Receive(serializedStarMessage);
+
+            Thread.Sleep(sleeptime);
 
             ReceiveMessageData starredMessage = listener.GetOnMessageData();
 
@@ -203,6 +214,8 @@ namespace Testing.Content
             string serializedUpdateMessage = serializer.Serialize(updateMessage);
 
             contentServer.Receive(serializedUpdateMessage);
+
+            Thread.Sleep(sleeptime);
 
             ReceiveMessageData updatedMessage = listener.GetOnMessageData();
 
@@ -249,6 +262,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializedFileDownloadMessage);
 
+            Thread.Sleep(sleeptime);
+
             Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
 
             string sentData = communicator.GetSentData();
@@ -280,6 +295,8 @@ namespace Testing.Content
             string serializesMessage = serializer.Serialize(messageData);
 
             contentServer.Receive(serializesMessage);
+
+            Thread.Sleep(sleeptime);
 
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
@@ -327,6 +344,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
+            Thread.Sleep(sleeptime);
+
             Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
@@ -349,6 +368,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
+            Thread.Sleep(sleeptime);
+
             Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
 
@@ -363,6 +384,8 @@ namespace Testing.Content
             serializedStarMessage = serializer.Serialize(eventMessage);
 
             contentServer.Receive(serializedStarMessage);
+
+            Thread.Sleep(sleeptime);
 
             Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
@@ -385,6 +408,8 @@ namespace Testing.Content
             string serializedStarMessage = serializer.Serialize(starMessage);
 
             contentServer.Receive(serializedStarMessage);
+
+            Thread.Sleep(sleeptime);
 
             Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
@@ -409,6 +434,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
+            Thread.Sleep(sleeptime);
+
             Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
@@ -421,6 +448,8 @@ namespace Testing.Content
 
             string garbageData = " adfasfasfsadf";
             contentServer.Receive(garbageData);
+
+            Thread.Sleep(sleeptime);
 
             Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);

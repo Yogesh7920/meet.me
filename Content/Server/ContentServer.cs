@@ -8,6 +8,7 @@ using Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Content
 {
@@ -192,7 +193,7 @@ namespace Content
         {
             foreach (IContentListener subscriber in _subscribers)
             {
-                subscriber.OnMessage(receiveMessageData);
+                _ = Task.Run(() => { subscriber.OnMessage(receiveMessageData); });
             }
         }
 
