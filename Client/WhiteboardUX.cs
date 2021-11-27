@@ -800,7 +800,7 @@ namespace Client
                 //cn.Children.Remove(sh);
                 //Since we are removing rendered temporary shape above and toRender[1] corresponds to CREATE operation
                 cn = RenderUXElement(toRender, cn);
-                cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
+                if (toRender != null && toRender.Count() == 2) cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
                 //Bugged, adr.ClipEnabled gives NullException??
                 //cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
@@ -946,7 +946,7 @@ namespace Client
 
                 //Since we already removed our side of temporary render, DELETE operation by WB module is not acknowledged, whereas toRender[1] refers to necessary CREATE operation with the updated shape
                 cn = RenderUXElement(toRender, cn);
-                cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
+                if (toRender != null && toRender.Count() == 2) cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
                 //Bugged as adr.isClipEnabled gives Null Exception
                 //cn = SelectShape(cn, toRender[0].WindowsShape, WBOps);
@@ -1216,7 +1216,7 @@ namespace Client
 
                 //Add 
                 cn = RenderUXElement(toRender, cn);
-                //cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
+                if (toRender != null && toRender.Count() == 2) cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
             }
 
             return cn;
@@ -1482,7 +1482,7 @@ namespace Client
 
             toRender = WBOps.ResizeShape(C_strt, C_end, shp.Uid, drgPos, true);
             cn = this.RenderUXElement(toRender, cn);
-            cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
+            if (toRender != null && toRender.Count() == 2) cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
             return cn;
         }
@@ -1700,12 +1700,15 @@ namespace Client
                             //Removing temporary render from Canvas
                             cn.Children.Remove(poly);
 
-                            //Adjusting the polyline render request to the user preference during Create Polyline operation
-                            ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
-                            ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
+                            if (!(toRender == null || toRender.Count() == 0))
+                            {
+                                //Adjusting the polyline render request to the user preference during Create Polyline operation
+                                ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeLineJoin = PenLineJoin.Round;
+                                ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
 
-                            //Rendering the Polyline onto the Canvas
-                            cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                                //Rendering the Polyline onto the Canvas
+                                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                            }
 
                             assgn_uid = "-1";
                         }
