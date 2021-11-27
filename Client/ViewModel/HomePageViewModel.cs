@@ -53,7 +53,14 @@ namespace Client.ViewModel
                                     {
                                         usernew.username += " (You)";
                                     }
-                                    usernew.shortname = (user.username.Substring(0,2)).ToUpper();
+                                    if (user.username.Length > 1)
+                                    {
+                                        usernew.shortname = (user.username.Substring(0, 2)).ToUpper();
+                                    }
+                                    else
+                                    {
+                                        usernew.shortname = (user.username.Substring(0, 1)).ToUpper();
+                                    }
                                     users.Add(usernew);
                                 }
                                 OnPropertyChanged("ListChanged");
