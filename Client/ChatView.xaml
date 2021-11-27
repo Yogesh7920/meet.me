@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         MouseDown="OnWindowMouseDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:DesignWidth="363.639" d:DesignHeight="807.376">
-    <!--Height="780" Width="470"-->
+
     <UserControl.Resources>
         <SolidColorBrush x:Key="DynamicTextClr" Color="{DynamicResource Color5}"/>
         <SolidColorBrush x:Key="DynamicButtonFore" Color="{DynamicResource Color5}"/>
@@ -20,6 +20,7 @@
         <SolidColorBrush x:Key="DynamicHeader" Color="{DynamicResource Color1}"/>
         <SolidColorBrush x:Key="DynamicButtonBack" Color="{DynamicResource Color1}"/>
 
+        <!--Setting the visibility of the reply text box as collapsed when its empty or null-->
         <Style TargetType="TextBlock" x:Key="ReplyText">
             <Style.Triggers>
                 <Trigger Property="Text" Value="">
@@ -30,11 +31,13 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
+        <!--Customizing the ScrollBar-->
         <Style TargetType="ScrollBar">
             <Setter Property="Background" Value="Transparent"/>
         </Style>
 
+        <!--Customizing the TextBox-->
         <Style TargetType="TextBox">
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -49,9 +52,9 @@
                     <Setter Property="Cursor" Value="Arrow" />
                 </Trigger>
             </Style.Triggers>
-            
         </Style>
 
+        <!--Customizing the Button type-->
         <Style TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{DynamicResource DynamicButtonBack}" />
             <Setter Property="BorderBrush" Value="{DynamicResource DynamicButtonBack}"/>
@@ -78,7 +81,8 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <!-- StarButton Template -->
+        
+        <!--Customizing the StarButton-->
         <ControlTemplate x:Key="StarToggleButton" TargetType="{x:Type ToggleButton}">
             <Canvas Width="12" Height="12" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
                 <Path
@@ -91,7 +95,7 @@
                         StrokeThickness="1"
                         Stretch="Fill"/>
             </Canvas>
-            <!-- When checked, fill with Yellow -->
+            <!--When checked, fill with Yellow-->
             <ControlTemplate.Triggers>
                 <Trigger Property="IsChecked" Value="true">
                     <Setter TargetName="ButtonPath" Property="Fill" Value="Yellow"/>
@@ -99,6 +103,7 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
+        <!--Data template for the chat message sent by the user-->
         <DataTemplate x:Name="MyToMsgTemplate" x:Key="MyToMsgTemplate">
             <Grid>
                 <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top">
@@ -142,6 +147,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+        <!--Data template for the file message sent by the user-->
         <DataTemplate x:Name="MyToFileTemplate" x:Key="MyToFileTemplate">
             <Grid>
                 <Grid x:Name="ToBubble" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" >
@@ -196,6 +202,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+        <!--Data template for the chat message received by the user-->
         <DataTemplate x:Name="MyFromMsgTemplate" x:Key="MyFromMsgTemplate">
             <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
@@ -245,6 +252,7 @@
                 </Grid>
             </Grid>
         </DataTemplate>
+        <!--Data template for the file message received by the user-->
         <DataTemplate x:Name="MyFromFileTemplate" x:Key="MyFromFileTemplate">
             <Grid x:Name="FromBubble" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
@@ -304,6 +312,8 @@
         </DataTemplate>
         <local:ChatBubbleSelector x:Key="ChatBubbleTemplateSelector" ToMsgBubble="{StaticResource MyToMsgTemplate}" ToFileBubble="{StaticResource MyToFileTemplate}" FromMsgBubble="{StaticResource MyFromMsgTemplate}" FromFileBubble="{StaticResource MyFromFileTemplate}"></local:ChatBubbleSelector>
     </UserControl.Resources>
+
+    <!--Grid layout for chat window-->
     <Grid>
         <Border CornerRadius="10" Background="{DynamicResource DynamicChatBackGrd}">
             <Border.Effect>
@@ -319,16 +329,14 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="0" Width="20" Height="20" Margin="4" Source="/Icons/ChatUX/logo.png" />
                 <TextBlock Foreground="{DynamicResource DynamicTextClr}" Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="20" Text="Chat"/>
-                <!--<Button Grid.Column="4" Background="Transparent" HorizontalAlignment="Right" Width="20" Margin="1,1,1,1" Click="OnCloseButtonClick">
-                    <Image Source="Icons/ChatUX/close.png" Width="15" Height="15"/>
-                </Button>-->
             </Grid>
-            <!--#region grid for listbox and textbox-->
+            <!--Grid layout for listbox and textbox-->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="670" />
                     <RowDefinition Height="95" />
                 </Grid.RowDefinitions>
+                <!--ListBox-->
                 <Grid Grid.Row="0" Margin="5,5,5,0">
                     <ListBox Background="{DynamicResource DynamicChatBackGrd}" HorizontalAlignment="Stretch" BorderBrush="{DynamicResource DynamicChatBackGrd}" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="myChat" ItemTemplateSelector="{StaticResource ChatBubbleTemplateSelector}">
                         <ListBox.ItemContainerStyle>
@@ -343,14 +351,12 @@
                                     </Setter.Value>
                                 </Setter>
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                                <!--<Setter Property="IsHitTestVisible" Value="False"></Setter>-->
                             </Style>
                         </ListBox.ItemContainerStyle>
                     </ListBox>
                 </Grid>
-                <!--#endregion-->
 
-                <!--#region send button and message textbox -->
+                <!--TextBox-->
                 <Grid Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="6*"/>
@@ -381,7 +387,6 @@
                         </Button>
                     </Border>
                 </Grid>
-                <!--#endregion-->
             </Grid>
         </StackPanel>
     </Grid>

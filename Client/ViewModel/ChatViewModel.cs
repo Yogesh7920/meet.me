@@ -1,5 +1,5 @@
 ﻿/// <author>Suchitra Yechuri</author>
-/// <created>12/11/2021</created>
+/// <created>2/11/2021</created>
 /// <summary>
 ///     This file contains some mock objects which can
 ///     be used to simulate tests for the networking module.
@@ -34,7 +34,7 @@ namespace Client.ViewModel
             get; private set;
         }
         /// <summary>
-        /// The received caption.
+        /// The received message
         /// </summary>
         public Message ReceivedMsg
         {
@@ -95,15 +95,20 @@ namespace Client.ViewModel
         {
             _model.CDownload(msgId, path);
         }
+
+        /// <summary>
+        /// Handles an incoming message.
+        /// </summary>
+        /// <param name="messageData">The message object</param>
         public void OnMessage(ReceiveMessageData messageData)
         {
+            // Execute the call on the application's main thread.
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<ReceiveMessageData>(messageData =>
                         {
                             lock (this)
                             {
-
                                 if (messageData.Event == MessageEvent.NewMessage)
                                 {
                                     Messages.Add(messageData.MessageId, messageData.Message);
@@ -112,11 +117,8 @@ namespace Client.ViewModel
                                     ReceivedMsg.MessageId = messageData.MessageId;
                                     ReceivedMsg.UserName = Users[messageData.SenderId];
                                     ReceivedMsg.TextMessage = messageData.Message;
-                                    System.Diagnostics.Debug.WriteLine(messageData.Message);
                                     ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                                     UserId = _model.GetUserId();
-                                    //System.Diagnostics.Debug.WriteLine("userid: " + UserId);
-                                    //System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
                                     ReceivedMsg.ToFrom = UserId == messageData.SenderId;
                                     ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                                     ReceivedMsg.Type = messageData.Type == MessageType.Chat;
@@ -138,7 +140,6 @@ namespace Client.ViewModel
                                 Users.Clear();
                                 foreach (UserData user in session.users)
                                 {
-                                    //System.Diagnostics.Debug.WriteLine(user.username);
                                     Users.Add(user.userID, user.username);
                                 }
                             }
@@ -146,8 +147,13 @@ namespace Client.ViewModel
                         session);
         }
 
+        /// <summary>
+        /// Handles incoming list of messages when a new user joins.
+        /// </summary>
+        /// <param name="allMessages">The list of all messages</param>
         public void OnAllMessages(List<ChatContext> allMessages)
         {
+            // Execute the call on the application's main thread.
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<List<ChatContext>>(allMessages =>
@@ -168,8 +174,6 @@ namespace Client.ViewModel
                                         ReceivedMsg.TextMessage = messageData.Message;
                                         ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                                         UserId = _model.GetUserId();
-                                        System.Diagnostics.Debug.WriteLine("userid: " + UserId);
-                                        System.Diagnostics.Debug.WriteLine("Senderid: " + messageData.SenderId);
                                         ReceivedMsg.ToFrom = UserId == messageData.SenderId;
                                         ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                                         ReceivedMsg.Type = messageData.Type == MessageType.Chat;
@@ -179,8 +183,6 @@ namespace Client.ViewModel
                             }
                         }),
                         allMessages);
-
-            //throw new NotImplementedException();
         }
 
         /// <summary>
@@ -208,7 +210,7 @@ namespace Client.ViewModel
                     Dispatcher.CurrentDispatcher;
 
         /// <summary>
-        /// Underlying data model.
+        /// Underlying data models.
         /// </summary>
         private IContentClient _model;
         private IUXClientSessionManager _modelDb;

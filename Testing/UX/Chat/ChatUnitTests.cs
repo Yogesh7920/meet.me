@@ -1,4 +1,11 @@
-﻿using Client;
+﻿/// <author>Suchitra Yechuri</author>
+/// <created>23/11/2021</created>
+/// <summary>
+///     This file contains some mock objects which can
+///     be used to simulate tests for the networking module.
+/// </summary>
+
+using Client;
 using Client.ViewModel;
 using Content;
 using Dashboard;
