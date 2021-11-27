@@ -29,4 +29,16 @@
         <ProjectReference Include="..\Server\Server.csproj" />
         <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Persistence\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Persistence\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Persistence\**" />
+    </ItemGroup>
 </Project>
