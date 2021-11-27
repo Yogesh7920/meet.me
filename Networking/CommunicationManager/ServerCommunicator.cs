@@ -57,7 +57,7 @@ namespace Networking
         /// <returns> String</returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
-            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "";
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "127.0.0.1:8080";
             var ip = IPAddress.Parse(GetLocalIpAddress());
             var port = FreeTcpPort(ip);
             _serverSocket = new TcpListener(ip, port);
@@ -185,6 +185,11 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier, string destination)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+            {
+                File.WriteAllText("networking_output.json", data);
+                return;
+            }
             if (!_clientIdSocket.ContainsKey(destination)) throw new Exception("Client does not exist in the room!");
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
             try

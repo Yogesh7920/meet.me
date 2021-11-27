@@ -41,7 +41,7 @@ namespace Networking
         /// <returns> String </returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
-            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "";
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "1";
             try
             {
                 //try to connect with server
