@@ -4,13 +4,13 @@ using NUnit.Framework;
 namespace Testing.Whiteboard
 {
     [TestFixture]
-    class ClientBoardCommunicatorTesting
+    class ServerBoardCommunicatorTesting
     {
         [Test]
         public void Instance_Always_ReturnsSameInstance()
         {
-            var comm1 = ClientBoardCommunicator.Instance;
-            var comm2 = ClientBoardCommunicator.Instance;
+            var comm1 = ServerBoardCommunicator.Instance;
+            var comm2 = ServerBoardCommunicator.Instance;
 
             Assert.That(ReferenceEquals(comm1, comm2));
         }
