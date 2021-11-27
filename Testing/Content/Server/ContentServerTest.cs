@@ -9,6 +9,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace Testing.Content
 {
@@ -19,6 +20,7 @@ namespace Testing.Content
         private FakeContentListener listener;
         private FakeCommunicator communicator;
         private ISerializer serializer;
+        private int sleeptime;
 
         [SetUp]
         public void Setup()
@@ -32,6 +34,7 @@ namespace Testing.Content
             communicator = new FakeCommunicator();
             contentServer.Communicator = communicator;
             serializer = new Serializer();
+            sleeptime = 50;
 
             MessageData messageData = utils.GenerateNewMessageData("First Message");
             string serializedMessage = serializer.Serialize(messageData);
@@ -66,6 +69,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializesMessage);
 
+            Thread.Sleep(sleeptime);
+
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Hello", notifiedMessage.Message);
@@ -84,6 +89,8 @@ namespace Testing.Content
             string serializesMessage = serializer.Serialize(messageData);
 
             contentServer.Receive(serializesMessage);
+
+            Thread.Sleep(sleeptime);
 
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
@@ -129,6 +136,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializesMessage);
 
+            Thread.Sleep(sleeptime);
+
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Test_File.pdf", notifiedMessage.Message);
@@ -165,6 +174,8 @@ namespace Testing.Content
             string serializedStarMessage = serializer.Serialize(starMessage);
 
             contentServer.Receive(serializedStarMessage);
+
+            Thread.Sleep(sleeptime);
 
             ReceiveMessageData starredMessage = listener.GetOnMessageData();
 
@@ -204,6 +215,8 @@ namespace Testing.Content
 
             contentServer.Receive(serializedUpdateMessage);
 
+            Thread.Sleep(sleeptime);
+
             ReceiveMessageData updatedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Hello World!", updatedMessage.Message);
@@ -227,8 +240,6 @@ namespace Testing.Content
         [Test]
         public void Receive_DownloadingAFile_FileShouldBeFetchedAndForwadedToTheCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
-
             string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
@@ -248,8 +259,6 @@ namespace Testing.Content
             string serializedFileDownloadMessage = serializer.Serialize(fileDownloadMessage);
 
             contentServer.Receive(serializedFileDownloadMessage);
-
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
 
             string sentData = communicator.GetSentData();
 
@@ -280,6 +289,8 @@ namespace Testing.Content
             string serializesMessage = serializer.Serialize(messageData);
 
             contentServer.Receive(serializesMessage);
+
+            Thread.Sleep(sleeptime);
 
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
@@ -312,7 +323,6 @@ namespace Testing.Content
         [Test]
         public void Receive_InvalidEventForChatType_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData eventMessage = new MessageData
@@ -327,14 +337,12 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_InvalidEventForFileType_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData eventMessage = new MessageData
@@ -349,7 +357,6 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
 
             eventMessage = new MessageData
@@ -364,14 +371,12 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_StarringAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData starMessage = new MessageData
@@ -386,14 +391,12 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_UpdatingAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData updateMessage = new MessageData
@@ -409,20 +412,17 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_GettingInvalidDataFromNotificationListener_ShouldReturnGracefully()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             string garbageData = " adfasfasfsadf";
             contentServer.Receive(garbageData);
 
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
