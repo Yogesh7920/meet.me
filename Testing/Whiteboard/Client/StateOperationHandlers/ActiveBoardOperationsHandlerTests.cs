@@ -50,13 +50,13 @@ namespace Testing.Whiteboard
             _handler.SetLastDrawn(null);
 
             // Creation from stratch
-            List<UXShape> operations = _handler.CreateShape(ShapeType.RECTANGLE, start, end, strokeWidth, strokecolor, null);
+            List<UXShape> operations = _handler.CreateShape(ShapeType.ELLIPSE, start, end, strokeWidth, strokecolor, null);
             _mockStateManager.Verify(m => m.GetUser(), Times.Once());
             Assert.IsNotNull(operations);
             Assert.IsTrue(operations.Count == 1);
 
             // Verifying the UXShape received
-            CheckUXShape(operations[0], UXOperation.CREATE, ShapeType.RECTANGLE, new Coordinate(2, 2), 0);
+            CheckUXShape(operations[0], UXOperation.CREATE, ShapeType.ELLIPSE, new Coordinate(2, 2), 0);
             Assert.IsNotNull(operations[0].WindowsShape.Uid);
             Assert.AreEqual(2, operations[0].WindowsShape.Width);
             Assert.AreEqual(2, operations[0].WindowsShape.Height);
@@ -66,7 +66,7 @@ namespace Testing.Whiteboard
             Assert.IsNotNull(lastDrawn);
             Assert.AreEqual(operations[0].WindowsShape.Uid, lastDrawn.Uid);
             Assert.AreEqual(Operation.CREATE, lastDrawn.RecentOperation);
-            Assert.AreEqual(ShapeType.RECTANGLE, lastDrawn.MainShapeDefiner.ShapeIdentifier);
+            Assert.AreEqual(ShapeType.ELLIPSE, lastDrawn.MainShapeDefiner.ShapeIdentifier);
         }
 
         [Test]
@@ -190,13 +190,13 @@ namespace Testing.Whiteboard
 
             //Verifying the UXShape received
             // The UXobject at list position 1 should be the one to be deleted
-            CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.LINE, new(2, 2), angleOfRotation);
+            CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.LINE, new(0, 0), angleOfRotation);
             Assert.IsNotNull(operations[0].WindowsShape.Uid);
             Assert.AreEqual(uid, operations[0].WindowsShape.Uid);
 
 
             // The UXObject at list position 2 should be the one to be created.
-            CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.LINE, new(3, 3), angleOfRotation);
+            CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.LINE, new(0, 0), angleOfRotation);
             Assert.AreEqual(uid, operations[1].WindowsShape.Uid);
 
             System.Windows.Shapes.Line operationLine = (System.Windows.Shapes.Line) operations[1].WindowsShape;
@@ -415,15 +415,21 @@ namespace Testing.Whiteboard
         public void Delete_ValidIdSuccessDelete_ReturnsList()
         {
             // setup stateManager with an object to return
-            string uid = "123";
-            SetupManagerForNonRealTimeOperations(uid);
+            string uid = "<+_+>";
+            // setup return value from manager.
+            MainShape mainShape = new Polyline(new(1, 1));
+            BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.CREATE);
+            _mockStateManager.Setup(m => m.GetBoardShape(It.IsAny<string>())).Returns(shape);
+            // set up the response of server on update
+            _mockStateManager.Setup(m => m.SaveOperation(It.IsAny<BoardShape>())).Returns(true);
+
             List<UXShape> operations = _handler.Delete(uid);
             Assert.IsTrue(operations.Count == 1);
             Assert.AreEqual(uid, operations[0].WindowsShape.Uid);
             Assert.AreEqual(UXOperation.DELETE, operations[0].UxOperation);
 
             _mockStateManager.Verify(m => m.SaveOperation(
-                It.Is<BoardShape>(obj => (obj.Uid.Equals("123") && (obj.RecentOperation == Operation.DELETE)))
+                It.Is<BoardShape>(obj => (obj.Uid.Equals(uid) && (obj.RecentOperation == Operation.DELETE)))
                 ), Times.Once());
 
         }
