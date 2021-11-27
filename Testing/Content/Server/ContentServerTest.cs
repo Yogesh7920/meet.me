@@ -240,7 +240,8 @@ namespace Testing.Content
         [Test]
         public void Receive_DownloadingAFile_FileShouldBeFetchedAndForwadedToTheCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
+            listener.OnMessage(null);
+            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
 
             string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
@@ -266,7 +267,7 @@ namespace Testing.Content
 
             ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
 
-            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
+            Assert.IsNull(currentMessageToSubscribers);
 
             string sentData = communicator.GetSentData();
 
@@ -331,7 +332,8 @@ namespace Testing.Content
         [Test]
         public void Receive_InvalidEventForChatType_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
+            listener.OnMessage(null);
+            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData eventMessage = new MessageData
@@ -350,14 +352,16 @@ namespace Testing.Content
 
             ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
 
-            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
+            Assert.IsNull(currentMessageToSubscribers);
+            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_InvalidEventForFileType_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
+            listener.OnMessage(null);
+            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData eventMessage = new MessageData
@@ -376,7 +380,8 @@ namespace Testing.Content
 
             ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
 
-            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
+            Assert.IsNull(currentMessageToSubscribers);
+            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
 
             eventMessage = new MessageData
@@ -395,13 +400,15 @@ namespace Testing.Content
 
             currentMessageToSubscribers = listener.GetOnMessageData();
 
-            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
+            Assert.IsNull(currentMessageToSubscribers);
+            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_StarringAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
+            listener.OnMessage(null);
             ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
@@ -421,14 +428,16 @@ namespace Testing.Content
 
             ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
 
-            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
+            Assert.IsNull(currentMessageToSubscribers);
+            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_UpdatingAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
+            listener.OnMessage(null);
+            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData updateMessage = new MessageData
@@ -448,14 +457,16 @@ namespace Testing.Content
 
             ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
 
-            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
+            Assert.IsNull(currentMessageToSubscribers);
+            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_GettingInvalidDataFromNotificationListener_ShouldReturnGracefully()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
+            listener.OnMessage(null);
+            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             string garbageData = " adfasfasfsadf";
@@ -465,7 +476,8 @@ namespace Testing.Content
 
             ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
 
-            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
+            Assert.IsNull(currentMessageToSubscribers);
+            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
