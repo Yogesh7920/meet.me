@@ -1142,6 +1142,9 @@ namespace Client
                     cn = this.RenderUXElement(toRender, cn);
                 }
             }
+
+            selectedShapes.Clear();
+
             Trace.WriteLine("Sent delete requests to the Client for the selected shapes with Uids:", selectedShapes.ToString());
             return cn;
         }

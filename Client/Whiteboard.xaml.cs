@@ -71,7 +71,7 @@ namespace Client
             InitializeComponent();
 
             this.GlobCanvas = MyCanvas;
-            viewModel = new WhiteBoardViewModel(GlobCanvas, testing:true);
+            viewModel = new WhiteBoardViewModel(GlobCanvas);
             this.DataContext = viewModel;
             this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDown_SelectionChanged;
             //this._chk = new ObservableCollection<string>();
@@ -1060,19 +1060,24 @@ namespace Client
         //Clear Frame Button Control 
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
-
-            MessageBoxResult result = MessageBox.Show( "Are you sure you want to clear frame ? All progress since the last checkpoint would be lost.",
-                                      "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.OK)
+            if(Bu_P.Toggled1 == true)
             {
-                GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
-                return;
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to clear frame ? All progress since the last checkpoint would be lost.",
+                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
+                    return;
+                }
+                else
+                {
+                    return;
+                }
             }
             else
             {
-                return;
+                MessageBox.Show("You must be a user of high priority to call clear canvas!");
             }
-            
         }
 
         //Save Frame Button Control
