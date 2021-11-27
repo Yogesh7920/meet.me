@@ -1,8 +1,7 @@
 ﻿/// <author>Suchitra Yechuri</author>
 /// <created>2/11/2021</created>
 /// <summary>
-///     This file contains some mock objects which can
-///     be used to simulate tests for the networking module.
+/// ViewModel for the Chat page.
 /// </summary>
 
 using System;
@@ -17,80 +16,116 @@ using Content;
 namespace Client.ViewModel
 {
     public class ChatViewModel :
-        INotifyPropertyChanged, // Notifies clients that a property value has changed.
-        IContentListener, // Notifies clients that has a message has been received.
+        INotifyPropertyChanged, 
+        IContentListener, 
         IClientSessionNotifications
     {
-
+        /// <summary>
+        /// Message ids along with corresponding message strings.
+        /// </summary>
         public IDictionary<int, string> Messages;
+
+        /// <summary>
+        /// User ids along with user names.
+        /// </summary>
         public IDictionary<int, string> Users;
+
+        /// <summary>
+        /// Message ids and their corresponding thread ids.
+        /// </summary>
         public IDictionary<int, int> ThreadIds;
+
+        /// <summary>
+        /// Current user id.
+        /// </summary>
         public static int UserId
         {
             get; private set;
         }
+
+        /// <summary>
+        /// Message to send.
+        /// </summary>
         public SendMessageData MsgToSend
         {
             get; private set;
         }
         /// <summary>
-        /// The received message
+        /// Received message.
         /// </summary>
         public Message ReceivedMsg
         {
             get; private set;
         }
+
+        /// <summary>
+        /// Creates an instance of the Chat ViewModel.
+        /// </summary>
         public ChatViewModel()
         {
             Messages = new Dictionary<int, string>();
             Users = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
+
             _model = ContentClientFactory.GetInstance();
             _model.CSubscribe(this);
-            UserId = _model.GetUserId();
 
             _modelDb = SessionManagerFactory.GetClientSessionManager();
             _modelDb.SubscribeSession(this);
         }
+
+        /// <summary>
+        /// Send chat message to the content module.
+        /// </summary>
+        /// <param name="message"> The message string </param>
+        /// <param name="replyMsgId"> Reply id of the message replied to, -1 if not a reply </param>
         public void SendChat(string message, int replyMsgId)
         {
             MsgToSend = new SendMessageData();
             MsgToSend.Type = MessageType.Chat;
             MsgToSend.Message = message;
             MsgToSend.ReplyMsgId = replyMsgId;
-            if (replyMsgId != -1)
-            {
-                MsgToSend.ReplyThreadId = ThreadIds[replyMsgId];
-            }
-            else
-            {
-                MsgToSend.ReplyThreadId = -1;
-            }
+            MsgToSend.ReplyThreadId = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
+
+            // Empty, as its a broadcast message
             MsgToSend.ReceiverIds = new int[] { };
+
             _model.CSend(MsgToSend);
         }
 
+        /// <summary>
+        /// Send file message to the content module.
+        /// </summary>
+        /// <param name="message"> The message string containing the file path </param>
+        /// <param name="replyMsgId"> Reply id of the message replied to, -1 if not a reply </param>
         public void SendFile(string message, int replyMsgId)
         {
             MsgToSend = new SendMessageData();
             MsgToSend.Type = MessageType.File;
             MsgToSend.Message = message;
             MsgToSend.ReplyMsgId = replyMsgId;
-            if (replyMsgId != -1)
-            {
-                MsgToSend.ReplyThreadId = ThreadIds[replyMsgId];
-            }
-            else
-            {
-                MsgToSend.ReplyThreadId = -1;
-            }
+            MsgToSend.ReplyThreadId = replyMsgId != -1 ? ThreadIds[replyMsgId] : -1;
+
+            // Empty, as its a broadcast message
             MsgToSend.ReceiverIds = new int[] { };
+
             _model.CSend(MsgToSend);
         }
+
+        /// <summary>
+        /// Inform content module that a message is starred.
+        /// </summary>
+        /// <param name="msgId"> The message id of the message </param>
         public void StarChat(int msgId)
         {
             _model.CMarkStar(msgId);
         }
+
+        /// <summary>
+        /// Inform content module that a file needs to be downloaded.
+        /// </summary>
+        /// <param name="msgId"> The message id of the message </param>
+        /// <param name="path"> The path to store the downloaded file in </param>
         public void DownloadFile(int msgId, string path)
         {
             _model.CDownload(msgId, path);
@@ -113,6 +148,7 @@ namespace Client.ViewModel
                                 {
                                     Messages.Add(messageData.MessageId, messageData.Message);
                                     ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
+
                                     ReceivedMsg = new Message();
                                     ReceivedMsg.MessageId = messageData.MessageId;
                                     ReceivedMsg.UserName = Users[messageData.SenderId];

@@ -13,6 +13,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using static Testing.UX.Chat.ChatUtils;
 
 namespace Testing.UX.Chat
@@ -179,7 +180,9 @@ namespace Testing.UX.Chat
         public void SendFileMessage_ShouldMatchMsgToBeSent()
         {
             //Arrange
-            string sampleMessage = "C:\\Users\\suchi\\Downloads\\Test_File.pdf";
+            string currentDirectory = Directory.GetCurrentDirectory() as string;
+            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
+            string sampleMessage = path[0] + "\\Testing\\UX\\Chat\\Test_File.pdf";
             int sampleReplyMsgId = -1;
 
             //Act
