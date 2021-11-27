@@ -13,7 +13,6 @@ namespace Client.ViewModel
 {
     public class HomePageViewModel : IClientSessionNotifications // Notifies change in list of users.
     {
-        public int userid; //client's user-id
         public List<UserViewData> users
         {
             get; private set;
@@ -23,7 +22,6 @@ namespace Client.ViewModel
             _model = SessionManagerFactory.GetClientSessionManager();
             _model.SubscribeSession(this);
             users = new List<UserViewData>();
-            userid = ChatViewModel.UserId;
         }
         /// <summary>
         /// Constructor for testing
@@ -49,10 +47,6 @@ namespace Client.ViewModel
                                 {
                                     UserViewData usernew = new UserViewData();
                                     usernew.username = user.username;
-                                    if(user.userID == userid)
-                                    {
-                                        usernew.username += " (You)";
-                                    }
                                     if (user.username.Length > 1)
                                     {
                                         usernew.shortname = (user.username.Substring(0, 2)).ToUpper();
