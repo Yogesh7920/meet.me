@@ -2,11 +2,13 @@
  * Owned By: Gurunadh Pachappagari
  * Created By: Gurunadh Pachappagari
  * Date Created: 13 Oct 2021
- * Date Modified: 01 Nov 2021
+ * Date Modified: 26 Nov 2021
 **/
 
 using System;
 using Networking;
+using System.Diagnostics;
+
 
 namespace Whiteboard
 {
@@ -47,36 +49,50 @@ namespace Whiteboard
 
         public void OnDataReceived(string data)
         {
-            BoardServerShape deserializedObject = serializer.Deserialize<BoardServerShape>(data);
-            string userId = deserializedObject.RequesterId;
-            if (deserializedObject.OperationFlag == Operation.FETCH_STATE)
+            try
             {
-                BoardServerShape shapes = stateManager.FetchState(userId);
-                this.Send(shapes, userId);
-            }
-            else if (deserializedObject.OperationFlag == Operation.FETCH_CHECKPOINT)
-            {
-                int checkPointNumber = deserializedObject.CheckpointNumber;
-                BoardServerShape shapes = stateManager.FetchCheckpoint(checkPointNumber, userId);
-                this.Send(shapes);
-            }
-            else if (deserializedObject.OperationFlag == Operation.CREATE_CHECKPOINT)
-            {
-                stateManager.SaveCheckpoint(userId);
-            }
-            else if (deserializedObject.OperationFlag == Operation.CREATE ||
-                    deserializedObject.OperationFlag == Operation.DELETE ||
-                    deserializedObject.OperationFlag == Operation.MODIFY)
-            {
-                bool resp = stateManager.SaveUpdate(deserializedObject);
-                if(resp == true) 
-                { 
-                    communicator.Send(data, moduleIdentifier);
+                Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string");
+                BoardServerShape deserializedObject = serializer.Deserialize<BoardServerShape>(data);
+                string userId = deserializedObject.RequesterId;
+                if (deserializedObject.OperationFlag == Operation.FETCH_STATE)
+                {
+                    BoardServerShape shapes = stateManager.FetchState(userId);
+                    this.Send(shapes, userId);
                 }
+                else if (deserializedObject.OperationFlag == Operation.FETCH_CHECKPOINT)
+                {
+                    int checkPointNumber = deserializedObject.CheckpointNumber;
+                    BoardServerShape shapes = stateManager.FetchCheckpoint(checkPointNumber, userId);
+                    this.Send(shapes);
+                }
+                else if (deserializedObject.OperationFlag == Operation.CREATE_CHECKPOINT)
+                {
+                    BoardServerShape shape = stateManager.SaveCheckpoint(userId);
+                    this.Send(shape);
+                }
+                else if (deserializedObject.OperationFlag == Operation.CREATE ||
+                        deserializedObject.OperationFlag == Operation.DELETE ||
+                        deserializedObject.OperationFlag == Operation.MODIFY ||
+                        deserializedObject.OperationFlag == Operation.CLEAR_STATE 
+                        )
+                {
+                    bool resp = stateManager.SaveUpdate(deserializedObject);
+                    if (resp == true)
+                    {
+                        communicator.Send(data, moduleIdentifier);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Unidentified Operation at ServerBoardCommunicator");
+                }
+                Trace.WriteLine("ServerBoardCommunicator.OnDataReceived: Took necessary actions on received object");
+
             }
-            else 
+            catch (Exception e) 
             {
-                Console.WriteLine("Unidentified Operation at ServerBoardCommunicator");
+                Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Exception Occured");
+                Trace.WriteLine(e.Message);
             }
 
         }
@@ -87,14 +103,25 @@ namespace Whiteboard
         /// <param name="clientUpdate"> the object to be passed to client</param>
         public void Send(BoardServerShape clientUpdate, string clientId = "all")
         {
-            string xml_obj = serializer.Serialize(clientUpdate);
-            if (clientId == "all")
+            try
             {
-                communicator.Send(xml_obj, moduleIdentifier);
+                Trace.WriteLine("ServerBoardCommunicator.Send: Sending BoardServerShape object");
+                string xml_obj = serializer.Serialize(clientUpdate);
+                if (clientId == "all")
+                {
+                    communicator.Send(xml_obj, moduleIdentifier);
+                }
+                else
+                {
+                    communicator.Send(xml_obj, moduleIdentifier, clientId);
+                }
+                Trace.WriteLine("ServerBoardCommunicator.Send: Sent BoardServerShape object");
+
             }
-            else 
+            catch (Exception e) 
             {
-                communicator.Send(xml_obj, moduleIdentifier, clientId);
+                Trace.WriteLine("ServerBoardCommunicator.Send: Exception Occured");
+                Trace.WriteLine(e.Message);
             }
 
         }

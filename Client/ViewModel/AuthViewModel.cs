@@ -18,7 +18,10 @@ namespace Client.ViewModel
         {
             _model = SessionManagerFactory.GetClientSessionManager();
         }
-
+        /// <summary>
+        /// Constructor for testing purpose
+        /// </summary>
+        /// <param name="model"> Instance of type IUXClientSessionManager. </param>
         public AuthViewModel(IUXClientSessionManager model)
         {
             _model = model;
