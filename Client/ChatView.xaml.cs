@@ -1,35 +1,52 @@
-﻿using System;
+﻿/// <author>Suchitra Yechuri</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// Interaction logic for ChatView.xaml
+/// </summary>
+
+using Client.ViewModel;
+using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.ComponentModel;
-using Client.ViewModel;
-using System.Windows.Media;
-using System.IO;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for ChatView.xaml
-    /// </summary>
     public partial class ChatView : UserControl
     {
+        /// <summary>
+        ///     Message Id of the message replied it
+        /// </summary>
         public int ReplyMsgId { get; set; }
-        
+
+        /// <summary>
+        ///     Collection of all the messages
+        /// </summary>
         public ObservableCollection<Message> AllMessages;
+
+        /// <summary>
+        /// Creates an instance of the ChatView.
+        /// </summary>
         public ChatView()
         {
             InitializeComponent();
 
             ChatViewModel viewModel = new ChatViewModel();
-            //subscribe to the property changed event
+
+            // Subscribe to the property changed event
             viewModel.PropertyChanged += Listner;
             this.DataContext = viewModel;
 
             AllMessages = new ObservableCollection<Message>();
+            // Binding AllMessages
             this.myChat.ItemsSource = AllMessages;
         }
+
         private void Listner(object sender, PropertyChangedEventArgs e)
         {
             string propertyName = e.PropertyName;
@@ -37,9 +54,15 @@ namespace Client
             if (propertyName == "ReceivedMsg")
             {
                 AllMessages.Add(viewModel.ReceivedMsg);
+                UpdateScrollBar(myChat);
             }
-            UpdateScrollBar(myChat);
+            else
+            {
+                AllMessages.Add(viewModel.ReceivedMsg);
+            }
+            
         }
+
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.SendTextBox.Text))
@@ -80,6 +103,7 @@ namespace Client
                 this.ReplyTextBox.Text = "";
             }
         }
+
         private void OnReplyButtonClick(object sender, RoutedEventArgs e)
         {
             if (sender is Button)
@@ -152,12 +176,14 @@ namespace Client
         }
         private void UpdateScrollBar(ListBox listBox)
         {
-            if (listBox != null)
-            {
-                var border = (Border)VisualTreeHelper.GetChild(listBox, 0);
-                var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                scrollViewer.ScrollToBottom();
-            }
+            ListBoxAutomationPeer svAutomation = (ListBoxAutomationPeer)ScrollViewerAutomationPeer.CreatePeerForElement(listBox);
+
+            IScrollProvider scrollInterface = (IScrollProvider)svAutomation.GetPattern(PatternInterface.Scroll);
+            System.Windows.Automation.ScrollAmount scrollVertical = System.Windows.Automation.ScrollAmount.LargeIncrement;
+            System.Windows.Automation.ScrollAmount scrollHorizontal = System.Windows.Automation.ScrollAmount.NoAmount;
+            //If the vertical scroller is not available, the operation cannot be performed, which will raise an exception. 
+            if (scrollInterface.VerticallyScrollable)
+                scrollInterface.Scroll(scrollHorizontal, scrollVertical);
         }
     }
 }
