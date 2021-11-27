@@ -1477,7 +1477,7 @@ namespace Client
                         cn.Children.Add(shp.WindowsShape);
                         break;
                     case (UXOperation.DELETE):
-                        //IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
+                        IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shp.WindowsShape.Uid);
 
 
 
@@ -1486,7 +1486,7 @@ namespace Client
 
 
 
-                        //cn.Children.Remove(iterat.ToList()[0]);
+                        cn.Children.Remove(iterat.ToList()[0]);
                         break;
                 }
             }
@@ -1630,9 +1630,8 @@ namespace Client
         public Canvas DeletePolyline(Canvas cn, IWhiteBoardOperationHandler WBops, System.Windows.Shapes.Polyline selectedLine)
         {
             //Call : Render UX element to delete the polyline 
-
-            cn.Children.Remove(selectedLine);
-
+            List<UXShape> toRender = WBops.DeleteShape(selectedLine.Uid);
+            cn = RenderUXElement(toRender, cn);
             return cn;
         }
     }
