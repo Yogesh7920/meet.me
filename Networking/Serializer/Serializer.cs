@@ -31,18 +31,24 @@ namespace Networking
 
     public class Serializer : ISerializer
     {
+        private JsonSerializerSettings _jsonSerializerSettings;
+
+        public Serializer()
+        {
+            _jsonSerializerSettings = new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All};
+        }
         /// <inheritdoc />
         string ISerializer.Serialize<T>(T objectToSerialize)
         {
             try
             {
-                var json = SerializeJSON(objectToSerialize);
+                var json = SerializeJson(objectToSerialize);
                 var obj = new MetaObject(typeof(T).ToString(), json);
-                return SerializeJSON(obj);
+                return SerializeJson(obj);
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.WriteLine($"[Networking] Error while serializing: {ex.Message}");
                 throw;
             }
         }
@@ -51,7 +57,7 @@ namespace Networking
         string ISerializer.GetObjectType(string serializedString, string nameSpace)
         {
             // json string
-            var obj = deserializeJSON<MetaObject>(serializedString);
+            var obj = DeserializeJson<MetaObject>(serializedString);
             return obj.typ;
         }
 
@@ -60,12 +66,12 @@ namespace Networking
         {
             try
             {
-                var obj = deserializeJSON<MetaObject>(serializedString);
-                return deserializeJSON<T>(obj.data);
+                var obj = DeserializeJson<MetaObject>(serializedString);
+                return DeserializeJson<T>(obj.data);
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.WriteLine($"[Networking] Error while deserializing: {ex.Message}");
                 throw;
             }
         }
@@ -76,10 +82,9 @@ namespace Networking
         /// <typeparam name="T"></typeparam>
         /// <param name="objectToSerialize"></param>
         /// <returns></returns>
-        private string SerializeJSON<T>(T objectToSerialize)
+        private string SerializeJson<T>(T objectToSerialize)
         {
-            var jset = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
-            return JsonConvert.SerializeObject(objectToSerialize, Formatting.Indented, jset);
+            return JsonConvert.SerializeObject(objectToSerialize, Formatting.Indented, _jsonSerializerSettings);
         }
 
         /// <summary>
@@ -88,10 +93,9 @@ namespace Networking
         /// <typeparam name="T"></typeparam>
         /// <param name="json"></param>
         /// <returns></returns>
-        private T deserializeJSON<T>(string json)
+        private T DeserializeJson<T>(string json)
         {
-            var jset = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
-            return JsonConvert.DeserializeObject<T>(json, jset);
+            return JsonConvert.DeserializeObject<T>(json, _jsonSerializerSettings);
         }
     }
 }
