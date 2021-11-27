@@ -21,6 +21,7 @@ namespace Content
         private Dictionary<int, int> _messageIdMap;
 
         private ICommunicator _communicator;
+        private ISerializer _serializer;
 
         private object _lock;
         private ChatClient _chatHandler;
@@ -51,7 +52,15 @@ namespace Content
             // subscribe to the network
             _notifHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
-            _communicator.Subscribe("Content", _notifHandler);
+            _serializer = new Serializer();
+            try
+            {
+                _communicator.Subscribe("Content", _notifHandler);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentClient] Exception encountered during subscribing to networking module: {e.GetType().Name}: {e.Message}");
+            }
 
             // initialize file handler and chat handler
             _fileHandler = new FileClient(_communicator);
@@ -65,7 +74,14 @@ namespace Content
             set
             {
                 _communicator = value;
-                _communicator.Subscribe("Content", _notifHandler);
+                try
+                {
+                    _communicator.Subscribe("Content", _notifHandler);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine($"[ContentClient] Exception encountered when using networking module: {e.GetType().Name}: {e.Message}");
+                }
                 _fileHandler.Communicator = value;
                 _chatHandler.Communicator = value;
             }
@@ -148,13 +164,13 @@ namespace Content
             if (toSend.ReplyMsgId != -1)
             {
                 // validate the reply message id
-                ValidateReplyMsgId(toSend.ReplyMsgId, toSend.ReplyThreadId);
+                ValidateSentReplyMsgId(toSend.ReplyMsgId, toSend.ReplyThreadId);
 
                 // modify the receiver ids to the intersection of given recipients and the precursor message's recipients
                 // this way, the privacy level of the precursor message is preserved
                 ReceiveMessageData precursorMessage = RetrieveMessage(toSend.ReplyMsgId);
                 if (precursorMessage is null)
-                    throw new ArgumentException("Message being replied to doesn't exist");
+                    throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
                 toSend.ReceiverIds = ReceiverIntersection(precursorMessage.ReceiverIds, toSend.ReceiverIds);
             }
                 
@@ -258,7 +274,6 @@ namespace Content
             throw new ArgumentException("Thread with requested thread ID does not exist");
         }
 
-
         // handler functions
 
         /// <summary>
@@ -279,6 +294,7 @@ namespace Content
             if (allMessages is null)
                 throw new ArgumentException("Null message in argument");
 
+            Trace.WriteLine("[ContentClient] Received message history from server");
             // since the received message history is from the server and thus more definitive,
             // replace the current message history with it
             setAllMessages(allMessages);
@@ -302,12 +318,20 @@ namespace Content
             if (key == -1)
                 throw new ArgumentException("Reply thread id of received message cannot be -1");
 
-            // add message id to the set of message ids
-            _messageIdMap.Add(receivedMessage.MessageId, key);
+            // if the message is a reply, ensure that the message being replied to exists
+            if (message.ReplyMsgId != -1)
+            {
+                ValidateReceivedReplyMsgId(receivedMessage.ReplyMsgId, receivedMessage.ReplyThreadId);
+            }
+
             // add the message to the correct ChatContext in allMessages
             // use locks because the list of chat contexts may be shared across multiple threads
             lock (_lock)
             {
+
+                // add message id to the set of message ids
+                _messageIdMap.Add(receivedMessage.MessageId, key);
+
                 if (_contextMap.ContainsKey(key))
                 {
                     var index = _contextMap[key];
@@ -352,7 +376,6 @@ namespace Content
                     string newMessage = receivedMessage.Message;
                     _allMessages[index].UpdateMessage(messageId, newMessage);
                 }
-
             }
             else
             {
@@ -398,6 +421,30 @@ namespace Content
             File.WriteAllBytes(savepath, message.FileData.fileContent);
         }
 
+        // utility functions not part of the interface
+
+        /// <summary>
+        ///     Sends a message to the server to send all messages received on the server until now
+        /// </summary>
+        public void RequestMessageHistory()
+        {
+            // the only fields that matter are type and sender id
+            MessageData msg = new MessageData();
+            msg.SenderId = UserId;
+            msg.Type = MessageType.HistoryRequest;
+
+            try
+            {
+                // serialize the message and send via network
+                var toSendSerialized = _serializer.Serialize(msg);
+                Trace.WriteLine($"[ContentClient] Sending request for message history to server for user id {UserId}");
+                _communicator.Send(toSendSerialized, "Content");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentClient] Exception encountered during sending message history request: {e.GetType().Name}: {e.Message}");
+            }
+        }
 
         // helper methods
 
@@ -486,29 +533,32 @@ namespace Content
             }
         }
 
-        private void ValidateReplyMsgId(int replyMsgId, int threadId)
+        private void ValidateSentReplyMsgId(int replyMsgId, int threadId)
         {
             // ensure the message being replied to exists
             if (!_messageIdMap.ContainsKey(replyMsgId))
-                throw new ArgumentException("Message being replied to doesn't exist");
+                throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
 
-            // ensure that if the reply is part of a thread its the same thread as the original message
             if (threadId != -1)
             {
                 // check equality with the thread id of the message being replied to
                 if (_messageIdMap[replyMsgId] != threadId)
-                    throw new ArgumentException("Message being replied to is part of a different thread than the reply");
+                    throw new ArgumentException("Invalid reply message id and thread id combination: Message being replied to is part of a different thread than the reply");
             }
         }
 
-        private bool IsReplyToMsgBroadcast(int replyMsgId, int threadId)
+        private void ValidateReceivedReplyMsgId(int replyMsgId, int threadId)
         {
-            int index = _contextMap[threadId];
-            ChatContext replyToChatContext = _allMessages[index];
-            int msgIndex = replyToChatContext.RetrieveMessageIndex(replyMsgId);
-            if (replyToChatContext.MsgList[msgIndex].ReceiverIds.Length == 0)
-                return true;
-            return false;
+            if (!_messageIdMap.ContainsKey(replyMsgId))
+                throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
+
+            // if the received message is part of a new thread, no check required
+            if (!_contextMap.ContainsKey(threadId))
+                return;
+
+            // otherwise check equality with the thread id of the message being replied to
+            if (_messageIdMap[replyMsgId] != threadId)
+                throw new ArgumentException("Invalid reply message id and thread id combination: Message being replied to is part of a different thread than the reply");
         }
 
         private int[] ReceiverIntersection(int[] receivers1, int[] receivers2)

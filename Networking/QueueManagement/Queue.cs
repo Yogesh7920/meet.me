@@ -1,8 +1,8 @@
-﻿/*
- * Author: Alisetti Sai Vamsi
- * Created on: 13/10/2021
- * Summary: This file contains the implementation of the IQueue interface.
- */
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// This file contains the implementation of the IQueue interface.
+/// </summary>
 
 using System;
 using System.Collections.Concurrent;
@@ -35,7 +35,7 @@ namespace Networking
             _currentWeight = 0;
             _avoidStateChange = 0;
             _queueSize = 0;
-            Trace.WriteLine("Initializing Queue Module");
+            Trace.WriteLine("[Networking] Initializing Queue Module");
         }
 
         /// <summary>
@@ -46,17 +46,17 @@ namespace Networking
         /// <exception cref="Exception">Does not allow duplicate module identifier</exception>
         public void RegisterModule(string moduleId, int priority)
         {
-            if (priority <= 0) throw new Exception("Priority should be positive integer");
+            if (priority <= 0) throw new Exception("[Networking] Priority should be positive integer");
 
             // Adding <moduleId, Queue> keyValuePair to the _multiLevelQueue dictionary 
             if (!_multiLevelQueue.TryAdd(moduleId, new ConcurrentQueue<Packet>()))
-                throw new Exception("Adding Queue to MultiLevelQueue Failed!");
+                throw new Exception("[Networking] Adding Queue to MultiLevelQueue Failed!");
 
             // Adding <moduleId, priority> keyValuePair to the _priorityMap dictionary
             if (!_priorityMap.TryAdd(moduleId, priority))
             {
                 _multiLevelQueue.TryRemove(moduleId, out _);
-                throw new Exception("Priority Map cannot overwrite existing key");
+                throw new Exception("[Networking] Priority Map cannot overwrite existing key");
             }
 
             // Getting the moduleIds in the priority order
@@ -76,8 +76,6 @@ namespace Networking
             {
                 _currentQueue = _moduleIdentifiers.FindIndex(x => x == _currentModuleIdentifier);
             }
-
-            Trace.WriteLine($"Module Registered with ModuleIdentifier: {moduleId} and Priority: {priority.ToString()}");
         }
 
         /// <summary>
@@ -94,7 +92,7 @@ namespace Networking
         /// </summary>
         public void Clear()
         {
-            Trace.WriteLine("Clearing all packets from the queue");
+            Trace.WriteLine("[Networking] Clearing all packets from the queue");
             lock (_lockObj)
             {
                 _queueSize = 0;
@@ -123,10 +121,10 @@ namespace Networking
             }
             else
             {
-                throw new Exception("Key Error: Packet holds invalid module identifier");
+                throw new Exception("[Networking] Key Error: Packet holds invalid module identifier");
             }
 
-            Trace.WriteLine("Packet Enqueued");
+            Trace.WriteLine("[Networking] Packet Enqueued");
         }
 
         /// <summary>
@@ -136,19 +134,18 @@ namespace Networking
         /// <exception cref="Exception">Cannot dequeue an empty queue</exception>
         public Packet Dequeue()
         {
-            if (IsEmpty()) throw new Exception("Cannot Dequeue empty queue");
+            if (IsEmpty()) throw new Exception("[Networking] Cannot Dequeue empty queue");
             FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
 
             var moduleIdentifier = _moduleIdentifiers[_currentQueue];
             _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
             _currentWeight -= 1;
             _avoidStateChange = 1;
-            Trace.WriteLine("Dequeuing Packet");
             lock (_lockObj)
             {
                 _queueSize -= 1;
             }
-
+            Trace.WriteLine("[Networking] Dequeued Packet");
             return packet;
         }
 
@@ -159,13 +156,13 @@ namespace Networking
         /// <exception cref="Exception">Cannot peek an empty queue</exception>
         public Packet Peek()
         {
-            if (IsEmpty()) throw new Exception("Cannot Peek into empty queue");
+            if (IsEmpty()) throw new Exception("[Networking] Cannot Peek into empty queue");
             FindNext(); // Populates the fields of _currentQueue, _currentWeight corresponding to the next packet
 
             var moduleIdentifier = _moduleIdentifiers[_currentQueue];
             _multiLevelQueue[moduleIdentifier].TryPeek(out var packet);
 
-            Trace.WriteLine("Peeking into the queue");
+            Trace.WriteLine("[Networking] Peeking into the queue");
             return packet;
         }
 

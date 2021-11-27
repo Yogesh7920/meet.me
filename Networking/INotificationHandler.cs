@@ -10,8 +10,8 @@
         void OnDataReceived(string data);
 
         /// <summary>
-        /// Event to indicate that the client has joined the room. This
-        /// will be signalled only on the server side to all modules.
+        ///     Event to indicate that the client has joined the room. This
+        ///     will be signalled only on the server side to all modules.
         /// </summary>
         /// <param name="socketObject">The socket object of the incoming client.</param>
         /// <typeparam name="T">Type of the socket object (TcpClient)</typeparam>
@@ -20,8 +20,8 @@
         }
 
         /// <summary>
-        /// Event to indicate that the client has left the room. This will be
-        /// signalled only on the server side to all modules.
+        ///     Event to indicate that the client has left the room. This will be
+        ///     signalled only on the server side to all modules.
         /// </summary>
         /// <param name="clientId"></param>
         void OnClientLeft(string clientId)

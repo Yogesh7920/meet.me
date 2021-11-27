@@ -141,6 +141,9 @@ namespace Testing.Dashboard
         public static SessionAnalytics GenerateSessionAnalyticsData()
         {
             SessionAnalytics analyticsData = new SessionAnalytics();
+            analyticsData.userCountAtAnyTime = new();
+            analyticsData.chatCountForEachUser = new();
+            analyticsData.insincereMembers = new();
             analyticsData.userCountAtAnyTime.Add(new DateTime(2021, 12, 10), 5);
             analyticsData.userCountAtAnyTime.Add(new DateTime(2021, 12, 11), 5);
             analyticsData.chatCountForEachUser.Add(1, 5);

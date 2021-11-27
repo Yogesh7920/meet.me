@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        MinWidth="1500" MinHeight="850" WindowStyle="None"
+        MinWidth="1500" MinHeight="850" WindowStyle="None" 
         Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
 
     <Window.Resources>
@@ -92,21 +92,28 @@
                 <!-- Minimize button -->
                 <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick" 
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
-                        ToolTip="Minimize" ToolTipService.ShowDuration="3000">
+                        ToolTip="Minimize">
                     <materialDesign:PackIcon Kind="WindowMinimize"/>
                 </Button>
 
                 <!--Maximize button -->
                 <Button x:Name="MaximizeButton" Click="OnMaximizeButtonClick" 
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
-                        ToolTip="Maximize" ToolTipService.ShowDuration="3000">
+                        ToolTip="Maximize">
                     <materialDesign:PackIcon Kind="WindowMaximize"/>
                 </Button>
 
+                <!--Restore button -->
+                <Button x:Name="RestoreButton" Click="OnRestoreButtonClick" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        ToolTip="Restore" Visibility="Collapsed">
+                    <materialDesign:PackIcon Kind="WindowRestore"/>
+                </Button>
+                
                 <!--Close button-->
                 <Button x:Name="CloseButton" Click="OnCloseButtonClick"
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
-                        ToolTip="Close" ToolTipService.ShowDuration="3000">
+                        ToolTip="Close">
                     <materialDesign:PackIcon Kind="Close"/>
                 </Button>
             </DockPanel>
