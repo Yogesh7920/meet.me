@@ -1,9 +1,9 @@
-﻿/*
+﻿/**
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
  * Date Modified: 11/23/2021
-*/
+**/
 
 using NUnit.Framework;
 using System;
@@ -43,6 +43,11 @@ namespace Testing.Whiteboard
         {
             // Asserting that the floats are equal
             Assert.IsTrue(Math.Abs(a - b) < _floatDiff);
+        }
+
+        public static bool AreDecimalEqual(float a, float b)
+        {
+            return (Math.Abs(Math.Round(a, 2) - Math.Round(b, 2)) < 0.02);
         }
     }
 }

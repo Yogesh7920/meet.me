@@ -37,8 +37,8 @@ namespace Client
             if (propertyName == "ReceivedMsg")
             {
                 AllMessages.Add(viewModel.ReceivedMsg);
-                //UpdateScrollBar(myChat);
             }
+            UpdateScrollBar(myChat);
         }
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
