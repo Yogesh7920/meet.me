@@ -63,6 +63,7 @@ namespace Client
         private float eraserThickness = 5;
 
         bool rotation = false;
+        bool close_popup = false; 
 
         //private ObservableCollection<string> _chk;
 
@@ -226,6 +227,26 @@ namespace Client
 
                         mouseDownFlag = 0;
                     }
+                    break;
+                case (WhiteBoardViewModel.WBTools.Selection):
+                    /*mouseDownFlag = 0;
+                    //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
+                    if (mouseLeftBtnMoveFlag > 5)
+                    {
+                        if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                        {
+
+                            if (rotation == true)
+                            {
+                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                rotation = false;
+                            }
+                            else
+                            {
+                                this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                            }
+                        }
+                    }*/
                     break;
                 default:
                     break;
@@ -791,13 +812,13 @@ namespace Client
             {
                 this.viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "StrokeThickness", Black, thickness);
             }
-
         }
 
         //Main Toolbar Pop-Ups 
         //Free Hand Pop-Up
         private void OpenPopupFreeHandButton_MouseEnter(object sender, MouseEventArgs e)
         {
+
             FreeHandPopUp.StaysOpen = true;
         }
 

@@ -269,6 +269,7 @@ namespace Client
         public AdornerLayer adornerLayer;
         public Shape underCreation;
         public System.Windows.Point selectMouseDownPos;
+        public System.Windows.Point selectMouseStuck;
 
         //Variable to keep track of the Uid of the new shape that is currently under creation
         private string uidShapeCreate = null;
@@ -738,14 +739,14 @@ namespace Client
             {
 
 
-            //if(!testing) Debug.Assert(selectedShapes.Count == 1);
-            string shUID = selectedShapes[0];
+                //if(!testing) Debug.Assert(selectedShapes.Count == 1);
+                string shUID = selectedShapes[0];
 
                 /* Temporary WB Module code to test functionality */
                 IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
 
-            //Check Condition 
-            //if (!testing) Debug.Assert(iterat.Count() == 1);
+                //Check Condition 
+                //if (!testing) Debug.Assert(iterat.Count() == 1);
 
                 Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
@@ -764,10 +765,18 @@ namespace Client
                     center_x = (int)(topleft_x - diff_topleft_x + sh.Width / 2);
                     center_y = (int)(topleft_y - diff_topleft_y + sh.Height / 2);
 
-                    if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(sh, topleft_x - diff_topleft_x);
+                    if (center_x > 0 && center_x < cn.Width)
+                    {
+                        //selectMouseStuck.X = strt.X;
+                        Canvas.SetLeft(sh, topleft_x - diff_topleft_x);
+                    }
                     else Canvas.SetLeft(sh, Canvas.GetLeft(sh));
 
-                    if (center_y > 0 && center_y < cn.Height) Canvas.SetTop(sh, topleft_y - diff_topleft_y);
+                    if (center_y > 0 && center_y < cn.Height)
+                    {
+                        //selectMouseStuck.Y = strt.Y;
+                        Canvas.SetTop(sh, topleft_y - diff_topleft_y);
+                    }
                     else Canvas.SetTop(sh, Canvas.GetTop(sh));
                 }
                 else
@@ -790,6 +799,7 @@ namespace Client
                 //Coordinate C_strt = new Coordinate(((float)strt.X), ((float)strt.Y));
                 //Coordinate C_strt = new Coordinate(((float)selectMouseDownPos.X), ((float)selectMouseDownPos.Y));
                 //Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
+
                 Coordinate C_strt = new Coordinate(((int)(cn.Height - selectMouseDownPos.Y)), ((int)selectMouseDownPos.X));
                 Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
 
