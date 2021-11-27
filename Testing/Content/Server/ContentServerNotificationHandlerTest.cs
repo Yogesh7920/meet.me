@@ -127,7 +127,9 @@ namespace Testing.Content
 
             Thread.Sleep(sleeptime);
 
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
+            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
+
+            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
     }
