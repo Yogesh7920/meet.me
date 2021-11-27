@@ -1,4 +1,10 @@
-﻿using System;
+﻿/// <author>Harsh Parihar</author>
+/// <created> 8/11/2021 </created>
+/// <summary>
+/// Interface for Telemetry
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

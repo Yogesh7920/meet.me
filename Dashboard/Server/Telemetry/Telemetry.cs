@@ -1,3 +1,9 @@
+/// <author>Harsh Parihar</author>
+/// <created> 16/11/2021 </created>
+/// <summary>
+/// All functionalities are implemented here.
+/// </summary>
+
 using System;
 using System.Collections.Generic;
 using Dashboard.Server.SessionManagement;
