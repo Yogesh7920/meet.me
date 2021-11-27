@@ -122,7 +122,7 @@ namespace Client
             }
             else
             {
-                _screenshareclient.stopSharing();
+                _screenshareclient.StopSharing();
                 sharing = false;
             }
             this.SSwb.Content = new ScreenShareUX();

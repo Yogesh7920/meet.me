@@ -1,12 +1,13 @@
 namespace Content
 {
     /// <summary>
-    ///     Message Type - File or Chat
+    ///     Message Type - File, Chat, or a request for message history until now
     /// </summary>
     public enum MessageType
     {
         File,
-        Chat
+        Chat,
+        HistoryRequest
     }
 
     /// <summary>
