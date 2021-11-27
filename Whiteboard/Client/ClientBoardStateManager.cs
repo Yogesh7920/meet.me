@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/11/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
@@ -572,7 +572,8 @@ namespace Whiteboard
         /// <summary>
         /// Clears the whiteboard state.
         /// </summary>
-        public void ClearWhiteBoard()
+        /// <returns>True to freeze state.</returns>
+        public bool ClearWhiteBoard()
         {
             Trace.WriteLine("ClientBoardStateManager.ClearWhiteBoard: Sending Clear_State request to server.");
 
@@ -581,7 +582,9 @@ namespace Whiteboard
             {
                 // reset state in sync to currentCheckpointState = 0.
                 _clientBoardCommunicator.Send(new(null, Operation.CLEAR_STATE, _currentUserId, currentCheckpointState: BoardConstants.INITIAL_CHECKPOINT_STATE));
+                return true;
             }
+            return false;
         }
 
         /// <summary>

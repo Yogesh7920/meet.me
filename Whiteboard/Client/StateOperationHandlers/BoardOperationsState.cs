@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/27/2021
 **/
 
 using System;
@@ -22,12 +22,12 @@ namespace Whiteboard
         /// <summary>
         /// User Level of client.
         /// </summary>
-        public int UserLevel { get; set; }
+        protected int UserLevel { get; set; }
 
         /// <summary>
         /// state Manager instance.
         /// </summary>
-        protected IClientBoardStateManagerInternal _stateManager;
+        protected IClientBoardStateManagerInternal StateManager;
 
         /// <summary>
         /// Checker if the module is running in test mode or not
@@ -42,9 +42,19 @@ namespace Whiteboard
         {
             if (IsRunningFromNUnit)
             {
-                _stateManager = stateManager;
+                StateManager = stateManager;
             }
 
+        }
+
+        /// <summary>
+        /// Sets user level of itself and state manager.
+        /// </summary>
+        /// <param name="userLevel">user level.</param>
+        public void SetUserLevel(int userLevel)
+        {
+            UserLevel = userLevel;
+            StateManager.SetUserLevel(userLevel);
         }
 
         /// <summary>
@@ -145,7 +155,7 @@ namespace Whiteboard
         /// <returns>BoardShape returned from server, if exists, else raise exception.</returns>
         protected BoardShape GetShapeFromManager(string shapeId)
         {
-            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+            BoardShape shapeFromManager = StateManager.GetBoardShape(shapeId);
             if (shapeFromManager == null)
             {
                 throw new Exception("Shape Id doesn't exist in server.");

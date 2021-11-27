@@ -8,17 +8,17 @@
         MouseDown="OnWindowMouseDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:DesignWidth="363.639" d:DesignHeight="807.376">
     <!--Height="780" Width="470"-->
     <UserControl.Resources>
-        <SolidColorBrush x:Key="DynamicTextClr" Color="White"/>
-        <SolidColorBrush x:Key="DynamicButtonFore" Color="White"/>
-        <SolidColorBrush x:Key="DynamicChatBackGrd" Color="#FFCFCFCF"/>
-        <SolidColorBrush x:Key="DynamicReplyBox" Color="#FF8522BD"/>
-        <SolidColorBrush x:Key="DynamicSentMsg" Color="#D500F9"/>
-        <SolidColorBrush x:Key="DynamicSentFile" Color="#830394"/>
-        <SolidColorBrush x:Key="DynamicRecvMsg" Color="#FF8522BD"/>
-        <SolidColorBrush x:Key="DynamicRecvFile" Color="#FF340051"/>
-        <SolidColorBrush x:Key="DynamicSendBox" Color="#FF340051"/>
-        <SolidColorBrush x:Key="DynamicHeader" Color="#FF340051"/>
-        <SolidColorBrush x:Key="DynamicButtonBack" Color="#FF340051"/>
+        <SolidColorBrush x:Key="DynamicTextClr" Color="{DynamicResource Color5}"/>
+        <SolidColorBrush x:Key="DynamicButtonFore" Color="{DynamicResource Color5}"/>
+        <SolidColorBrush x:Key="DynamicChatBackGrd" Color="{DynamicResource Color3}"/>
+        <SolidColorBrush x:Key="DynamicReplyBox" Color="{DynamicResource Color2}"/>
+        <SolidColorBrush x:Key="DynamicSentMsg" Color="{DynamicResource Color4}"/>
+        <SolidColorBrush x:Key="DynamicSentFile" Color="{DynamicResource Color6}"/>
+        <SolidColorBrush x:Key="DynamicRecvMsg" Color="{DynamicResource Color2}"/>
+        <SolidColorBrush x:Key="DynamicRecvFile" Color="{DynamicResource Color1}"/>
+        <SolidColorBrush x:Key="DynamicSendBox" Color="{DynamicResource Color1}"/>
+        <SolidColorBrush x:Key="DynamicHeader" Color="{DynamicResource Color1}"/>
+        <SolidColorBrush x:Key="DynamicButtonBack" Color="{DynamicResource Color1}"/>
 
         <Style TargetType="TextBlock" x:Key="ReplyText">
             <Style.Triggers>
@@ -29,6 +29,27 @@
                     <Setter Property="Visibility" Value="Collapsed" />
                 </Trigger>
             </Style.Triggers>
+        </Style>
+        
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Cursor" Value="Pen" />
+                    <Setter Property="CaretBrush">
+                        <Setter.Value>
+                            <SolidColorBrush Color="White"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </Style.Triggers>
+            
         </Style>
 
         <Style TargetType="{x:Type Button}">
@@ -108,7 +129,7 @@
                         </Grid>
                         <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="60"></ColumnDefinition>
+                                <ColumnDefinition Width="70"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
@@ -164,12 +185,10 @@
                         </Grid>
                         <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="60"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="70"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <TextBlock Opacity="0.8" Foreground="{DynamicResource DynamicTextClr}" Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8" Grid.Column="0"/>
-                            <RadioButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left" Template="{DynamicResource StarToggleButton}" Click="OnStarButtonClick"/>
                             <TextBlock Opacity="0.8" Foreground="{DynamicResource DynamicTextClr}" Text="Sent" x:Name="status" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8" Grid.Column="2" HorizontalAlignment="Right"/>
                         </Grid>
                     </Grid>
@@ -217,7 +236,7 @@
                     </Grid>
                     <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"></ColumnDefinition>
+                            <ColumnDefinition Width="70"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Opacity="0.8" Foreground="{DynamicResource DynamicTextClr}" Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8" Grid.Column="0"/>
@@ -278,12 +297,7 @@
                         </Button>
                     </Grid>
                     <Grid Grid.Row="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
                         <TextBlock Opacity="0.8" Foreground="{DynamicResource DynamicTextClr}" Text="{Binding Time}" x:Name="timeText" Margin="0" TextWrapping="Wrap" Grid.Row="0" Padding="8" Grid.Column="0"/>
-                        <RadioButton Grid.Column="1" Content="All" Padding="2" HorizontalAlignment="Left" Template="{DynamicResource StarToggleButton}" Click="OnStarButtonClick"/>
                     </Grid>
                 </Grid>
             </Grid>

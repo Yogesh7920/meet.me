@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Client
 {
-    class UserViewData
+    public class UserViewData
     {
         public string username { get; set; }
         public string shortname { get; set; }

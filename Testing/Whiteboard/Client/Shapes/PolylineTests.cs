@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/25/2021
 **/
 
 using NUnit.Framework;
@@ -116,6 +116,16 @@ namespace Testing.Whiteboard
             Coordinate end = new(-3, -5);
             MainShape newPolyline = _polyline.ShapeMaker(start, end, null);
             Assert.IsFalse(newPolyline.ResizeAboutCenter(start.Clone(), end.Clone(), DragPos.TOP_RIGHT));
+        }
+
+        [Test]
+        public void Rotate_RotationOfPolyline_ReturnFalse()
+        {
+            // Check rotate of polyline not possible
+            Coordinate start = new(1, 1);
+            Coordinate end = new(-3, -5);
+            MainShape newPolyline = _polyline.ShapeMaker(start, end, null);
+            Assert.IsFalse(newPolyline.Rotate(start.Clone(), end.Clone()));
         }
     }
 }

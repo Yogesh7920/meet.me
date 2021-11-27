@@ -1121,13 +1121,13 @@ namespace Client
         {
             if (Bu_P.Toggled1 == true)
             {
-                //this.viewModel.WBOps;
+                this.viewModel.WBOps.SetUserLevel(1);
                 this.PriorityBlock.Text = "High PR";
                 MessageBox.Show("Switched to High Priority");
             }
             else
             {
-                //this.viewModel.WBOps;
+                this.viewModel.WBOps.SetUserLevel(0);
                 this.PriorityBlock.Text = "Medium PR";
                 MessageBox.Show("Switched to Medium Priority");
             }
