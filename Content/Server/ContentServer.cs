@@ -105,6 +105,11 @@ namespace Content
                         receiveMessageData = _fileServer.Receive(messageData);
                         break;
 
+                    case MessageType.HistoryRequest:
+                        Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
+                        SSendAllMessagesToClient(messageData.SenderId);
+                        return;
+
                     default:
                         Trace.WriteLine("[ContentServer] Unknown Message Type");
                         return;
