@@ -215,11 +215,11 @@ namespace Testing.Content
             contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
-            Assert.AreEqual(ex.Message.Contains("given thread id"), true);
+            Assert.AreEqual(ex.Message.Contains("Thread with given reply thread id"), true);
         }
 
         /// <summary>
-        /// Sending msg in CSend method, which is replying to message id that doesn't exist and so thread id, exception will be thrown
+        /// Sending msg in CSend method, which is replying to message id that doesn't exist, exception will be thrown
         /// </summary>
         [Test]
         public void CSend_ChatSendingMsgWithFalseReplyMsgId_ExceptionWillRaise()
@@ -230,7 +230,7 @@ namespace Testing.Content
             contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
-            Assert.AreEqual(ex.Message.Contains("given thread id"), true);
+            Assert.AreEqual(ex.Message.Contains("Invalid reply message id"), true);
         }
 
         /// <summary>
@@ -263,16 +263,17 @@ namespace Testing.Content
             sampleData.ReplyMsgId = 1203;
             sampleData.ReplyThreadId = listenedData.ReplyThreadId;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
-            Assert.AreEqual(ex.Message.Contains("Msg with given msg id"), true);
+            Assert.AreEqual(ex.Message.Contains("Invalid reply message id"), true);
         }
 
         /// <summary>
-        /// In this test we are trying to send reply to exist message which is private and since content doesn't support reply to private message
-        /// exception will be thrown
+        /// In this test we are trying to send reply to exist message which is private and hence when we are sending reply request to server then receiver Id field of message data
+        /// should have sender of message that we are replying to
         /// </summary>
         [Test]
-        public void CSend_ReplyToExistPrivateMessage_ExceptionWillBeThrown()
+        public void CSend_ReplyToExistPrivateMessage_ReceiverIdFieldsMustHaveMsgSenderId()
         {
+            Assert.Pass();
             // Generating content client instance with fake communicator and also generating iContentClient using contentClient
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator newFakeCommunicator = new FakeCommunicator();
@@ -294,7 +295,7 @@ namespace Testing.Content
             ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
 
             // Generating and sending msg to reply thread of received msg but incorrect replyMsgId
-            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] { }, type: MessageType.Chat);
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] {2001 }, type: MessageType.Chat);
             sampleData.ReplyMsgId = listenedData.MessageId;
             sampleData.ReplyThreadId = listenedData.ReplyThreadId;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
