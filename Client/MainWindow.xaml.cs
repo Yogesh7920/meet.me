@@ -118,7 +118,7 @@ namespace Client
             }
             else
             {
-                _screenshareclient.stopSharing();
+                _screenshareclient.StopSharing();
                 sharing = false;
             }
             //uncomment below line after respective User Controls are done

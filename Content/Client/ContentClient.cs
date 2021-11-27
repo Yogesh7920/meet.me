@@ -21,6 +21,7 @@ namespace Content
         private Dictionary<int, int> _messageIdMap;
 
         private ICommunicator _communicator;
+        private ISerializer _serializer;
 
         private object _lock;
         private ChatClient _chatHandler;
@@ -51,6 +52,7 @@ namespace Content
             // subscribe to the network
             _notifHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
+            _serializer = new Serializer();
             try
             {
                 _communicator.Subscribe("Content", _notifHandler);
@@ -272,7 +274,6 @@ namespace Content
             throw new ArgumentException("Thread with requested thread ID does not exist");
         }
 
-
         // handler functions
 
         /// <summary>
@@ -293,6 +294,7 @@ namespace Content
             if (allMessages is null)
                 throw new ArgumentException("Null message in argument");
 
+            Trace.WriteLine("[ContentClient] Received message history from server");
             // since the received message history is from the server and thus more definitive,
             // replace the current message history with it
             setAllMessages(allMessages);
@@ -419,6 +421,30 @@ namespace Content
             File.WriteAllBytes(savepath, message.FileData.fileContent);
         }
 
+        // utility functions not part of the interface
+
+        /// <summary>
+        ///     Sends a message to the server to send all messages received on the server until now
+        /// </summary>
+        public void RequestMessageHistory()
+        {
+            // the only fields that matter are type and sender id
+            MessageData msg = new MessageData();
+            msg.SenderId = UserId;
+            msg.Type = MessageType.HistoryRequest;
+
+            try
+            {
+                // serialize the message and send via network
+                var toSendSerialized = _serializer.Serialize(msg);
+                Trace.WriteLine($"[ContentClient] Sending request for message history to server for user id {UserId}");
+                _communicator.Send(toSendSerialized, "Content");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentClient] Exception encountered during sending message history request: {e.GetType().Name}: {e.Message}");
+            }
+        }
 
         // helper methods
 
