@@ -7,11 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.Diagnostics;
-using System.Xml.Serialization;
 using System.IO;
 using Newtonsoft;
+using Newtonsoft.Json;
 using System.Text.Json;
 
 
@@ -44,7 +43,11 @@ namespace Whiteboard
                 var boardShapes = (List<BoardShape>)xml.Deserialize(streamReader);*/
 
                 string jsonString = File.ReadAllText(boardShapesPath);
-                List<BoardShape> boardShapes = JsonSerializer.Deserialize<List<BoardShape>>(jsonString);
+                //List<BoardShape> boardShapes = JsonSerializer.Deserialize<List<BoardShape>>(jsonString);
+                List<BoardShape> boardShapes = JsonConvert.DeserializeObject<List<BoardShape>> (jsonString, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                });
                 return boardShapes;
 
             }
@@ -89,9 +92,14 @@ namespace Whiteboard
 
             xml.Serialize(streamWriter, boardShapes);
 
-            streamWriter.Close();*/
+            streamWriter.Close();
             string jsonString = JsonSerializer.Serialize(boardShapes);
-            File.WriteAllText(boardShapesPath, jsonString);
+            File.WriteAllText(boardShapesPath, jsonString);*/
+            string jsonString = JsonConvert.SerializeObject(boardShapes, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
+            File.WriteAllText(boardShapesPath, jsonString); 
 
 
             return CheckpointNumber;
@@ -105,6 +113,6 @@ namespace Whiteboard
             return CheckpointSummary;
         }
     }
-        
-    
+
+
 }
