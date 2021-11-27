@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/12/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/25/2021
 **/
 
 using NUnit.Framework;
@@ -105,7 +105,21 @@ namespace Testing.Whiteboard
             Assert.IsNull(ClonedShape.GetPoints());
         }
 
-        
+        [Test]
+        public void AngleOfRotation_GreaterThanPi()
+        {
+            MainShape rectangle = new Rectangle(2, 2, new(0,0), new(1,1));
+            rectangle.AngleOfRotation = (float)(2* Math.PI + 1);
+            Comparators.CompareFloats(rectangle.AngleOfRotation, 1);
+        }
+
+        [Test]
+        public void AngleOfRotation_LessThanPi()
+        {
+            MainShape rectangle = new Rectangle(2, 2, new(0, 0), new(1, 1));
+            rectangle.AngleOfRotation = (float)(-2 * Math.PI - 1);
+            Comparators.CompareFloats(rectangle.AngleOfRotation, -1);
+        }
 
 
         [Test, TestCaseSource(typeof(TestIterators), "Rotate_Quad1_TestCases")]
@@ -176,12 +190,28 @@ namespace Testing.Whiteboard
             // create a new shape
             MainShape previousMainShape = new Rectangle(height, width, strokeWidth, strokeColor.Clone(), 
                                                         fillColor.Clone(), shapeStart.Clone(), center.Clone(), null, angleOfRotation);
-            previousMainShape.ResizeAboutCenter(start, end, dragPos);
+            bool successFlag = previousMainShape.ResizeAboutCenter(start, end, dragPos);
 
             // check whether the state formed is correct
             Comparators.Compare(previousMainShape, shapeStart, center, expectedHeight, expectedWidth,
                                 strokeWidth, strokeColor, fillColor, angleOfRotation);
+            Assert.IsTrue(successFlag);
 
+        }
+
+        [Test]
+        public void Resize_DragPosisNone_ReturnsFalse()
+        {
+            Coordinate start = new(_random.Next(0, 10), _random.Next(0, 10));
+            Coordinate center = new(_random.Next(0, 10), _random.Next(0, 10));
+            float height = _random.Next(0, 10);
+            float width = _random.Next(0, 10);
+            MainShape rectangle = new Rectangle(height, width, start, center);
+            bool successFlag = rectangle.ResizeAboutCenter(new(0,0), new(1,1), DragPos.NONE);
+            
+            Assert.IsFalse(successFlag);
+            Comparators.Compare(rectangle, start, center, height, width, 1,
+                                new BoardColor(0, 0, 0), new BoardColor(255, 255, 255), 0);
         }
 
     }

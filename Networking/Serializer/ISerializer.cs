@@ -1,4 +1,7 @@
-﻿namespace Networking
+﻿/// <author>Abdullah Khan</author>
+/// <created>14/10/2021</created>
+
+namespace Networking
 {
     public interface ISerializer
     {
