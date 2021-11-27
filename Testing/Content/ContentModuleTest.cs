@@ -273,7 +273,6 @@ namespace Testing.Content
         [Test]
         public void CSend_ReplyToExistPrivateMessage_ReceiverIdFieldsMustHaveMsgSenderId()
         {
-            Assert.Pass();
             // Generating content client instance with fake communicator and also generating iContentClient using contentClient
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator newFakeCommunicator = new FakeCommunicator();
@@ -298,8 +297,49 @@ namespace Testing.Content
             SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] {2001 }, type: MessageType.Chat);
             sampleData.ReplyMsgId = listenedData.MessageId;
             sampleData.ReplyThreadId = listenedData.ReplyThreadId;
-            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
-            Assert.AreEqual(ex.Message.Contains("Message to reply is not broadcast"), true);
+            iContentClient.CSend(sampleData);
+            var sendSerializedMsg = fakeCommunicator.GetSentData();
+            var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
+            Assert.AreEqual(deserialized.Message, sampleData.Message);
+            Assert.AreEqual(deserialized.ReceiverIds, sampleData.ReceiverIds);
+        }
+
+        /// <summary>
+        /// In this test we are trying to send reply to exist message which is private and hence when we are sending reply request to server then receiver Id field of message data
+        /// should have all users that are msg was sent to
+        /// </summary>
+        [Test]
+        public void CSend_ReplyToExistPrivateMessageWithMultipleReceivers_ReceiverIdFieldsMustHaveAllUsersRelatedToMsg()
+        {
+            // Generating content client instance with fake communicator and also generating iContentClient using contentClient
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator newFakeCommunicator = new FakeCommunicator();
+            contentClient.Communicator = newFakeCommunicator;
+            int userId = 1001;
+            contentClient.UserId = userId;
+            IContentClient iContentClient = contentClient;
+
+            // Subscribing to content client
+            iContentClient.CSubscribe(iFakeListener);
+            // Generating private message where user 2001 sending hello to user 1001, 1002 and 1003
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 490, ReplyThreadId: 6, rcvIds: new int[] { userId, 1002, 1003 }, SenderId: 2001);
+
+            // Notifying client with msg
+            newFakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
+            System.Threading.Thread.Sleep(50);
+
+            // Fetching listened data from listener
+            ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
+
+            // Generating and sending msg to reply all users related to msgId
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] { 2001, 1002, 1003}, type: MessageType.Chat);
+            sampleData.ReplyMsgId = listenedData.MessageId;
+            sampleData.ReplyThreadId = listenedData.ReplyThreadId;
+            iContentClient.CSend(sampleData);
+            var sendSerializedMsg = fakeCommunicator.GetSentData();
+            var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
+            Assert.AreEqual(deserialized.Message, sampleData.Message);
+            Assert.AreEqual(deserialized.ReceiverIds, sampleData.ReceiverIds);
         }
 
         /// <summary>
