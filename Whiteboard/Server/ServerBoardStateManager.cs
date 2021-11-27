@@ -198,7 +198,7 @@ namespace Whiteboard
                 }
 
                 // if some stale request for previous state is received, discard it
-                if(boardServerShape.CurrentCheckpointState != _currentCheckpointState)
+                if(boardServerShape.OperationFlag != Operation.CLEAR_STATE && boardServerShape.CurrentCheckpointState != _currentCheckpointState)
                 {
                     Trace.WriteLine("ServerBoardStateManager.SaveUpdate: Update for previous state received. Discarding such requests.");
                     return false;

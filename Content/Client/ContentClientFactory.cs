@@ -34,6 +34,7 @@ namespace Content
         {
             if (instance == null) CreateInstance();
             instance.UserId = userId;
+            instance.RequestMessageHistory();
         }
 
         /// <summary>
