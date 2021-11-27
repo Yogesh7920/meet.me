@@ -14,6 +14,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Client
 {
@@ -163,10 +164,6 @@ namespace Client
             }
             
         }
-        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
-        {
-            Window.GetWindow(this).Close();
-        }
         private void OnWindowMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -176,14 +173,12 @@ namespace Client
         }
         private void UpdateScrollBar(ListBox listBox)
         {
-            ListBoxAutomationPeer svAutomation = (ListBoxAutomationPeer)ScrollViewerAutomationPeer.CreatePeerForElement(listBox);
-
-            IScrollProvider scrollInterface = (IScrollProvider)svAutomation.GetPattern(PatternInterface.Scroll);
-            System.Windows.Automation.ScrollAmount scrollVertical = System.Windows.Automation.ScrollAmount.LargeIncrement;
-            System.Windows.Automation.ScrollAmount scrollHorizontal = System.Windows.Automation.ScrollAmount.NoAmount;
-            //If the vertical scroller is not available, the operation cannot be performed, which will raise an exception. 
-            if (scrollInterface.VerticallyScrollable)
-                scrollInterface.Scroll(scrollHorizontal, scrollVertical);
+            if (listBox != null)
+            {
+                var border = (Border)VisualTreeHelper.GetChild(listBox, 0);
+                var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                scrollViewer.ScrollToBottom();
+            }
         }
     }
 }
