@@ -135,10 +135,10 @@ namespace Content
                 // Else send the message to all the receivers and notify the subscribers
                 else
                 {
-                    Trace.WriteLine("[ContentServer] Sending message to clients");
-                    Send(receiveMessageData);
                     Trace.WriteLine("[ContentServer] Notifying subscribers");
                     Notify(receiveMessageData);
+                    Trace.WriteLine("[ContentServer] Sending message to clients");
+                    Send(receiveMessageData);
                 }
             }
             catch (Exception e)
