@@ -6,8 +6,6 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace Networking
@@ -41,8 +39,8 @@ namespace Networking
         /// <returns></returns>
         string SerializeJSON<T>(T objectToSerialize)
         {
-            var jset = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
-            return JsonConvert.SerializeObject(objectToSerialize, Newtonsoft.Json.Formatting.Indented, jset);
+            var jset = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            return JsonConvert.SerializeObject(objectToSerialize, Formatting.Indented, jset);
         }
         /// <inheritdoc />
         string ISerializer.Serialize<T>(T objectToSerialize)
@@ -51,7 +49,7 @@ namespace Networking
             {
                 string json = SerializeJSON(objectToSerialize);
                 MetaObject obj = new MetaObject(typeof(T).ToString(), json);
-                return SerializeJSON<MetaObject>(obj);
+                return SerializeJSON(obj);
             }
             catch (Exception ex)
             {
@@ -62,16 +60,9 @@ namespace Networking
         /// <inheritdoc />
         string ISerializer.GetObjectType(string serializedString, string nameSpace)
         {
-            try
-            {
-                // json string
-                MetaObject obj = deserializeJSON<MetaObject>(serializedString);
-                return obj.typ;
-            }
-            catch
-            {
-                throw;
-            }
+            // json string
+            MetaObject obj = deserializeJSON<MetaObject>(serializedString);
+            return obj.typ;
         }
         /// <summary>
         /// JSON supoorted deserialization.
@@ -81,7 +72,7 @@ namespace Networking
         /// <returns></returns>
         T deserializeJSON<T>(string json)
         {
-            var jset = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+            var jset = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
             return JsonConvert.DeserializeObject<T>(json, jset);
         }
         /// <inheritdoc />

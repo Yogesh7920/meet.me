@@ -80,8 +80,8 @@ namespace ScreenSharing
 
 			// creating a thread to notify the UX and starting its execution
 			IsNotifying = true;
-			NotifyingThread = new Thread(NotifyUx);
-			NotifyingThread.Start();
+			// NotifyingThread = new Thread(NotifyUx);
+			// NotifyingThread.Start();
 		}
 
 		/// <summary>
