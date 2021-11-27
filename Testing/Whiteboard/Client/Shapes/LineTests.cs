@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/25/2021
 **/
 
 using NUnit.Framework;
@@ -89,6 +89,31 @@ namespace Testing.Whiteboard
             Assert.That(ReferenceEquals(previousMainShape, modification1));
             Comparators.Compare(modification1, start, expectedCenter, 0, expectedWidth, strokeWidth, strokeColor,
                                 fillColor, expectedAngle);
+        }
+
+        [Test, TestCaseSource(typeof(TestIterators), "Resize_AllLatchsforLine_TestCases")]
+        public void ResizeAboutCenter(float expectedWidth, Coordinate end, DragPos drapgPos)
+        {
+            // setting parameters for line.
+            float height = 0;
+            float width = (float)Math.Sqrt(32);
+            float strokeWidth = 1;
+            BoardColor strokeColor = new(34, 5, 6);
+            BoardColor fillColor = new(34, 5, 64);
+            Coordinate start = new(1, 1);
+            Coordinate center = new(3, 3);
+            float angleOfRotation = (float)Math.PI / 6;
+
+            // create a new shape
+            // creating a line to be modified by shapeMaker.
+            MainShape previousMainShape = new Line(height, width, strokeWidth, strokeColor.Clone(),
+                                                   fillColor.Clone(), start.Clone(), center.Clone(), null, angleOfRotation);
+
+            previousMainShape.ResizeAboutCenter(new Coordinate(0,0), end, drapgPos);
+
+            // check whether the state formed is correct
+            Comparators.Compare(previousMainShape, start, center, 0, expectedWidth,
+                                strokeWidth, strokeColor, fillColor, angleOfRotation);
         }
     }
 }

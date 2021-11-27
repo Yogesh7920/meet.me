@@ -2,9 +2,6 @@
 using System.Windows;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
@@ -12,7 +9,7 @@ using Client;
 
 namespace Client.ViewModel
 {
-    class HomePageViewModel : IClientSessionNotifications
+    public class HomePageViewModel : IClientSessionNotifications // Notifies change in list of users.
     {
         int userid;
         public List<UserViewData> users
@@ -46,7 +43,6 @@ namespace Client.ViewModel
                                     }
                                     usernew.shortname = user.username.Substring(0,2);
                                     users.Add(usernew);
-                                    System.Diagnostics.Debug.WriteLine(user.username);
                                 }
                                 OnPropertyChanged("ListChanged");
                             }
@@ -59,6 +55,9 @@ namespace Client.ViewModel
             _model.RemoveClient();
         }
 
+        /// <summary>
+        /// Property changed event raised when a property is changed on a component.
+        /// </summary>
         public event PropertyChangedEventHandler UsersListChanged;
 
         /// <summary>
@@ -69,6 +68,12 @@ namespace Client.ViewModel
         {
             UsersListChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
+
+        /// <summary>
+        /// Gets the dispatcher to the main thread. In case it is not available
+        /// (such as during unit testing) the dispatcher associated with the
+        /// current thread is returned.
+        /// </summary>
         private Dispatcher ApplicationMainThreadDispatcher =>
             (Application.Current?.Dispatcher != null) ?
                     Application.Current.Dispatcher :
