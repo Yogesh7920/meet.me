@@ -377,8 +377,6 @@ namespace Testing.Content
         [Test]
         public void Receive_StarringAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            listener.OnMessage(null);
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData starMessage = new MessageData
