@@ -100,6 +100,7 @@ namespace Networking
                         {
                             var isMessage = false;
                             var packetString = "";
+                            if (message == "") break;
                             // get the index of the next two flags
                             var flagIndex = message.IndexOf(Utils.Flag, StringComparison.Ordinal);
                             var nextFlagIndex = message.IndexOf(Utils.Flag, flagIndex + 5, StringComparison.Ordinal);
@@ -136,7 +137,7 @@ namespace Networking
                 catch (Exception ex)
                 {
                     Trace.WriteLine(
-                        "[Networking] An Exception has been raised in ReceiveSocketListenerClient thread "
+                        "[Networking] An Exception has been raised in ReceiveSocketListener thread "
                         + ex.Message);
                 }
         }
