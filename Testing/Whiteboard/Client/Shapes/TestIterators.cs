@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/25/2021
 **/
 
 using NUnit.Framework;
@@ -30,8 +30,6 @@ namespace Testing.Whiteboard
                 yield return new TestCaseData(0, 4, new Coordinate(5, 4), stopDrag).SetArgDisplayNames(stopDrag.R.ToString(), stopDrag.C.ToString());
                 stopDrag = new Coordinate(1, 10);
                 yield return new TestCaseData(6, 2, new Coordinate(2, 7), stopDrag).SetArgDisplayNames(stopDrag.R.ToString(), stopDrag.C.ToString());
-                stopDrag = new Coordinate(7, 8);
-                yield return new TestCaseData(4, 4, new Coordinate(5, 6), stopDrag).SetArgDisplayNames(stopDrag.R.ToString(), stopDrag.C.ToString());
                 stopDrag = new Coordinate(4, 5);
                 yield return new TestCaseData(1, 1, new Coordinate((float)3.5, (float)4.5), stopDrag).SetArgDisplayNames(stopDrag.R.ToString(), stopDrag.C.ToString());
             }
@@ -129,6 +127,7 @@ namespace Testing.Whiteboard
                 yield return new TestCaseData(new Coordinate(-mag * sin60, -mag * cos60), 4 - deltaH, 4 - deltaW, dragPos).SetArgDisplayNames("TopRight_Dec_H_Dec_W");
                 yield return new TestCaseData(new Coordinate(0, mag), 4 - deltaH, 4 + deltaW, dragPos).SetArgDisplayNames("TopRight_Dec_H_Inc_W");
 
+
                 dragPos = DragPos.TOP_LEFT;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 + deltaH, 4 - deltaW, dragPos).SetArgDisplayNames("TopLeft_Inc_H_Dec_W");
                 yield return new TestCaseData(new Coordinate(0, -mag), 4 + deltaH, 4 + deltaW, dragPos).SetArgDisplayNames("TopLeft_Inc_H_Inc_W");
@@ -140,12 +139,69 @@ namespace Testing.Whiteboard
                 yield return new TestCaseData(new Coordinate(0, -mag), 4 - deltaH, 4 + deltaW, dragPos).SetArgDisplayNames("BottomRight_Dec_H_Inc_W");
                 yield return new TestCaseData(new Coordinate(-mag * sin60, -mag * cos60), 4 + deltaH, 4 + deltaW, dragPos).SetArgDisplayNames("BottomRight_Inc_H_Inc_W");
                 yield return new TestCaseData(new Coordinate(0, mag), 4 + deltaH, 4 - deltaW, dragPos).SetArgDisplayNames("BottomRight_Inc_H_Dec_W");
+                yield return new TestCaseData(new Coordinate(4 * sin60, 4 * cos60), BoardConstants.MIN_HEIGHT, BoardConstants.MIN_WIDTH, dragPos).SetArgDisplayNames("BottomLeft_MinH_MinW");
 
                 dragPos = DragPos.BOTTOM_RIGHT;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 - deltaH, 4 + deltaW, dragPos).SetArgDisplayNames("BottomLeft_Dec_H_Inc_W");
                 yield return new TestCaseData(new Coordinate(0, -mag), 4 - deltaH, 4 - deltaW, dragPos).SetArgDisplayNames("BottomLeft_Dec_H_Dec_W");
                 yield return new TestCaseData(new Coordinate(-mag * sin60, -mag * cos60), 4 + deltaH, 4 - deltaW, dragPos).SetArgDisplayNames("BottomLeft_Inc_H_Dec_W");
                 yield return new TestCaseData(new Coordinate(0, mag), 4 + deltaH, 4 + deltaW, dragPos).SetArgDisplayNames("BottomLeft_Inc_H_Inc_W");
+
+                dragPos = DragPos.TOP;
+                yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 + deltaH, 4,dragPos).SetArgDisplayNames("Top_Inc_H");
+
+                dragPos = DragPos.BOTTOM;
+                yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 - deltaH, 4,dragPos).SetArgDisplayNames("Bottom_Dec_H");
+
+                dragPos = DragPos.RIGHT;
+                yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4, 4 + deltaW, dragPos).SetArgDisplayNames("Right_Inc_W");
+
+                dragPos = DragPos.LEFT;
+                yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4, 4 - deltaW, dragPos).SetArgDisplayNames("Left_Dec_W");
+                
+            }
+        }
+
+        /// <summary>
+        /// Test cases for resizing for all the four latches
+        /// </summary>
+        public static IEnumerable<TestCaseData> Resize_AllLatchsforLine_TestCases
+        {
+            get
+            {
+                float w = (float)Math.Sqrt(32);
+                float mag = 2;
+                float cos60 = (float)Math.Cos(Math.PI / 3);
+                float sin60 = (float)Math.Sin(Math.PI / 3);
+                DragPos dragPos = DragPos.TOP_RIGHT;
+                float changeW = 2 * (float)Math.Sqrt(3);
+                yield return new TestCaseData(w + changeW, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("TopRight_W_Inc_1");
+                yield return new TestCaseData(w - changeW, new Coordinate(0, -mag), dragPos).SetArgDisplayNames("TopRight_W_Dec_1");
+                yield return new TestCaseData(w - changeW, new Coordinate(-mag * sin60, -mag * cos60), dragPos).SetArgDisplayNames("TopRight_W_Dec_1");
+                yield return new TestCaseData(w + changeW, new Coordinate(0, mag), dragPos).SetArgDisplayNames("TopRight_H_Inc_2");
+
+                dragPos = DragPos.TOP_LEFT;
+                yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("TopLeft_W_Dec_1");
+                yield return new TestCaseData(w + changeW, new Coordinate(0, -mag), dragPos).SetArgDisplayNames("TopLeft_W_Inc_1");
+                yield return new TestCaseData(w + changeW, new Coordinate(-mag * sin60, -mag * cos60),  dragPos).SetArgDisplayNames("TopLeft_W_Inc_2");
+                yield return new TestCaseData(w - changeW, new Coordinate(0, mag), dragPos).SetArgDisplayNames("TopLeft_W_Dec_2");
+
+                dragPos = DragPos.BOTTOM_LEFT;
+                yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60),  dragPos).SetArgDisplayNames("BottomLeft_W_Dec");
+
+                dragPos = DragPos.BOTTOM_RIGHT;
+                yield return new TestCaseData(w + changeW, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("BottomRight_W_Inc");
+
+                dragPos = DragPos.RIGHT;
+                yield return new TestCaseData(w + changeW, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("Right_W_Inc");
+
+                dragPos = DragPos.LEFT;
+                yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("Left_W_Dec");
+                yield return new TestCaseData(BoardConstants.MIN_WIDTH, new Coordinate(4 * sin60, 4 * cos60), dragPos).SetArgDisplayNames("Left_W_Dec");
+
+                dragPos = DragPos.TOP;
+                yield return new TestCaseData(w, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("Top_W_Same");
+
             }
         }
     }
