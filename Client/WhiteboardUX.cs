@@ -679,12 +679,12 @@ namespace Client
                         case WhiteBoardViewModel.WBTools.NewEllipse:
                             toRender = WBOps.CreateEllipse(C_strt, C_end, 2, stroke, shapeId: null, shapeComp: true);
                             //setting the rendered-to-be shape fill according to the Canvas background
-                            toRender[0].WindowsShape.Fill = strokeColorBrush;
+                            //toRender[0].WindowsShape.Fill = strokeColorBrush;
                             break;
                         case WhiteBoardViewModel.WBTools.NewRectangle:
                             toRender = WBOps.CreateRectangle(C_strt, C_end, 2, stroke, shapeId: null, shapeComp: true);
                             //setting the rendered-to-be shape fill according to the Canvas background
-                            toRender[0].WindowsShape.Fill = strokeColorBrush;
+                            //toRender[0].WindowsShape.Fill = strokeColorBrush;
                             break;
                     }
                     //Removing temporary render from Canvas as Whiteboard module sends only CREATE operation, so we need to clean up temporary render

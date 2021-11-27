@@ -71,7 +71,7 @@ namespace Client
             InitializeComponent();
 
             this.GlobCanvas = MyCanvas;
-            viewModel = new WhiteBoardViewModel(GlobCanvas);
+            viewModel = new WhiteBoardViewModel(GlobCanvas, testing:true);
             this.DataContext = viewModel;
             this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDown_SelectionChanged;
             //this._chk = new ObservableCollection<string>();
@@ -600,7 +600,7 @@ namespace Client
         private void MyCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             MessageBox.Show("Scrolled at X =" + e.GetPosition(GlobCanvas).X.ToString() + " ,Y = " + e.GetPosition(GlobCanvas).Y.ToString());
-            MessageBox.Show("Canvas has Width = " + GlobCanvas.Width + " , Height = " + GlobCanvas.Height);
+            MessageBox.Show("Canvas has Width = " + GlobCanvas.ActualWidth + " , Height = " + GlobCanvas.ActualHeight);
 
             SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
 
@@ -1116,5 +1116,21 @@ namespace Client
             }
         }
 
+        //Toggle Button Control (Canvas State Lock)
+        private void Bu_PMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Bu_P.Toggled1 == true)
+            {
+                //this.viewModel.WBOps;
+                this.PriorityBlock.Text = "High PR";
+                MessageBox.Show("Switched to High Priority");
+            }
+            else
+            {
+                //this.viewModel.WBOps;
+                this.PriorityBlock.Text = "Medium PR";
+                MessageBox.Show("Switched to Medium Priority");
+            }
+        }
     }
 }
