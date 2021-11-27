@@ -26,6 +26,7 @@ namespace Client
         //init variables 
         private System.Windows.Controls.Primitives.ToggleButton activeMainToolbarButton;
         private Button activeSelectToolbarButton;
+        private RadioButton rbutton; 
         private WhiteBoardViewModel viewModel;
         public Canvas GlobCanvas;
 
@@ -79,20 +80,30 @@ namespace Client
         private void RestorFrameDropDown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBox listbox = (ListBox)sender;
-            string item = listbox.SelectedItem.ToString(); 
-            string numeric = new String(item.Where(Char.IsDigit).ToArray());
-            int cp = int.Parse(numeric);
+            
+            if(this.RestorFrameDropDown.SelectedItem != null){
+                
+                string item = listbox.SelectedItem.ToString();
+                string numeric = new String(item.Where(Char.IsDigit).ToArray());
+                int cp = int.Parse(numeric);
 
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
-                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.OK)
-            {
-                viewModel.RestoreFrame(cp, GlobCanvas);
-                return;
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+                              "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    viewModel.RestoreFrame(cp, GlobCanvas);
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+                else
+                {
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
             }
             else
             {
-                return;
+                return; 
             }
 
         }
@@ -589,7 +600,7 @@ namespace Client
         private void MyCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             MessageBox.Show("Scrolled at X =" + e.GetPosition(GlobCanvas).X.ToString() + " ,Y = " + e.GetPosition(GlobCanvas).Y.ToString());
-            MessageBox.Show("Canvas has Width = " + GlobCanvas.Width + " , Height = " + GlobCanvas.Height);
+            MessageBox.Show("Canvas has Width = " + GlobCanvas.ActualWidth + " , Height = " + GlobCanvas.ActualHeight);
 
             SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
 
@@ -690,27 +701,37 @@ namespace Client
         //Fill Shape Check Buttons 
         private void ColorFill1Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg1, 1);
+            rbutton.IsChecked = false;
         }
 
         private void ColorFill2Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg2, 1);
+            rbutton.IsChecked = false;
         }
 
         private void ColorFill3Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg3, 1);
+            rbutton.IsChecked = false;
         }
 
         private void ColorFill4Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg4, 1);
+            rbutton.IsChecked = false;
         }
 
         private void ColorFill5Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg5, 1);
+            rbutton.IsChecked = false;
         }
 
         //Shape Stroke Properties Pop-Up
@@ -728,27 +749,37 @@ namespace Client
         //Fill Border Check Buttons 
         private void ColorBorder1Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Black, 0);
+            rbutton.IsChecked = false; 
         }
 
         private void ColorBorder2Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg2, 0);
+            rbutton.IsChecked = false;
         }
 
         private void ColorBorder3Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg3, 0);
+            rbutton.IsChecked = false;
         }
 
         private void ColorBorder4Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg4, 0);
+            rbutton.IsChecked = false;
         }
 
         private void ColorBorder5Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg5, 0);
+            rbutton.IsChecked = false;
         }
 
         //Stroke Thickness Slider Control 
@@ -756,7 +787,7 @@ namespace Client
         {
             float thickness = (byte)StrokeThicknessSlider.Value;
 
-            if (thickness > 0)
+            if (thickness > 0 && viewModel != null)
             {
                 this.viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "StrokeThickness", Black, thickness);
             }
@@ -1047,11 +1078,8 @@ namespace Client
         //Save Frame Button Control
         private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("ClickedSaveFrame");
-
             //this.viewModel.NumCheckpoints += 1;
-            
-            viewModel.SaveFrame();
+            this.viewModel.SaveFrame();
             return;
         }
 
@@ -1076,15 +1104,33 @@ namespace Client
         {
             if (Bu.Toggled1 == true)
             {
-                viewModel.ChangePrivilegeSwitch();
-                MessageBox.Show("Changed Privilege Switch to On");
+                this.viewModel.ChangeActivityState();
+                this.ActivityBlock.Text = "Inactive";
+                MessageBox.Show("Changed State to Inactive");
             }
             else
             {
-                viewModel.ChangePrivilegeSwitch();
-                MessageBox.Show("Changed Privilege Switch to Off");
+                this.viewModel.ChangeActivityState();
+                this.ActivityBlock.Text = "Active";
+                MessageBox.Show("Changed State to Active");
             }
         }
 
+        //Toggle Button Control (Canvas State Lock)
+        private void Bu_PMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Bu_P.Toggled1 == true)
+            {
+                this.viewModel.WBOps.SetUserLevel(1);
+                this.PriorityBlock.Text = "High PR";
+                MessageBox.Show("Switched to High Priority");
+            }
+            else
+            {
+                this.viewModel.WBOps.SetUserLevel(0);
+                this.PriorityBlock.Text = "Medium PR";
+                MessageBox.Show("Switched to Medium Priority");
+            }
+        }
     }
 }
