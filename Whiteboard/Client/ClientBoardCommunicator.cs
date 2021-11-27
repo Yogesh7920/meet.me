@@ -2,11 +2,12 @@
  * Owned By: Gurunadh Pachappagari
  * Created By: Gurunadh Pachappagari
  * Date Created: 13 Oct 2021
- * Date Modified: 01 Nov 2021
+ * Date Modified: 26 Nov 2021
 **/
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Networking;
 
 namespace Whiteboard
@@ -48,23 +49,40 @@ namespace Whiteboard
         
         public void OnDataReceived(string data)
         {
-            BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
-            foreach (var subscriber in subscribers) 
+            try
             {
-                subscriber.OnMessageReceived(deserializedShape);
+                BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
+                foreach (var subscriber in subscribers)
+                {
+                    subscriber.OnMessageReceived(deserializedShape);
+                }
             }
-            
+            catch (Exception e) 
+            {
+                Trace.WriteLine("ClientBoardCommunicator.OnDataReceived: Exception Occured");
+                Trace.WriteLine(e.Message);
+            }
         }
-        
+
         /// <summary>
         /// serializes the shape objects and passes it to communicator.send()
         /// </summary>
         /// <param name="clientUpdate"> the object to be passed to server</param>
         public void Send(BoardServerShape clientUpdate) 
         {
-            string xml_obj = serializer.Serialize(clientUpdate);
-            communicator.Send(xml_obj, moduleIdentifier);
-            
+            try
+            {
+                Trace.WriteLine("ClientBoardCommunicator.Send: Sending objects to server");
+                string xml_obj = serializer.Serialize(clientUpdate);
+                communicator.Send(xml_obj, moduleIdentifier);
+                Trace.WriteLine("ClientBoardCommunicator.Send: Sent objects to server");
+
+            }
+            catch (Exception e) 
+            {
+                Trace.WriteLine("ClientBoardCommunicator.Send: Exception Occured");
+                Trace.WriteLine(e.Message);
+            }
         }   
         /// <summary>
         /// publishes deserialized objects to listeners
@@ -72,9 +90,20 @@ namespace Whiteboard
         /// <param name="listener">subscriber</param>
         public void Subscribe(IServerUpdateListener listener) 
         {
-            subscribers.Add(listener);
+            try
+            {
+                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Adding Subcriber");
+                subscribers.Add(listener);
+                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Added Subcriber");
+
+            }
+            catch (Exception e) 
+            {
+                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Exception Occured");
+                Trace.WriteLine(e.Message);
+            }
         }
-        
+
 
 
     }

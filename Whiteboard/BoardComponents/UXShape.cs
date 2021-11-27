@@ -100,6 +100,7 @@ namespace Whiteboard
             }
             else if (s.ShapeIdentifier == ShapeType.LINE)
             {
+                TranslationCoordinate = new(0, 0);
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
                     Y1 = s.Center.R,
@@ -112,6 +113,8 @@ namespace Whiteboard
             }
             else
             {
+                TranslationCoordinate = new(0, 0);
+                AngleOfRotation = 0;
                 System.Windows.Shapes.Polyline PolylineUXElement = new();
                 PointCollection PolyLinePointCollection = new();
                 foreach (Coordinate cord in s.GetPoints())
