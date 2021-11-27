@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Testing.Whiteboard
 {
     [TestFixture]
-    internal class ClientBoardCommunicatorTesting
+    class ClientBoardCommunicatorTesting
     {
         [Test]
         public void Instance_Always_RetunsSameInstance()
