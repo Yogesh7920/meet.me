@@ -1,17 +1,19 @@
-﻿using System;
+﻿/// <author>P S Harikrishnan</author>
+/// <created>13/11/2021</created>
+
+using System;
 using System.Windows;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Windows.Threading;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
-using Client;
 
 namespace Client.ViewModel
 {
     public class HomePageViewModel : IClientSessionNotifications // Notifies change in list of users.
     {
-        int userid;
+        public int userid; //client's user-id
         public List<UserViewData> users
         {
             get; private set;
@@ -23,7 +25,17 @@ namespace Client.ViewModel
             users = new List<UserViewData>();
             userid = ChatViewModel.UserId;
         }
-
+        /// <summary>
+        /// Constructor for testing
+        /// </summary>
+        public HomePageViewModel(IUXClientSessionManager model)
+        {
+            _model = model;
+        }
+        /// <summary>
+        /// Taking new session object when users list changes
+        /// </summary>
+        /// <param name="session">New session object.</param>
         public void OnClientSessionChanged(SessionData session)
         {
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
@@ -49,22 +61,24 @@ namespace Client.ViewModel
                         }),
                         session);
         }
-
+        /// <summary>
+        /// When a client leaves
+        /// </summary>
         public void LeftClient()
         {
             _model.RemoveClient();
         }
 
         /// <summary>
-        /// Property changed event raised when a property is changed on a component.
+        /// Property changed event raised when userlist gets changed.
         /// </summary>
         public event PropertyChangedEventHandler UsersListChanged;
 
         /// <summary>
-        /// Handles the property changed event raised on a component.
+        /// Handles the property changed event raised.
         /// </summary>
         /// <param name="property">The name of the property.</param>
-        private void OnPropertyChanged(string property)
+        public void OnPropertyChanged(string property)
         {
             UsersListChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
@@ -79,6 +93,9 @@ namespace Client.ViewModel
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
 
+        /// <summary>
+        /// Underlying data model.
+        /// </summary>
         private IUXClientSessionManager _model;
     }
 }

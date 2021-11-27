@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿/// <author>P S Harikrishnan</author>
+/// <created>06/11/2021</created>
+
+using System.Windows;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,7 +21,6 @@ namespace Client
         public UsersList(MainWindow instance)
         {
             InitializeComponent();
-
             obj = instance;
 
             UserListHidden = true;
@@ -32,11 +34,18 @@ namespace Client
             users = new ObservableCollection<UserViewData>();
             UsersListView.ItemsSource = users;
         }
+        /// <summary>
+        /// Listening to property changed event
+        /// Sets new object as ItemSource
+        /// </summary>
         private void Listener(object sender, PropertyChangedEventArgs e)
         {
             users = new ObservableCollection<UserViewData>(viewModelHomePage.users);
             UsersListView.ItemsSource = users;
         }
+        /// <summary>
+        /// Resizing users list based on button click
+        /// </summary>
         private void UsersListClick(object sender, RoutedEventArgs e)
         {
             obj.OnUsersListClick();
@@ -53,6 +62,9 @@ namespace Client
                 UserListHidden = true;
             }
         }
+        /// <summary>
+        /// Leave button clicked
+        /// </summary>
         public void OnLeaveButtonClick()
         {
             viewModelHomePage.LeftClient();
