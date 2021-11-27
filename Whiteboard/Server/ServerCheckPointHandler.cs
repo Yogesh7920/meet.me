@@ -7,10 +7,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.Diagnostics;
-using System.Xml.Serialization;
 using System.IO;
+using Newtonsoft;
+using Newtonsoft.Json;
+using System.Text.Json;
+
+
 
 namespace Whiteboard
 {
@@ -30,14 +33,21 @@ namespace Whiteboard
         {
             try
             {   // Construct path from the checkpointNumber
-                string boardShapesPath = checkpointNumber.ToString() + ".xml";
+                string boardShapesPath = checkpointNumber.ToString() + ".json";
 
                 // Get the file corresponding to the path
-                StreamReader streamReader = new StreamReader(boardShapesPath);
+                /*StreamReader streamReader = new StreamReader(boardShapesPath);
 
                 //Deserializing the file
                 XmlSerializer xml = new XmlSerializer(typeof(List<BoardShape>));
-                var boardShapes = (List<BoardShape>)xml.Deserialize(streamReader);
+                var boardShapes = (List<BoardShape>)xml.Deserialize(streamReader);*/
+
+                string jsonString = File.ReadAllText(boardShapesPath);
+                //List<BoardShape> boardShapes = JsonSerializer.Deserialize<List<BoardShape>>(jsonString);
+                List<BoardShape> boardShapes = JsonConvert.DeserializeObject<List<BoardShape>> (jsonString, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                });
                 return boardShapes;
 
             }
@@ -74,15 +84,24 @@ namespace Whiteboard
             CheckpointSummary.Add(new Tuple<int, string, List<BoardShape>>(CheckpointNumber, userId, boardShapes));
 
             //Construct path from the corresopnding checkpoint number
-            string boardShapesPath = CheckpointNumber.ToString() + ".xml";
+            string boardShapesPath = CheckpointNumber.ToString() + ".json";
 
             // Serializing boardShapes object and saving them at the boardShapesPath
-            XmlSerializer xml = new XmlSerializer(typeof(List<BoardShape>));
+            /*XmlSerializer xml = new XmlSerializer(boardShapes.GetType());
             StreamWriter streamWriter = new StreamWriter(boardShapesPath);
 
             xml.Serialize(streamWriter, boardShapes);
 
             streamWriter.Close();
+            string jsonString = JsonSerializer.Serialize(boardShapes);
+            File.WriteAllText(boardShapesPath, jsonString);*/
+            string jsonString = JsonConvert.SerializeObject(boardShapes, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
+            File.WriteAllText(boardShapesPath, jsonString); 
+
+
             return CheckpointNumber;
         }
         /// <summary>
@@ -94,6 +113,6 @@ namespace Whiteboard
             return CheckpointSummary;
         }
     }
-        
-    
+
+
 }
