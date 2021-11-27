@@ -41,7 +41,7 @@ namespace Networking
         /// <returns> String </returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
-            if (Environment.GetEnvironmentVariable("isTesting") == "true") return "";
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "";
             try
             {
                 //try to connect with server
@@ -110,9 +110,10 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
-            if (Environment.GetEnvironmentVariable("isTesting") == "true")
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
             {
                 File.WriteAllText("networking_output.json", data);
+                return;
             }
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try

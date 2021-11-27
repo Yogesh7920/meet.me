@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -56,7 +57,7 @@ namespace Networking
         /// <returns> String</returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
-            if (Environment.GetEnvironmentVariable("isTesting") == "true") return "";
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "";
             var ip = IPAddress.Parse(GetLocalIpAddress());
             var port = FreeTcpPort(ip);
             _serverSocket = new TcpListener(ip, port);
@@ -156,6 +157,12 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+            {
+                File.WriteAllText("networking_output.json", data);
+                return;
+            }
+            
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {
