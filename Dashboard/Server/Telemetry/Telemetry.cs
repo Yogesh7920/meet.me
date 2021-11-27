@@ -89,7 +89,7 @@ namespace Dashboard.Server.Telemetry{
             {
                 UserData  currUser = user_i.Key;
                 // if difference of exit and enter time is less than 30 min.
-                if(userExitTime.ContainsKey(currUser) && userExitTime[currUser].Subtract(user_i.Value).TotalMinutes<30)
+                if(userExitTime.ContainsKey(currUser) && userExitTime[currUser].Subtract(user_i.Value).TotalMinutes < thresholdTime)
                 {
                     int id = currUser.userID;
                     insincereMembers.Add(id);
@@ -185,6 +185,7 @@ namespace Dashboard.Server.Telemetry{
         public Dictionary<int, int> userIdChatCountDic= new Dictionary<int, int>();
         public List<int> insincereMembers= new List<int>();
         private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
+        private int thresholdTime = 30;
         private ITelemetrySessionManager _sm = SessionManagerFactory.GetServerSessionManager();
     }
 }

@@ -43,6 +43,11 @@ namespace Testing.Dashboard.TestModels
             throw new NotImplementedException();
         }
 
+        bool IClientBoardStateManager.ClearWhiteBoard()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool isWhiteBoardInitialised;
         public string userId;
     }

@@ -21,6 +21,7 @@ namespace Content
         private Dictionary<int, int> _messageIdMap;
 
         private ICommunicator _communicator;
+        private ISerializer _serializer;
 
         private object _lock;
         private ChatClient _chatHandler;
@@ -51,6 +52,7 @@ namespace Content
             // subscribe to the network
             _notifHandler = new ContentClientNotificationHandler(this);
             _communicator = CommunicationFactory.GetCommunicator();
+            _serializer = new Serializer();
             try
             {
                 _communicator.Subscribe("Content", _notifHandler);
@@ -169,7 +171,8 @@ namespace Content
                 ReceiveMessageData precursorMessage = RetrieveMessage(toSend.ReplyMsgId);
                 if (precursorMessage is null)
                     throw new ArgumentException("Invalid reply message id: Message being replied to doesn't exist");
-                toSend.ReceiverIds = ReceiverIntersection(precursorMessage.ReceiverIds, toSend.ReceiverIds);
+                // sender id of the precursor also has to be counted in the intersection
+                toSend.ReceiverIds = ReceiverIntersection(precursorMessage.ReceiverIds, precursorMessage.SenderId, toSend.ReceiverIds);
             }
                 
             switch (toSend.Type)
@@ -272,7 +275,6 @@ namespace Content
             throw new ArgumentException("Thread with requested thread ID does not exist");
         }
 
-
         // handler functions
 
         /// <summary>
@@ -293,6 +295,7 @@ namespace Content
             if (allMessages is null)
                 throw new ArgumentException("Null message in argument");
 
+            Trace.WriteLine("[ContentClient] Received message history from server");
             // since the received message history is from the server and thus more definitive,
             // replace the current message history with it
             setAllMessages(allMessages);
@@ -419,6 +422,30 @@ namespace Content
             File.WriteAllBytes(savepath, message.FileData.fileContent);
         }
 
+        // utility functions not part of the interface
+
+        /// <summary>
+        ///     Sends a message to the server to send all messages received on the server until now
+        /// </summary>
+        public void RequestMessageHistory()
+        {
+            // the only fields that matter are type and sender id
+            MessageData msg = new MessageData();
+            msg.SenderId = UserId;
+            msg.Type = MessageType.HistoryRequest;
+
+            try
+            {
+                // serialize the message and send via network
+                var toSendSerialized = _serializer.Serialize(msg);
+                Trace.WriteLine($"[ContentClient] Sending request for message history to server for user id {UserId}");
+                _communicator.Send(toSendSerialized, "Content");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[ContentClient] Exception encountered during sending message history request: {e.GetType().Name}: {e.Message}");
+            }
+        }
 
         // helper methods
 
@@ -535,17 +562,25 @@ namespace Content
                 throw new ArgumentException("Invalid reply message id and thread id combination: Message being replied to is part of a different thread than the reply");
         }
 
-        private int[] ReceiverIntersection(int[] receivers1, int[] receivers2)
+        private int[] ReceiverIntersection(int[] precursorReceiverIds, int precursorSenderId, int[] replyReceiverIds)
         {
             // special case for empty array, which means broadcast, so the intersection is just the other array
-            if (receivers1.Length == 0)
-                return receivers2;
-            if (receivers2.Length == 0)
-                return receivers1;
+            if (precursorReceiverIds.Length == 0)
+                return replyReceiverIds;
+
+            // the sender should also be counted as one of the receivers of the precursor, so append it to the precursor receiver ids
+            precursorReceiverIds = precursorReceiverIds.Concat(new int[] { precursorSenderId }).ToArray();
+            if (replyReceiverIds.Length == 0)
+                return precursorReceiverIds; ; 
 
             // take intersection
-            int[] intersection = receivers1.Intersect(receivers2).ToArray();
-            return intersection;
+            int[] intersection = precursorReceiverIds.Intersect(replyReceiverIds).ToArray();
+            // if intersection is empty, it means that the list of recievers of the first message and the reply are disjoint
+            // which means the reply can't be sent to anyone, in which case we raise an error
+            if (intersection.Length > 0)
+                return intersection;
+            else
+                throw new ArgumentException("Invalid list of receivers, the reply can't be sent to anyone because of the privacy of the precursor message");
         }
     }
 }

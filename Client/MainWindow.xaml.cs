@@ -13,22 +13,25 @@ namespace Client
     {
         private static WhiteBoardView _whiteboard;
         public bool sharing = false;
-        //uncomment below lines after the respective user controls are done
         private static ChatView _chat;
         private static UsersList _userslist;
+        private bool _chatFlag = false;
+        private bool _ssFlag = false;
+        private bool _wbFlag = true;
+        private ScreenShareClient SSClient;
+
         public MainWindow()
         {
             InitializeComponent();
             CenterWindowOnScreen();
             _whiteboard = new WhiteBoardView();
             this.SSwb.Content = _whiteboard;
-
-            //uncomment below lines after the respective User Controls are done
-
             _chat = new ChatView();
             this.Chat.Content = _chat;
             _userslist = new UsersList(this);
             this.UsersListControl.Content = _userslist;
+
+            SSClient = ScreenShareFactory.GetScreenSharer();
         }
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
         /// <summary>
@@ -49,7 +52,7 @@ namespace Client
         private void OnThemeClick(object sender, RoutedEventArgs e)
         {
             ResourceDictionary dict = new ResourceDictionary();
-            if (Theme.IsChecked == true)//((sender as ToggleButton).IsEnabled)
+            if (Theme.IsChecked == true)
             {
                 dict.Source = new Uri("Theme2.xaml", UriKind.Relative);
                 Application.Current.Resources.MergedDictionaries.Clear();
@@ -67,7 +70,7 @@ namespace Client
         /// </summary>
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            this.DragMove();
+            DragMove();
         }
         /// <summary>
         /// Minimize button functionality
@@ -88,14 +91,19 @@ namespace Client
         /// </summary>
         private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
         {
-            if (this.WindowState == WindowState.Normal)
-            {
-                this.WindowState = WindowState.Maximized;
-            }
-            else
-            {
-                this.WindowState = WindowState.Normal;
-            }
+            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            this.WindowState = WindowState.Maximized;
+            MaximizeButton.Visibility = Visibility.Collapsed;
+            RestoreButton.Visibility = Visibility.Visible;
+        }
+        /// <summary>
+        /// Restore button functionality
+        /// </summary>
+        private void OnRestoreButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Normal;
+            RestoreButton.Visibility = Visibility.Collapsed;
+            MaximizeButton.Visibility = Visibility.Visible;
         }
         /// <summary>
         /// Close button functionality
@@ -110,18 +118,16 @@ namespace Client
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
             _ssFlag = true;
-            ScreenShareClient _screenshareclient = new ScreenShareClient();
             if (!sharing)
             {
-                //_screenshareclient.startSharing();
+                SSClient.StartSharing();
                 sharing = true;
             }
             else
             {
-                _screenshareclient.stopSharing();
-                sharing = false;
+               SSClient.StopSharing();
+               sharing = false;
             }
-            //uncomment below line after respective User Controls are done
             this.SSwb.Content = new ScreenShareUX();
             if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
             {
@@ -151,8 +157,6 @@ namespace Client
         {
             _wbFlag = true;
             this.SSwb.Content = _whiteboard;
-
-            //uncomment below lines after the respective User Controls are done
             if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
@@ -179,8 +183,6 @@ namespace Client
         /// </summary>
         private void OnChatButtonClick(object sender, RoutedEventArgs e)
         {
-            //uncomment below lines after the respective user controls are done
-
             if (_chatFlag.Equals(false))
             {
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
@@ -197,7 +199,6 @@ namespace Client
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
                     }
                 }
-                //uncomment after Chat user control is done
                 this.Chat.Visibility = Visibility.Visible;
                 _chatFlag = true;
             }
@@ -225,7 +226,6 @@ namespace Client
         /// </summary>
         private void OnDashboardClick(object sender, RoutedEventArgs e)
         {
-            //uncomment after Dashboard is added 
             DashboardView dashboard = new DashboardView();
             dashboard.Show();
         }
@@ -234,7 +234,6 @@ namespace Client
         /// </summary>
         public void OnUsersListClick()
         {
-            //uncomment below lines after the respective User Controls are done
             if (_userslist.UserListHidden.Equals(true))
             {
                 UsersListControl.SetValue(Grid.ColumnSpanProperty, 3);
@@ -274,12 +273,8 @@ namespace Client
         /// </summary>
         private void OnLeaveButtonClicked(object sender, RoutedEventArgs e)
         {
-            //uncomment below line after UsersList User Control is done
             _userslist.OnLeaveButtonClick();
         }
-
-        private bool _chatFlag = false;
-        private bool _ssFlag = false;
-        private bool _wbFlag = true;
+        
     }
 }
