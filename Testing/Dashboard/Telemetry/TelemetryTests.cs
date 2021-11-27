@@ -214,7 +214,7 @@ namespace Testing.Dashboard.Telemetry
             serverData.allSessionsSummary.Add(session1);
             //Act
             ResponseEntity response = _persistence.SaveServerData(serverData);
-            //Assert
+            Directory.Delete("../../../Persistence", true);
             Assert.IsTrue(response.IsSaved);
         }
         private readonly TelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();

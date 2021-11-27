@@ -22,11 +22,17 @@ namespace Content
         /// </summary>
         public MessageType Type;
 
+        /// <summary>
+        ///     Id of the message being replied to
+        /// </summary>
+        public int ReplyMsgId;
+
         public SendMessageData()
         {
             Message = "";
-            ReceiverIds = new int[0];
+            ReceiverIds = null;
             ReplyThreadId = -1;
+            ReplyMsgId = -1;
         }
     }
 }

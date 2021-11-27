@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
@@ -187,8 +187,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false)
         {
-            Debug.Assert(shapeComp == true);
-            return _boardState.Resize(start, end, shapeId, dragPos);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.RESIZE, start, end, shapeId, dragPos, shapeComp);
         }
 
         /// <summary>
@@ -201,7 +200,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, shapeComp);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, DragPos.NONE, shapeComp);
         }
 
         /// <summary>
@@ -225,7 +224,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, shapeComp);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, DragPos.NONE, shapeComp);
         }
 
         /// <summary>
@@ -239,7 +238,7 @@ namespace Whiteboard
 
         public void SetUserLevel(int userlevel)
         {
-            _boardState.UserLevel = userlevel;
+            _boardState.SetUserLevel(userlevel);
         }
     }
 }

@@ -20,10 +20,10 @@ namespace Testing.Dashboard.Summary
 				return null;
 			else if (query == "Empty chat context")
 				return Array.Empty<ChatContext>();
-			else if(query == "Empty chats")
+			else if (query == "Empty chats")
 			{
 				List<ChatContext> chats = new();
-				for(int i=0; i<50; i++)
+				for (int i = 0; i < 50; i++)
 				{
 					ReceiveMessageData data = new();
 					data.Message = "";
@@ -44,7 +44,7 @@ namespace Testing.Dashboard.Summary
 				{
 					ChatContext c = new();
 					List<ReceiveMessageData> receiveMessageDatas = new();
-					for(int j=0; j<5; j++)
+					for (int j = 0; j < 5; j++)
 					{
 						ReceiveMessageData data = new();
 						data.Message = "CONST";
@@ -101,11 +101,11 @@ namespace Testing.Dashboard.Summary
 					for (int j = 0; j < 5; j++)
 					{
 						ReceiveMessageData data = new();
-						data.Message = "Hi from " + (i+j).ToString();
+						data.Message = "Hi from " + (i + j).ToString();
 						if (i % 5 == 0)
 							data.Message += ".This is special";
 						data.Type = MessageType.Chat;
-						data.Starred = (i%5) == 0;
+						data.Starred = (i % 5) == 0;
 						receiveMessageDatas.Add(data);
 					}
 					c.MsgList = receiveMessageDatas;

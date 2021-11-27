@@ -8,13 +8,21 @@ namespace Dashboard.Server.Telemetry{
     ///<summary>
     /// All analytics are done in this class
     ///</summary>
-    
-    public class Telemetry: ITelemetry
+    public class Telemetry: ITelemetry, ITelemetryNotifications
     {
-        public void Telemetry()
+        /// <summary>
+        /// Constructor which will make the Telemetry subscribe to Session Manager
+        /// </summary>
+        public Telemetry()
         {
-            _sm.Subscribe( this );
+             _sm.Subscribe(this);
         }
+
+        public Telemetry(ITelemetrySessionManager sessionManager)
+        {
+            sessionManager.Subscribe(this);
+        }
+
         /// <summary>
         ///     constructs a dictionary with DateTime as key and int as value
         ///     which indicates UserCount at corresponding DateTime 
@@ -108,11 +116,22 @@ namespace Dashboard.Server.Telemetry{
         }
 
         /// <summary>
-        ///     To get any change in the SessionData
+        ///     To get any change in the SessionData, overloaded for testing
         /// </summary>
         /// <params name="newSession"> Received new SessionData </params>
         public void OnAnalyticsChanged(SessionData newSession, DateTime time)
         {
+            GetUserCountVsTimeStamp(newSession, time);
+            CalculateEnterExitTimes(newSession, time);
+        }
+
+        /// <summary>
+        ///     To get any change in the SessionData
+        /// </summary>
+        /// <params name="newSession"> Received new SessionData </params>
+        public void OnAnalyticsChanged(SessionData newSession)
+        {
+            DateTime time = DateTime.Now;
             GetUserCountVsTimeStamp(newSession, time);
             CalculateEnterExitTimes(newSession, time);
         }
@@ -167,7 +186,6 @@ namespace Dashboard.Server.Telemetry{
         public List<int> insincereMembers= new List<int>();
         private readonly ITelemetryPersistence _persistence = PersistenceFactory.GetTelemetryPersistenceInstance();
         private int thresholdTime = 30;
-        
         private ITelemetrySessionManager _sm = SessionManagerFactory.GetServerSessionManager();
     }
 }

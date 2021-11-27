@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.ComponentModel;
 using Client.ViewModel;
 using System.Windows.Media;
+using System.IO;
 
 namespace Client
 {
@@ -16,7 +17,7 @@ namespace Client
     {
         public int ReplyMsgId { get; set; }
         
-        ObservableCollection<Message> allmessages;
+        public ObservableCollection<Message> AllMessages;
         public ChatView()
         {
             InitializeComponent();
@@ -26,12 +27,8 @@ namespace Client
             viewModel.PropertyChanged += Listner;
             this.DataContext = viewModel;
 
-            allmessages = new ObservableCollection<Message>();
-            allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
-            allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
-            allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
-            allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
-            this.myChat.ItemsSource = allmessages;
+            AllMessages = new ObservableCollection<Message>();
+            this.myChat.ItemsSource = AllMessages;
         }
         private void Listner(object sender, PropertyChangedEventArgs e)
         {
@@ -39,13 +36,12 @@ namespace Client
             ChatViewModel viewModel = this.DataContext as ChatViewModel;
             if (propertyName == "ReceivedMsg")
             {
-                allmessages.Add(viewModel.ReceivedMsg);
+                AllMessages.Add(viewModel.ReceivedMsg);
             }
             UpdateScrollBar(myChat);
         }
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
-            //System.Diagnostics.Debug.WriteLine(this.SendTextBox.Text);
             if (!string.IsNullOrEmpty(this.SendTextBox.Text))
             {
                 ChatViewModel viewModel = this.DataContext as ChatViewModel;
@@ -118,18 +114,18 @@ namespace Client
             {
                 ChatViewModel viewModel = this.DataContext as ChatViewModel;
                 Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-                dlg.FileName = "Document"; // Default file name
-                dlg.DefaultExt = ".text"; // Default file extension
                 //dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
-
-                // Show save file dialog box
-                Nullable<bool> result = dlg.ShowDialog();
 
                 Button cmd = (Button)sender;
                 if (cmd.DataContext is Message)
                 {
                     Message m = (Message)cmd.DataContext;
-
+                    //dlg.FileName = "Document"; // Default file name
+                    //dlg.DefaultExt = ".text"; // Default file extension
+                    dlg.DefaultExt = Path.GetExtension(m.TextMessage);
+                    dlg.FileName = Path.GetFileNameWithoutExtension(m.TextMessage);
+                    // Show save file dialog box
+                    Nullable<bool> result = dlg.ShowDialog();
                     // Process save file dialog box results
                     if (result == true)
                     {

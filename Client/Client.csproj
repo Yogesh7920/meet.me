@@ -63,6 +63,8 @@
       <None Remove="Icons\MainWindow\icons8-whiteboard-150.png" />
       <None Remove="Icons\Eraser.cur" />
       <None Remove="Icons\Eraser_2.cur" />
+      <None Remove="Icons\meet.me_logo_no_bg.png" />
+      <None Remove="Icons\screenshare.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\bin.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\duplication.png" />
       <None Remove="Icons\WhiteboardUX\Toolbar\fill.png" />
@@ -149,6 +151,12 @@
     <ItemGroup>
         <Resource Include="Icons\Eraser.cur" />
         <Resource Include="Icons\Eraser_2.cur" />
+        <Resource Include="Icons\meet.me_logo_no_bg.png">
+          <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Resource>
+        <Resource Include="Icons\screenshare.png">
+          <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </Resource>
         <Resource Include="Icons\WhiteboardUX\Toolbar\bin.png" />
     </ItemGroup>
 
@@ -170,6 +178,10 @@
         <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
         <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
         <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="View" />
     </ItemGroup>
 
 

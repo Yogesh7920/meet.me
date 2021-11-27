@@ -1,3 +1,9 @@
+/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// This file contains the class definition of SendSocketListenerClient.
+/// </summary>
+
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -8,9 +14,6 @@ namespace Networking
 {
     public class SendSocketListenerClient
     {
-        // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 1025;
-
         // Declare the queue variable which is used to dequeue the required the packet 
         private readonly IQueue _queue;
 
@@ -36,11 +39,13 @@ namespace Networking
         /// <summary>
         ///     This method is for starting the thread
         /// </summary>
+        /// <returns> Void  </returns>
         public void Start()
         {
             _listen = new Thread(Listen);
             _listenRun = true;
             _listen.Start();
+            Trace.WriteLine("[Networking] SendSocketListenerClient thread started.");
         }
 
         /// <summary>
@@ -48,7 +53,7 @@ namespace Networking
         ///     it also adds EOF to indicate that the message
         ///     that has been popped out from the queue is finished
         /// </summary>
-        /// ///
+        /// <param name="packet">Packet Object.</param>
         /// <returns>String </returns>
         private static string GetMessage(Packet packet)
         {
@@ -62,38 +67,30 @@ namespace Networking
         /// <summary>
         ///     This method is for listen to queue and send to server if some packet comes in queue
         /// </summary>
+        /// <returns> Void  </returns>
         private void Listen()
         {
             while (_listenRun)
-            {
                 // If the queue is not empty, get a packet from the front of the queue
                 // and remove that packet from the queue
-                while (!_queue.IsEmpty())
-                {
-                    // Dequeue the front packet of the queue
-                    var packet = _queue.Dequeue();
+            while (!_queue.IsEmpty())
+            {
+                // Dequeue the front packet of the queue
+                var packet = _queue.Dequeue();
 
-                    //Call GetMessage function to form string msg from the packet object 
-                    var msg = GetMessage(packet);
-                    // Send the message in chunks of threshold number of characters, 
-                    // if the data size is greater than threshold value
-                    for (var i = 0; i < msg.Length; i += Threshold)
-                    {
-                        var chunk = msg[i..Math.Min(msg.Length, i + Threshold)];
-                        var outStream = Encoding.ASCII.GetBytes(chunk);
-                        try
-                        {
-                            var networkStream = _tcpSocket.GetStream();
-                            networkStream.Write(outStream, 0, outStream.Length);
-                            networkStream.Flush();
-                        }
-                        catch (Exception e)
-                        {
-                            Trace.WriteLine(
-                                "Networking: Error in SendSocketListenerClientThread "
-                                + e.Message);
-                        }
-                    }
+                //Call GetMessage function to form string msg from the packet object 
+                var msg = GetMessage(packet);
+                var outStream = Encoding.ASCII.GetBytes(msg);
+                try
+                {
+                    _tcpSocket.Client.Send(outStream);
+                    Trace.WriteLine("[Networking] Data sent from client to server.");
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(
+                        "[Networking] An Exception has been raised in SendSocketListenerClientThread "
+                        + e.Message);
                 }
             }
         }
@@ -101,9 +98,11 @@ namespace Networking
         /// <summary>
         ///     This method is for stopping the thread
         /// </summary>
+        /// <returns> Void  </returns>
         public void Stop()
         {
             _listenRun = false;
+            Console.WriteLine("[Networking] Stopped SendSocketListenerClient thread.");
         }
     }
 }

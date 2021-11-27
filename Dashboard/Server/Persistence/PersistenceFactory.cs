@@ -36,14 +36,14 @@ namespace Dashboard.Server.Persistence
         /// <returns> return ITelemetryPersistence Interface which enables to use functions of class inheriting the same </returns>
         public static SummaryPersistence GetSummaryPersistenceInstance()
         {
-            return new SummaryPersistence();
+            return _summaryPersisitence;
         }
 
         /// <summary>Helps to create instance of ITelemetryPersistence </summary>
         /// <returns> return ITelemetryPersistence Interface which enables to use functions of class inheriting the same </returns>
         public static TelemetryPersistence GetTelemetryPersistenceInstance()
         {
-            return new TelemetryPersistence();
+            return _telemetryPersisitence;
         }
 
         private static SummaryPersistence _summaryPersisitence;

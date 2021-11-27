@@ -14,7 +14,7 @@ namespace Content
 
         public SendFileData()
         {
-            fileContent = new byte[0];
+            fileContent = null;
             fileName = "";
             fileSize = 0;
         }

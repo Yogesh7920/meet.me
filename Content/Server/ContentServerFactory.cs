@@ -1,3 +1,8 @@
+/// <author>Sameer Dhiman</author>
+/// <created>18/10/2021</created>
+/// <summary>
+///     This file is a singleton factory for ContentServer
+/// </summary>
 namespace Content
 {
     public class ContentServerFactory

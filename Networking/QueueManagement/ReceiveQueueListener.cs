@@ -1,8 +1,8 @@
-﻿/*
- * Author: Alisetti Sai Vamsi
- * Created on: 27/10/2021
- * Summary: This file contains the class definition of ReceiveQueueListener.
- */
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>27/10/2021</created>
+/// <summary>
+/// This file contains the class definition of ReceiveQueueListener.
+/// </summary>
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,11 +60,15 @@ namespace Networking
                 if (_notificationHandlers.ContainsKey(moduleIdentifier))
                 {
                     var handler = _notificationHandlers[moduleIdentifier];
-                    _ = Task.Run(() => { handler.OnDataReceived(data); });
+                    _ = Task.Run(() =>
+                    {
+                        handler.OnDataReceived(data);
+                        Trace.WriteLine($"[Networking] OnDataReceived notification sent to {moduleIdentifier}");
+                    });
                 }
                 else
                 {
-                    Trace.WriteLine("Handler does not exist: " + moduleIdentifier);
+                    Trace.WriteLine($"[Networking] Handler for {moduleIdentifier} does not exist");
                 }
             }
         }

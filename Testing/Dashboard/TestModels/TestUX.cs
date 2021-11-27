@@ -17,6 +17,7 @@ namespace Testing.Dashboard.TestModels
             gotNotified = false;
             _sessionManager.SummaryCreated += (summary) => UpdateSummary(summary);
             _sessionManager.MeetingEnded += () => OnMeetingEnds();
+            _sessionManager.AnalyticsCreated += (sessionAnalytics) => UpdateAnalytics(sessionAnalytics);
             summary = null;
             meetingEndEvent = false;
         }
@@ -30,6 +31,11 @@ namespace Testing.Dashboard.TestModels
         private void UpdateSummary(string recievedSummary)
         {
             summary = recievedSummary;
+        }
+
+        private void UpdateAnalytics(SessionAnalytics sessionAnalytics)
+        {
+            this.sessionAnalytics = sessionAnalytics;
         }
 
         private void OnMeetingEnds()

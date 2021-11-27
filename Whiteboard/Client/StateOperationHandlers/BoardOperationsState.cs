@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
@@ -22,12 +22,36 @@ namespace Whiteboard
         /// <summary>
         /// User Level of client.
         /// </summary>
-        public int UserLevel { get; set; }
+        protected int UserLevel { get; set; }
 
         /// <summary>
         /// state Manager instance.
         /// </summary>
-        protected IClientBoardStateManagerInternal _stateManager;
+        protected IClientBoardStateManagerInternal StateManager;
+
+        /// <summary>
+        /// Checker if the module is running in test mode or not
+        /// </summary>
+        protected static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
+
+        /// <summary>
+        /// Allows setting stateManager handler when running as part of NUnit tests.
+        /// </summary>
+        /// <param name="stateManager">state Manager object.</param>
+        public void SetStateManager(IClientBoardStateManagerInternal stateManager)
+        {
+            if (IsRunningFromNUnit)
+            {
+                StateManager = stateManager;
+            }
+
+        }
+
+        public void SetUserLevel(int userLevel)
+        {
+            UserLevel = userLevel;
+            StateManager.SetUserLevel(userLevel);
+        }
 
         /// <summary>
         /// Changes the shape fill of the shape.
@@ -77,7 +101,7 @@ namespace Whiteboard
         /// <param name="shapeId">Id of the shape.</param>
         /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, bool shapeComp = false);
+        abstract public List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false);
 
         /// <summary>
         /// Delete a shape with given shape Id.
@@ -97,16 +121,6 @@ namespace Whiteboard
         /// </summary>
         ///  <returns>The List of operations on Shapes for UX to render.</returns>
         abstract public List<UXShape> Undo();
-
-        /// <summary>
-        /// Perform resizing operation on shape.
-        /// </summary>
-        /// <param name="start">Start of mouse drag.</param>
-        /// <param name="end">End of mouse drag.</param>
-        /// <param name="shapeId">Id of the shape.</param>
-        /// <param name="dragpos">The latch used for resizing.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> Resize(Coordinate start, Coordinate end, string shapeId, DragPos dragpos);
 
         /// <summary>
         /// Gets the username for given shape Id.
@@ -137,7 +151,7 @@ namespace Whiteboard
         /// <returns>BoardShape returned from server, if exists, else raise exception.</returns>
         protected BoardShape GetShapeFromManager(string shapeId)
         {
-            BoardShape shapeFromManager = _stateManager.GetBoardShape(shapeId);
+            BoardShape shapeFromManager = StateManager.GetBoardShape(shapeId);
             if (shapeFromManager == null)
             {
                 throw new Exception("Shape Id doesn't exist in server.");
