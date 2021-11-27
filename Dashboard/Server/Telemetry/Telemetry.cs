@@ -40,7 +40,14 @@ namespace Dashboard.Server.Telemetry{
         /// </params>
         public void GetUserCountVsTimeStamp(SessionData newSession, DateTime currTime)
         {
-            userCountAtEachTimeStamp[currTime] = newSession.users.Count;
+            try
+            {
+                userCountAtEachTimeStamp[currTime] = newSession.users.Count;
+            }
+            catch(NullReferenceException ex)
+            {
+                Console.WriteLine("Null  object passed. Exception message= " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -70,20 +77,26 @@ namespace Dashboard.Server.Telemetry{
         /// <params name="newSession"> Takes the session data which contains the list of users </params>
         public void CalculateEnterExitTimes(SessionData newSession, DateTime currTime)
         {
-            foreach(UserData user_i in newSession.users )
+            try
             {
-                if(userEnterTime.ContainsKey(user_i)==false)
+                foreach(UserData user_i in newSession.users )
                 {
-                    userEnterTime[user_i]= currTime;
+                    if(userEnterTime.ContainsKey(user_i)==false)
+                    {
+                        userEnterTime[user_i]= currTime;
+                    }
+                }
+                // if user is in userEnterTime but not in users list, that means he left the meeting.
+                foreach(KeyValuePair<UserData,DateTime> user_i in userEnterTime){
+                    if(newSession.users.Contains(user_i.Key)==false && userExitTime.ContainsKey(user_i.Key)==false ){
+                        userExitTime[user_i.Key]=currTime;
+                    }
                 }
             }
-            // if user is in userEnterTime but not in users list, that means he left the meeting.
-            foreach(KeyValuePair<UserData,DateTime> user_i in userEnterTime){
-                if(newSession.users.Contains(user_i.Key)==false && userExitTime.ContainsKey(user_i.Key)==false ){
-                    userExitTime[user_i.Key]=currTime;
-                }
+            catch(NullReferenceException ex)
+            {
+                Console.WriteLine("Null  object passed. Exception message= " + ex.Message);
             }
-
         }
 
         /// <summary>
