@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="Login" WindowStyle="None" MinWidth="1500" MinHeight="750"
+        Title="Login" WindowStyle="None" MinWidth="1500" MinHeight="850"  
         Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
     <Window.Resources>
         
@@ -42,7 +42,7 @@
         </Grid.RowDefinitions>
 
         <!-- Title Bar -->
-        <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown" >
+        <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown" >
             <Image Height="35" Width="40" Margin="0 0 220 0"  HorizontalAlignment="Center" VerticalAlignment="Center" Source="/Icons/meet.me_logo_no_bg.png"/>
             <TextBlock Text="meet.me" HorizontalAlignment="Center" VerticalAlignment="Top"  
                        FontWeight="Bold" FontFamily="ComicSans"  FontSize="40" Foreground="{DynamicResource Color3Bg}"/>
@@ -50,21 +50,28 @@
                 <!-- Minimize button -->
                 <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick" 
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
-                        ToolTip="Minimize" ToolTipService.ShowDuration="3000">
+                        ToolTip="Minimize">
                     <materialDesign:PackIcon Kind="WindowMinimize"/>
                 </Button>
                 
                 <!--Maximize button -->
                 <Button x:Name="MaximizeButton" Click="OnMaximizeButtonClick" 
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
-                        ToolTip="Maximize" ToolTipService.ShowDuration="3000">
+                        ToolTip="Maximize">
                     <materialDesign:PackIcon Kind="WindowMaximize"/>
+                </Button>
+
+                <!--Restore button -->
+                <Button x:Name="RestoreButton" Click="OnRestoreButtonClick" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        ToolTip="Restore" Visibility="Collapsed">
+                    <materialDesign:PackIcon Kind="WindowRestore"/>
                 </Button>
 
                 <!--Close button-->
                 <Button x:Name="CloseButton" Click="OnCloseButtonClick"
                         Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
-                        ToolTip="Close" ToolTipService.ShowDuration="3000">
+                        ToolTip="Close">
                     <materialDesign:PackIcon Kind="Close"/>
                 </Button>
             </DockPanel>
@@ -72,7 +79,6 @@
         <!-- Title Bar ends -->
 
         <DockPanel Grid.Row="1" Grid.Column="2">
-            <!--<Image Height="35" Width="40" Margin="0 100 0 5" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/Icons/meet.me_logo_no_bg.png"/>-->
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Name="Login" Text="Login" Foreground="{StaticResource Color1Bg}" FontSize="40" FontWeight="Bold" FontFamily="ComicSans"/>
         </DockPanel>
 
