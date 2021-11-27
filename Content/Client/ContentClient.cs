@@ -571,7 +571,12 @@ namespace Content
 
             // take intersection
             int[] intersection = receivers1.Intersect(receivers2).ToArray();
-            return intersection;
+            // if intersection is empty, it means that the list of recievers of the first message and the reply are disjoint
+            // which means the reply can't be sent to anyone, in which case we raise an error
+            if (intersection.Length > 0)
+                return intersection;
+            else
+                throw new ArgumentException("Invalid list of receivers, the reply can't be sent to anyone because of the privacy of the precursor message");
         }
     }
 }
