@@ -31,7 +31,7 @@
                     <Image Source="/Icons/ExpCol.png"/>
                 </Button>
             </Grid>
-            <ListView x:Name="UsersListView" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="{DynamicResource Color1Bg}" Foreground="White" BorderThickness="0" MaxHeight="750">
+            <ListView x:Name="UsersListView" VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="{DynamicResource Color2Bg}" Foreground="White" BorderThickness="0" MaxHeight="750">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="0 5" Height="32" Orientation="Horizontal">
