@@ -249,7 +249,7 @@ namespace Testing.Content
 
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
-            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 491, ReplyThreadId: 7);
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 512, ReplyThreadId: 13);
 
             // Notifying client with msg
             newFakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
