@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 11/26/2021
+ * Date Modified: 11/27/2021
 **/
 
 using System;
@@ -38,7 +38,43 @@ namespace Whiteboard
         /// Storing Handler for inactive State.
         /// </summary>
         private readonly InactiveBoardOperationsHandler _inactiveBoardOperationsHandler;
+
+        /// <summary>
+        /// Identifier denoting the current state of the handler.
+        /// </summary>
         private BoardState _boardStateIdentifier;
+
+        /// <summary>
+        /// Checker if the module is running in test mode or not
+        /// </summary>
+        private static readonly bool _isRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
+
+        /// <summary>
+        /// Sets the OperationsHandler to another object for testing.
+        /// </summary>
+        /// <param name="boardState">BoardOperationState to be set.</param>
+        public void SetOperationHandler(BoardOperationsState boardState)
+        {
+            if (_isRunningFromNUnit)
+            {
+                _boardState = boardState;
+            }
+
+        }
+
+        /// <summary>
+        /// Get the current set BoardOperationState.
+        /// Used for testing.
+        /// </summary>
+        /// <returns></returns>
+        public BoardOperationsState GetBoardOperationsState()
+        {
+            if (_isRunningFromNUnit)
+            {
+                return _boardState;
+            }
+            return null;
+        }
 
         /// <summary>
         /// Construction for WhiteBoardOperationHandler.
@@ -236,6 +272,10 @@ namespace Whiteboard
             return _boardState.Undo() ?? (new());
         }
 
+        /// <summary>
+        /// Sets user level in operation handler.
+        /// </summary>
+        /// <param name="userlevel">User level of client.</param>
         public void SetUserLevel(int userlevel)
         {
             _boardState.SetUserLevel(userlevel);
