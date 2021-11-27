@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -13,37 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using System.Collections.ObjectModel;
+
 namespace Client
 {
-    public class SimpleCircleAdorner : Adorner
-    {
-        // Be sure to call the base class constructor.
-        public SimpleCircleAdorner(UIElement adornedElement)
-          : base(adornedElement)
-        {
-        }
-
-        // A common way to implement an adorner's rendering behavior is to override the OnRender
-        // method, which is called by the layout system as part of a rendering pass.
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            Rect adornedElementRect = new Rect(this.AdornedElement.DesiredSize);
-
-            // Some arbitrary drawing implements.
-            SolidColorBrush renderBrush = new SolidColorBrush(Colors.Green);
-            renderBrush.Opacity = 0.2;
-            Pen renderPen = new Pen(new SolidColorBrush(Colors.Navy), 1.5);
-            double renderRadius = 5.0;
-
-            // Draw a circle at each corner.
-            drawingContext.DrawRectangle(renderBrush, renderPen, adornedElementRect);
-            drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopLeft, renderRadius, renderRadius);
-            drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopRight, renderRadius, renderRadius);
-            drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomLeft, renderRadius, renderRadius);
-            drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomRight, renderRadius, renderRadius);
-        }
-    }
-
 
 
     /// <summary>
@@ -54,6 +26,7 @@ namespace Client
         //init variables 
         private System.Windows.Controls.Primitives.ToggleButton activeMainToolbarButton;
         private Button activeSelectToolbarButton;
+        private RadioButton rbutton; 
         private WhiteBoardViewModel viewModel;
         public Canvas GlobCanvas;
 
@@ -89,12 +62,71 @@ namespace Client
         private float penThickness = 5;
         private float eraserThickness = 5;
 
+        bool rotation = false;
+
+        //private ObservableCollection<string> _chk;
+
         public WhiteBoardView()
         {
             InitializeComponent();
+
             this.GlobCanvas = MyCanvas;
             viewModel = new WhiteBoardViewModel(GlobCanvas);
+            this.DataContext = viewModel;
+            this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDown_SelectionChanged;
+            //this._chk = new ObservableCollection<string>();
         }
+
+        private void RestorFrameDropDown_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox listbox = (ListBox)sender;
+            
+            if(this.RestorFrameDropDown.SelectedItem != null){
+                
+                string item = listbox.SelectedItem.ToString();
+                string numeric = new String(item.Where(Char.IsDigit).ToArray());
+                int cp = int.Parse(numeric);
+
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
+                              "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    viewModel.RestoreFrame(cp, GlobCanvas);
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+                else
+                {
+                    this.RestorFrameDropDown.SelectedItem = null;
+                    return;
+                }
+            }
+            else
+            {
+                return; 
+            }
+
+        }
+
+        /*public ObservableCollection<string> chckList
+        {
+            get
+            {
+                return _chk;
+            }
+            set
+            {
+
+                int n = this.viewModel.NumCheckpoints;
+                ObservableCollection<string> temp = new ObservableCollection<string>();
+                for (int i = 0; i < n; i++)
+                {
+                    temp.Add("Checkpoint #" + (i + 1));
+                }
+                _chk = temp;
+            }
+        }*/
+
 
         // Function to clear flags and mouse variables to be called when a popup is opened/closed or active tool is changed
         private void clearFlags()
@@ -102,6 +134,7 @@ namespace Client
             mouseDownFlag = 0;
             mouseLeftBtnMoveFlag = 0;
             mouseDownSh = null;
+            rotation = false; 
             viewModel.start = new Point { X = 0, Y = 0 };
             viewModel.end = new Point { X = 0, Y = 0 };
             return;
@@ -144,7 +177,8 @@ namespace Client
                     if (mouseDownFlag == 1)
                     {
                         Point fh_pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, false, true);
+                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, false, true);
+                        mouseDownFlag = 0;
                     }
                     break;
                 case (WhiteBoardViewModel.WBTools.Eraser):
@@ -253,7 +287,7 @@ namespace Client
                             Point fh_pt = e.GetPosition(GlobCanvas);
                             this.viewModel.freeHand.SetColor(curPenColor);
                             this.viewModel.freeHand.SetThickness(penThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: true);
                         }
                         break;
                     case (WhiteBoardViewModel.WBTools.Eraser):
@@ -263,7 +297,7 @@ namespace Client
                             Point fh_pt = e.GetPosition(GlobCanvas);
                             this.viewModel.freeHand.SetColor(curEraseColor);
                             this.viewModel.freeHand.SetThickness(eraserThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, true);
+                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: true, isEraser: true);
 
                             if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
                             {
@@ -291,6 +325,10 @@ namespace Client
 
                         if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
                         {
+                            //setting the initial mouse down position for usage in shapeManager.MoveShape,
+                            //as we need to send the server the very start and very end points during a final move operation
+                            //since we are doing temporary rendering by using differential (start,end) points pair
+                            this.viewModel.setSelectMouseDownPos(e.GetPosition(GlobCanvas));
                             Shape mouseDownShape = e.OriginalSource as Shape;
                             mouseDownSh = mouseDownShape;
                         }
@@ -317,7 +355,7 @@ namespace Client
                             if (mouseDownFlag == 1)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, shapeComp: true);
                                 mouseDownFlag = 0;
                             }
                         }
@@ -328,7 +366,7 @@ namespace Client
                             if (mouseDownFlag == 1)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, true, shapeComp: true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, isEraser: true, shapeComp: true);
 
                                 if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
                                 {
@@ -387,26 +425,33 @@ namespace Client
                         //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
                         if (mouseLeftBtnMoveFlag > 5)
                         {
-                            if (e.OriginalSource is Shape)
-                            {
-                                Shape selectedShape = e.OriginalSource as Shape;
+                            //if ((e.OriginalSource is Shape && ((Shape)e.OriginalSource) == mouseDownSh) || rotation == true)
+                            //{
+
                                 if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
                                 {
                                     //sets the end point for usage in both TranslateShape/RotateShape when left mouse button is release
-                                    this.viewModel.end = e.GetPosition(MyCanvas);
+                                    //this.viewModel.end = e.GetPosition(MyCanvas);
 
-                                    if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                                    if (rotation == true)
                                     {
                                         this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                        rotation = false; 
                                     }
+                                    /*else if (Keyboard.IsKeyUp(Key.LeftAlt) && rotation == true)
+                                    {
+                                        this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                        rotation = false;
+                                    }*/
                                     else
                                     {
+                                        this.viewModel.end = e.GetPosition(MyCanvas);
                                         this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
                                     }
                                 }
                                 //Resetting the value of 'start' to perform the next Move functions
                                 this.viewModel.start = e.GetPosition(MyCanvas);
-                            }
+                            //}
                         }
 
                         //If mouse was not moved after left clicking, then shapes would be selected/unselected
@@ -463,7 +508,7 @@ namespace Client
                             if (mouseDownFlag == 1 && mouseLeftBtnMoveFlag > 5)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false);
                                 mouseLeftBtnMoveFlag = 0;
                             }
                         }
@@ -474,7 +519,7 @@ namespace Client
                             if (mouseDownFlag == 1)
                             {
                                 Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, true);
+                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, isEraser: true);
 
 
                                 if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
@@ -510,32 +555,75 @@ namespace Client
                         }
                         break;
                     case (WhiteBoardViewModel.WBTools.Selection):
-                        //if(e.OriginalSource is Shape)
-                        //{
-                        Shape selectedShape = e.OriginalSource as Shape;
-                        //sets the end point for usage in TranslateShape/RotateShape
-                        this.viewModel.end = e.GetPosition(MyCanvas);
-
-                        if ((this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y) && mouseDownFlag == 1)
-                        //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                        if(e.OriginalSource is Shape && ((Shape)e.OriginalSource) == mouseDownSh)
                         {
-                            //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
-                            if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                            //sets the end point for usage in TranslateShape/RotateShape
+                            this.viewModel.end = e.GetPosition(MyCanvas);
+
+                            if ((this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y) && mouseDownFlag == 1)
+                            //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
                             {
-                                //if (e.OriginalSource is Shape)                                   
-                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
-                            }
-                            else
-                            {
-                                this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
-                                //Resetting the value of 'start' to perform the next Move functions
-                                this.viewModel.start = e.GetPosition(MyCanvas);
+                                //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
+                                if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+                                {
+                                    //if (e.OriginalSource is Shape)                                   
+                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
+
+                                    rotation = true;
+
+                                }else if(rotation == true)
+                                {
+                                    //if (e.OriginalSource is Shape)                                   
+                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
+
+                                    //rotation = true;
+                                }
+                                else
+                                {
+                                    this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    //Resetting the value of 'start' to perform the next Move functions
+                                    this.viewModel.start = e.GetPosition(MyCanvas);
+                                }
                             }
                         }
-                        //}
                         break;
                 }
             }
+            return;
+        }
+
+        //MouseWheel function to mock Canvas coordinate system
+        private void MyCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            MessageBox.Show("Scrolled at X =" + e.GetPosition(GlobCanvas).X.ToString() + " ,Y = " + e.GetPosition(GlobCanvas).Y.ToString());
+            MessageBox.Show("Canvas has Width = " + GlobCanvas.ActualWidth + " , Height = " + GlobCanvas.ActualHeight);
+
+            SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
+
+            System.Windows.Shapes.Rectangle shp = new System.Windows.Shapes.Rectangle { Width = 50, Height = 50, Stroke = blackBrush };
+            GlobCanvas.Children.Add(shp);
+
+            //Check for Systems.Windows Canvas.SetLeft & SetTop
+            Canvas.SetLeft(shp, 20);
+            Canvas.SetTop(shp, 100);
+            MessageBox.Show("The Shape should be present at X=20 & Y=100 acc. to System.Windows convention");
+
+            //Check for System.Windows Shapes Height & Width
+            double origHt = shp.Height;
+            double origWt = shp.Width;
+            shp.Width = 150;
+            shp.Height = 30;
+
+            MessageBox.Show("The Shape should be of Width=150 (parallel to X axis) & Height=30 (parallel to Y axis) acc. to System.Windows convention");
+
+            shp.Height = origHt;
+            shp.Width = origWt;
+
+            GlobCanvas.Children.Remove(shp);
             return;
         }
 
@@ -613,27 +701,37 @@ namespace Client
         //Fill Shape Check Buttons 
         private void ColorFill1Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg1, 1);
+            rbutton.IsChecked = false;
         }
 
         private void ColorFill2Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg2, 1);
+            rbutton.IsChecked = false;
         }
 
         private void ColorFill3Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg3, 1);
+            rbutton.IsChecked = false;
         }
 
         private void ColorFill4Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg4, 1);
+            rbutton.IsChecked = false;
         }
 
         private void ColorFill5Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg5, 1);
+            rbutton.IsChecked = false;
         }
 
         //Shape Stroke Properties Pop-Up
@@ -651,27 +749,37 @@ namespace Client
         //Fill Border Check Buttons 
         private void ColorBorder1Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Black, 0);
+            rbutton.IsChecked = false; 
         }
 
         private void ColorBorder2Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg2, 0);
+            rbutton.IsChecked = false;
         }
 
         private void ColorBorder3Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg3, 0);
+            rbutton.IsChecked = false;
         }
 
         private void ColorBorder4Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg4, 0);
+            rbutton.IsChecked = false;
         }
 
         private void ColorBorder5Checked(object sender, RoutedEventArgs e)
         {
+            rbutton = sender as RadioButton;
             GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg5, 0);
+            rbutton.IsChecked = false;
         }
 
         //Stroke Thickness Slider Control 
@@ -679,7 +787,7 @@ namespace Client
         {
             float thickness = (byte)StrokeThicknessSlider.Value;
 
-            if (thickness > 0)
+            if (thickness > 0 && viewModel != null)
             {
                 this.viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "StrokeThickness", Black, thickness);
             }
@@ -931,6 +1039,8 @@ namespace Client
             activeSelectToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             activeSelectToolbarButton.ClearValue(Button.BackgroundProperty);
             //viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
+
+            viewModel.shapeManager.DuplicateShape(GlobCanvas, viewModel.WBOps);
             return;
         }
 
@@ -941,7 +1051,7 @@ namespace Client
             activeSelectToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
             activeSelectToolbarButton.ClearValue(Button.BackgroundProperty);
             //viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
-            GlobCanvas = viewModel.shapeManager.DeleteSelectedShapes(GlobCanvas, viewModel.WBOps);
+            GlobCanvas = viewModel.DeleteShape(GlobCanvas);
             return;
         }
 
@@ -950,29 +1060,42 @@ namespace Client
         //Clear Frame Button Control 
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
-            //To change this 
-            GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
-            return;
+
+            MessageBoxResult result = MessageBox.Show( "Are you sure you want to clear frame ? All progress since the last checkpoint would be lost.",
+                                      "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.OK)
+            {
+                GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
+                return;
+            }
+            else
+            {
+                return;
+            }
+            
         }
 
         //Save Frame Button Control
         private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedSaveFrame");
+            //this.viewModel.NumCheckpoints += 1;
+            this.viewModel.SaveFrame();
             return;
         }
 
         //Undo Button Control
         private void ClickedUndoButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedUndo");
+            //MessageBox.Show("ClickedUndo");
+            this.viewModel.sendUndoRequest();
             return;
         }
 
         //Redo Button Control
         private void ClickedRedoButton(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("ClickedRedo");
+            //MessageBox.Show("ClickedRedo");
+            this.viewModel.sendRedoRequest();
             return;
         }
 
@@ -981,14 +1104,33 @@ namespace Client
         {
             if (Bu.Toggled1 == true)
             {
-                MessageBox.Show("Toggled On");
+                this.viewModel.ChangeActivityState();
+                this.ActivityBlock.Text = "Inactive";
+                MessageBox.Show("Changed State to Inactive");
             }
             else
             {
-                MessageBox.Show("Toggled Off");
+                this.viewModel.ChangeActivityState();
+                this.ActivityBlock.Text = "Active";
+                MessageBox.Show("Changed State to Active");
             }
         }
 
-
+        //Toggle Button Control (Canvas State Lock)
+        private void Bu_PMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Bu_P.Toggled1 == true)
+            {
+                this.viewModel.WBOps.SetUserLevel(1);
+                this.PriorityBlock.Text = "High PR";
+                MessageBox.Show("Switched to High Priority");
+            }
+            else
+            {
+                this.viewModel.WBOps.SetUserLevel(0);
+                this.PriorityBlock.Text = "Medium PR";
+                MessageBox.Show("Switched to Medium Priority");
+            }
+        }
     }
 }
