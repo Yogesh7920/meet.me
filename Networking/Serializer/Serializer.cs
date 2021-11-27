@@ -1,11 +1,13 @@
-﻿/*
- * Author: Abdullah Khan
- * Created on: 14/10/2021
- * Summary: This file contains the class definitions of the serializer submodule.
- */
+/// <author>Abdullah Khan</author>
+/// <created>14/10/2021</created>
+/// <summary>
+/// This file contains the class definitions of the serializer submodule.
+/// </summary>
 
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace Networking
@@ -15,15 +17,20 @@ namespace Networking
     /// </summary>
     public class MetaObject
     {
-        public string typ;
         public string data;
-        public MetaObject() { }
+        public string typ;
+
+        public MetaObject()
+        {
+        }
+
         public MetaObject(string typ, string data)
         {
             this.data = data;
             this.typ = typ;
         }
     }
+
     public class Serializer : ISerializer
     {
         /// <summary>

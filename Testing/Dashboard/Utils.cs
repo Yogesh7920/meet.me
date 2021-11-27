@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dashboard;
 using Content;
+using Dashboard.Server.Telemetry;
 
 namespace Testing.Dashboard
 {
@@ -110,6 +111,46 @@ namespace Testing.Dashboard
                 chats.Add(c);
             }
             return chats;
+        }
+
+
+        public static List<ChatContext> GetSampleChatContextForUsers(List<UserData>users, int size=5)
+        {
+            List<ChatContext> chats = new();
+            for (int i = 0; i < size; i++)
+            {
+                ChatContext c = new();
+                List<ReceiveMessageData> receiveMessageDatas = new();
+                for (int j = 0; j < users.Count; j++)
+                {
+                    ReceiveMessageData data = new();
+                    data.Message = "Hi from " + (i + j).ToString();
+                    if (i % 5 == 0)
+                        data.Message += ".This is special";
+                    data.Type = MessageType.Chat;
+                    data.Starred = (i % 5) == 0;
+                    data.SenderId = users[i].userID;
+                    receiveMessageDatas.Add(data);
+                }
+                c.MsgList = receiveMessageDatas;
+                chats.Add(c);
+            }
+            return chats;
+        }
+
+        public static SessionAnalytics GenerateSessionAnalyticsData()
+        {
+            SessionAnalytics analyticsData = new SessionAnalytics();
+            analyticsData.userCountAtAnyTime = new();
+            analyticsData.chatCountForEachUser = new();
+            analyticsData.insincereMembers = new();
+            analyticsData.userCountAtAnyTime.Add(new DateTime(2021, 12, 10), 5);
+            analyticsData.userCountAtAnyTime.Add(new DateTime(2021, 12, 11), 5);
+            analyticsData.chatCountForEachUser.Add(1, 5);
+            analyticsData.chatCountForEachUser.Add(2, 10);
+            analyticsData.insincereMembers.Add(1);
+            analyticsData.insincereMembers.Add(2);
+            return analyticsData;
         }
 
 #pragma warning disable SecurityIntelliSenseCS // MS Security rules violation

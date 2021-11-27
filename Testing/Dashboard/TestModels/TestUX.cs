@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
+using Dashboard.Server.Telemetry;
 
 namespace Testing.Dashboard.TestModels
 {
@@ -16,6 +17,7 @@ namespace Testing.Dashboard.TestModels
             gotNotified = false;
             _sessionManager.SummaryCreated += (summary) => UpdateSummary(summary);
             _sessionManager.MeetingEnded += () => OnMeetingEnds();
+            _sessionManager.AnalyticsCreated += (sessionAnalytics) => UpdateAnalytics(sessionAnalytics);
             summary = null;
             meetingEndEvent = false;
         }
@@ -31,6 +33,11 @@ namespace Testing.Dashboard.TestModels
             summary = recievedSummary;
         }
 
+        private void UpdateAnalytics(SessionAnalytics sessionAnalytics)
+        {
+            this.sessionAnalytics = sessionAnalytics;
+        }
+
         private void OnMeetingEnds()
         {
             meetingEndEvent = true;
@@ -41,5 +48,6 @@ namespace Testing.Dashboard.TestModels
         public bool meetingEndEvent;
         private IUXClientSessionManager _sessionManager;
         public SessionData sessionData;
+        public SessionAnalytics sessionAnalytics;
     }
 }

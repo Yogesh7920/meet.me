@@ -12,6 +12,9 @@ namespace Dashboard
     /// </summary>
     public class UserData : IEquatable<UserData>
     {
+        /// <summary>
+        /// Default Constructo for serializing
+        /// </summary>
         public UserData()
         {
 
@@ -28,17 +31,7 @@ namespace Dashboard
             userID = clientID;
         }
 
-        /// <summary>
-        /// Overriding the Equals class to compare two objects of the
-        /// type UserData.
-        /// </summary>
-        /// <param name="obj"> The object of interest in our case is UserData </param>
-        /// <returns>Bool denoting the status of equivalence </returns>
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj as UserData);
-        }
-
+      
         /// <summary>
         /// Compare two UserData objects
         /// </summary>
@@ -57,11 +50,20 @@ namespace Dashboard
                 );
         }
 
+        /// <summary>
+        /// IEquatable interface consists of this function. This servers as the default
+        /// hash function.
+        /// </summary>
+        /// <returns> A hash code of the current object</returns>
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
 
+        /// <summary>
+        /// Overriding the ToString() method to print the UserData object for debugging and logging
+        /// </summary>
+        /// <returns> A string containing the name and the ID of the user</returns>
         public override string ToString()
         {
             return "UserName: " + this.username + "\n UserID: " + this.userID + "\n";

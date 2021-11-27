@@ -1,11 +1,14 @@
-using NUnit.Framework;
-using Networking;
-using Testing.Dashboard.TestModels;
-using System.Collections.Generic;
-using Dashboard.Server.SessionManagement;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
+using Dashboard.Server.Persistence;
+using Dashboard.Server.SessionManagement;
+using Dashboard.Server.Telemetry;
+using Networking;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
+using Testing.Dashboard.TestModels;
 
 namespace Testing.Dashboard
 {
@@ -17,13 +20,14 @@ namespace Testing.Dashboard
             _testContentServer = new();
             _testCommunicator = new();
             _testCommunicator.ipAddressAndPort = validIP + ":" + validPort;
-            clientSessionManagerA = SessionManagerFactory.GetClientSessionManager(_testCommunicator);
-            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager (_testCommunicator);
+            _testWhiteBoard = new TestWhiteBoard();
+            clientSessionManagerA = SessionManagerFactory.GetClientSessionManager(_testCommunicator, _testWhiteBoard);
+            clientSessionManagerB = SessionManagerFactory.GetClientSessionManager(_testCommunicator, _testWhiteBoard);
             newUX = new(clientSessionManagerB);
             oldUX = new(clientSessionManagerA);
             clientSessionManagerB.SubscribeSession(newUX);
             clientSessionManagerA.SubscribeSession(oldUX);
-            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator,_testContentServer);
+            serverSessionManager = SessionManagerFactory.GetServerSessionManager(_testCommunicator, _testContentServer);
         }
 
         [Test]
@@ -38,9 +42,9 @@ namespace Testing.Dashboard
             Assert.AreEqual(testMeetCreds.ipAddress, returnedMeetCreds.ipAddress);
             Assert.AreEqual(testMeetCreds.port, returnedMeetCreds.port);
 
-            
+
         }
-        
+
         [Test]
         [TestCase(null)]
         [TestCase("")]
@@ -62,21 +66,19 @@ namespace Testing.Dashboard
         public void AddClient_ValidClientArrivalClientSide_ReturnsTrue()
         {
             IUXClientSessionManager _sessionManager = clientSessionManagerB;
-            
-           // Setting the IP address and Port for fake server
+
+            // Setting the IP address and Port for fake server
             bool isValid = _sessionManager.AddClient(validIP, int.Parse(validPort), "John");
             bool expectedValue = true;
             Assert.AreEqual(expectedValue, isValid);
-
-            // Testing for invalid IPs and usernames
         }
 
         [Test]
-        [TestCase("192.168.1.2",8080,"John")]
-        [TestCase("192.168.1.1",8080,"")]
-        [TestCase("192.168.1.1",8081,"John")]
-        [TestCase("192.168.1.1",8080,null)]
-        [TestCase("abced",8080,"John")]
+        [TestCase("192.168.1.2", 8080, "John")]
+        [TestCase("192.168.1.1", 8080, "")]
+        [TestCase("192.168.1.1", 8081, "John")]
+        [TestCase("192.168.1.1", 8080, null)]
+        [TestCase("abced", 8080, "John")]
         public void AddClient_InValidClientArrivalClientSide_ReturnsFalse(string ip, int port, string username)
         {
             IUXClientSessionManager _sessionManager = clientSessionManagerB;
@@ -103,7 +105,7 @@ namespace Testing.Dashboard
         }
 
         [Test]
-        public void AddClientProcedure_NewClientArrivalServerSide_BroadcastsSessionObjectToAllClientsAndUpdatesNetworkModule ()
+        public void AddClientProcedure_NewClientArrivalServerSide_BroadcastsSessionObjectToAllClientsAndUpdatesNetworkModule()
         {
             int sampleSize = 10;
             List<UserData> users = Utils.GenerateUserData(sampleSize);
@@ -130,13 +132,13 @@ namespace Testing.Dashboard
             sData.users.RemoveAt(dataSize - 1);
 
             // When the old user joins the first time, it would recieve complete session object
-            ServerToClientData serverToClientData = new("addClient", sData, null, sData.users[dataSize - 2]); ; ;
+            ServerToClientData serverToClientData = new("addClient", sData, null, null, sData.users[dataSize - 2]); ; ;
             clientSessionManagerA.OnDataReceived(_serializer.Serialize<ServerToClientData>(serverToClientData));
             oldUX.gotNotified = false;
 
             // Following are recieved when new user joins for old and new users
             sData.AddUser(newUser);
-            ServerToClientData serverToClientDataNew = new("addClient", sData, null, sData.users[dataSize - 1]);
+            ServerToClientData serverToClientDataNew = new("addClient", sData, null, null, sData.users[dataSize - 1]);
             string serialisedDataNew = _serializer.Serialize(serverToClientDataNew);
             //Console.WriteLine("MT: " + serialisedDataNew);
             clientSessionManagerB.OnDataReceived(serialisedDataNew);
@@ -147,6 +149,7 @@ namespace Testing.Dashboard
             Assert.NotNull(newUX.sessionData);
             CollectionAssert.AreEqual(sData.users, oldUX.sessionData.users);
             CollectionAssert.AreEqual(sData.users, newUX.sessionData.users);
+            Assert.AreEqual(newUser.userID.ToString(), _testWhiteBoard.userId);
 
         }
 
@@ -164,6 +167,7 @@ namespace Testing.Dashboard
 
             ClientToServerData deserialisedObject = _serializer.Deserialize<ClientToServerData>(_testCommunicator.sentData);
             Assert.NotNull(deserialisedObject);
+            Assert.AreEqual("removeClient", deserialisedObject.eventType);
             Assert.AreEqual(username, deserialisedObject.username);
             Assert.AreEqual(userId, deserialisedObject.userID);
         }
@@ -209,38 +213,92 @@ namespace Testing.Dashboard
         [Test]
         public void EndMeet_RecievedEndMeetingEventClientSide_SendsEndMeetingEventToUX()
         {
-            ServerToClientData endMeetingMessage = new("endMeet", null, null, null);
+            ServerToClientData endMeetingMessage = new("endMeet", null, null, null, null);
             clientSessionManagerB.OnDataReceived(_serializer.Serialize<ServerToClientData>(endMeetingMessage));
             Assert.IsTrue(newUX.meetingEndEvent);
+        }
+
+        [Test]
+        public void EndMeetingProcedure_MeetingEnds_SaveSummaryOfSession()
+        {
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            ClientToServerData sampleClientRequest = new("endMeet", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            string path = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+            string actualSavedSummary = File.ReadAllText(Path.Combine(path, PersistenceFactory.lastSaveResponse.FileName));
+            Assert.IsNotEmpty(actualSavedSummary);
+        }
+
+
+        [Test]
+        public void EndMeetingProcedure_MeetingEnds_SaveServerAnalytics()
+        {
+            int expectedUsers = 10;
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            List<UserData> users = Utils.GenerateUserData(expectedUsers);
+            AddUsersAtServer(users);
+            _testContentServer.chats = Utils.GetSampleChatContextForUsers(users);
+            ClientToServerData sampleClientRequest = new("endMeet", users[0].username, users[0].userID);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            string serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            Assert.IsTrue(File.Exists(Path.Combine(serverDataPath, "GlobalServerData.xml")));
+            Directory.Delete("../../../Persistence", true);
+        }
+
+        [Test]
+        public void EndMeetingProcedure_MeetingEndsWhenOnlyOneUser_SaveServerAnalytics()
+        {
+            int expectedUsers = 1;
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            List<UserData> users = Utils.GenerateUserData(expectedUsers);
+            AddUsersAtServer(users);
+            ClientToServerData sampleClientRequest = new("endMeet", users[0].username, users[0].userID);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            string serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            Assert.IsTrue(File.Exists(Path.Combine(serverDataPath, "GlobalServerData.xml")));
+            Directory.Delete("../../../Persistence", true);
+        }
+
+
+        [Test]
+        public void EndMeetingProcedure_MeetingEnds_SendEndMeetingEventToClients()
+        {
+            _testContentServer.chats = Utils.GetSampleChatContext();
+            ClientToServerData sampleClientRequest = new("endMeet", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            string actualEvent = deserialisedReceivedData.eventType;
+            Assert.AreEqual("endMeet", actualEvent);
         }
 
         [TestCase("This is sample summary")]
         [TestCase("")]
         [Test]
-        public void GetSummary_GetSummaryClientSide_ReturnsSummary(string testSummary)
+        public void GetSummary_GetSummaryClientSide_UpdatesUXWithModifiedSummary(string testSummary)
         {
             UserData user = new("John", 1);
             // Adding a user at client
             AddUserClientSide(user.username, user.userID);
             string recievedSummary = null;
             SummaryData summaryData = new(testSummary);
-            ServerToClientData testData = new("getSummary", null, summaryData, user);
+            ServerToClientData testData = new("getSummary", null, summaryData, null, user);
             clientSessionManagerB.GetSummary();
             clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
             recievedSummary = newUX.summary;
             Assert.AreEqual(testSummary, recievedSummary);
         }
 
-        //[Test]
-        //public void GetSummaryProcedure_GetSummarryServerSideWhenChatContextNull_ReturnsEmptyString()
-        //{
-        //    _testContentServer.chats = null;
-        //    ClientToServerData sampleClientRequest = new ClientToServerData("getSummary", "John", 1);
-        //    serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
-        //    ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
-        //    string actualSummary = deserialisedReceivedData.summaryData.summary;
-        //    Assert.IsEmpty(actualSummary);
-        //}
+
+        [Test]
+        public void GetSummaryProcedure_GetSummarryServerSideWhenChatContextNull_ReturnsEmptyString()
+        {
+            _testContentServer.chats = null;
+            ClientToServerData sampleClientRequest = new ClientToServerData("getSummary", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            ServerToClientData deserialisedReceivedData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            SummaryData actualSummaryDataObj = deserialisedReceivedData.summaryData;
+            Assert.IsNull(actualSummaryDataObj);
+        }
 
         [Test]
         public void GetSummaryProcedure_GetSummarryServerSideWhenNoChats_ReturnsEmptyString()
@@ -275,26 +333,43 @@ namespace Testing.Dashboard
             Assert.IsNotEmpty(actualSummary);
         }
 
-        //[TestCase("This is sample summary")]
-        //[TestCase(null)]
-        //[TestCase("")]
-        //[Test]
-        //public void GetAnalytics_TelemetryAnalyticsRetrieval_ReturnsTelemetryAnalytics(string testSummary)
-        //{
-        //    UserData user = new("John", 1);
-        //    // Adding a user at client
-        //    AddUserClientSide(user.username, user.userID);
-        //     recievedSummary = null;
-        //    SummaryData summaryData = new(testSummary);
-        //    ServerToClientData testData = new("getSummary", null, summaryData, user);
-        //    Thread getSummaryThread = new Thread(new ThreadStart(() => { recievedSummary = clientSessionManagerB.GetSummary(); }));
-        //    getSummaryThread.Start();
-        //    Thread.Sleep(1000);
-        //    clientSessionManagerB.OnDataReceived(_serializer.Serialize(testData));
-        //    while (getSummaryThread.IsAlive) ;
-        //    Assert.AreEqual(testSummary, recievedSummary);
-        //}
+        [Test]
+        public void GetAnalyticsProcedure_GetAnalyticsServerSide_SendsSessionAnalyticsObjectOnNetwork()
+        {
+            int expectedUsers = 10;
+            List<UserData> users = Utils.GenerateUserData(expectedUsers);
+            AddUsersAtServer(users);
+            _testContentServer.chats = Utils.GetSampleChatContextForUsers(users);
+            ClientToServerData sampleClientRequest = new("getAnalytics", "John", 1);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientRequest));
+            SessionAnalytics actualAnalytics = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData).sessionAnalytics;
+            Assert.NotNull(actualAnalytics.chatCountForEachUser);
+            Assert.NotNull(actualAnalytics.userCountAtAnyTime);
+            Assert.NotNull(actualAnalytics.insincereMembers);
+            Assert.AreEqual(actualAnalytics.userCountAtAnyTime.Count, expectedUsers);
+        }
 
+        [Test]
+        public void GetAnalytics_TelemetryAnalyticsRetrievalClientSide_UpdatesUXWithTelemetryAnalytics()
+        {
+            UserData user = new("John", 1);
+            SessionAnalytics expectedData = Utils.GenerateSessionAnalyticsData();
+            // Adding a user at client
+            ServerToClientData sampleServerResponse = new("getAnalytics", null, null, expectedData, user);
+            clientSessionManagerB.OnDataReceived(_serializer.Serialize(sampleServerResponse));
+            SessionAnalytics actualData = newUX.sessionAnalytics;
+            CollectionAssert.AreEqual(expectedData.chatCountForEachUser, actualData.chatCountForEachUser);
+            CollectionAssert.AreEqual(expectedData.insincereMembers, actualData.insincereMembers);
+            CollectionAssert.AreEqual(expectedData.userCountAtAnyTime, actualData.userCountAtAnyTime);
+        }
+
+        [Test]
+        public void ModuleInitialisations_ClientModuleInitialisations_InitialisesRequiredModules()
+        {
+            _testWhiteBoard.isWhiteBoardInitialised = false;
+            _ = SessionManagerFactory.GetClientSessionManager(_testCommunicator, _testWhiteBoard);
+            Assert.IsTrue(_testWhiteBoard.isWhiteBoardInitialised);
+        }
 
 
         private void AddUserClientSide(string username, int userId, string ip = "192.168.1.1", string port = "8080")
@@ -303,7 +378,7 @@ namespace Testing.Dashboard
             IUXClientSessionManager _uxSessionManager = clientSessionManagerB;
             INotificationHandler _networkSessionManager = clientSessionManagerB;
             // Creating the user who joined
-            ServerToClientData serverToClientData = new("removeClient",null, null, userData);
+            ServerToClientData serverToClientData = new("removeClient", new(), null, null, userData);
             string serialisedServerData = _serializer.Serialize(serverToClientData);
 
             // Adding the client to client first
@@ -332,7 +407,8 @@ namespace Testing.Dashboard
         private TestUX newUX, oldUX;
         private readonly ISerializer _serializer = new Serializer();
         private TestCommunicator _testCommunicator;
-        private readonly string validIP = "192.168.1.1", validPort ="8080";
+        private readonly string validIP = "192.168.1.1", validPort = "8080";
         private TestContentServer _testContentServer;
+        private TestWhiteBoard _testWhiteBoard;
     }
 }

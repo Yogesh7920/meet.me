@@ -11,6 +11,7 @@ namespace Testing.Dashboard.SessionManagement.TestModules
     {
         public TestCommunicator(string address = null)
         {
+            userCount = 0;
             if (address == null)
                 meetAddress = "192.168.1.1:8080";
             else
@@ -18,7 +19,7 @@ namespace Testing.Dashboard.SessionManagement.TestModules
         }
         public void AddClient<T>(string clientId, T socketObject)
         {
-            throw new NotImplementedException();
+            userCount++;
         }
 
         public void RemoveClient(string clientId)
@@ -28,7 +29,7 @@ namespace Testing.Dashboard.SessionManagement.TestModules
 
         public void Send(string data, string identifier)
         {
-            throw new NotImplementedException();
+            transferredData = data;
         }
 
         public void Send(string data, string identifier, string destination)
@@ -48,7 +49,7 @@ namespace Testing.Dashboard.SessionManagement.TestModules
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void Subscribe(string identifier, INotificationHandler handler, int priority)
@@ -57,5 +58,7 @@ namespace Testing.Dashboard.SessionManagement.TestModules
         }
 
         public string meetAddress;
+        public string transferredData;
+        public int userCount;
     }
 }

@@ -1,9 +1,8 @@
-﻿/*
- * Author: Alisetti Sai Vamsi
- * Created on: 12/11/2021
- * Summary: This file contains the unit tests
- *          for ReceiveQueueListener Module.
- */
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>12/11/2021</created>
+/// <summary>
+/// This file contains the unit tests for ReceiveQueueListener Module.
+/// </summary>
 
 using System.Collections.Generic;
 using System.Threading;

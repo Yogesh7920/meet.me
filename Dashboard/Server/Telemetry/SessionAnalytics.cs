@@ -10,6 +10,11 @@ namespace Dashboard.Server.Telemetry
     /// The data used to plot the visuals
     ///</summary>
     public class SessionAnalytics{
+
+        public SessionAnalytics()
+        {
+
+        }
         
         /// Stores the userCount(int) at every time stamp(DateTime)
         public Dictionary<DateTime, int> userCountAtAnyTime;

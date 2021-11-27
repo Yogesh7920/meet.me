@@ -2,11 +2,12 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Whiteboard
     /// <summary>
     /// Handler when Board is Inactive State.
     /// </summary>
-    class InactiveBoardOperationsHandler : BoardOperationsState
+    public class InactiveBoardOperationsHandler : BoardOperationsState
     {
         /// <summary>
         /// Constructor for InactiveBoardOperationsHandler
@@ -24,6 +25,7 @@ namespace Whiteboard
         public InactiveBoardOperationsHandler()
         {
             UserLevel = 0;
+            StateManager = ClientBoardStateManager.Instance;
         }
 
         /// <summary>
@@ -87,23 +89,25 @@ namespace Whiteboard
         /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start,
-                                                          Coordinate end, string shapeId, bool shapeComp = false)
+                                                          Coordinate end, string shapeId, DragPos dragpos, bool shapeComp = false)
         {
-            return new List<UXShape>();
+            try
+            {
+                // This requirement is very specified to the UX team.
+                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+                UXShape oldShape = new(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeId);
+                UXShape newShape = new(UXOperation.CREATE, shapeFromManager.MainShapeDefiner, shapeId);
+
+                List<UXShape> grey = new() { oldShape, newShape };
+                return grey;
+            }
+            catch(Exception e)
+            {
+                Trace.WriteLine(e.Message);
+                return null;
+            }
         }
 
-        /// <summary>
-        /// Perform resizing operation on shape.
-        /// </summary>
-        /// <param name="start">Start of mouse drag.</param>
-        /// <param name="end">End of mouse drag.</param>
-        /// <param name="shapeId">Id of the shape.</param>
-        /// <param name="dragPos">The latch used for performing resizing.</param>
-        /// <returns>The List of operations on Shapes for UX to render.</returns>
-        public override List<UXShape> Resize(Coordinate start, Coordinate end, string shapeId, DragPos dragPos)
-        {
-            return new List<UXShape>();
-        }
 
         /// <summary>
         /// Delete a shape with given shape Id.

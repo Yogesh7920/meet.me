@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿/// <author>Sameer Dhiman</author>
+/// <created>5/11/2021</created>
+/// <summary>
+///     This file handles all the chat messages
+/// </summary>
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Content
@@ -21,9 +26,10 @@ namespace Content
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new message</returns>
-        public ReceiveMessageData Receive(MessageData messageData)
+        public MessageData Receive(MessageData messageData)
         {
-            Trace.WriteLine("[ContentServer] Received message from ContentServer");
+            ReceiveMessageData receiveMessageData;
+            Trace.WriteLine("[ChatContextServer] Received message from ContentServer");
             switch (messageData.Event)
             {
                 case MessageEvent.NewMessage:
@@ -32,16 +38,29 @@ namespace Content
 
                 case MessageEvent.Star:
                     Trace.WriteLine("[ChatContextServer] Event is Star, Starring message in existing Thread");
-                    return StarMessage(messageData.ReplyThreadId, messageData.MessageId);
+                    receiveMessageData = StarMessage(messageData.ReplyThreadId, messageData.MessageId);
+                    break;
 
                 case MessageEvent.Update:
                     Trace.WriteLine("[ChatContextServer] Event is Update, Updating message in existing Thread");
-                    return UpdateMessage(messageData.ReplyThreadId, messageData.MessageId, messageData.Message);
+                    receiveMessageData = UpdateMessage(messageData.ReplyThreadId, messageData.MessageId, messageData.Message);
+                    break;
 
                 default:
-                    Trace.WriteLine($"Uknown Event {messageData.Event} for chat type.");
+                    Trace.WriteLine($"[ChatContextServer] Uknown Event {messageData.Event} for chat type.");
                     return null;
             }
+
+            // If this is null that means message was not found, return null
+            if (receiveMessageData == null)
+            {
+                return null;
+            }
+
+            // Else create a MessageData object from ReceiveMessageData and return that to be notified to clients
+            MessageData notifyMessageData = new MessageData(receiveMessageData);
+            notifyMessageData.Event = messageData.Event;
+            return notifyMessageData;
         }
 
         /// <summary>
@@ -62,14 +81,15 @@ namespace Content
         {
             ReceiveMessageData message = _contentDatabase.GetMessage(replyThreadId, messageId);
 
+            // If ContentDatabase returns null that means the message doesn't exists, return null
             if (message == null)
             {
                 Trace.WriteLine($"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
                 return null;
             }
 
+            // Star the message and return the starred message
             message.Starred = !message.Starred;
-            message.Event = MessageEvent.Star;
             return message;
         }
 
@@ -82,14 +102,15 @@ namespace Content
         {
             ReceiveMessageData message = _contentDatabase.GetMessage(replyThreadId, messageId);
 
+            // If ContentDatabase returns null that means the message doesn't exists, return null
             if (message == null)
             {
                 Trace.WriteLine($"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
                 return null;
             }
 
+            // Update the message and return the updated message
             message.Message = msgString;
-            message.Event = MessageEvent.Update;
             return message;
         }
     }

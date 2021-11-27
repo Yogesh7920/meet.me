@@ -21,7 +21,7 @@ namespace Whiteboard
     /// </summary>
     public sealed class ServerBoardStateManager : IServerBoardStateManager
     {
-        private readonly IServerCheckPointHandler _serverCheckPointHandler;
+        private IServerCheckPointHandler _serverCheckPointHandler;
 
         // data structures to maintain state
         private readonly Dictionary<string, BoardShape> _mapIdToBoardShape;
@@ -34,6 +34,9 @@ namespace Whiteboard
 
         // The current base state.
         private int _currentCheckpointState;
+
+        // Check if running as part of NUnit
+        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
 
         /// <summary>
         /// Constructor initializing all the attributes. 
@@ -53,6 +56,19 @@ namespace Whiteboard
         }
 
         /// <summary>
+        /// Allows setting checkpoint handler when running as part of NUnit tests.
+        /// </summary>
+        /// <param name="serverCheckPointHandler">The object for checkpoint handler.</param>
+        public void SetCheckpointHandler(IServerCheckPointHandler serverCheckPointHandler)
+        {
+            if (IsRunningFromNUnit)
+            {
+                _serverCheckPointHandler = serverCheckPointHandler;
+            }
+
+        }
+
+        /// <summary>
         /// Fetches the checkpoint and updates the server state. 
         /// </summary>
         /// <param name="checkpointNumber">The identifier/number of the checkpoint which needs to fetched.</param>
@@ -63,6 +79,10 @@ namespace Whiteboard
             try
             {
                 List<BoardShape> boardShapes = _serverCheckPointHandler.FetchCheckpoint(checkpointNumber);
+                if(boardShapes == null)
+                {
+                    throw new NullReferenceException("FetchCheckpoint returned null.");
+                }
 
                 // Clear current state
                 NullifyCurrentState();
@@ -141,7 +161,15 @@ namespace Whiteboard
             {
                 // sending sorted list of shapes to ServerCheckPointHandler
                 List<BoardShape> boardShapes = GetOrderedList();
+                int prevCheckpointNumber = GetCheckpointsNumber();
                 int checkpointNumber = _serverCheckPointHandler.SaveCheckpoint(boardShapes, userId);
+
+                // the checkpoint number should increment by 1
+                if(checkpointNumber != prevCheckpointNumber + 1)
+                {
+                    throw new Exception("Checkpoint number mismatch");
+                }
+
                 BoardServerShape boardServerShape = new(null, Operation.CREATE_CHECKPOINT, userId, checkpointNumber, _currentCheckpointState);
                 Trace.WriteLine("ServerBoardStateManager.SaveCheckpoint: Checkpoint saved.");
                 return boardServerShape;
@@ -164,7 +192,7 @@ namespace Whiteboard
             try
             {
                 // expecting one operation update at a time
-                if (boardServerShape.ShapeUpdates.Count != BoardConstants.SINGLE_UPDATE_SIZE)
+                if (boardServerShape.OperationFlag != Operation.CLEAR_STATE && boardServerShape.ShapeUpdates.Count != BoardConstants.SINGLE_UPDATE_SIZE)
                 {
                     throw new NotSupportedException("Multiple shape operation.");
                 }
@@ -234,7 +262,7 @@ namespace Whiteboard
                         Trace.WriteLine("ServerBoardStateManager.SaveUpdate: Delete on deleted shape.");
                         return false;
                     }
-
+                    
                     // Checking pre-conditions
                     PreConditionChecker(boardShape, Operation.DELETE);
 
@@ -309,12 +337,6 @@ namespace Whiteboard
         /// <param name="operation">The operation specified in BoardServerShape containing boardShape.</param>
         private void PreConditionChecker(BoardShape boardShape, [NotNull] Operation operation)
         {
-            if (boardShape == null)
-            {
-                Trace.WriteLine("ServerBoardStateManager.PreConditionChecker: Null BoardShape");
-                throw new NullReferenceException();
-            }
-
             if(operation != boardShape.RecentOperation)
             {
                 Trace.WriteLine("ServerBoardStateManager.PreConditionChecker: Operation equality condition failed.");
