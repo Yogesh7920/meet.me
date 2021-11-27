@@ -25,13 +25,13 @@ namespace Networking
         // Declare dictionary variable to get handler
         private readonly Dictionary<string, INotificationHandler> _subscribedModules;
 
+        private bool _isTesting;
+
         // Declare the thread variable of SendSocketListenerServer 
         private Thread _listen;
 
         // Declare variable that dictates the start and stop of the thread _listen
         private volatile bool _listenRun;
-
-        private bool _isTesting = false;
 
         /// <summary>
         ///     This is the constructor of the class which initializes the params
@@ -148,7 +148,8 @@ namespace Networking
                                         {
                                             Trace.WriteLine("[Networking] Client has reconnected!");
                                             sTry.Send(outStreamTry);
-                                            Trace.WriteLine($"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
+                                            Trace.WriteLine(
+                                                $"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
                                             isSent = true;
                                             break;
                                         }
@@ -177,7 +178,8 @@ namespace Networking
                         else
                         {
                             socket.Send(outStream);
-                            Trace.WriteLine($"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
+                            Trace.WriteLine(
+                                $"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
                         }
                     }
                     catch (Exception e)

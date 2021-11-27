@@ -22,7 +22,7 @@ namespace Testing.Networking.SocketManagement
         {
             Environment.SetEnvironmentVariable("TEST_MODE", "UNIT");
         }
-        
+
         [SetUp]
         public void StartSendSocketListenerClient()
         {

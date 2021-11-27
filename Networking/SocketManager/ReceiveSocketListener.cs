@@ -98,7 +98,7 @@ namespace Networking
                         // loop till there are no valid messages
                         while (true)
                         {
-                            bool isMessage = false;
+                            var isMessage = false;
                             var packetString = "";
                             // get the index of the next two flags
                             var flagIndex = message.IndexOf(Utils.Flag, StringComparison.Ordinal);
@@ -110,9 +110,11 @@ namespace Networking
                                 if (message[(nextFlagIndex - 5)..nextFlagIndex] == Utils.Esc)
                                 {
                                     // if the message is of the form [ESC][FLAG], ignore and continue
-                                    nextFlagIndex = message.IndexOf(Utils.Flag, nextFlagIndex + 6, StringComparison.Ordinal);
+                                    nextFlagIndex = message.IndexOf(Utils.Flag, nextFlagIndex + 6,
+                                        StringComparison.Ordinal);
                                     continue;
                                 }
+
                                 packetString = message[(flagIndex + 6)..nextFlagIndex];
                                 message = message[(nextFlagIndex + 6)..];
                                 isMessage = true;
@@ -126,6 +128,7 @@ namespace Networking
                                 PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
                                 continue;
                             }
+
                             break;
                         }
                     }

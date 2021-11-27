@@ -1,10 +1,13 @@
-﻿namespace Networking
+﻿/// <author>Subhash S</author>
+/// <created>27/11/2021</created>
+
+namespace Networking
 {
     public static class Utils
     {
         public const string Flag = "[FLAG]";
         public const string Esc = "[ESC]";
-        
+
         /// <summary>
         ///     This method form string from packet object
         ///     it also adds EOF to indicate that the message

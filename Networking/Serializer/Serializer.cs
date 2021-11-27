@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace Networking
 {
     /// <summary>
-    /// Wrapper object to store serilized object's type and serilized string representation.
+    ///     Wrapper object to store serilized object's type and serilized string representation.
     /// </summary>
     public class MetaObject
     {
@@ -31,24 +31,13 @@ namespace Networking
 
     public class Serializer : ISerializer
     {
-        /// <summary>
-        /// JSON supported serialization
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="objectToSerialize"></param>
-        /// <returns></returns>
-        string SerializeJSON<T>(T objectToSerialize)
-        {
-            var jset = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-            return JsonConvert.SerializeObject(objectToSerialize, Formatting.Indented, jset);
-        }
         /// <inheritdoc />
         string ISerializer.Serialize<T>(T objectToSerialize)
         {
             try
             {
-                string json = SerializeJSON(objectToSerialize);
-                MetaObject obj = new MetaObject(typeof(T).ToString(), json);
+                var json = SerializeJSON(objectToSerialize);
+                var obj = new MetaObject(typeof(T).ToString(), json);
                 return SerializeJSON(obj);
             }
             catch (Exception ex)
@@ -57,30 +46,21 @@ namespace Networking
                 throw;
             }
         }
+
         /// <inheritdoc />
         string ISerializer.GetObjectType(string serializedString, string nameSpace)
         {
             // json string
-            MetaObject obj = deserializeJSON<MetaObject>(serializedString);
+            var obj = deserializeJSON<MetaObject>(serializedString);
             return obj.typ;
         }
-        /// <summary>
-        /// JSON supoorted deserialization.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        T deserializeJSON<T>(string json)
-        {
-            var jset = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-            return JsonConvert.DeserializeObject<T>(json, jset);
-        }
+
         /// <inheritdoc />
         T ISerializer.Deserialize<T>(string serializedString)
         {
             try
             {
-                MetaObject obj = deserializeJSON<MetaObject>(serializedString);
+                var obj = deserializeJSON<MetaObject>(serializedString);
                 return deserializeJSON<T>(obj.data);
             }
             catch (Exception ex)
@@ -88,6 +68,30 @@ namespace Networking
                 Trace.WriteLine(ex.Message);
                 throw;
             }
+        }
+
+        /// <summary>
+        ///     JSON supported serialization
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objectToSerialize"></param>
+        /// <returns></returns>
+        private string SerializeJSON<T>(T objectToSerialize)
+        {
+            var jset = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
+            return JsonConvert.SerializeObject(objectToSerialize, Formatting.Indented, jset);
+        }
+
+        /// <summary>
+        ///     JSON supoorted deserialization.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        private T deserializeJSON<T>(string json)
+        {
+            var jset = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
+            return JsonConvert.DeserializeObject<T>(json, jset);
         }
     }
 }

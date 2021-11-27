@@ -145,6 +145,7 @@ namespace Networking
             {
                 _queueSize -= 1;
             }
+
             Trace.WriteLine("[Networking] Dequeued Packet");
             return packet;
         }

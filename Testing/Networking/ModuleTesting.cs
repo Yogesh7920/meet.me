@@ -300,7 +300,7 @@ namespace Testing.Networking
         [Test]
         public void Send_MessageWithSpecialStrings_ShouldNotFail()
         {
-            string message = $"Message with {Utils.Flag} and {Utils.Esc} should work.";
+            var message = $"Message with {Utils.Flag} and {Utils.Esc} should work.";
             _clientA.Communicator.Send(message, Modules.WhiteBoard);
             _server.WbHandler.Wait();
             Assert.AreEqual(OnDataReceived, _server.WbHandler.Event);
