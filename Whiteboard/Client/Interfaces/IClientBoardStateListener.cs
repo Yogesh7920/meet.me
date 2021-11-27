@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/11/2021
- * Date Modified: 10/11/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System.Collections.Generic;
@@ -18,6 +18,6 @@ namespace Whiteboard
         ///     Handles the reception of update from state manager.
         /// </summary>
         /// <param name="shapeUpdates">List of UXShapes for UX to render.</param>
-        void OnUpdateFromStateManager(List<UXShape> shapeUpdates);
+        void OnUpdateFromStateManager(List<UXShapeHelper> shapeUpdates);
     }
 }

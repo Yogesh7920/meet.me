@@ -1,3 +1,5 @@
+/// <author>Yuvraj Raghuvanshi</author>
+/// <created>01/11/2021</created>
 using System;
 using System.Collections.Generic;
 
@@ -18,7 +20,10 @@ namespace Content
         /// <summary>
         ///     Number of messages in the thread
         /// </summary>
-        public int NumOfMessages;
+        public int NumOfMessages
+        {
+            get => MsgList.Count;
+        }
 
         /// <summary>
         ///     Id of the thread
@@ -26,13 +31,12 @@ namespace Content
         public int ThreadId;
 
         // dictionary mapping message id to its index in MsgList
-        private Dictionary<int, int> messageIds;
+        public Dictionary<int, int> messageIds;
 
         public ChatContext()
         {
             CreationTime = new DateTime();
             MsgList = new List<ReceiveMessageData>();
-            NumOfMessages = 0;
             ThreadId = -1;
             messageIds = new Dictionary<int, int>();
         }
@@ -48,7 +52,6 @@ namespace Content
                     throw new ArgumentException("Thread id of a message can't be -1");
 
                 MsgList.Add(msg);
-                NumOfMessages++;
                 ThreadId = msg.ReplyThreadId;
                 CreationTime = msg.SentTime;
                 messageIds.Add(msg.MessageId, NumOfMessages - 1);
@@ -56,14 +59,18 @@ namespace Content
 
             else
             {
+                // ensure the message belongs to this chat context
                 if (msg.ReplyThreadId != ThreadId)
                     throw new ArgumentException("Invalid thread id, message doesn't belong in this thread");
+                
+                // ensure the message being replied to (if any) is also part of this chat context
+                if (msg.ReplyMsgId != -1 && !messageIds.ContainsKey(msg.ReplyMsgId))
+                    throw new ArgumentException("Message being replied to isn't part of the same thread");
 
                 if (messageIds.ContainsKey(msg.MessageId))
                     throw new ArgumentException("Message with given message id already exists in thread");
 
                 MsgList.Add(msg);
-                NumOfMessages++;
                 messageIds.Add(msg.MessageId, NumOfMessages - 1);
 
             }
@@ -104,6 +111,12 @@ namespace Content
                 throw new ArgumentException("Message with given message id doesn't exist in thread");
 
             return messageIds[messageId];
+        }
+
+        public bool ContainsMessageId(int messageId)
+        {
+            if (messageIds.ContainsKey(messageId)) return true;
+            else return false;
         }
 
         private bool MessageIsValid(string message)

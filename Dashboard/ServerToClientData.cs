@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dashboard.Server.Summary;
+using Dashboard.Server.Telemetry;
 //using Dashboard.Server.Telemetry;
 
 namespace Dashboard
@@ -19,16 +20,14 @@ namespace Dashboard
         /// </summary>
         /// <param name="eventName"> The name of the event </param>
         /// <param name="objectToSend"> The object that is to be sent on the client side </param>
-        public ServerToClientData(string eventName, SessionData sessionDataToSend, SummaryData summaryDataToSend, string abc, UserData user)
+        public ServerToClientData(string eventName, SessionData sessionDataToSend, SummaryData summaryDataToSend, SessionAnalytics sessionAnalyticsToSend, UserData user)
         {
             // SessionAnalytics sessionAnalyticsToSend
             eventType = eventName;
             _user = user;
             sessionData = sessionDataToSend;
             summaryData = summaryDataToSend;
-            //sessionAnalytics = sessionAnalyticsToSend;
-            temp = abc;
-
+            sessionAnalytics = sessionAnalyticsToSend;
         }
 
        /// <summary>
@@ -51,8 +50,7 @@ namespace Dashboard
         public string eventType;
         public SummaryData summaryData;
         public SessionData sessionData;
-        //public SessionAnalytics sessionAnalytics;
+        public SessionAnalytics sessionAnalytics;
         public UserData _user;
-        public string temp;
     }
 }

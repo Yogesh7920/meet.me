@@ -1,9 +1,8 @@
-/*
-* Author: Tausif Iqbal
-* Created on: 01/11/2021
-* Summary: This file covers the unit tests
-*           for client joining the server and leaving the server.
-*/
+/// <author>Tausif Iqbal</author>
+/// <created>01/11/2021</created>
+/// <summary>
+/// This file covers the unit tests for client joining the server and leaving the server.
+/// </summary>
 
 using Networking;
 using NUnit.Framework;

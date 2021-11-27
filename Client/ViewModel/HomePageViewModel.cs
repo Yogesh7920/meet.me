@@ -2,9 +2,6 @@
 using System.Windows;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
@@ -12,11 +9,9 @@ using Client;
 
 namespace Client.ViewModel
 {
-
-    class HomePageViewModel : IClientSessionNotifications
+    public class HomePageViewModel : IClientSessionNotifications // Notifies change in list of users.
     {
-        private IUXClientSessionManager _model;
-
+        int userid;
         public List<UserViewData> users
         {
             get; private set;
@@ -25,35 +20,34 @@ namespace Client.ViewModel
         {
             _model = SessionManagerFactory.GetClientSessionManager();
             _model.SubscribeSession(this);
+            users = new List<UserViewData>();
+            userid = ChatViewModel.UserId;
         }
 
         public void OnClientSessionChanged(SessionData session)
         {
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
-                        new Action<List<UserViewData>>((users) =>
+                        new Action<SessionData>((session) =>
                         {
                             lock (this)
                             {
-                                if (users != null)
-                                {
-                                    users.Clear();
-                                }
+                                users.Clear();
                                 foreach (UserData user in session.users)
                                 {
                                     UserViewData usernew = new UserViewData();
                                     usernew.username = user.username;
-                                    if(user.userID == ChatViewModel.UserId)
+                                    if(user.userID == userid)
                                     {
                                         usernew.username += " (You)";
                                     }
                                     usernew.shortname = user.username.Substring(0,2);
                                     users.Add(usernew);
                                 }
-                                this.OnPropertyChanged("ListChanged");
+                                OnPropertyChanged("ListChanged");
                             }
                         }),
-                        users);
+                        session);
         }
 
         public void LeftClient()
@@ -61,7 +55,10 @@ namespace Client.ViewModel
             _model.RemoveClient();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// Property changed event raised when a property is changed on a component.
+        /// </summary>
+        public event PropertyChangedEventHandler UsersListChanged;
 
         /// <summary>
         /// Handles the property changed event raised on a component.
@@ -69,11 +66,19 @@ namespace Client.ViewModel
         /// <param name="property">The name of the property.</param>
         private void OnPropertyChanged(string property)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            UsersListChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
+
+        /// <summary>
+        /// Gets the dispatcher to the main thread. In case it is not available
+        /// (such as during unit testing) the dispatcher associated with the
+        /// current thread is returned.
+        /// </summary>
         private Dispatcher ApplicationMainThreadDispatcher =>
             (Application.Current?.Dispatcher != null) ?
                     Application.Current.Dispatcher :
                     Dispatcher.CurrentDispatcher;
+
+        private IUXClientSessionManager _model;
     }
 }

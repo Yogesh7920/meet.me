@@ -1,8 +1,8 @@
-﻿/*
- * Author: Alisetti Sai Vamsi
- * Created on: 13/10/2021
- * Summary: This file contains the class definition of Packet.
- */
+﻿/// <author>Alisetti Sai Vamsi</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// This file contains the class definition of Packet.
+/// </summary>
 
 namespace Networking
 {

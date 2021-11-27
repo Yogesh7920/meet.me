@@ -35,8 +35,8 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-            
-            _ = new ServerBoardStateManager();
+
+            _ = ServerBoardCommunicator.Instance;
             _ = new ScreenShareServer();
             _contentServer = ContentServerFactory.GetInstance();
 
@@ -96,9 +96,6 @@ namespace Dashboard.Server.SessionManagement
             UserData user = CreateUser(arrivedClient.username);
             AddUserToSession(user);
 
-            // sending the all the messages to the new user
-            _contentServer.SSendAllMessagesToClient(user.userID);
-
             // Notify Telemetry about the change in the session object.
             NotifyTelemetryModule();
 
@@ -142,7 +139,7 @@ namespace Dashboard.Server.SessionManagement
                 // returning the summary
                 return new SummaryData(_sessionSummary);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine("Summary Creation Failed: " + e.Message);
                 return null;
@@ -164,7 +161,7 @@ namespace Dashboard.Server.SessionManagement
             try
             {
                 // n tries are made to save summary and analytics before ending the meet
-                while(tries > 0 && summarySaved == false)
+                while (tries > 0 && summarySaved == false)
                 {
                     // Fetching all the chats from the content module
                     ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
@@ -177,7 +174,7 @@ namespace Dashboard.Server.SessionManagement
                 SendDataToClient("endMeet", _sessionData, null, null, user);
 
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 // In case of any exception, the meeting is ended without saving the summary.
                 // The user is notified about this
@@ -204,7 +201,7 @@ namespace Dashboard.Server.SessionManagement
                 // Fetching the chats and creating analytics on them
                 ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
                 _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
-                SendDataToClient("getAnalytics", null, null, "sampleString", user);
+                SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)
             {
@@ -363,7 +360,7 @@ namespace Dashboard.Server.SessionManagement
             ClientToServerData deserializedObj = _serializer.Deserialize<ClientToServerData>(serializedObject);
 
             // If a null object or username is received, return without further processing.
-            if(deserializedObj == null || deserializedObj.username == null)
+            if (deserializedObj == null || deserializedObj.username == null)
             {
                 Trace.WriteLine("Null object provided by the client.");
                 return;
@@ -410,14 +407,14 @@ namespace Dashboard.Server.SessionManagement
             NotifyTelemetryModule();
             SendDataToClient("removeClient", _sessionData, null, null, userToRemove);
         }
-        
+
         /// <summary>
         /// Removes the user from the user list in the sessionData.
         /// </summary>
         /// <param name="userToRemove">A UserData object that denotes the used to remove. </param>
         private void RemoveUserFromSession(UserData userToRemove)
         {
-            if(_sessionData == null)
+            if (_sessionData == null)
             {
                 Trace.Write("Session is empty, cannot remove user");
                 return;
@@ -444,8 +441,8 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="summaryData">The summary of the session. </param>
         /// <param name="sessionaAnalytics">The analytics of the session.</param>
         /// <param name="user">The user to broadcast/reply. </param>
-        private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, string sessionaAnalytics, UserData user)
-        //private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, SessionAnalytics sessionaAnalytics, UserData user)
+        
+        private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, SessionAnalytics sessionaAnalytics, UserData user)
         {
             ServerToClientData serverToClientData;
             lock (this)
