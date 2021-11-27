@@ -49,10 +49,10 @@ namespace Client
 
         //Canvas BG available Colors 
         private string canvasBg1 = "#FFFFFF";
-        private string canvasBg2 = "#FF0000";
-        private string canvasBg3 = "#00FF00";
-        private string canvasBg4 = "#0000FF";
-        private string canvasBg5 = "#FFFF00";
+        private string canvasBg2 = "#F8F8FF";
+        private string canvasBg3 = "#FFFAFA";
+        private string canvasBg4 = "#FFFFF0";
+        private string canvasBg5 = "#FFFAF0";
 
         //pen and eraser properties 
         private string curCanvasBg = "#FFFFFF";
@@ -723,35 +723,35 @@ namespace Client
         private void ColorFill1Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg1, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", White, 1);
             rbutton.IsChecked = false;
         }
 
         private void ColorFill2Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg2, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", Red, 1);
             rbutton.IsChecked = false;
         }
 
         private void ColorFill3Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg3, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", Green, 1);
             rbutton.IsChecked = false;
         }
 
         private void ColorFill4Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg4, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", Blue, 1);
             rbutton.IsChecked = false;
         }
 
         private void ColorFill5Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg5, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", Yellow, 1);
             rbutton.IsChecked = false;
         }
 
@@ -778,28 +778,28 @@ namespace Client
         private void ColorBorder2Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg2, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Red, 0);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder3Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg3, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Green, 0);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder4Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg4, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Blue, 0);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder5Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg5, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Yellow, 0);
             rbutton.IsChecked = false;
         }
 

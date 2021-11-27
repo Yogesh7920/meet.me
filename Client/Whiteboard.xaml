@@ -152,7 +152,7 @@
                     Height="65"
                     Width="110">
 
-                <Grid Name="SetBGDropdown" Background="{DynamicResource Color3Bg}">
+                <Grid Name="SetBGDropdown" Background="WhiteSmoke">
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*"></RowDefinition>
@@ -185,22 +185,22 @@
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
-                            <RadioButton Grid.Column="1" x:Name="c2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBtn2Checked">
+                            <RadioButton Grid.Column="1" x:Name="c2" Margin="5 0 0 10" VerticalAlignment="Center" Background="#F8F8FF" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBtn2Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
-                            <RadioButton Grid.Column="2" x:Name="c3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBtn3Checked">
+                            <RadioButton Grid.Column="2" x:Name="c3" Margin="5 0 0 10" VerticalAlignment="Center" Background="#FFFAFA" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBtn3Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
-                            <RadioButton Grid.Column="3" x:Name="c4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBtn4Checked">
+                            <RadioButton Grid.Column="3" x:Name="c4" Margin="5 0 0 10" VerticalAlignment="Center" Background="#FFFFF0" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBtn4Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
                             </RadioButton>
-                            <RadioButton Grid.Column="4" x:Name="c5" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBtn5Checked">
+                            <RadioButton Grid.Column="4" x:Name="c5" Margin="5 0 0 10" VerticalAlignment="Center" Background="#FFFAF0" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBtn5Checked">
                                 <RadioButton.RenderTransform>
                                     <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                 </RadioButton.RenderTransform>
@@ -366,7 +366,7 @@
                     Height="100"
                     Width="115">
 
-                <Grid Name="RestoreDropdown" Background="{DynamicResource Color3Bg}">
+                <Grid Name="RestoreDropdown" Background="WhiteSmoke">
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*"></RowDefinition>
@@ -385,7 +385,7 @@
                         ></TextBlock>
                     </StackPanel>
 
-                    <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="{DynamicResource Color3Bg}" ItemsSource="{Binding chckList}">
+                    <ListBox Name="RestorFrameDropDown" Grid.Row="1" Background="WhiteSmoke" ItemsSource="{Binding chckList}">
 
                         <!--<ListBox.ItemTemplate>
                             <DataTemplate>
@@ -531,7 +531,7 @@
                                         Height="125"
                                         Width="110">
 
-                                        <Grid Name="FreeHandDropdown" Background="{DynamicResource Color3Bg}">
+                                        <Grid Name="FreeHandDropdown" Background="WhiteSmoke">
 
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="2*"></RowDefinition>
@@ -919,7 +919,7 @@
                                         Height="125"
                                         Width="110">
 
-                                            <Grid Name="SetShapeBorderDropdown" Background="{DynamicResource Color3Bg}">
+                                        <Grid Name="SetShapeBorderDropdown" Background="WhiteSmoke">
 
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="2*"></RowDefinition>
@@ -1039,7 +1039,7 @@
                                         Height="65"
                                         Width="110">
 
-                                            <Grid Name="SetShapeFillDropdown" Background="{DynamicResource Color3Bg}">
+                                        <Grid Name="SetShapeFillDropdown" Background="WhiteSmoke">
 
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="2*"></RowDefinition>

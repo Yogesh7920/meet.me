@@ -43,7 +43,7 @@ namespace Client
         /// <summary>
         /// Render fetched updates on canvas  
         /// </summary>
-        abstract Canvas RenderUXElement(List<UXShape> shps, Canvas cn);
+        abstract Canvas RenderUXElement(List<UXShape> shps, Canvas cn, IWhiteBoardOperationHandler WBOps);
     }
 
     public class BorderAdorner : Adorner
@@ -691,7 +691,7 @@ namespace Client
 
                     if (!(toRender == null || toRender.Count() == 0))
                     {
-                        cn = RenderUXElement(toRender, cn);
+                        cn = RenderUXElement(toRender, cn, WBOps);
 
                         //select the shape 
                         SelectShape(cn, toRender.ElementAt(0).WindowsShape, WBOps, 0);
@@ -809,7 +809,7 @@ namespace Client
                 cn = UnselectAllBB(cn, WBOps);
                 //cn.Children.Remove(sh);
                 //Since we are removing rendered temporary shape above and toRender[1] corresponds to CREATE operation
-                cn = RenderUXElement(toRender, cn);
+                cn = RenderUXElement(toRender, cn, WBOps);
                 if (toRender != null && toRender.Count() == 2) cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
                 //Bugged, adr.ClipEnabled gives NullException??
@@ -955,7 +955,7 @@ namespace Client
                 toRender = WBOps.RotateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
 
                 //Since we already removed our side of temporary render, DELETE operation by WB module is not acknowledged, whereas toRender[1] refers to necessary CREATE operation with the updated shape
-                cn = RenderUXElement(toRender, cn);
+                cn = RenderUXElement(toRender, cn, WBOps);
                 if (toRender != null && toRender.Count() == 2) cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
                 //Bugged as adr.isClipEnabled gives Null Exception
@@ -1040,7 +1040,7 @@ namespace Client
         /// <summary>
         /// Render fetched shape updates on canvas  
         /// </summary>
-        public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
+        public Canvas RenderUXElement(List<UXShape> shps, Canvas cn, IWhiteBoardOperationHandler WBOps)
         {
             if (shps == null || shps.Count() == 0) return cn;
 
@@ -1117,6 +1117,7 @@ namespace Client
                             Canvas.SetTop(shp.WindowsShape, (cn.Height - recv_Line.Y1));
                         }
 
+                        shp.WindowsShape.ToolTip = "User : " + getUserId(shp.WindowsShape, WBOps);
                         cn.Children.Add(shp.WindowsShape);
                         break;
                     case (UXOperation.DELETE):
@@ -1149,7 +1150,7 @@ namespace Client
                 lock (this)
                 {
                     toRender = WBOps.DeleteShape(shp);
-                    cn = this.RenderUXElement(toRender, cn);
+                    cn = this.RenderUXElement(toRender, cn, WBOps);
                 }
             }
 
@@ -1228,7 +1229,7 @@ namespace Client
                 //cn.Children.Remove(sh);
 
                 //Add 
-                cn = RenderUXElement(toRender, cn);
+                cn = RenderUXElement(toRender, cn, WBOps);
                 if (toRender != null && toRender.Count() == 2) cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
             }
 
@@ -1494,7 +1495,7 @@ namespace Client
             //cn.Children.Remove(shp);
 
             toRender = WBOps.ResizeShape(C_strt, C_end, shp.Uid, drgPos, true);
-            cn = this.RenderUXElement(toRender, cn);
+            cn = this.RenderUXElement(toRender, cn, WBOps);
             if (toRender != null && toRender.Count() == 2) cn = SelectShape(cn, toRender[1].WindowsShape, WBOps, 0);
 
             return cn;
@@ -1564,7 +1565,7 @@ namespace Client
         /// <summary>
         /// Render FreeHand instances shape updates on canvas  
         /// </summary>
-        public Canvas RenderUXElement(List<UXShape> shps, Canvas cn)
+        public Canvas RenderUXElement(List<UXShape> shps, Canvas cn, IWhiteBoardOperationHandler WBOps)
         {
             if (shps == null || shps.Count() == 0) return cn;
 
@@ -1720,7 +1721,7 @@ namespace Client
                                 ((System.Windows.Shapes.Polyline)(toRender.ElementAt(1).WindowsShape)).StrokeDashCap = PenLineCap.Round;
 
                                 //Rendering the Polyline onto the Canvas
-                                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn);
+                                cn = RenderUXElement(new List<UXShape> { toRender[1] }, cn, WBOps);
                             }
 
                             assgn_uid = "-1";
@@ -1735,13 +1736,13 @@ namespace Client
             return cn;
         }
 
-        public Canvas DeletePolyline(Canvas cn, IWhiteBoardOperationHandler WBops, System.Windows.Shapes.Polyline selectedLine)
+        public Canvas DeletePolyline(Canvas cn, IWhiteBoardOperationHandler WBOps, System.Windows.Shapes.Polyline selectedLine)
         {
             //Call : Render UX element to delete the polyline 
             if (!testing)
             {
-                List<UXShape> toRender = WBops.DeleteShape(selectedLine.Uid);
-                cn = RenderUXElement(toRender, cn);
+                List<UXShape> toRender = WBOps.DeleteShape(selectedLine.Uid);
+                cn = RenderUXElement(toRender, cn, WBOps);
             }
             else
             {
@@ -2060,11 +2061,11 @@ namespace Client
             {
                 if (renderUndo[i].WindowsShape is System.Windows.Shapes.Polyline)
                 {
-                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas, WBOps);
                 }
                 else
                 {
-                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas, WBOps);
                 }
             }
             return;
@@ -2082,11 +2083,11 @@ namespace Client
             {
                 if (renderUndo[i].WindowsShape is System.Windows.Shapes.Polyline)
                 {
-                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                    this.GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas, WBOps);
                 }
                 else
                 {
-                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas);
+                    this.GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { renderUndo[i] }, GlobCanvas, WBOps);
                 }
             }
             return;
@@ -2167,8 +2168,8 @@ namespace Client
                             this.GlobCanvas.IsEnabled = true;
                             continue; 
                         }
-                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
-                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
 
                         //Enabling the Canvas as all of the FETCH_STATE render requests in current batch have been rendered and the new user can now use Canvas
                         if (i == received.Count() - 1)  this.GlobCanvas.IsEnabled = true;
@@ -2177,8 +2178,8 @@ namespace Client
 
                     case Operation.FETCH_CHECKPOINT:
 
-                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
-                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
 
                         //Enabling the Canvas as all of the FETCH_STATE render requests in current batch have been rendered and the new user can now use Canvas
                         if (i == received.Count() - 1) this.GlobCanvas.IsEnabled = true;
@@ -2202,22 +2203,22 @@ namespace Client
                     case Operation.MODIFY:
                         //If the operation is MODIFY, directly render it onto the Canvas
                         if (received[i].WindowsShape == null) Trace.WriteLine("RenderUXElement received null");
-                        else if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
-                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
 
                         break;
                     case Operation.CREATE:
                         //If the operation is CREATE, directly render it onto the Canvas
                         if (received[i].WindowsShape == null) Trace.WriteLine("RenderUXElement received null");
-                        else if(received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
-                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else if(received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
 
                         break;
                     case Operation.DELETE:
                         //If the operation is DELETE, directly render it onto the Canvas
                         if (received[i].WindowsShape == null) Trace.WriteLine("RenderUXElement received null");
-                        else if(received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
-                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas);
+                        else if(received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
+                        else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
 
                         break;
 
