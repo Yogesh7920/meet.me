@@ -124,7 +124,7 @@ namespace Networking
                 throw new Exception("[Networking] Key Error: Packet holds invalid module identifier");
             }
 
-            Trace.WriteLine("[Networking] Packet Enqueued");
+            Trace.WriteLine($"[Networking] Packet from {moduleIdentifier} Enqueued");
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace Networking
                 _queueSize -= 1;
             }
 
-            Trace.WriteLine("[Networking] Dequeued Packet");
+            Trace.WriteLine($"[Networking] Dequeued Packet for {moduleIdentifier}");
             return packet;
         }
 
@@ -163,7 +163,7 @@ namespace Networking
             var moduleIdentifier = _moduleIdentifiers[_currentQueue];
             _multiLevelQueue[moduleIdentifier].TryPeek(out var packet);
 
-            Trace.WriteLine("[Networking] Peeking into the queue");
+            Trace.WriteLine($"[Networking] Peeking into the queue! Found a packet of {moduleIdentifier}");
             return packet;
         }
 
