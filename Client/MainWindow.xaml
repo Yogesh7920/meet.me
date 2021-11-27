@@ -142,9 +142,7 @@
         </DockPanel>
 
         <ContentControl Name="UsersListControl" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="5"/>
-
         <ContentControl Name="SSwb" Grid.Row="2" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-
         <ContentControl Name="Chat" Grid.Row="1" Grid.Column="6" Grid.RowSpan="5" Visibility="Collapsed"/>
 
     </Grid>

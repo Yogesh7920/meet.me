@@ -1,4 +1,7 @@
-﻿using System;
+﻿/// <authors>Irene Casmir and P S Harikrishnan</authors>
+/// <created>08/10/2021</created>
+
+using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
@@ -275,6 +278,5 @@ namespace Client
         {
             _userslist.OnLeaveButtonClick();
         }
-        
     }
 }
