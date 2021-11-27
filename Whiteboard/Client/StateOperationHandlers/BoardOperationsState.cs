@@ -58,24 +58,6 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Checker if the module is running in test mode or not
-        /// </summary>
-        protected static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
-
-        /// <summary>
-        /// Allows setting stateManager handler when running as part of NUnit tests.
-        /// </summary>
-        /// <param name="stateManager">state Manager object.</param>
-        public void SetStateManager(IClientBoardStateManagerInternal stateManager)
-        {
-            if (IsRunningFromNUnit)
-            {
-                _stateManager = stateManager;
-            }
-
-        }
-
-        /// <summary>
         /// Changes the shape fill of the shape.
         /// </summary>
         /// <param name="shapeFill">Modified fill color of the shape..</param>
