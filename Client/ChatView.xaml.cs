@@ -7,6 +7,8 @@ using System.ComponentModel;
 using Client.ViewModel;
 using System.Windows.Media;
 using System.IO;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 
 namespace Client
 {
@@ -18,6 +20,7 @@ namespace Client
         public int ReplyMsgId { get; set; }
         
         public ObservableCollection<Message> AllMessages;
+
         public ChatView()
         {
             InitializeComponent();
@@ -30,6 +33,7 @@ namespace Client
             AllMessages = new ObservableCollection<Message>();
             this.myChat.ItemsSource = AllMessages;
         }
+
         private void Listner(object sender, PropertyChangedEventArgs e)
         {
             string propertyName = e.PropertyName;
@@ -37,9 +41,15 @@ namespace Client
             if (propertyName == "ReceivedMsg")
             {
                 AllMessages.Add(viewModel.ReceivedMsg);
+                UpdateScrollBar(myChat);
             }
-            UpdateScrollBar(myChat);
+            else
+            {
+                AllMessages.Add(viewModel.ReceivedMsg);
+            }
+            
         }
+
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.SendTextBox.Text))
@@ -80,6 +90,7 @@ namespace Client
                 this.ReplyTextBox.Text = "";
             }
         }
+
         private void OnReplyButtonClick(object sender, RoutedEventArgs e)
         {
             if (sender is Button)
@@ -152,12 +163,14 @@ namespace Client
         }
         private void UpdateScrollBar(ListBox listBox)
         {
-            if (listBox != null)
-            {
-                var border = (Border)VisualTreeHelper.GetChild(listBox, 0);
-                var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                scrollViewer.ScrollToBottom();
-            }
+            ListBoxAutomationPeer svAutomation = (ListBoxAutomationPeer)ScrollViewerAutomationPeer.CreatePeerForElement(listBox);
+
+            IScrollProvider scrollInterface = (IScrollProvider)svAutomation.GetPattern(PatternInterface.Scroll);
+            System.Windows.Automation.ScrollAmount scrollVertical = System.Windows.Automation.ScrollAmount.LargeIncrement;
+            System.Windows.Automation.ScrollAmount scrollHorizontal = System.Windows.Automation.ScrollAmount.NoAmount;
+            //If the vertical scroller is not available, the operation cannot be performed, which will raise an exception. 
+            if (scrollInterface.VerticallyScrollable)
+                scrollInterface.Scroll(scrollHorizontal, scrollVertical);
         }
     }
 }

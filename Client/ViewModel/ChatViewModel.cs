@@ -29,6 +29,10 @@ namespace Client.ViewModel
         {
             get; private set;
         }
+        public SendMessageData MsgToSend
+        {
+            get; private set;
+        }
         /// <summary>
         /// The received caption.
         /// </summary>
@@ -48,43 +52,40 @@ namespace Client.ViewModel
             _modelDb = SessionManagerFactory.GetClientSessionManager();
             _modelDb.SubscribeSession(this);
         }
-
         public void SendChat(string message, int replyMsgId)
         {
-            SendMessageData msg = new SendMessageData();
-            msg.Type = MessageType.Chat;
-            msg.Message = message;
-            msg.ReplyMsgId = replyMsgId;
+            MsgToSend = new SendMessageData();
+            MsgToSend.Type = MessageType.Chat;
+            MsgToSend.Message = message;
+            MsgToSend.ReplyMsgId = replyMsgId;
             if (replyMsgId != -1)
             {
-                msg.ReplyThreadId = ThreadIds[replyMsgId];
+                MsgToSend.ReplyThreadId = ThreadIds[replyMsgId];
             }
             else
             {
-                msg.ReplyThreadId = -1;
+                MsgToSend.ReplyThreadId = -1;
             }
-            System.Diagnostics.Debug.WriteLine(msg.ReplyThreadId);
-            msg.ReceiverIds = new int[] { };
-            _model.CSend(msg);
+            MsgToSend.ReceiverIds = new int[] { };
+            _model.CSend(MsgToSend);
         }
 
         public void SendFile(string message, int replyMsgId)
         {
-            System.Diagnostics.Debug.WriteLine(message);
-            SendMessageData msg = new SendMessageData();
-            msg.Type = MessageType.File;
-            msg.Message = message;
-            msg.ReplyMsgId = replyMsgId;
+            MsgToSend = new SendMessageData();
+            MsgToSend.Type = MessageType.File;
+            MsgToSend.Message = message;
+            MsgToSend.ReplyMsgId = replyMsgId;
             if (replyMsgId != -1)
             {
-                msg.ReplyThreadId = ThreadIds[replyMsgId];
+                MsgToSend.ReplyThreadId = ThreadIds[replyMsgId];
             }
             else
             {
-                msg.ReplyThreadId = -1;
+                MsgToSend.ReplyThreadId = -1;
             }
-            msg.ReceiverIds = new int[] { };
-            _model.CSend(msg);
+            MsgToSend.ReceiverIds = new int[] { };
+            _model.CSend(MsgToSend);
         }
         public void StarChat(int msgId)
         {
@@ -172,7 +173,7 @@ namespace Client.ViewModel
                                         ReceivedMsg.ToFrom = UserId == messageData.SenderId;
                                         ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                                         ReceivedMsg.Type = messageData.Type == MessageType.Chat;
-                                        this.OnPropertyChanged("ReceivedMsg");
+                                        this.OnPropertyChanged("ReceivedMsgs");
                                     }
                                 }
                             }
