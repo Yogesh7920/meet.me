@@ -453,7 +453,15 @@ namespace Testing.Content
         {
             communicator.Reset();
 
-            contentServer.SSendAllMessagesToClient(10);
+            MessageData messageData = new MessageData
+            {
+                Type = MessageType.HistoryRequest,
+                SenderId = 10
+            };
+
+            string serializedMessageData = serializer.Serialize(messageData);
+
+            contentServer.Receive(serializedMessageData);
 
             string serializedAllMessages = communicator.GetSentData();
 

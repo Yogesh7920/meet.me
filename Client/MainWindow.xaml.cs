@@ -120,8 +120,8 @@ namespace Client
             }
             else
             {
-                SSClient.StopSharing();
-                sharing = false;
+               SSClient.StopSharing();
+               sharing = false;
             }
             //uncomment below line after respective User Controls are done
             this.SSwb.Content = new ScreenShareUX();
