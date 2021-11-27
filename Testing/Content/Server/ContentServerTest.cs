@@ -34,7 +34,7 @@ namespace Testing.Content
             communicator = new FakeCommunicator();
             contentServer.Communicator = communicator;
             serializer = new Serializer();
-            sleeptime = 50;
+            sleeptime = 100;
 
             MessageData messageData = utils.GenerateNewMessageData("First Message");
             string serializedMessage = serializer.Serialize(messageData);
