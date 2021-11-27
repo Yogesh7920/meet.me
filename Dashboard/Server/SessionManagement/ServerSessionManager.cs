@@ -97,7 +97,7 @@ namespace Dashboard.Server.SessionManagement
             AddUserToSession(user);
 
             // sending the all the messages to the new user
-            _contentServer.SSendAllMessagesToClient(user.userID);
+            // _contentServer.SSendAllMessagesToClient(user.userID);
 
             // Notify Telemetry about the change in the session object.
             NotifyTelemetryModule();
