@@ -240,9 +240,6 @@ namespace Testing.Content
         [Test]
         public void Receive_DownloadingAFile_FileShouldBeFetchedAndForwadedToTheCommunicator()
         {
-            listener.OnMessage(null);
-            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
-
             string CurrentDirectory = Directory.GetCurrentDirectory();
             string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
             string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
@@ -262,8 +259,6 @@ namespace Testing.Content
             string serializedFileDownloadMessage = serializer.Serialize(fileDownloadMessage);
 
             contentServer.Receive(serializedFileDownloadMessage);
-
-            Thread.Sleep(sleeptime);
 
             string sentData = communicator.GetSentData();
 
@@ -328,8 +323,6 @@ namespace Testing.Content
         [Test]
         public void Receive_InvalidEventForChatType_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            listener.OnMessage(null);
-            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData eventMessage = new MessageData
@@ -344,17 +337,12 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Thread.Sleep(sleeptime);
-
-            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_InvalidEventForFileType_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            listener.OnMessage(null);
-            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData eventMessage = new MessageData
@@ -369,9 +357,6 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Thread.Sleep(sleeptime);
-
-            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
 
             eventMessage = new MessageData
@@ -386,9 +371,6 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Thread.Sleep(sleeptime);
-
-            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
@@ -411,17 +393,12 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Thread.Sleep(sleeptime);
-
-            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_UpdatingAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            listener.OnMessage(null);
-            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             MessageData updateMessage = new MessageData
@@ -437,25 +414,17 @@ namespace Testing.Content
 
             contentServer.Receive(serializedStarMessage);
 
-            Thread.Sleep(sleeptime);
-
-            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
         [Test]
         public void Receive_GettingInvalidDataFromNotificationListener_ShouldReturnGracefully()
         {
-            listener.OnMessage(null);
-            //ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
             string previousMessageToCommunicator = communicator.GetSentData();
 
             string garbageData = " adfasfasfsadf";
             contentServer.Receive(garbageData);
 
-            Thread.Sleep(sleeptime);
-
-            //Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
 
