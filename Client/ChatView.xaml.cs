@@ -20,12 +20,12 @@ namespace Client
         /// <summary>
         ///     Message Id of the message replied it.
         /// </summary>
-        public int ReplyMsgId { get; set; }
+        private int _replyMsgId { get; set; }
 
         /// <summary>
         ///     Collection of all the messages.
         /// </summary>
-        public ObservableCollection<Message> AllMessages;
+        private ObservableCollection<Message> _allMessages;
 
         /// <summary>
         ///     Creates an instance of the ChatView.
@@ -40,9 +40,9 @@ namespace Client
             viewModel.PropertyChanged += Listner;
             this.DataContext = viewModel;
 
-            AllMessages = new ObservableCollection<Message>();
+            _allMessages = new ObservableCollection<Message>();
             // Binding AllMessages
-            this.myChat.ItemsSource = AllMessages;
+            this.myChat.ItemsSource = _allMessages;
         }
 
         /// <summary>
@@ -57,12 +57,12 @@ namespace Client
 
             if (propertyName == "ReceivedMsg")
             {
-                AllMessages.Add(viewModel.ReceivedMsg);
+                _allMessages.Add(viewModel.ReceivedMsg);
                 UpdateScrollBar(myChat);
             }
             else if (propertyName == "ReceivedMsgs")
             {
-                AllMessages.Add(viewModel.ReceivedMsg);
+                _allMessages.Add(viewModel.ReceivedMsg);
             }
             
         }
@@ -86,7 +86,7 @@ namespace Client
                 }
                 else
                 {
-                    viewModel.SendChat(this.SendTextBox.Text, ReplyMsgId);
+                    viewModel.SendChat(this.SendTextBox.Text, _replyMsgId);
                 }
 
                 this.SendTextBox.Text = string.Empty;
@@ -117,7 +117,7 @@ namespace Client
                 }
                 else
                 {
-                    viewModel.SendFile(openFileDlg.FileName, ReplyMsgId);
+                    viewModel.SendFile(openFileDlg.FileName, _replyMsgId);
                 }
                 this.ReplyTextBox.Text = "";
             }
@@ -142,7 +142,7 @@ namespace Client
                     this.ReplyTextBox.Text = m.TextMessage;
 
                     // Set the reply message id
-                    ReplyMsgId = m.MessageId;
+                    _replyMsgId = m.MessageId;
                 }
             }
         }

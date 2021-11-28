@@ -184,7 +184,7 @@ namespace Testing.UX.Chat
             int sampleReplyMsgId = -1;
 
             //Act
-            _viewModel.SendChat(sampleMessage, sampleReplyMsgId, testing: true);
+            _viewModel.SendChat(sampleMessage, sampleReplyMsgId);
 
             //Assert
             Assert.IsTrue(_viewModel.MsgToSend.ReplyThreadId == -1);
@@ -203,7 +203,7 @@ namespace Testing.UX.Chat
             int sampleReplyMsgId = -1;
 
             //Act
-            _viewModel.SendFile(sampleMessage, sampleReplyMsgId, testing: false);
+            _viewModel.SendFile(sampleMessage, sampleReplyMsgId);
 
             //Assert
             Assert.IsTrue(_viewModel.MsgToSend.ReplyThreadId == -1);

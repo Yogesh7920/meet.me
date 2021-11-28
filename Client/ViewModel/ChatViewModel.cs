@@ -60,6 +60,14 @@ namespace Client.ViewModel
         }
 
         /// <summary>
+        ///     Set true for testing purposes.
+        /// </summary>
+        public bool Testing
+        {
+            get; private set;
+        }
+
+        /// <summary>
         ///     Creates an instance of the Chat ViewModel.
         /// </summary>
         /// <param name="testing"> For testing pursose set as true </param>
@@ -69,6 +77,7 @@ namespace Client.ViewModel
             Users = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
 
+            this.Testing = testing;
             if (!testing)
             {
                 _model = ContentClientFactory.GetInstance();
@@ -86,8 +95,7 @@ namespace Client.ViewModel
         /// </summary>
         /// <param name="message"> The message string </param>
         /// <param name="replyMsgId"> Reply id of the message replied to, -1 if not a reply </param>
-        /// <param name="testing"> For testing pursose set as true </param>
-        public void SendChat(string message, int replyMsgId, bool testing = false)
+        public void SendChat(string message, int replyMsgId)
         {
             // Create the SendMessageData object and update the fields accordingly
             MsgToSend = new SendMessageData();
@@ -99,7 +107,7 @@ namespace Client.ViewModel
             // Empty, as its a broadcast message
             MsgToSend.ReceiverIds = new int[] { };
 
-            if (!testing)
+            if (!Testing)
             {
                 Trace.WriteLine("[UX] Sending chat message");
                 _model.CSend(MsgToSend);
@@ -111,8 +119,7 @@ namespace Client.ViewModel
         /// </summary>
         /// <param name="message"> The message string containing the file path </param>
         /// <param name="replyMsgId"> Reply id of the message replied to, -1 if not a reply </param>
-        /// /// <param name="testing"> For testing pursose set as true </param>
-        public void SendFile(string message, int replyMsgId, bool testing = false)
+        public void SendFile(string message, int replyMsgId)
         {
             // Create the SendMessageData object and update the fields accordingly
             MsgToSend = new SendMessageData();
@@ -124,7 +131,7 @@ namespace Client.ViewModel
             // Empty, as its a broadcast message
             MsgToSend.ReceiverIds = new int[] { };
 
-            if (!testing)
+            if (!Testing)
             {
                 Trace.WriteLine("[UX] Sending file message");
                 _model.CSend(MsgToSend);
@@ -172,7 +179,10 @@ namespace Client.ViewModel
                                     ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
 
                                     // Get the userid from the content module
-                                    UserId = _model.GetUserId();
+                                    if (!Testing)
+                                    {
+                                        UserId = _model.GetUserId();
+                                    }
 
                                     // Create the ReceivedMsg object and update the fields accordingly
                                     ReceivedMsg = new Message();
@@ -242,7 +252,10 @@ namespace Client.ViewModel
                                         ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
 
                                         // Get the userid from the content module
-                                        UserId = _model.GetUserId();
+                                        if (!Testing)
+                                        {
+                                            UserId = _model.GetUserId();
+                                        }
 
                                         // Create the ReceivedMsg object and update the fields accordingly
                                         ReceivedMsg = new Message();
