@@ -276,7 +276,7 @@ namespace ScreenSharing
 		/// </summary>
 		public void NotifyUx()
 		{
-			while (IsNotifying)
+			/*while (IsNotifying)
 			{
 				while (FrameQueue.Count == 0) ;
 				try
@@ -313,7 +313,7 @@ namespace ScreenSharing
 					Trace.WriteLine("ScreenSharing: Unable to Notify UX");
 					Trace.WriteLine(e.Message);
 				}
-			}
+			}*/
 		}
 
 		/// <summary>

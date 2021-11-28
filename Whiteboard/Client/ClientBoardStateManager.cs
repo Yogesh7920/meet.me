@@ -356,12 +356,12 @@ namespace Whiteboard
                     Trace.WriteLine("ClientBoardStateManager.OnMessageReceived: CLEAR_STATE request's result arrived.");
 
                     // checking conditions on server update.
-                    CheckCountAndCurrentCheckpoint(serverUpdate, false, true);
+                    CheckCountAndCurrentCheckpoint(serverUpdate, false, false);
 
                     lock (_stateLock)
                     {
                         // set checkpoint state
-                        _currentCheckpointState = serverUpdate.CurrentCheckpointState;
+                        _currentCheckpointState = 0;
 
                         // clear the state and notify the UX for the same
                         NullifyDataStructures();
