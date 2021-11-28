@@ -65,23 +65,5 @@ namespace Content
             Starred = false;
             ReplyMsgId = -1;
         }
-
-        /// <summary>
-        /// Contructor for ReceiveMessageData from MessageData
-        /// </summary>
-        /// <param name="msgData"></param>
-        /// <returns></returns>
-        public ReceiveMessageData(MessageData msgData)
-        {
-            Event = msgData.Event;
-            Message = msgData.Message;
-            MessageId = msgData.MessageId;
-            ReceiverIds = msgData.ReceiverIds;
-            SenderId = msgData.SenderId;
-            ReplyThreadId = msgData.ReplyThreadId;
-            Starred = msgData.Starred;
-            Type = msgData.Type;
-            ReplyMsgId = msgData.ReplyMsgId;
-        }
     }
 }
