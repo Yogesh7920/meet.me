@@ -60,17 +60,7 @@ namespace Testing.Whiteboard
 
         }
 
-        [Test]
-        public void FetchCheckPoint_RequestSentToCommunicatorFails()
-        {
-            _clientCheckPointHandler.SaveCheckpoint("userId", 0);
-
-            var ex=Assert.Throws<ArgumentException>(() => _clientCheckPointHandler.FetchCheckpoint(2,"userId", 0));
-            Assert.That(ex.Message, Is.EqualTo("invalid checkpointNumber"));
-
-
-
-        }
+        
 
     }
 }
