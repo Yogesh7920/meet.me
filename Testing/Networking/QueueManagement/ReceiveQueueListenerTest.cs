@@ -5,7 +5,6 @@
 /// </summary>
 
 using System.Collections.Generic;
-using System.Threading;
 using Networking;
 using NUnit.Framework;
 
@@ -66,18 +65,19 @@ namespace Testing.Networking.QueueManagement
             _queue.Enqueue(screenSharePacket);
             _queue.Enqueue(fileSharePacket);
 
-            Thread.Sleep(100);
-
             var whiteBoardHandler = (FakeNotificationHandler) _notificationHandlers[Modules.WhiteBoard];
             var screenShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.ScreenShare];
             var fileShareHandler = (FakeNotificationHandler) _notificationHandlers[Modules.File];
 
+            screenShareHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnDataReceived, screenShareHandler.Event);
             Assert.AreEqual(screenShareData, screenShareHandler.Data);
 
+            whiteBoardHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnDataReceived, whiteBoardHandler.Event);
             Assert.AreEqual(whiteBoardData, whiteBoardHandler.Data);
 
+            fileShareHandler.Wait();
             Assert.AreEqual(NotificationEvents.OnDataReceived, fileShareHandler.Event);
             Assert.AreEqual(fileShareData, fileShareHandler.Data);
         }

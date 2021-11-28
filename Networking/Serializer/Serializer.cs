@@ -31,12 +31,13 @@ namespace Networking
 
     public class Serializer : ISerializer
     {
-        private JsonSerializerSettings _jsonSerializerSettings;
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         public Serializer()
         {
-            _jsonSerializerSettings = new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All};
+            _jsonSerializerSettings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
         }
+
         /// <inheritdoc />
         string ISerializer.Serialize<T>(T objectToSerialize)
         {

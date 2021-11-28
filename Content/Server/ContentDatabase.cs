@@ -69,7 +69,7 @@ namespace Content
             {
                 int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
                 ChatContext chatContext = _chatContexts[threadIndex];
-                ReceiveMessageData msg = new(messageData);
+                ReceiveMessageData msg = messageData.Clone();
                 chatContext.AddMessage(msg);
             }
             // else create a new chatContext and add the message to it
@@ -78,7 +78,7 @@ namespace Content
                 ChatContext chatContext = new ChatContext();
                 int newThreadId = IdGenerator.GetChatContextId();
                 messageData.ReplyThreadId = newThreadId;
-                ReceiveMessageData msg = new(messageData);
+                ReceiveMessageData msg = messageData.Clone();
                 chatContext.AddMessage(msg);
 
                 _chatContexts.Add(chatContext);

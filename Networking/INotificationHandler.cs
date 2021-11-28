@@ -1,4 +1,6 @@
-﻿namespace Networking
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Networking
 {
     public interface INotificationHandler
     {
@@ -15,6 +17,7 @@
         /// </summary>
         /// <param name="socketObject">The socket object of the incoming client.</param>
         /// <typeparam name="T">Type of the socket object (TcpClient)</typeparam>
+        [ExcludeFromCodeCoverage]
         void OnClientJoined<T>(T socketObject)
         {
         }
@@ -24,6 +27,7 @@
         ///     signalled only on the server side to all modules.
         /// </summary>
         /// <param name="clientId"></param>
+        [ExcludeFromCodeCoverage]
         void OnClientLeft(string clientId)
         {
         }
