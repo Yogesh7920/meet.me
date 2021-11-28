@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -56,6 +57,7 @@ namespace Networking
         /// <returns> String</returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "127.0.0.1:8080";
             var ip = IPAddress.Parse(GetLocalIpAddress());
             var port = FreeTcpPort(ip);
             _serverSocket = new TcpListener(ip, port);
@@ -87,6 +89,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Stop()
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             //stop acceptRequest thread
             _acceptRequestRun = false;
             _serverSocket.Stop();
@@ -112,6 +115,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             // add clientID and socketObject into Dictionary 
             _clientIdSocket[clientId] = (TcpClient) (object) socketObject;
 
@@ -155,6 +159,12 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+            {
+                File.WriteAllText("networking_output.json", data);
+                return;
+            }
+            
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {
@@ -178,6 +188,11 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier, string destination)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+            {
+                File.WriteAllText("networking_output.json", data);
+                return;
+            }
             if (!_clientIdSocket.ContainsKey(destination)) throw new Exception("Client does not exist in the room!");
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
             try
@@ -197,6 +212,8 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
+            
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);

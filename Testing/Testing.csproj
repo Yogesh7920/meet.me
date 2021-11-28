@@ -41,4 +41,8 @@
     <ItemGroup>
       <None Remove="Persistence\**" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="E2E" />
+    </ItemGroup>
 </Project>

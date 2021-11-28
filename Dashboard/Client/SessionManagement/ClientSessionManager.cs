@@ -49,9 +49,6 @@ namespace Dashboard.Client.SessionManagement
             clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
 
-            _screenShareClient = ScreenShareFactory.GetScreenShareClient();
-
-
             if (_clients == null)
             {
                 _clients = new List<IClientSessionNotifications>();
@@ -59,6 +56,9 @@ namespace Dashboard.Client.SessionManagement
             _clientSessionData = null;
             _user = null;
             _chatSummary = null;
+            
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
+            _screenShareClient = ScreenShareFactory.GetScreenShareClient();
         }
 
         /// <summary>
@@ -391,8 +391,8 @@ namespace Dashboard.Client.SessionManagement
                 clientBoardStateManager.SetUser(user.userID.ToString());
                 Trace.WriteLine("[Client Dashboard] Whiteboard's user ID set.");
 
-
-                _screenShareClient.SetUser(user.userID.ToString(), user.username);
+                if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
+                    _screenShareClient.SetUser(user.userID.ToString(), user.username);
 
                 Trace.WriteLine("[Client Dashboard] ScreenShare's user ID and username set.");
 
