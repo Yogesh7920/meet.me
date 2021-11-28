@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/25/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -29,7 +29,7 @@ namespace Whiteboard
         /// </summary>
         public BoardPriorityQueue()
         {
-            Trace.WriteLine("Whiteboard.BoardPriorityQueue: Initializing priority queue");
+            Trace.WriteLine("[Whiteboard] BoardPriorityQueue: Initializing priority queue");
             _queue = new List<QueueElement>();
         }
 
@@ -139,7 +139,7 @@ namespace Whiteboard
             if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 Trace.Indent();
-                Trace.WriteLine("Whiteboard.BoardPriorityQueue.Top: Priority queue empty, returning null");
+                Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Top: Priority queue empty, returning null");
                 Trace.Unindent();
                 return null;
             }
@@ -164,7 +164,7 @@ namespace Whiteboard
                 SwapElements(lastIndex, Parent(lastIndex));
                 lastIndex = Parent(lastIndex);
             }
-            Trace.WriteLine("Whiteboard.BoardPriorityQueue.Insert: Inserted the element successfully.");
+            Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Insert: Inserted the element successfully.");
             Trace.Unindent();
         }
 
@@ -175,7 +175,7 @@ namespace Whiteboard
             {
                 Insert(queueElements[i]);
             }
-            Trace.WriteLine("Whiteboard.BoardPriorityQueue.Insert: Inserted the list of elements successfully.");
+            Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Insert: Inserted the list of elements successfully.");
             Trace.Unindent();
         }
 
@@ -188,7 +188,7 @@ namespace Whiteboard
             Trace.Indent();
             if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
-                Trace.WriteLine("Whiteboard.BoardPriorityQueue.Extract: No element present, returning null.");
+                Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Extract: No element present, returning null.");
                 Trace.Unindent();
                 return null;
             }
@@ -199,7 +199,7 @@ namespace Whiteboard
                 // removing the last and only element from the queue.
                 _queue.RemoveAt(0);
 
-                Trace.WriteLine("Whiteboard.BoardPriorityQueue.Extract: One element present, the priority queue is empty now.");
+                Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Extract: One element present, the priority queue is empty now.");
                 Trace.Unindent();
                 return queueElement;
             }
@@ -211,10 +211,10 @@ namespace Whiteboard
                 _queue[0] = _queue[GetSize() - 1];
                 _queue[0].Index = 0;
                 _queue.RemoveAt(GetSize() - 1);
-                Trace.WriteLine("Whiteboard.BoardPriorityQueue.Extract: Replaced the top with last element. Calling heapify on root.");
+                Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Extract: Replaced the top with last element. Calling heapify on root.");
                 Heapify(0);
 
-                Trace.WriteLine("Whiteboard.BoardPriorityQueue.Extract: Returning the extracted out element.");
+                Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Extract: Returning the extracted out element.");
                 Trace.Unindent();
                 return queueElement;
             }
@@ -233,13 +233,13 @@ namespace Whiteboard
             // if index is out of range 
             if (index < BoardConstants.EMPTY_SIZE || index >= GetSize())
             {
-                Trace.WriteLine("Whiteboard.BoardPriorityQueue.IncreaseTimestamp: Index out of range.");
+                Trace.WriteLine("[Whiteboard] BoardPriorityQueue.IncreaseTimestamp: Index out of range.");
                 throw new IndexOutOfRangeException("Element index not in the queue. IncreaseTimestamp failed.");
             }
 
-            if(queueElement.Timestamp > dateTime)
+            if (queueElement.Timestamp > dateTime)
             {
-                Trace.WriteLine("Whiteboard.BoardPriorityQueue.IncreaseTimestamp: Can't decrease timestamp");
+                Trace.WriteLine("[Whiteboard] BoardPriorityQueue.IncreaseTimestamp: Can't decrease timestamp");
                 throw new InvalidOperationException();
             }
 
@@ -250,7 +250,7 @@ namespace Whiteboard
                 SwapElements(index, Parent(index));
                 index = Parent(index);
             }
-            Trace.WriteLine("Whiteboard.BoardPriorityQueue.IncreaseTimestamp: Increased timestamp and moved to new suitable position.");
+            Trace.WriteLine("[Whiteboard] BoardPriorityQueue.IncreaseTimestamp: Increased timestamp and moved to new suitable position.");
             Trace.Unindent();
         }
 
@@ -264,11 +264,11 @@ namespace Whiteboard
 
             // Increase the timestamp to max possible value.  
             IncreaseTimestamp(queueElement, DateTime.MaxValue);
-            Trace.WriteLine("Whiteboard.BoardPriorityQueue.DeleteElement: Timestamp for element increased to MAX");
+            Trace.WriteLine("[Whiteboard] BoardPriorityQueue.DeleteElement: Timestamp for element increased to MAX");
 
             // extract out max value (highest timestamp)
             Extract();
-            Trace.WriteLine("Whiteboard.BoardPriorityQueue.DeleteElement: Element extracted out.");
+            Trace.WriteLine("[Whiteboard] BoardPriorityQueue.DeleteElement: Element extracted out.");
             Trace.Unindent();
         }
 

@@ -16,6 +16,9 @@ using System.IO;
 
 namespace Testing.Dashboard.Telemetry
 {
+    /// <summary>
+    /// Contains all Telemetry Test cases
+    /// </summary>
     public class TelemetryNunitTests
     {
         /// <summary>
@@ -184,15 +187,16 @@ namespace Testing.Dashboard.Telemetry
             ServerDataToSave serverData = new ServerDataToSave();
             serverData.sessionCount=0;
             serverData.allSessionsSummary=new List<SessionSummary>();
-            SessionSummary session1 = new SessionSummary();
-            session1.chatCount=100;
-            session1.userCount=30;
-            session1.score=3000;
+            int totalUsers=30;
+            int totalChats=3000;
             //Act
-            serverData.sessionCount++;
-            serverData.allSessionsSummary.Add(session1);
+            TelemetryFactory.GetTelemetryInstance().UpdateServerData(serverData,totalUsers,totalChats);
             //Assert
-            Assert.AreEqual(serverData.allSessionsSummary.Count,1);
+            SessionSummary currSessionSummary = serverData.allSessionsSummary[0];
+            bool correctUserCount= currSessionSummary.userCount == totalUsers;
+            bool correctChatCount= currSessionSummary.chatCount == totalChats;
+            bool correctScore    = currSessionSummary.score == totalChats*totalUsers;
+            Assert.IsTrue(correctUserCount && correctChatCount && correctScore);
             
         }
         

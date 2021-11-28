@@ -16,8 +16,8 @@ using Content;
 namespace Client.ViewModel
 {
     public class ChatViewModel :
-        INotifyPropertyChanged, 
-        IContentListener, 
+        INotifyPropertyChanged,
+        IContentListener,
         IClientSessionNotifications
     {
         /// <summary>
@@ -173,10 +173,13 @@ namespace Client.ViewModel
                         {
                             lock (this)
                             {
-                                Users.Clear();
-                                foreach (UserData user in session.users)
+                                if(session != null)
                                 {
-                                    Users.Add(user.userID, user.username);
+                                    Users.Clear();
+                                    foreach (UserData user in session.users)
+                                    {
+                                        Users.Add(user.userID, user.username);
+                                    }
                                 }
                             }
                         }),
