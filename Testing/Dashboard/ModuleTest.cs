@@ -216,7 +216,19 @@ namespace Testing.Dashboard
             serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientLeaveRequest));
             ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
             Assert.AreEqual("endMeet", serverToClientData.eventType);
+            Directory.Delete("../../../Persistence", true);
+        }
 
+        [Test]
+        public void EndMeetProcedure_WhenLastClientCannotBeReached_BroadCastsEndMeetEvent()
+        {
+            List<UserData> users = Utils.GenerateUserData(1);
+            UserData userLeavingLast = users[0];
+            AddUsersAtServer(users);
+            serverSessionManager.OnClientLeft(userLeavingLast.userID.ToString());
+            ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            Assert.AreEqual("endMeet", serverToClientData.eventType);
+            Directory.Delete("../../../Persistence", true);
         }
 
 
