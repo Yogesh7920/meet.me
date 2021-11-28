@@ -15,10 +15,14 @@ namespace Testing.ScreenSharing
         [Test]
         public void GetScreenSharer_MustReturnReferenceToSameObject()
         {
-            var screenSharer1 = ScreenShareFactory.GetScreenSharer();
-            var screenSharer2 = ScreenShareFactory.GetScreenSharer();
+            var clientScreenSharer1 = ScreenShareFactory.GetScreenShareClient();
+            var clientScreenSharer2 = ScreenShareFactory.GetScreenShareClient();
 
-            Assert.That(ReferenceEquals(screenSharer1, screenSharer2));
+            var serverScreenSharer1 = ScreenShareFactory.GetScreenShareServer();
+            var serverScreenSharer2 = ScreenShareFactory.GetScreenShareServer();
+
+            Assert.That(ReferenceEquals(clientScreenSharer1, clientScreenSharer2));
+            Assert.That(ReferenceEquals(serverScreenSharer1, serverScreenSharer2));
         }
     }
 }

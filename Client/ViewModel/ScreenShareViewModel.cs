@@ -33,7 +33,7 @@ namespace Client.ViewModel
 
         public ScreenShareViewModel()
         {
-            ScreenShareClient model = ScreenShareFactory.GetScreenSharer();
+            ScreenShareClient model = ScreenShareFactory.GetScreenShareClient();
             model.Subscribe(this);
 
             this.ReceivedMessage = "No one is sharing the screen(Default)";

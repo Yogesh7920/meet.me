@@ -313,7 +313,7 @@ namespace ScreenSharing
 							ThisSharing = false;
 							Ux.OnScreenRecieved(UserId, UserName, -1, null);
 						}
-						Trace.WriteLine("[ScreenSharingClient] Ux has notified");
+						Trace.WriteLine("[ScreenSharingClient] Ux has been notified");
 				}
 			}
 			catch(Exception e)
