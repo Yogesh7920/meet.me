@@ -36,8 +36,10 @@ namespace Content
             ReceiverIds = msgData.ReceiverIds;
             SenderId = msgData.SenderId;
             ReplyThreadId = msgData.ReplyThreadId;
+            ReplyMsgId = msgData.ReplyMsgId;
             Starred = msgData.Starred;
             Type = msgData.Type;
+            SentTime = msgData.SentTime;
         }
     }
 }
