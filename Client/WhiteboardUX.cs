@@ -3,9 +3,7 @@
  * Created By: Aniket Singh Rajpoot
  * Date Created: 25/10/2021
  * Date Modified: 28/11/2021
- 
 **/
-
 
 using System;
 using System.Collections.Generic;
@@ -123,6 +121,7 @@ namespace Client
 
             FrameworkElement adornedElement = this.AdornedElement as FrameworkElement;
             Thumb corner = sender as Thumb;
+            
             /*if (corner.Equals(topLeft)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on topLeft");
             else if (corner.Equals(bottomRight)) MessageBox.Show("Start = " + dragStart.ToString() + " ,End = " + dragEnd.ToString() + " on bottomRight");
 
@@ -1303,7 +1302,6 @@ namespace Client
             double oldTop, newTop;
             Point perm = new Point { X = 0, Y = 0 };
 
-            /////////////////
             Transform rt = adornedElement.RenderTransform;
 
             var mat = new Matrix();
@@ -1321,18 +1319,11 @@ namespace Client
             transStrt = rt.Inverse.Transform(transStrt);
             transEnd = rt.Inverse.Transform(transEnd);
 
-            /*transStrt.X = (int)transStrt.X;
-            transStrt.Y = (int)transStrt.Y;
-            transEnd.X = (int)transEnd.X;
-            transEnd.Y = (int)transEnd.Y;*/
-
             double deltaWidth = transEnd.X - transStrt.X;
             double deltaHeight = transEnd.Y - transStrt.Y;
 
             RotateTransform rt_angie = (RotateTransform)adornedElement.RenderTransform;
             float shapeAtAngle = (float)(rt_angie.Angle * (180 / Math.PI));
-
-            ////////////////
 
             if (adornedElement is System.Windows.Shapes.Line)
             {
@@ -1454,41 +1445,12 @@ namespace Client
                             Canvas.SetLeft(adornedElement, newLef);
                         }
 
-
-
-                        //newWidth = Math.Max(Math.Max(adornedElement.Width + deltaWidth * 2, corner.DesiredSize.Width), 10);
-                        //newHeight = Math.Max(Math.Max(adornedElement.Height + deltaHeight * 2, corner.DesiredSize.Height), 10);
-
-
-                        //newWidth = Math.Max(adornedElement.Width + deltaWidth * 2, corner.DesiredSize.Width);
-                        //newHeight = Math.Max(adornedElement.Height + deltaHeight * 2, corner.DesiredSize.Height);
-
-
-
-
-                        /*double newTp = Canvas.GetTop(adornedElement) - verticalDrag;
-                        double newLef = Canvas.GetLeft(adornedElement) - horizontalDrag;
-
-                        Canvas.SetTop(adornedElement, newTp);
-                        Canvas.SetLeft(adornedElement, newLef);*/
-
-                        if (newWidth < 10 || newHeight < 10)
-                        {
-                            newWidth = newWidth;
-                        }
-
-                        //Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) - verticalDrag);
-                        //Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) - horizontalDrag);
-
                         break;
 
                     //Top Left Corner 
                     case AdornerDragPos.TopLeft:
                         oldWidth = adornedElement.Width;
                         oldHeight = adornedElement.Height;
-
-                        //newWidth = Math.Max(adornedElement.Width - deltaWidth * 2, corner.DesiredSize.Width);
-                        //newHeight = Math.Max(adornedElement.Height - deltaHeight * 2, corner.DesiredSize.Height);
 
                         newWidth = Math.Max(Math.Max(adornedElement.Width - deltaWidth * 2, corner.DesiredSize.Width), 0);
                         newHeight = Math.Max(Math.Max(adornedElement.Height - deltaHeight * 2, corner.DesiredSize.Height), 0);
@@ -1498,9 +1460,6 @@ namespace Client
 
                         Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) + Math.Min(verticalDrag, adornedElement.Height / 2));
                         Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) + Math.Min(horizontalDrag, adornedElement.Width / 2));
-
-                        //Canvas.SetTop(adornedElement, Canvas.GetTop(adornedElement) + verticalDrag);
-                        //Canvas.SetLeft(adornedElement, Canvas.GetLeft(adornedElement) + horizontalDrag);
                         break;
                 }
             }
@@ -1519,10 +1478,6 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Shape shp, Point strt, Point end, AdornerDragPos pos)
         {
-            //Coordinate C_strt = new Coordinate(((int)strt.X), ((int)strt.Y));
-            //Coordinate C_end = new Coordinate(((int)end.X), ((int)end.Y));
-
-
             Coordinate C_strt = new Coordinate(((int)(cn.Height - strt.Y)), ((int)strt.X));
             Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
 
@@ -1853,9 +1808,6 @@ namespace Client
                 }
             }
         }
-
-
-
 
         /// UX sets this enum to different options when user clicks on the appropriate tool icon
         public enum WBTools 

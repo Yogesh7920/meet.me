@@ -36,7 +36,7 @@ namespace Client
         private string buttonSelectedColor = "#007C9C";
 
         //Color Palette 
-        private string Black = "#0B0A08";
+        private string Black = "#161B22";
         private string White = "#FFFFFF";
         private string Red = "#900604";
         private string Green = "#1E5631";
@@ -59,11 +59,13 @@ namespace Client
         private float penThickness = 5;
         private float eraserThickness = 5;
 
+        //variable to keep track for rotaion of shape is in progress or not 
         bool rotation = false;
         bool close_popup = false; 
 
-        //private ObservableCollection<string> _chk;
-
+        /// <summary>
+        /// Constructor for View in MVVM pattern
+        /// </summary>
         public WhiteBoardView()
         {
             InitializeComponent();
@@ -72,9 +74,13 @@ namespace Client
             viewModel = new WhiteBoardViewModel(GlobCanvas);
             this.DataContext = viewModel;
             this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDown_SelectionChanged;
-            //this._chk = new ObservableCollection<string>();
         }
 
+        /// <summary>
+        /// Checkpoint listbox selection changed event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RestorFrameDropDown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBox listbox = (ListBox)sender;
@@ -106,27 +112,9 @@ namespace Client
 
         }
 
-        /*public ObservableCollection<string> chckList
-        {
-            get
-            {
-                return _chk;
-            }
-            set
-            {
-
-                int n = this.viewModel.NumCheckpoints;
-                ObservableCollection<string> temp = new ObservableCollection<string>();
-                for (int i = 0; i < n; i++)
-                {
-                    temp.Add("Checkpoint #" + (i + 1));
-                }
-                _chk = temp;
-            }
-        }*/
-
-
-        // Function to clear flags and mouse variables to be called when a popup is opened/closed or active tool is changed
+        /// <summary>
+        /// Function to clear flags and mouse variables to be called when a popup is opened/closed or active tool is changed
+        /// </summary>
         private void clearFlags()
         {
             mouseDownFlag = 0;
@@ -138,7 +126,9 @@ namespace Client
             return;
         }
 
-        //Function to switch to selection tool after creation of shape 
+        /// <summary>
+        /// Function to switch to selection tool after creation of shape 
+        /// </summary>
         private void switchToSelection()
         {
             if (activeMainToolbarButton != null)
@@ -160,15 +150,21 @@ namespace Client
             return;
         }
 
-        //clear selected shapes after switching 
+        /// <summary>
+        /// Function to clear selected shapes
+        /// </summary>
         private void clearSelectedShapes()
         {
             this.viewModel.shapeManager.UnselectAllBB(GlobCanvas, this.viewModel.WBOps);
         }
 
+        /// <summary>
+        /// Canvas Mouse leave event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCanvasMouseLeave(object sender, MouseEventArgs e)
         {
-            //MessageBox.Show("Mouse Levae Event!");
             switch (viewModel.GetActiveTool())
             {
                 case (WhiteBoardViewModel.WBTools.FreeHand):
@@ -251,6 +247,11 @@ namespace Client
 
         }
 
+        /// <summary>
+        /// Canvas mouse enter event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCanvasMouseEnter(object sender, MouseEventArgs e)
         {
 
@@ -289,7 +290,11 @@ namespace Client
             }
         }
 
-        //Canvas Mouse Down 
+        /// <summary>
+        /// Canvas mouse down event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCanvasMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
             mouseLeftBtnMoveFlag = 0;   //init mouse move flag 
@@ -361,6 +366,11 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Canvas Mouse Button Up event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCanvasMouseButtonUp(object sender, MouseButtonEventArgs e)
         {
             UIElement el = (UIElement)sender;
@@ -479,21 +489,6 @@ namespace Client
                             //sets the starting point for usage in TranslateShape/RotateShape
                             this.viewModel.start = e.GetPosition(MyCanvas);
 
-                            //IF-ELSE to handle Select operations, i.e, Single & Multi select.
-                            /*if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
-                            {
-                                if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
-                                {
-                                
-                                    Shape selectedShape = e.OriginalSource as Shape;
-                                    GlobCanvas = viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps, 1);
-                                }
-                                else
-                                {
-                                    GlobCanvas = viewModel.shapeManager.UnselectAllBB(GlobCanvas, viewModel.WBOps);
-                                }
-                            }*/
-
                             if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
                             {
                                 Shape selectedShape = e.OriginalSource as Shape;
@@ -513,6 +508,11 @@ namespace Client
             return;
         }
 
+        /// <summary>
+        /// Canvas Mouse Move event 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCanvasMouseMove(object sender, MouseEventArgs e)
         {
             //MessageBox.Show("Canvas Mouse Move triggered");
@@ -615,7 +615,11 @@ namespace Client
             return;
         }
 
-        //MouseWheel function to mock Canvas coordinate system
+        /// <summary>
+        /// MouseWheel function to mock Canvas coordinate system
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MyCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             MessageBox.Show("Scrolled at X =" + e.GetPosition(GlobCanvas).X.ToString() + " ,Y = " + e.GetPosition(GlobCanvas).Y.ToString());
@@ -895,7 +899,12 @@ namespace Client
         }*/
 
         //Main Toolbar Here 
-        //Toolbar selection tool 
+
+        /// <summary>
+        /// Toolbar selection tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedSelectTool(object sender, RoutedEventArgs e)
         {
             if (activeMainToolbarButton != null)
@@ -917,7 +926,11 @@ namespace Client
             return;
         }
 
-        //Toolbar Rectangle tool
+        /// <summary>
+        /// Toolbar Rectangle tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedRectTool(object sender, RoutedEventArgs e)
         {
             if (activeMainToolbarButton != null)
@@ -939,7 +952,11 @@ namespace Client
             return;
         }
 
-        //Toolbar Ellipse tool
+        /// <summary>
+        /// Toolbar Ellipse tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedEllTool(object sender, RoutedEventArgs e)
         {
             if (activeMainToolbarButton != null)
@@ -961,7 +978,11 @@ namespace Client
             return;
         }
 
-        //Toolbar FreeHand tool
+        /// <summary>
+        /// Toolbar FreeHand tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckedFreehandTool(object sender, RoutedEventArgs e)
         {
             // Code for Un-Checked state
@@ -984,7 +1005,11 @@ namespace Client
             return;
         }
 
-        //Toolbar Eraser tool
+        /// <summary>
+        /// Toolbar Eraser tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedEraserTool(object sender, RoutedEventArgs e)
         {
             if (activeMainToolbarButton != null)
@@ -1006,7 +1031,11 @@ namespace Client
             return;
         }
 
-        //Toolbar Line tool
+        /// <summary>
+        /// Toolbar Line tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedLineTool(object sender, RoutedEventArgs e)
         {
             if (activeMainToolbarButton != null)
@@ -1029,7 +1058,11 @@ namespace Client
         }
 
         //Selection Toolbar
-        //Fill Border Tool Button
+        /// <summary>
+        /// Fill Border Tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedFillBorderTool(object sender, RoutedEventArgs e)
         {
             activeSelectToolbarButton = sender as Button;
@@ -1040,7 +1073,11 @@ namespace Client
             return;
         }
 
-        //Fill Shape Tool Button
+        /// <summary>
+        /// Fill Shape Tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedFillShapeTool(object sender, RoutedEventArgs e)
         {
             activeSelectToolbarButton = sender as Button;
@@ -1051,7 +1088,11 @@ namespace Client
             return;
         }
 
-        //Duplicate Shape Tool Button
+        /// <summary>
+        /// Duplicate Shape Tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedDuplicateTool(object sender, RoutedEventArgs e)
         {
             activeSelectToolbarButton = sender as Button;
@@ -1063,7 +1104,11 @@ namespace Client
             return;
         }
 
-        //Delete Shape Tool Button
+        /// <summary>
+        /// Delete Shape Tool 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedDeleteTool(object sender, RoutedEventArgs e)
         {
             activeSelectToolbarButton = sender as Button;
@@ -1076,7 +1121,11 @@ namespace Client
 
         //Whiteboard General tools 
 
-        //Clear Frame Button Control 
+        /// <summary>
+        /// Clear Frame Button Control 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
             if(Bu_P.Toggled1 == true)
@@ -1099,7 +1148,11 @@ namespace Client
             }
         }
 
-        //Save Frame Button Control
+        /// <summary>
+        /// Save Frame Button Control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
             //this.viewModel.NumCheckpoints += 1;
@@ -1107,7 +1160,11 @@ namespace Client
             return;
         }
 
-        //Undo Button Control
+        /// <summary>
+        /// Undo Button Control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedUndoButton(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("ClickedUndo");
@@ -1115,7 +1172,11 @@ namespace Client
             return;
         }
 
-        //Redo Button Control
+        /// <summary>
+        /// Redo Button Control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClickedRedoButton(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("ClickedRedo");
@@ -1123,7 +1184,11 @@ namespace Client
             return;
         }
 
-        //Toggle Button Control (Canvas State Lock)
+        /// <summary>
+        /// Toggle Button Control (Canvas State Lock)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Bu_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (Bu.Toggled1 == true)
@@ -1140,7 +1205,11 @@ namespace Client
             }
         }
 
-        //Toggle Button Control (Canvas State Lock)
+        /// <summary>
+        /// Toggle Button Control (User Priority)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Bu_PMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (Bu_P.Toggled1 == true)
