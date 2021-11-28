@@ -47,7 +47,7 @@ namespace Client.ViewModel
         public ScreenShareViewModel()
         {
 
-            ScreenShareClient model = ScreenShareFactory.GetScreenShareClient();
+            model = ScreenShareFactory.GetScreenShareClient();
 
             model.Subscribe(this);
 

@@ -35,7 +35,7 @@ namespace Client
             this.UsersListControl.Content = s_userslist;
 
 
-            SSClient = ScreenShareFactory.GetScreenShareClient();
+            _ssClient = ScreenShareFactory.GetScreenShareClient();
 
         }
         
