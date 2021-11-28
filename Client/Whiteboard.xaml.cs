@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/**
+ * Owned By: Arpan Tripathi
+ * Created By: Arpan Tripathi
+ * Date Created: 25/10/2021
+ * Date Modified: 28/11/2021
+**/
+
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
-using System.Collections.ObjectModel;
 
 namespace Client
 {
-
-
     /// <summary>
     /// Interaction logic for Whiteboard.xaml
     /// </summary>
@@ -39,13 +36,13 @@ namespace Client
         private string buttonSelectedColor = "#007C9C";
 
         //Color Palette 
-        private string Black = "#000000";
+        private string Black = "#0B0A08";
         private string White = "#FFFFFF";
-        private string Red = "#FF0000";
-        private string Green = "#00FF00";
-        private string Blue = "#0000FF";
-        private string Yellow = "#FFFF00";
-        private string Gray = "#808080";
+        private string Red = "#900604";
+        private string Green = "#1E5631";
+        private string Blue = "#005CC3";
+        private string Yellow = "#EFC002";
+        private string Gray = "#909090";
 
         //Canvas BG available Colors 
         private string canvasBg1 = "#FFFFFF";
