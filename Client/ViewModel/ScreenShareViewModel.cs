@@ -51,8 +51,9 @@ namespace Client.ViewModel
 
         public ScreenShareViewModel()
         {
-            Trace.WriteLine("[UX] ScreenShareViewModel contructor is called");
-            model = ScreenShareFactory.GetScreenSharer();
+
+            model = ScreenShareFactory.GetScreenShareClient();
+
             model.Subscribe(this);
 
 
