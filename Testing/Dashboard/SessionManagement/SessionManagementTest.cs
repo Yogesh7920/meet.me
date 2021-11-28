@@ -316,19 +316,79 @@ namespace Testing.Dashboard.SessionManagement
             Assert.AreEqual(_serverSessionManager.summarySaved, true);
         }
 
-        //[Test]
-        //public void OnDataReceivedServerSide_SendingNullData_TraceAndReturn()
-        //{
-        //    try
-        //    {
-        //        _serverSessionManager.OnDataReceived(null);
-        //        Assert.Pass();
-        //    }
-        //    catch(Exception e)
-        //    {
-        //        Assert.Fail("OnDataReceived failed: " + e.Message);
-        //    }
-        //}
+        [Test]
+        public void OnDataReceivedServerSide_SendingNullData_TraceAndReturn()
+        {
+            try
+            {
+                _serverSessionManager.OnDataReceived(null);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("OnDataReceived failed: " + e.ToString());
+            }
+        }
+
+        [Test]
+        public void OnDataReceivedClientSide_SendingNullData_TraceAndReturn()
+        {
+            try
+            {
+                _clientSessionManager.OnDataReceived(null);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("OnDataReceived failed: " + e.ToString());
+            }
+        }
+
+        [Test]
+        public void OnClientLeft_ClientDisconnects_UserRemoved_ServerSessionChanged()
+        {
+            // Adding the users to the session and the client side
+            List<UserData> users = Utils.GetUsers();
+            AddUsersToServerSession(users);
+            _clientSessionManager.SetUser(users.Last().username, users.Last().userID);
+            _clientSessionManager.SetSessionUsers(users);
+            
+            // removing the last user from the meet because of the disconnection
+            UserData disconnectedUser = users.Last();
+            users.Remove(users.Last());
+
+            // The client disconnects and the client side is notified
+            _serverSessionManager.OnClientLeft(disconnectedUser.userID.ToString());
+            _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
+
+            // Check if the session on the server side was updated and the user and session data on the client side are removed.
+            CollectionAssert.AreEqual(users, _serverSessionManager.GetSessionData().users);
+            Assert.Null(_clientSessionManager.GetSessionData());
+            Assert.Null(_clientSessionManager.GetUser());
+        }
+
+        [Test]
+        public void EndMeet_LastUserLeaves_MeetingShouldEnd()
+        {
+            FakeClientUX fakeClientUx = new(_clientSessionManager);
+            FakeServerUX fakeServerUX = new(_serverSessionManager);
+
+            fakeClientUx.meetingEnded = false;
+            fakeServerUX.meetingEnded = false;
+
+            List<UserData> users = new();
+            users.Add(new("Justin", 1));
+
+            AddUsersToServerSession(users);
+            _clientSessionManager.SetSessionUsers(users);
+            _clientSessionManager.SetUser(users[0].username, users[0].userID);
+
+            _clientSessionManager.RemoveClient();
+            _serverSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
+            _clientSessionManager.OnDataReceived(_fakeCommunicator.transferredData);
+
+            Assert.AreEqual(fakeServerUX.meetingEnded, true);
+            Assert.AreEqual(fakeClientUx.meetingEnded, true);
+            Assert.AreEqual(_serverSessionManager.summarySaved, true);
+        }
 
         public void AddUsersToServerSession(List<UserData> users)
         {
@@ -339,6 +399,7 @@ namespace Testing.Dashboard.SessionManagement
 
                 _serverSessionManager.OnClientJoined<TcpClient>(null);
                 _serverSessionManager.OnDataReceived(serializedData);
+
             }
         }
 
