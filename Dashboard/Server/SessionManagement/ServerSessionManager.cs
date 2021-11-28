@@ -45,7 +45,7 @@ namespace Dashboard.Server.SessionManagement
             _summarizer = SummarizerFactory.GetSummarizer();
 
             _ = ServerBoardCommunicator.Instance;
-            _ = new ScreenShareServer();
+            _ = ScreenShareFactory.GetScreenShareServer();
             _contentServer = ContentServerFactory.GetInstance();
 
             userCount = 0;
@@ -70,6 +70,7 @@ namespace Dashboard.Server.SessionManagement
             _summarizer = SummarizerFactory.GetSummarizer();
             //_ = new ScreenShareServer();
 
+            _ = ScreenShareFactory.GetScreenShareServer();
             TraceManager traceManager = new();
             traceManager.TraceListener();
 
