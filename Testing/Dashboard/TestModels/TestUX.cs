@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/// <author>Siddharth Sha</author>
+/// <created>15/11/2021</created>
+/// <summary>
+///		This file contains the test UX
+///		for testing purpose
+/// </summary>
+
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 using Dashboard.Server.Telemetry;
+using System;
 
 namespace Testing.Dashboard.TestModels
 {

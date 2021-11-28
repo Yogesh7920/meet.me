@@ -49,10 +49,10 @@ namespace ScreenSharing
 			Timer = new System.Timers.Timer(2000);
 			Timer.Elapsed += OnTimeout;
 			Timer.AutoReset = true;
+            FrameQueue = new Queue<SharedScreen>();
 
-
-			Communicator = CommunicationFactory.GetCommunicator();
-			Communicator.Subscribe(this.GetType().Namespace, this);
+            Communicator = CommunicationFactory.GetCommunicator(false);
+			Communicator.Subscribe("ScreenSharing", this);
 			Serializer = new Serializer();
 
 			IsSharing = true;
@@ -111,7 +111,7 @@ namespace ScreenSharing
 						}
 						// Broadcasting the screen
 						string data = Serializer.Serialize<SharedScreen>(currScreen);
-						Communicator.Send(data, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+						Communicator.Send(data, "ScreenSharing");
 					}
 				}
 			}
