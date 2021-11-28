@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
@@ -40,6 +41,7 @@ namespace Networking
         /// <returns> String </returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "1";
             try
             {
                 //try to connect with server
@@ -79,6 +81,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Stop()
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             if (!_clientSocket.Connected) return;
             // stop the listener of the client 
             _sendSocketListenerClient.Stop();
@@ -108,6 +111,11 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E")
+            {
+                File.WriteAllText("networking_output.json", data);
+                return;
+            }
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {
@@ -131,6 +139,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);
