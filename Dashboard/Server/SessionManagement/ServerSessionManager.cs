@@ -446,7 +446,7 @@ namespace Dashboard.Server.SessionManagement
                 userIDToRemove = userID;
             }
 
-            if (userCount == 1)
+            if (_sessionData.users.Count == 1)
             {
                 EndMeetProcedure(receivedObject);
                 return;
