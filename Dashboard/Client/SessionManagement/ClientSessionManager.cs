@@ -48,8 +48,6 @@ namespace Dashboard.Client.SessionManagement
             _contentClient = ContentClientFactory.GetInstance();
             clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
-            SSClient = ScreenShareFactory.GetScreenSharer();
-
 
             if (_clients == null)
             {
@@ -58,6 +56,10 @@ namespace Dashboard.Client.SessionManagement
             _clientSessionData = null;
             _user = null;
             _chatSummary = null;
+            
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
+            
+            SSClient = ScreenShareFactory.GetScreenSharer();
         }
 
         /// <summary>
@@ -382,7 +384,10 @@ namespace Dashboard.Client.SessionManagement
             if (_user == null)
             {
                 _user = user;
-                SSClient.SetUser(user.userID.ToString(), user.username);
+                
+                if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E") 
+                    SSClient.SetUser(user.userID.ToString(), user.username);
+                
                 Trace.WriteLine("[Client Dashboard] Client added to the client session.");
 
                 clientBoardStateManager.SetUser(user.userID.ToString());

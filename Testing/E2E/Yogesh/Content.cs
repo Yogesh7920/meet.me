@@ -51,6 +51,7 @@ namespace Testing.E2E.Yogesh
             Assert.AreEqual(data.Message, message);
             Assert.AreEqual(data.ReplyMsgId, replyId);
             _contentClient.OnReceive(data);
+            // _contentClient.CSubscribe(chatViewModel);
         }
         
         [Test]
@@ -82,15 +83,15 @@ namespace Testing.E2E.Yogesh
 
         SendMessageData CreateChatReply(string message, int replyMsgId)
         {
-            var MsgToSend = new SendMessageData();
-            MsgToSend.Type = MessageType.Chat;
-            MsgToSend.Message = message;
-            MsgToSend.ReplyMsgId = replyMsgId;
-            MsgToSend.ReplyThreadId = 0;
+            var msgToSend = new SendMessageData();
+            msgToSend.Type = MessageType.Chat;
+            msgToSend.Message = message;
+            msgToSend.ReplyMsgId = replyMsgId;
+            msgToSend.ReplyThreadId = 0;
 
             // Empty, as its a broadcast message
-            MsgToSend.ReceiverIds = new int[] { };
-            return MsgToSend;
+            msgToSend.ReceiverIds = new int[] { };
+            return msgToSend;
         }
         
         [Test]
@@ -110,15 +111,15 @@ namespace Testing.E2E.Yogesh
         
         SendMessageData CreateFileReply(string message, int replyMsgId)
         {
-            var MsgToSend = new SendMessageData();
-            MsgToSend.Type = MessageType.File;
-            MsgToSend.Message = message;
-            MsgToSend.ReplyMsgId = replyMsgId;
-            MsgToSend.ReplyThreadId = 0;
+            var msgToSend = new SendMessageData();
+            msgToSend.Type = MessageType.File;
+            msgToSend.Message = message;
+            msgToSend.ReplyMsgId = replyMsgId;
+            msgToSend.ReplyThreadId = 0;
 
             // Empty, as its a broadcast message
-            MsgToSend.ReceiverIds = new int[] { };
-            return MsgToSend;
+            msgToSend.ReceiverIds = new int[] { };
+            return msgToSend;
         }
         
         [Test]
