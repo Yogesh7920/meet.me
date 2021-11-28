@@ -123,7 +123,6 @@ namespace Testing.Networking
         }
 
         [Test]
-
         public void ClientSend_UnregisteredModuleMustThrow_RegisteredModuleMustNotThrow()
         {
             var message = RandomMessage;
@@ -137,9 +136,8 @@ namespace Testing.Networking
             Assert.DoesNotThrow(() => _clientA.Communicator.Send(message, Modules.WhiteBoard));
             _server.WbHandler.Wait();
         }
-        
-        [Test]
 
+        [Test]
         public void ServerSend_UnregisteredModuleMustThrow_RegisteredModuleMustNotThrow()
         {
             var message = RandomMessage;
