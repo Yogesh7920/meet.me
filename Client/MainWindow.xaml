@@ -91,28 +91,28 @@
                 </DockPanel>
                 <!-- Minimize button -->
                 <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Minimize">
                     <materialDesign:PackIcon Kind="WindowMinimize"/>
                 </Button>
 
                 <!--Maximize button -->
                 <Button x:Name="MaximizeButton" Click="OnMaximizeButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Maximize">
                     <materialDesign:PackIcon Kind="WindowMaximize"/>
                 </Button>
 
                 <!--Restore button -->
                 <Button x:Name="RestoreButton" Click="OnRestoreButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Restore" Visibility="Collapsed">
                     <materialDesign:PackIcon Kind="WindowRestore"/>
                 </Button>
                 
                 <!--Close button-->
                 <Button x:Name="CloseButton" Click="OnCloseButtonClick"
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Close">
                     <materialDesign:PackIcon Kind="Close"/>
                 </Button>
@@ -134,8 +134,8 @@
             <Button x:Name="Dashboard" Click="OnDashboardClick" ToolTip="Dashboard" Width="40" Height="40" BorderThickness="0" Background="White" Margin="0 0 7.5 0">
                 <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png"/>
             </Button>
-            <Border Width="35" Height="35" BorderBrush="{DynamicResource Color1Bg}" BorderThickness="1" CornerRadius="50" Background="{DynamicResource Color1Bg}">
-                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="22" Height="22" BorderThickness="0" Background="{DynamicResource Color1Bg}" >
+            <Border Width="35" Height="35" BorderBrush="{DynamicResource Color4Bg}" BorderThickness="1" CornerRadius="50" Background="{DynamicResource Color2Bg}">
+                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="22" Height="22" BorderThickness="0" Background="{DynamicResource Color2Bg}" >
                     <Image Source="/Icons/Mainwindow/icons8-end-call-96.png"/>
                 </Button>
             </Border>

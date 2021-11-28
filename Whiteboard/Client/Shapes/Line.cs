@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/28/2021
 **/
 
 
@@ -19,26 +19,17 @@ namespace Whiteboard
     /// <summary>
     /// Line Class.
     /// </summary>
-    public class Line: MainShape
+    public class Line : MainShape
     {
 
         /// <summary>
         /// Constructor for Ellipse Shape.
         /// </summary>
-        /// <param name="height">Height of Line.</param>
+        /// <param name="angle">Angle from C axis at which the line is.</param>
         /// <param name="width">Width of Line.</param>
         /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
-        /*
-        public Line(float height, float width, Coordinate start, Coordinate center) : base(ShapeType.LINE)
-        {
-            this.Height = height;
-            this.Width = width;
-            this.Start = start;
-            this.Center = center;
-        }
-        */
-
-        public Line(float angle,float width, Coordinate start, Coordinate center) : base(ShapeType.LINE)
+        /// <param name="center">Center of the line.</param>
+        public Line(float angle, float width, Coordinate start, Coordinate center) : base(ShapeType.LINE)
         {
             this.AngleOfRotation = angle;
             this.Start = start;
@@ -139,7 +130,6 @@ namespace Whiteboard
 
             // Calculating displacements in direction of unit vector
             float xDelta = (float)(deltaNorm * Math.Cos(angleBetween));
-            //float yDelta = (float)(deltaNorm * Math.Sin(angleBetween));
 
             // Changing shape attributes after resizing.
             switch (dragPos)
