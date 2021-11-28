@@ -4,13 +4,7 @@ An application as part of CS5617 Software Engineering project at IIT Palakkad
 * [Wiki](https://github.com/Yogesh7920/meet.me/wiki)
 
 ## Installation
-Download below files-
-
-* [certificate](https://drive.google.com/file/d/1SmAdpGlpF4tMt5k_zKJEwixaTMHBPUb4/view?usp=sharing)
-* [.appxbundle file](https://drive.google.com/file/d/1r9Ww0QDeBbvDsq1ntjd5nGkzty9E54w2/view?usp=sharing)
-* [Server](https://drive.google.com/file/d/1W5sEHH-gfd0Ra1kdqBf0IbxEut-taew_/view?usp=sharing), packaged console application
-
-and follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installation) steps. 
+Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installation) guide. 
 
 
 ## The Team
