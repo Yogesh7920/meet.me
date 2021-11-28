@@ -1,4 +1,11 @@
-﻿using NUnit.Framework;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 14/10/2021 </created>
+/// <summary>
+/// This file contains the interface for UX to access Client session manager's methods and fields.
+/// </summary>
+
+
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;

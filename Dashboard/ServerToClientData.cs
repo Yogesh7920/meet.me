@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 24/10/2021 </created>
+/// <summary>
+/// This file contains the ServerToClientData class whose isntance are used to send data from server 
+/// to client side.
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
