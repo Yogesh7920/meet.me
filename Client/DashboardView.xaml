@@ -195,12 +195,12 @@
                         </Grid.OpacityMask>
                         <Border x:Name="BorderG2" CornerRadius="15" Background="#FF340051"/>
 
-                        <lvc:CartesianChart Zoom="X" Pan="X"> 
+                        <lvc:CartesianChart x:Name="usersVsTimeChart" Zoom="X" Pan="X"> 
                             <lvc:CartesianChart.Series>
-                                <lvc:LineSeries Title="Users vs Time" Values="{Binding usersCountList}"/>
+                                <lvc:LineSeries Title="Users vs Time" Values="{Binding usersCountList}" />
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Time" Labels="{Binding timestampList}" MinValue="0">
+                                <lvc:Axis Title="Time" Labels="{Binding timestampList}">
                                     <!--<lvc:Axis.Separator>
                                         <lvc:Separator Step="1"/>
                                     </lvc:Axis.Separator>-->
@@ -246,7 +246,7 @@
                         </StackPanel>
 
                     </Grid>
-                    <Grid Margin="50 20 50 100">
+                    <Grid x:Name="UserVsMsgGrid" Margin="50 20 50 100">
                         <Grid.OpacityMask>
                             <VisualBrush Visual="{ Binding ElementName=BorderG2_2 }"/>
                         </Grid.OpacityMask>
@@ -269,7 +269,7 @@
                             </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>-->
 
-                        <lvc:CartesianChart Zoom="X" Pan="X">
+                        <lvc:CartesianChart x:Name="usersVsMessagesPlot" Zoom="X" Pan="X">
                             <lvc:CartesianChart.Series>
                                 <lvc:ColumnSeries Title="Users vs Sent Messages" Values="{Binding messagesCountList}"/>
                             </lvc:CartesianChart.Series>
@@ -406,6 +406,7 @@
                     </StackPanel>
                 </Grid>
             </Grid>
+
         </Grid>
         <!--Sidebar View ends-->
 

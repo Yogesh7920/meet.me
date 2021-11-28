@@ -21,7 +21,8 @@ namespace Client.ViewModel
     {
 
         /// <summary>
-        /// Populates the dashboard analytics with random values for the time being
+        /// Constructs the Dashboard ViewModel and 
+        /// subscribes to Client Session Manager for summary and telemetry updates
         /// </summary>
         public DashboardViewModel()
         {
@@ -36,23 +37,24 @@ namespace Client.ViewModel
             _clientSM.SummaryCreated += (latestSummary) => OnSummaryChanged(latestSummary);
             _clientSM.AnalyticsCreated += (latestAnalytics) => OnAnalyticsChanged(latestAnalytics);
 
-            //UpdateVM();
-
-            _chatSummary = "Refresh to get the updated summary!";
+//            UpdateVM();
+        
+            // Default Setup
+            _chatSummary = "Refresh to get the latest stats!";
             _usersList = new List<int>() { 0 };
             _messagesCountList = new List<int>() { 0 };
-            _usersCountList = new List<int>() { 0 };
+            _usersCountList = new List<int>() { 1 };
             _timestampList = new List<DateTime>() {
                 DateTime.Now,
             };
 
-            usersList = new ChartValues<ObservableValue>((IEnumerable<ObservableValue>)_usersList.ConvertAll(x => new ObservableValue(x)).AsChartValues());
+            usersList = new ObservableCollection<string>((IEnumerable<string>)_usersList.ConvertAll(val => new string(val.ToString())));
             messagesCountList = new ChartValues<ObservableValue>((IEnumerable<ObservableValue>)_messagesCountList.ConvertAll(x => new ObservableValue(x)).AsChartValues());
             timestampList = new ObservableCollection<string>((IEnumerable<string>)_timestampList.ConvertAll(val => new string(val.ToString("T"))));
             usersCountList = new ChartValues<ObservableValue>((IEnumerable<ObservableValue>)_usersCountList.ConvertAll(x => new ObservableValue(x)).AsChartValues());
 
             messagesCount = _messagesCountList.AsQueryable().Sum();
-            participantsCount = usersList.Count;
+            participantsCount = _usersList.Count;
             engagementRate = CalculateEngagementRate();
 
         }
@@ -89,6 +91,7 @@ namespace Client.ViewModel
                     _messagesCountList = new List<int>(this._sessionAnalytics.chatCountForEachUser.Values);
                 }
 
+
                 if (_sessionAnalytics.userCountAtAnyTime.Count != 0)
                 {
                     _timestampList = new List<DateTime>(this._sessionAnalytics.userCountAtAnyTime.Keys);
@@ -101,7 +104,7 @@ namespace Client.ViewModel
                     _recentlyJoined = _insincereMembers.AsQueryable().Sum();
                 }
 
-                usersList = new ChartValues<ObservableValue>((IEnumerable<ObservableValue>)_usersList.ConvertAll(x => new ObservableValue(x)).AsChartValues());
+                usersList = new ObservableCollection<string>((IEnumerable<string>)_usersList.ConvertAll(val => new string(val.ToString())));
                 messagesCountList = new ChartValues<ObservableValue>((IEnumerable<ObservableValue>)_messagesCountList.ConvertAll(x => new ObservableValue(x)).AsChartValues());
                 timestampList = new ObservableCollection<string>((IEnumerable<string>)_timestampList.ConvertAll(val => new string(val.ToString("T"))));
                 usersCountList = new ChartValues<ObservableValue>((IEnumerable<ObservableValue>)_usersCountList.ConvertAll(x => new ObservableValue(x)).AsChartValues());
@@ -112,7 +115,6 @@ namespace Client.ViewModel
 
             }
         }
-
 
         /// <summary>
         /// Calculates the engagement rate based on number of users 
@@ -199,7 +201,7 @@ namespace Client.ViewModel
         /// List of users present in the meeting
         /// </summary>
         //public ObservableCollection<string> usersList { get; private set; }
-        public ChartValues<ObservableValue> usersList { get; private set; }
+        public ObservableCollection<string> usersList { get; private set; }
 
 
         /// <summary>
