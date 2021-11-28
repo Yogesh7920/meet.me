@@ -229,7 +229,7 @@ namespace Client
                     }
                     break;
                 case (WhiteBoardViewModel.WBTools.Selection):
-                    mouseDownFlag = 0;
+                    /*mouseDownFlag = 0;
                     //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
                     if (mouseLeftBtnMoveFlag > 5)
                     {
@@ -246,7 +246,7 @@ namespace Client
                                 this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
                             }
                         }
-                    }
+                    }*/
                     break;
                 default:
                     break;

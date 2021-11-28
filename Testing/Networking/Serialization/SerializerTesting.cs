@@ -1,7 +1,7 @@
-﻿using System;
-using AutoFixture;
+﻿using AutoFixture;
 using FluentAssertions;
 using Networking;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Testing.Networking.Objects;
 
@@ -81,7 +81,7 @@ namespace Testing.Networking
             var xml = _ser.Serialize(serObj);
             // Corupt xml string
             xml = xml.Substring(50);
-            Assert.Throws<InvalidOperationException>(() => _ser.Deserialize<SimpleObject>(xml));
+            Assert.Throws<JsonSerializationException>(() => _ser.Deserialize<SimpleObject>(xml));
         }
     }
 }

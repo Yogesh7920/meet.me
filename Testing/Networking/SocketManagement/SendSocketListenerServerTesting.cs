@@ -4,6 +4,7 @@
 /// This file covers the unit tests for for the class SendSocketListenerServer.
 /// </summary>
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -16,6 +17,12 @@ namespace Testing.Networking.SocketManagement
     [TestFixture]
     public class SendSocketListenerServerTesting
     {
+        [OneTimeSetUp]
+        public void OneTimeSetup()
+        {
+            Environment.SetEnvironmentVariable("TEST_MODE", "UNIT");
+        }
+
         [SetUp]
         public void StartSendSocketListenerClient()
         {
@@ -74,15 +81,6 @@ namespace Testing.Networking.SocketManagement
         private TcpListener _serverListener;
 
         private Dictionary<string, INotificationHandler> _notificationHandlers;
-
-        private string GetMessage(Packet packet)
-        {
-            var msg = packet.ModuleIdentifier;
-            msg += ":";
-            msg += packet.SerializedData;
-            msg += "EOF";
-            return msg;
-        }
 
         [Test]
         public void BroadCastServerSendTesting()
