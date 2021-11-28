@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 24/112021 </created>
+/// <summary>
+/// This file contains the fake UX which subscribes and listens for the client session data as well as summary/analytics.
+/// </summary>
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 18/112021 </created>
+/// <summary>
+/// This file contains a fake communicator which notifies the server and client session manager
+/// about any data receives and client joining.
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +14,9 @@ using Networking;
 
 namespace Testing.Dashboard.SessionManagement.TestModules
 {
-    public class TestCommunicator : ICommunicator
+    public class FakeCommunicator : ICommunicator
     {
-        public TestCommunicator(string address = null)
+        public FakeCommunicator(string address = null)
         {
             userCount = 0;
             if (address == null)
