@@ -36,7 +36,7 @@ namespace Client
         private string buttonSelectedColor = "#007C9C";
 
         //Color Palette 
-        private string Black = "#0B0A08";
+        private string Black = "#161B22";
         private string White = "#FFFFFF";
         private string Red = "#900604";
         private string Green = "#1E5631";
