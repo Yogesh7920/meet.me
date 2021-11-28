@@ -25,9 +25,9 @@
             <RowDefinition Height="15*"/>
         </Grid.RowDefinitions>
         <StackPanel x:Name="UsersListPane" Background="{DynamicResource Color1Bg}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="6" Grid.ColumnSpan="1" Visibility="Visible">
-            <Grid Background="White" VerticalAlignment="Top" Height="20">
-                <TextBlock FontWeight="Bold" x:Name="UserListHead" HorizontalAlignment="Center" Text="Users"/>
-                <Button ToolTip="Expand/Collapse" Height="20" Width="20" Name="UsersListShow" HorizontalAlignment="Right" VerticalAlignment="Top" BorderThickness="0" Background="Transparent" Click="UsersListClick">
+            <Grid Background="{DynamicResource Color4Bg}" VerticalAlignment="Top" Height="20">
+                <TextBlock FontWeight="Bold" x:Name="UserListHead" HorizontalAlignment="Center" Foreground="{DynamicResource Color5Bg}" Text="Users"/>
+                <Button ToolTip="Expand/Collapse" Height="20" Width="20" Name="UsersListShow" HorizontalAlignment="Right" VerticalAlignment="Top" BorderThickness="0" Background="WhiteSmoke" Click="UsersListClick">
                     <Image Source="/Icons/ExpCol.png"/>
                 </Button>
             </Grid>

@@ -1,4 +1,10 @@
-﻿<!--<Window x:Class="Client.WhiteBoardView"
+﻿<!--
+ * Owned By: Aniket Singh Rajpoot
+ * Created By: Aniket Singh Rajpoot
+ * Date Created: 25/10/2021
+ * Date Modified: 28/11/2021
+-->
+    <!--<Window x:Class="Client.WhiteBoardView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -559,27 +565,27 @@
                                                         <ColumnDefinition></ColumnDefinition>
                                                     </Grid.ColumnDefinitions>
 
-                                                    <RadioButton Grid.Column="0" Margin="5 0 0 10"  VerticalAlignment="Center" Background="Black" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen1Checked">
+                                                    <RadioButton Grid.Column="0" Margin="5 0 0 10"  VerticalAlignment="Center" Background="#161B22" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen1Checked">
                                                         <RadioButton.RenderTransform>
                                                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                         </RadioButton.RenderTransform>
                                                     </RadioButton>
-                                                    <RadioButton Grid.Column="1" Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen2Checked">
+                                                    <RadioButton Grid.Column="1" Margin="5 0 0 10" VerticalAlignment="Center" Background="#900604" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen2Checked">
                                                         <RadioButton.RenderTransform>
                                                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                         </RadioButton.RenderTransform>
                                                     </RadioButton>
-                                                    <RadioButton Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen3Checked">
+                                                    <RadioButton Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="#1E5631" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen3Checked">
                                                         <RadioButton.RenderTransform>
                                                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                         </RadioButton.RenderTransform>
                                                     </RadioButton>
-                                                    <RadioButton Grid.Column="3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen4Checked">
+                                                    <RadioButton Grid.Column="3" Margin="5 0 0 10" VerticalAlignment="Center" Background="#005CC3" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen4Checked">
                                                         <RadioButton.RenderTransform>
                                                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                         </RadioButton.RenderTransform>
                                                     </RadioButton>
-                                                    <RadioButton Grid.Column="4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen5Checked">
+                                                    <RadioButton Grid.Column="4" Margin="5 0 0 10" VerticalAlignment="Center" Background="#EFC002" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorPen5Checked">
                                                         <RadioButton.RenderTransform>
                                                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                         </RadioButton.RenderTransform>
@@ -947,27 +953,27 @@
                                                             <ColumnDefinition></ColumnDefinition>
                                                         </Grid.ColumnDefinitions>
 
-                                                        <RadioButton Grid.Column="0" Margin="5 0 0 10"  VerticalAlignment="Center" Background="Black" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder1Checked">
+                                                    <RadioButton Grid.Column="0" Margin="5 0 0 10"  VerticalAlignment="Center" Background="#161B22" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder1Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
                                                         </RadioButton>
-                                                        <RadioButton Grid.Column="1" Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder2Checked">
+                                                    <RadioButton Grid.Column="1" Margin="5 0 0 10" VerticalAlignment="Center" Background="#900604" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder2Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
                                                         </RadioButton>
-                                                        <RadioButton Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder3Checked">
+                                                    <RadioButton Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="#1E5631" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder3Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
                                                         </RadioButton>
-                                                        <RadioButton Grid.Column="3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder4Checked">
+                                                    <RadioButton Grid.Column="3" Margin="5 0 0 10" VerticalAlignment="Center" Background="#005CC3" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder4Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
                                                         </RadioButton>
-                                                        <RadioButton Grid.Column="4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder5Checked">
+                                                    <RadioButton Grid.Column="4" Margin="5 0 0 10" VerticalAlignment="Center" Background="#EFC002" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorBorder5Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
@@ -1072,22 +1078,22 @@
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
                                                         </RadioButton>
-                                                        <RadioButton Grid.Column="1" Margin="5 0 0 10" VerticalAlignment="Center" Background="Red" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorFill2Checked">
+                                                    <RadioButton Grid.Column="1" Margin="5 0 0 10" VerticalAlignment="Center" Background="#900604" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorFill2Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
                                                         </RadioButton>
-                                                        <RadioButton Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="Green" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorFill3Checked">
+                                                    <RadioButton Grid.Column="2" Margin="5 0 0 10" VerticalAlignment="Center" Background="#1E5631" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorFill3Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
                                                         </RadioButton>
-                                                        <RadioButton Grid.Column="3" Margin="5 0 0 10" VerticalAlignment="Center" Background="Blue" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorFill4Checked">
+                                                    <RadioButton Grid.Column="3" Margin="5 0 0 10" VerticalAlignment="Center" Background="#005CC3" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorFill4Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
                                                         </RadioButton>
-                                                        <RadioButton Grid.Column="4" Margin="5 0 0 10" VerticalAlignment="Center" Background="Yellow" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorFill5Checked">
+                                                    <RadioButton Grid.Column="4" Margin="5 0 0 10" VerticalAlignment="Center" Background="#EFC002" BorderBrush="{DynamicResource Color3Bg}" BorderThickness="1" Checked="ColorFill5Checked">
                                                             <RadioButton.RenderTransform>
                                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
                                                             </RadioButton.RenderTransform>
