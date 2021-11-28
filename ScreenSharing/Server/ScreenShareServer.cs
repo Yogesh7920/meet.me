@@ -143,6 +143,8 @@ namespace ScreenSharing
 			{
 				UserId = "-";
 				FrameQueue.Clear();
+				Timer.Stop();
+				Timer.Interval = 10000;
 			}
 			catch(Exception ex)
             {
