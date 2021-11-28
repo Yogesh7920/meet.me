@@ -1,11 +1,9 @@
 ﻿/// <author>Suchitra Yechuri</author>
 /// <created>23/11/2021</created>
 /// <summary>
-///     This file contains some mock objects which can
-///     be used to simulate tests for the networking module.
+///     This file contains all the chat unit tests.
 /// </summary>
 
-using Client;
 using Client.ViewModel;
 using Content;
 using Dashboard;
@@ -27,9 +25,12 @@ namespace Testing.UX.Chat
         [SetUp]
         public void SetUp()
         {
-            _viewModel = new ChatViewModel();
+            _viewModel = new ChatViewModel(testing: true);
         }
 
+        /// <summary>
+        ///     Checking whether the OnClientSessionChanged function updates the user list
+        /// </summary>
         [Test]
         public void OnClientSessionChanged_ShouldAddUsers()
         {
@@ -51,6 +52,10 @@ namespace Testing.UX.Chat
             Assert.AreEqual(_viewModel.Users[111801017],"Irene");
         }
 
+        /// <summary>
+        ///     Checking whether the message data received from the content module 
+        ///     through the OnMessage function matchs the ReceivedMsg object
+        /// </summary>
         [Test]
         public void OnMessage_ReceivedMsgObj_ShouldMatchReceivedMsg()
         {
@@ -87,6 +92,10 @@ namespace Testing.UX.Chat
 
         }
 
+        /// <summary>
+        ///     Checking whether the messages data received from the content module 
+        ///     through the OnAllMessages function matchs the ReceivedMsg object
+        /// </summary>
         [Test]
         public void OnAllMessages_ReceivedMsgObj_ShouldMatchReceivedMsg()
         {
@@ -143,6 +152,9 @@ namespace Testing.UX.Chat
             Assert.AreEqual(_viewModel.ReceivedMsg.Type, true);
         }
 
+        /// <summary>
+        ///     Checking whether event is raised on OnPropertyChanged
+        /// </summary>
         [Test]
         public void OnPropertyChanged_EventShouldBeRaised()
         {
@@ -161,6 +173,9 @@ namespace Testing.UX.Chat
             Assert.AreEqual("testing", samplePropertyName);
         }
 
+        /// <summary>
+        ///     Checking whether the chat message to be sent matchs the MsgToSend object
+        /// </summary>
         [Test]
         public void SendChatMessage_ShouldMatchMsgToBeSent()
         {
@@ -169,13 +184,15 @@ namespace Testing.UX.Chat
             int sampleReplyMsgId = -1;
 
             //Act
-            _viewModel.SendChat(sampleMessage, sampleReplyMsgId);
+            _viewModel.SendChat(sampleMessage, sampleReplyMsgId, testing: true);
 
             //Assert
             Assert.IsTrue(_viewModel.MsgToSend.ReplyThreadId == -1);
-
         }
 
+        /// <summary>
+        ///     Checking whether the file message to be sent matchs the MsgToSend object
+        /// </summary>
         [Test]
         public void SendFileMessage_ShouldMatchMsgToBeSent()
         {
@@ -186,12 +203,10 @@ namespace Testing.UX.Chat
             int sampleReplyMsgId = -1;
 
             //Act
-            _viewModel.SendFile(sampleMessage, sampleReplyMsgId);
+            _viewModel.SendFile(sampleMessage, sampleReplyMsgId, testing: false);
 
             //Assert
             Assert.IsTrue(_viewModel.MsgToSend.ReplyThreadId == -1);
-
         }
-
     }
 }
