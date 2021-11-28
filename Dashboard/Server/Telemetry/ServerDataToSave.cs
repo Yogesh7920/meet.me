@@ -1,3 +1,9 @@
+/// <author>Harsh Parihar</author>
+/// <created> 17/11/2021 </created>
+/// <summary>
+/// Gives the overall summary of the session, updated after each session ends
+/// </summary>
+
 using System.Collections.Generic;
 
 namespace Dashboard.Server.Telemetry

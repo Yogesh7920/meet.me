@@ -1,3 +1,10 @@
+/// <author>Siddharth Sha</author>
+/// <created>15/11/2021</created>
+/// <summary>
+///		This file contains the modular tests
+///		for dashboard module
+/// </summary>
+
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 using Dashboard.Server.Persistence;
@@ -173,8 +180,8 @@ namespace Testing.Dashboard
         }
 
         [Test]
+        //[TestCase(1, 1)]
         [TestCase(10, 5)]
-        [TestCase(1, 1)]
         [TestCase(2, 1)]
         public void RemoveClientProcedure_ClientDepartsServerSide_ReturnsModifiedSessionObject(int sampleSize, int userIndex)
         {
