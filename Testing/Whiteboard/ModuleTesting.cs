@@ -36,12 +36,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("1");
             _mockCommunicator = new Mock<ICommunicator>();
             _mockSerializer = new Mock<ISerializer>();
-
-            // _mockCommunicator.Setup(m => m.Subscribe(It.IsAny<String>(), It.IsAny<INotificationHandler>(), It.IsAny<int>()));
-            
-            
-
-            _clientBoardCommunicator.SetCommunicatorAndCheckpointHandler(_mockCommunicator.Object, _mockSerializer.Object);
+            _clientBoardCommunicator.SetCommunicatorAndSerializer(_mockCommunicator.Object, _mockSerializer.Object);
         }
 
         [Test]
