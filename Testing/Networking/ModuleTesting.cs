@@ -123,7 +123,7 @@ namespace Testing.Networking
         }
 
         [Test]
-        public void Send_UnregisteredModuleMustThrow_RegisteredModuleMustNotThrow()
+        public void ClientSend_UnregisteredModuleMustThrow_RegisteredModuleMustNotThrow()
         {
             var message = RandomMessage;
             // Networking module does not exist, so must throw an error.
@@ -135,6 +135,24 @@ namespace Testing.Networking
             // Whiteboard module exists, so shouldn't throw an error
             Assert.DoesNotThrow(() => _clientA.Communicator.Send(message, Modules.WhiteBoard));
             _server.WbHandler.Wait();
+        }
+
+        [Test]
+        public void ServerSend_UnregisteredModuleMustThrow_RegisteredModuleMustNotThrow()
+        {
+            var message = RandomMessage;
+            // Networking module does not exist, so must throw an error.
+            const string expectedMessage = "[Networking] Key Error: Packet holds invalid module identifier";
+
+            // both broadcast and private sending should throw the error
+            Assert.That(() => _server.Communicator.Send(Modules.Networking, message),
+                Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));
+            Assert.That(() => _server.Communicator.Send(Modules.Networking, message, FakeClientA.Id),
+                Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));
+
+            // Whiteboard module exists, so shouldn't throw an error
+            Assert.DoesNotThrow(() => _server.Communicator.Send(message, Modules.WhiteBoard));
+            _clientA.WbHandler.Wait();
         }
 
         [Test]
@@ -153,6 +171,15 @@ namespace Testing.Networking
             // Whiteboard should receive the same message
             Assert.AreEqual(OnDataReceived, _server.WbHandler.Event);
             Assert.AreEqual(message, _server.WbHandler.Data);
+        }
+
+        [Test]
+        public void ServerSend_NonExistentClient_MustThrow()
+        {
+            var expectedMessage = "Client does not exist in the room!";
+            // try sending to whiteboard module of a non-existent client.
+            Assert.That(() => _server.Communicator.Send(Modules.WhiteBoard, RandomMessage, "C"),
+                Throws.TypeOf<Exception>().With.Message.EqualTo(expectedMessage));
         }
 
         [Test]
