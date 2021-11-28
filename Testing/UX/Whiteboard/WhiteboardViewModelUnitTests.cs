@@ -273,8 +273,8 @@ namespace Testing.UX.Whiteboard
             Shape sh = new System.Windows.Shapes.Rectangle() { Height = 10, Width = 30, Uid = uid };
             
             Random r = new Random();
-            int left = r.Next(1, (int)_globCanvas.Width - ((int)sh.Width + 1));
-            int top = r.Next(1, (int)_globCanvas.Height - ((int)sh.Height + 1));
+            int left = r.Next(240, 250);
+            int top = r.Next(140, 150);
 
             Canvas.SetLeft(sh, left);
             Canvas.SetTop(sh, top);
@@ -300,12 +300,12 @@ namespace Testing.UX.Whiteboard
             temp = strt;
             end = strt; 
             //mouse move 
-            for (int i = 1; i <= 20; i++)
+            for (int i = 1; i <= 10; i++)
             {
                 
                 if(end.X < _globCanvas.Width && end.X > 0)
                 {
-                    end.X = strt.X + i;
+                    end.X = end.X + 1;
                 }
                 else
                 {
@@ -314,7 +314,7 @@ namespace Testing.UX.Whiteboard
 
                 if(end.Y < _globCanvas.Height && end.Y > 0) 
                 { 
-                    end.Y = strt.Y + i;
+                    end.Y = end.Y + 1;
                 }
                 else
                 {
@@ -360,8 +360,8 @@ namespace Testing.UX.Whiteboard
             Point end;
             PointCollection drawingPoints = new PointCollection();
 
-            strt.X = r.Next(1, (int)_globCanvas.Width - 1);
-            strt.Y = r.Next(1, (int)_globCanvas.Height - 1);
+            strt.X = r.Next(240, 250);
+            strt.Y = r.Next(140, 150);
             drawingPoints.Add(strt);
 
             _viewModel.freeHand.SetColor(Red);
@@ -376,7 +376,7 @@ namespace Testing.UX.Whiteboard
             {
                 if (end.X < _globCanvas.Width && end.X > 0)
                 {
-                    end.X = strt.X + i;
+                    end.X = end.X + 1;
                 }
                 else
                 {
@@ -385,7 +385,7 @@ namespace Testing.UX.Whiteboard
 
                 if (end.Y < _globCanvas.Height && end.Y > 0)
                 {
-                    end.Y = strt.Y + i;
+                    end.Y = end.Y + 1;
                 }
                 else
                 {
@@ -407,7 +407,7 @@ namespace Testing.UX.Whiteboard
             Assert.AreEqual(line.StrokeThickness, 2);
             Assert.AreEqual(((SolidColorBrush)line.Stroke).Color, ((SolidColorBrush)(new BrushConverter().ConvertFrom(Red))).Color);
 
-            Assert.AreEqual(line.Points, drawingPoints);
+            Assert.AreEqual(drawingPoints, line.Points); 
 
             _globCanvas.Children.Clear();
         }
