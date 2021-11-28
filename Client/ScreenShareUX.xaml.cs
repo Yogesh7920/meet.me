@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using ScreenSharing;
 using Client.ViewModel;
+using System.Diagnostics;
 
 namespace Client
 {
@@ -35,6 +36,7 @@ namespace Client
         {
             InitializeComponent();
 
+            Trace.WriteLine("[ScreenShareUX] instance is created");
             ScreenShareViewModel SSviewModel = new ScreenShareViewModel();
             this.DataContext = SSviewModel;
         }

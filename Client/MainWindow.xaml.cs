@@ -129,6 +129,7 @@ namespace Client
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
             _ssFlag = true;
+            this.SSwb.Content = new ScreenShareUX();
             if (!sharing)
             {
                 _ssClient.StartSharing();
@@ -139,7 +140,7 @@ namespace Client
                _ssClient.StopSharing();
                sharing = false;
             }
-            this.SSwb.Content = new ScreenShareUX();
+            //this.SSwb.Content = new ScreenShareUX();
             if (_chatFlag.Equals(true) && s_userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
