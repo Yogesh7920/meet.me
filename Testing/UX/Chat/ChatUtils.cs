@@ -1,19 +1,16 @@
 ﻿/// <author>Suchitra Yechuri</author>
 /// <created>23/11/2021</created>
 /// <summary>
-///     This file contains some mock objects which can
-///     be used to simulate tests for the networking module.
+///     Utility functions for unit testing.
 /// </summary>
 
-using System.Security.Permissions;
-using System.Windows;
 using System.Windows.Threading;
 
 namespace Testing.UX.Chat
 {
     public class ChatUtils
     {
-        //https://docs.microsoft.com/en-us/dotnet/api/system.windows.threading.dispatcher.pushframe?view=windowsdesktop-6.0
+        // Utility function to get the dispatcher for unit testing.
         public static class DispatcherUtil
         {
             public static void DoEvents()
