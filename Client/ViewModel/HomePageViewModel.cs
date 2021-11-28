@@ -13,7 +13,10 @@ namespace Client.ViewModel
 {
     public class HomePageViewModel : IClientSessionNotifications // Notifies change in list of users.
     {
-        public UserData client; // current client's data
+        public UserData client   // current client's data
+        {
+            get; private set;
+        }
         public List<UserViewData> users
         {
             get; private set;
@@ -23,6 +26,7 @@ namespace Client.ViewModel
             _model = SessionManagerFactory.GetClientSessionManager();
             _model.SubscribeSession(this);
             users = new List<UserViewData>();
+            client = new UserData();
             client.userID = -1;
         }
         /// <summary>
@@ -31,6 +35,10 @@ namespace Client.ViewModel
         public HomePageViewModel(IUXClientSessionManager model)
         {
             _model = model;
+            _model.SubscribeSession(this);
+            users = new List<UserViewData>();
+            client = new UserData();
+            client.userID = -1;
         }
         /// <summary>
         /// Taking new session object when users list changes

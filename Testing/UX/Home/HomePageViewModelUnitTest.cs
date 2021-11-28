@@ -13,7 +13,6 @@ namespace Testing.UX.Home
     class HomePageViewModelUnitTest
     {
         private HomePageViewModel _homePageViewModel;
-        private HomePageViewModel _viewModelLeave;
 
         [SetUp]
         public void SetUp()
