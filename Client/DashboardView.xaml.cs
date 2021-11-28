@@ -1,9 +1,17 @@
-﻿using System;
+﻿/// <author>Mitul Kataria</author>
+/// <created>19/11/2021</created>
+/// <summary>
+///		This file consists of DashboardView class
+///		which handles the structure, layout and appearance of 
+///		what a user sees on the Dashboard screen.
+///		It displays a representation of the Dashboard model and 
+///		receives the user's interaction and it forwards the handling of 
+///		these to the DashboardViewModel through the data binding.
+/// </summary>
+
 using System.Windows;
 using System.Windows.Input;
 using Client.ViewModel;
-using LiveCharts;
-using LiveCharts.Wpf;
 
 namespace Client
 {
