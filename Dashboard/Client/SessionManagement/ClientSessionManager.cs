@@ -383,7 +383,7 @@ namespace Dashboard.Client.SessionManagement
                 clientBoardStateManager.SetUser(user.userID.ToString());
                 Trace.WriteLine("[Client Dashboard] Whiteboard's user ID set.");
 
-                //                _screenShareClient.SetUser("5", "Neeraj");
+                //_screenShareClient.SetUser(user.userID.ToString(),user.username);
                 Trace.WriteLine("[Client Dashboard] ScreenShare's user ID and username set.");
 
                 ContentClientFactory.SetUser(user.userID);
