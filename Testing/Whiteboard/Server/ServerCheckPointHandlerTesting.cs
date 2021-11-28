@@ -86,7 +86,6 @@ namespace Testing.Whiteboard
                         || boardShapes1[i].UserLevel != boardShapes2[i].UserLevel
                         || boardShapes1[i].RecentOperation != boardShapes2[i].RecentOperation)
                     {
-                        System.Diagnostics.Debug.WriteLine("something is wrong");
 
                         return false;
                     }

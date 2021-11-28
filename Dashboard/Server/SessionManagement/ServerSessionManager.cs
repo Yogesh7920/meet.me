@@ -33,7 +33,6 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public ServerSessionManager()
         {
-            
             _ = new TraceManager();
 
             Trace.WriteLine("[Server Dashboard] Server Dashboard initialised.");
@@ -44,16 +43,16 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-            userCount = 0;
+
+            _ = ServerBoardCommunicator.Instance;
+            _ = ScreenShareFactory.GetScreenShareServer();
             _contentServer = ContentServerFactory.GetInstance();
+
+            userCount = 0;
+
             _communicator = CommunicationFactory.GetCommunicator(false);
             Trace.WriteLine("[Server Dashboard] Subscribed to communicator.");
             _communicator.Subscribe(moduleIdentifier, this);
-
-            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
-            
-            _ = ServerBoardCommunicator.Instance;
-            _ = new ScreenShareServer();
 
             //_telemetry = new Telemetry.Telemetry();
         }
@@ -71,6 +70,7 @@ namespace Dashboard.Server.SessionManagement
             _summarizer = SummarizerFactory.GetSummarizer();
             //_ = new ScreenShareServer();
 
+            _ = ScreenShareFactory.GetScreenShareServer();
             TraceManager traceManager = new();
             traceManager.TraceListener();
 

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Networking;
 
 namespace Whiteboard
@@ -23,6 +24,10 @@ namespace Whiteboard
         private static ICommunicator communicator;
         private readonly static string moduleIdentifier = "Whiteboard";
         private static HashSet<IServerUpdateListener> subscribers;
+
+
+        // Check if running as part of NUnit
+        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
         /// <summary>
         /// private constructor for a singleton
         /// </summary>
@@ -46,7 +51,16 @@ namespace Whiteboard
                 return instance;
             }
         }
-        
+
+        public void SetCommunicatorAndSerializer(ICommunicator iCommunicator, ISerializer iSerializer) 
+        {
+            if (IsRunningFromNUnit)
+            {
+                communicator = iCommunicator;
+                serializer = iSerializer;
+            }
+        }
+
         public void OnDataReceived(string data)
         {
             try
