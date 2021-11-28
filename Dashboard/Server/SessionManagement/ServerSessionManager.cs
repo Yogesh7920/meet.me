@@ -43,11 +43,7 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-
-            _ = ServerBoardCommunicator.Instance;
-            _ = ScreenShareFactory.GetScreenShareServer();
-            _contentServer = ContentServerFactory.GetInstance();
-
+            
             userCount = 0;
 
             _communicator = CommunicationFactory.GetCommunicator(false);
@@ -55,6 +51,10 @@ namespace Dashboard.Server.SessionManagement
             _communicator.Subscribe(moduleIdentifier, this);
 
             //_telemetry = new Telemetry.Telemetry();
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
+            _ = ServerBoardCommunicator.Instance;
+            _ = ScreenShareFactory.GetScreenShareServer();
+            _contentServer = ContentServerFactory.GetInstance();
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Dashboard.Server.SessionManagement
             _summarizer = SummarizerFactory.GetSummarizer();
             //_ = new ScreenShareServer();
 
-            _ = ScreenShareFactory.GetScreenShareServer();
+            
             TraceManager traceManager = new();
             traceManager.TraceListener();
 
@@ -81,6 +81,8 @@ namespace Dashboard.Server.SessionManagement
             _communicator.Subscribe(moduleIdentifier, this);
             summarySaved = false;
             testmode = true;
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
+            _ = ScreenShareFactory.GetScreenShareServer();
         }
 
         /// <summary>
