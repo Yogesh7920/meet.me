@@ -60,7 +60,7 @@ namespace Networking
         }
 
         /// <summary>
-        ///     This method extract destination from packet
+        ///     This method extracts destination from packet
         ///     if destination is null , then it is case of broadcast so
         ///     it returns all the client socket objects
         ///     else it returns only the socket of that client
@@ -86,10 +86,10 @@ namespace Networking
         }
 
         /// <summary>
-        ///     This method extract finds client Id
+        ///     This method extracts client Id
         ///     from tcpSocket Object
         /// </summary>
-        /// <param name="tcpSocket">TcpClient Object.</param>
+        /// <param name="tcpSocket">TcpClient Object</param>
         /// <returns> String </returns>
         private string GetClientId(TcpClient tcpSocket)
         {
@@ -101,7 +101,7 @@ namespace Networking
         }
 
         /// <summary>
-        ///     This method is for listen to queue and send to server if some packet comes in queue
+        ///     This method is for listening  to queue and for sending to server if some packet comes in queue
         /// </summary>
         /// <returns> Void  </returns>
         private void Listen()

@@ -49,7 +49,7 @@ namespace Networking
                 var ip = IPAddress.Parse(serverIp);
                 var port = int.Parse(serverPort);
                 _clientSocket = new TcpClient();
-                // _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, false);
+                
                 _clientSocket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
 
                 _clientSocket.Connect(ip, port);
