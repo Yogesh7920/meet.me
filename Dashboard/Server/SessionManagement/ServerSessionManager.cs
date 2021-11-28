@@ -170,8 +170,6 @@ namespace Dashboard.Server.SessionManagement
         private void EndMeetProcedure(ClientToServerData receivedObject)
         {
             int tries = 3;
-            // User who requested to end the meet.
-            UserData user = new(receivedObject.username, receivedObject.userID);
             try
             {
                 // n tries are made to save summary and analytics before ending the meet
@@ -186,14 +184,14 @@ namespace Dashboard.Server.SessionManagement
                     tries--;
                 }
                 
-                SendDataToClient("endMeet", _sessionData, null, null, user);
+                SendDataToClient("endMeet", _sessionData, null, null, null);
             }
             catch (Exception e)
             {
                 // In case of any exception, the meeting is ended without saving the summary.
                 // The user is notified about this
                 Trace.WriteLine("[Server Dashboard] The summary/analytics could not be saved: ", e.Message);
-                SendDataToClient("endMeet", _sessionData, null, null, user);
+                SendDataToClient("endMeet", _sessionData, null, null, null);
             }
 
             // stopping the communicator and notifying UX server about the End Meet event.
