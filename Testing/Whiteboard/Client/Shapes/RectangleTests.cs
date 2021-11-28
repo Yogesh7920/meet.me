@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/12/2021
- * Date Modified: 11/25/2021
+ * Date Modified: 11/28/2021
 **/
 
 using NUnit.Framework;
@@ -40,12 +40,12 @@ namespace Testing.Whiteboard
             // compare expected and received
             float expectedHeight = 2;
             float expectedWidth = 4;
-            Comparators.Compare(newRectangle, new Coordinate(1, 1), new Coordinate(2, 3), expectedHeight, expectedWidth, 1, 
+            Comparators.Compare(newRectangle, new Coordinate(1, 1), new Coordinate(2, 3), expectedHeight, expectedWidth, 1,
                                 new BoardColor(0, 0, 0), new BoardColor(255, 255, 255), 0);
 
         }
 
-        
+
         [Test, TestCaseSource(typeof(TestIterators), "ShapeMaker_PreviousShape_ReturnsModifiedPreviousShape_TestCases")]
         public void ShapeMaker_CreationFromPreviousShape_ReturnsModifiedShape(float expectedWidth, float expectedHeight,
                                                                               Coordinate expectedCenter, Coordinate stopDrag)
@@ -54,10 +54,10 @@ namespace Testing.Whiteboard
             float height = 2;
             float width = 2;
             float strokeWidth = 1;
-            BoardColor strokeColor = new (34, 5, 6);
-            BoardColor fillColor = new (34, 5, 64);
-            Coordinate start = new (3, 4);
-            Coordinate center = new (4, 5);
+            BoardColor strokeColor = new(34, 5, 6);
+            BoardColor fillColor = new(34, 5, 64);
+            Coordinate start = new(3, 4);
+            Coordinate center = new(4, 5);
             float angleOfRotation = 0;
 
             // create precious Rectangle from above params.
@@ -85,7 +85,7 @@ namespace Testing.Whiteboard
             float strokeWidth = _random.Next(0, 3);
             BoardColor strokeColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
             BoardColor fillColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
-            Coordinate start = new (_random.Next(0, 10), _random.Next(0, 10));
+            Coordinate start = new(_random.Next(0, 10), _random.Next(0, 10));
             Coordinate center = new(_random.Next(0, 10), _random.Next(0, 10));
             float angleOfRotation = (float)3.00;
 
@@ -108,16 +108,20 @@ namespace Testing.Whiteboard
         [Test]
         public void AngleOfRotation_GreaterThanPi()
         {
-            MainShape rectangle = new Rectangle(2, 2, new(0,0), new(1,1));
-            rectangle.AngleOfRotation = (float)(2* Math.PI + 1);
+            MainShape rectangle = new Rectangle(2, 2, new(0, 0), new(1, 1))
+            {
+                AngleOfRotation = (float)(2 * Math.PI + 1)
+            };
             Comparators.CompareFloats(rectangle.AngleOfRotation, 1);
         }
 
         [Test]
         public void AngleOfRotation_LessThanPi()
         {
-            MainShape rectangle = new Rectangle(2, 2, new(0, 0), new(1, 1));
-            rectangle.AngleOfRotation = (float)(-2 * Math.PI - 1);
+            MainShape rectangle = new Rectangle(2, 2, new(0, 0), new(1, 1))
+            {
+                AngleOfRotation = (float)(-2 * Math.PI - 1)
+            };
             Comparators.CompareFloats(rectangle.AngleOfRotation, -1);
         }
 
@@ -129,12 +133,12 @@ namespace Testing.Whiteboard
             float height = 2;
             float width = 2;
             float strokeWidth = 1;
-            BoardColor strokeColor = new (34, 5, 6);
-            BoardColor fillColor = new (34, 5, 64);
-            Coordinate shapeStart = new (3, 4);
-            Coordinate center = new (0, 0);
+            BoardColor strokeColor = new(34, 5, 6);
+            BoardColor fillColor = new(34, 5, 64);
+            Coordinate shapeStart = new(3, 4);
+            Coordinate center = new(0, 0);
             float angleOfRotation = 0;
-            Coordinate start = new (0, 1);
+            Coordinate start = new(0, 1);
 
             // Perform Forward Rotation
             MainShape previousMainShape = new Rectangle(height, width, strokeWidth, strokeColor, fillColor, shapeStart, center, null, angleOfRotation);
@@ -154,12 +158,12 @@ namespace Testing.Whiteboard
             float height = 2;
             float width = 2;
             float strokeWidth = 1;
-            BoardColor strokeColor = new (34, 5, 6);
-            BoardColor fillColor = new (34, 5, 64);
-            Coordinate shapeStart = new (3, 4);
-            Coordinate center = new (0, 0);
+            BoardColor strokeColor = new(34, 5, 6);
+            BoardColor fillColor = new(34, 5, 64);
+            Coordinate shapeStart = new(3, 4);
+            Coordinate center = new(0, 0);
             float angleOfRotation = (float)Math.PI / 2;
-            Coordinate start = new (0, 1);
+            Coordinate start = new(0, 1);
 
             // Perform Forward Rotation
             MainShape previousMainShape = new Rectangle(height, width, strokeWidth, strokeColor,
@@ -180,15 +184,15 @@ namespace Testing.Whiteboard
             float height = 4;
             float width = 4;
             float strokeWidth = 1;
-            BoardColor strokeColor = new (34, 5, 6);
-            BoardColor fillColor = new (34, 5, 64);
-            Coordinate shapeStart = new (3, 4);
-            Coordinate center = new (1, 1);
+            BoardColor strokeColor = new(34, 5, 6);
+            BoardColor fillColor = new(34, 5, 64);
+            Coordinate shapeStart = new(3, 4);
+            Coordinate center = new(1, 1);
             float angleOfRotation = (float)Math.PI / 6;
-            Coordinate start = new (0, 0);
+            Coordinate start = new(0, 0);
 
             // create a new shape
-            MainShape previousMainShape = new Rectangle(height, width, strokeWidth, strokeColor.Clone(), 
+            MainShape previousMainShape = new Rectangle(height, width, strokeWidth, strokeColor.Clone(),
                                                         fillColor.Clone(), shapeStart.Clone(), center.Clone(), null, angleOfRotation);
             bool successFlag = previousMainShape.ResizeAboutCenter(start, end, dragPos);
 
@@ -207,8 +211,8 @@ namespace Testing.Whiteboard
             float height = _random.Next(0, 10);
             float width = _random.Next(0, 10);
             MainShape rectangle = new Rectangle(height, width, start, center);
-            bool successFlag = rectangle.ResizeAboutCenter(new(0,0), new(1,1), DragPos.NONE);
-            
+            bool successFlag = rectangle.ResizeAboutCenter(new(0, 0), new(1, 1), DragPos.NONE);
+
             Assert.IsFalse(successFlag);
             Comparators.Compare(rectangle, start, center, height, width, 1,
                                 new BoardColor(0, 0, 0), new BoardColor(255, 255, 255), 0);

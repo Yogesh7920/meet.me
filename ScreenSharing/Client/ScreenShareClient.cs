@@ -67,7 +67,7 @@ namespace ScreenSharing
 		/// </summary>
 		public ScreenShareClient()
 		{
-            Timer = new System.Timers.Timer(2000);
+            Timer = new System.Timers.Timer(10000);
             Timer.Elapsed += OnTimeout;
 			Timer.AutoReset = true;
             FrameQueue = new Queue<SharedScreen>();
@@ -140,6 +140,7 @@ namespace ScreenSharing
 			{
 				SharedScreen scrn = Serializer.Deserialize<SharedScreen>(data);
 				FrameQueue.Enqueue(scrn);
+				Trace.WriteLine("[ScreenSharingClient] Recieved data from networking team");
 			}
 			catch (Exception e)
 			{
@@ -229,7 +230,7 @@ namespace ScreenSharing
 						return;
                     }
 
-					Thread.Sleep(30);
+					Thread.Sleep(1000);
 				}
 			}
 			catch(Exception e)
@@ -248,6 +249,7 @@ namespace ScreenSharing
             {
 				string scrn = Serializer.Serialize<SharedScreen>(message);
 				Communicator.Send(scrn, "ScreenSharing");
+				Trace.WriteLine("[ScreenSharingClient] Data sent to Networking");
 			}
 			catch(Exception e)
             {
@@ -264,6 +266,7 @@ namespace ScreenSharing
             try
 			{
 				Ux = listener;
+				Trace.WriteLine("[ScreenSharingClient] Ux has subscribed");
 			}
 			catch(Exception e)
             {
@@ -284,7 +287,7 @@ namespace ScreenSharing
 					while (FrameQueue.Count == 0) ;
 				
 						// if the queue is not empty take the screen from the queue and pass it to the ux
-						Timer.Interval = 2000;
+						Timer.Interval = 10000;
 						if (Timer.Enabled == false)
 							Timer.Start();
 						OtherSharing = true;
@@ -295,7 +298,7 @@ namespace ScreenSharing
 						if (mtype == 0)
 						{
 							Timer.Stop();
-							Timer.Interval = 2000;
+							Timer.Interval = 10000;
 							OtherSharing = false;
 							Ux.OnScreenRecieved(uid, uname, mtype, null);
 						}
@@ -309,7 +312,7 @@ namespace ScreenSharing
 							ThisSharing = false;
 							Ux.OnScreenRecieved(UserId, UserName, -1, null);
 						}
-				
+						Trace.WriteLine("[ScreenSharingClient] Ux has notified");
 				}
 			}
 			catch(Exception e)

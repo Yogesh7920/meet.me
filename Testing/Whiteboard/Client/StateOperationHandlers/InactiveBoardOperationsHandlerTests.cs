@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/25/2021
- * Date Modified: 11/25/2021
+ * Date Modified: 11/28/2021
 **/
 
 using Moq;
@@ -53,7 +53,7 @@ namespace Testing.Whiteboard
         [Test]
         public void CreateShape_RequestChange_ReturnsEmptyList()
         {
-            Assert.IsEmpty(_handler.CreateShape(ShapeType.ELLIPSE, new(0,0), new(0,0), 1, new(0,0,0), "12"));
+            Assert.IsEmpty(_handler.CreateShape(ShapeType.ELLIPSE, new(0, 0), new(0, 0), 1, new(0, 0, 0), "12"));
         }
 
         [Test]

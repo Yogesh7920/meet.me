@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/28/2021
 **/
 using NUnit.Framework;
 using System;
@@ -39,8 +39,8 @@ namespace Testing.Whiteboard
             float strokeWidth = _random.Next(0, 3);
             BoardColor strokeColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
             BoardColor fillColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
-            Coordinate start = new (3, 4);
-            Coordinate center = new (4, 5);
+            Coordinate start = new(3, 4);
+            Coordinate center = new(4, 5);
             float angleOfRotation = (float)3.00;
 
             // create an ellipse
@@ -81,14 +81,14 @@ namespace Testing.Whiteboard
             float height = 2;
             float width = 2;
             float strokeWidth = 1;
-            BoardColor strokeColor = new (34, 5, 6);
-            BoardColor fillColor = new (34, 5, 64);
-            Coordinate start = new (3, 4);
-            Coordinate center = new (4, 5);
+            BoardColor strokeColor = new(34, 5, 6);
+            BoardColor fillColor = new(34, 5, 64);
+            Coordinate start = new(3, 4);
+            Coordinate center = new(4, 5);
             float angleOfRotation = 0;
 
             // Creating a previous ellipse to be used in the creation of new ellipse by modifying the previous one itself.
-            MainShape previousMainShape = new Ellipse(height, width, strokeWidth, strokeColor.Clone(), 
+            MainShape previousMainShape = new Ellipse(height, width, strokeWidth, strokeColor.Clone(),
                                                       fillColor.Clone(), start.Clone(), center.Clone(), null, angleOfRotation);
 
             // Modify the previous ellipse

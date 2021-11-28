@@ -1,9 +1,6 @@
-﻿/**
- * owned by: Irene Casmir
- * created by: Irene Casmir
- * date created: 26/11/2021
- * date modified: 27/11/2021
-**/
+﻿/// <author>Irene Casmir</author>
+/// <created>26/11/2021</created>
+
 using NUnit.Framework;
 using Client.ViewModel;
 using static Testing.UX.Authentication.AuthUtils;
