@@ -173,6 +173,7 @@ namespace Networking
             catch (Exception ex)
             {
                 Trace.WriteLine($"[Networking] {ex.Message}");
+                throw;
             }
         }
 
@@ -201,6 +202,7 @@ namespace Networking
             catch (Exception ex)
             {
                 Trace.WriteLine($"[Networking] {ex.Message}");
+                throw;
             }
         }
 
