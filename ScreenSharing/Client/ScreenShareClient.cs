@@ -2,7 +2,7 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 26/11/2021
+ * date modified: 28/11/2021
 **/
 
 using System;
@@ -14,7 +14,6 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Threading;
 using Networking;
-using System.Reflection;
 using System.Diagnostics;
 
 namespace ScreenSharing
@@ -62,6 +61,7 @@ namespace ScreenSharing
 		// stores the UserName of the client
 		public string UserName;
 
+
 		/// <summary>
 		/// Public Constructor which will initialize most of the attributes.
 		/// </summary>
@@ -83,6 +83,7 @@ namespace ScreenSharing
 			NotifyingThread = new Thread(NotifyUx);
 			NotifyingThread.Start();
 		}
+
 
 		/// <summary>
 		/// This method will be used by the session manager to set the UserID and User name.
@@ -158,7 +159,7 @@ namespace ScreenSharing
 			{
 				using (var output = new MemoryStream())
 				{
-					image.Save(output, ImageFormat.Bmp);
+					image.Save(output, ImageFormat.Jpeg);
 					return output.ToArray();
 				};
 			}
@@ -333,6 +334,8 @@ namespace ScreenSharing
 				OtherSharing = false;
 				FrameQueue.Clear();
 				Ux.OnScreenRecieved(UserId, UserName, -2, null);
+				Timer.Stop();
+				Timer.Interval = 10000;
 			}
 			catch(Exception ex)
             {
