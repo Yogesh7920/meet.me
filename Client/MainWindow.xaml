@@ -15,7 +15,7 @@
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel Orientation="Horizontal">
                             <Grid >
-                                <Border Width="30" Height="15" Background="{DynamicResource Color2Bg}" CornerRadius="5" Margin="5,0"></Border>
+                                <Border Width="30" Height="15" Background="{DynamicResource Color7Bg}" CornerRadius="7" Margin="5,0"></Border>
                                 <Border x:Name="button" Height="15" Width="15" CornerRadius="10" HorizontalAlignment="Left"  ></Border>
                             </Grid>
                             <ContentPresenter x:Name="content" Margin="10,0,0,0" Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
@@ -42,7 +42,7 @@
                                     <RemoveStoryboard BeginStoryboardName="leftt"></RemoveStoryboard>
                                     <BeginStoryboard Storyboard="{StaticResource right}" x:Name="rightt" ></BeginStoryboard>
                                 </Trigger.ExitActions>
-                                <Setter TargetName="button" Property="Background" Value="{StaticResource Color1Bg}"></Setter>
+                                <Setter TargetName="button" Property="Background" Value="{StaticResource Color4Bg}"></Setter>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="true">
                                 <Trigger.ExitActions>
@@ -91,28 +91,28 @@
                 </DockPanel>
                 <!-- Minimize button -->
                 <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Minimize">
                     <materialDesign:PackIcon Kind="WindowMinimize"/>
                 </Button>
 
                 <!--Maximize button -->
                 <Button x:Name="MaximizeButton" Click="OnMaximizeButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Maximize">
                     <materialDesign:PackIcon Kind="WindowMaximize"/>
                 </Button>
 
                 <!--Restore button -->
                 <Button x:Name="RestoreButton" Click="OnRestoreButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Restore" Visibility="Collapsed">
                     <materialDesign:PackIcon Kind="WindowRestore"/>
                 </Button>
                 
                 <!--Close button-->
                 <Button x:Name="CloseButton" Click="OnCloseButtonClick"
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Close">
                     <materialDesign:PackIcon Kind="Close"/>
                 </Button>
@@ -134,17 +134,15 @@
             <Button x:Name="Dashboard" Click="OnDashboardClick" ToolTip="Dashboard" Width="40" Height="40" BorderThickness="0" Background="White" Margin="0 0 7.5 0">
                 <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png"/>
             </Button>
-            <Border Width="35" Height="35" BorderBrush="{DynamicResource Color1Bg}" BorderThickness="1" CornerRadius="50" Background="{DynamicResource Color1Bg}">
-                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="22" Height="22" BorderThickness="0" Background="{DynamicResource Color1Bg}" >
+            <Border Width="35" Height="35" BorderBrush="{DynamicResource Color4Bg}" BorderThickness="1" CornerRadius="50" Background="{DynamicResource Color2Bg}">
+                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="22" Height="22" BorderThickness="0" Background="{DynamicResource Color2Bg}" >
                     <Image Source="/Icons/Mainwindow/icons8-end-call-96.png"/>
                 </Button>
             </Border>
         </DockPanel>
 
         <ContentControl Name="UsersListControl" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="5"/>
-
         <ContentControl Name="SSwb" Grid.Row="2" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-
         <ContentControl Name="Chat" Grid.Row="1" Grid.Column="6" Grid.RowSpan="5" Visibility="Collapsed"/>
 
     </Grid>

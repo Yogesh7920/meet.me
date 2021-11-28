@@ -91,7 +91,7 @@ namespace Content
             }
 
             // Star the message and return the starred message
-            message.Starred = !message.Starred;
+            message.Starred = true;
             return message;
         }
 

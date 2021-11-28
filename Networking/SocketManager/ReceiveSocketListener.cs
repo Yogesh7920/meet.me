@@ -15,7 +15,7 @@ namespace Networking
     public class ReceiveSocketListener
     {
         // Fix the maximum size of the message that can be sent  one at a time 
-        private const int Threshold = 500 * 1024;
+        private const int Threshold = 1024 * 1024;
 
         // Declare the TcpClient  variable 
         private readonly TcpClient _clientSocket;
@@ -95,21 +95,49 @@ namespace Networking
                         var buffer = Encoding.ASCII.GetString(inStream);
                         buffer = buffer.Trim('\u0000');
                         message += buffer;
-                        var endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
-                        while (endIdx != -1)
+                        // loop till there are no valid messages
+                        while (true)
                         {
-                            var packetString = message[..endIdx];
-                            message = message[(endIdx + 3)..];
-                            endIdx = message.IndexOf("EOF", StringComparison.Ordinal);
-                            var packet = GetPacket(packetString.Split(":"));
-                            PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
+                            var isMessage = false;
+                            var packetString = "";
+                            if (message == "") break;
+                            // get the index of the next two flags
+                            var flagIndex = message.IndexOf(Utils.Flag, StringComparison.Ordinal);
+                            var nextFlagIndex = message.IndexOf(Utils.Flag, flagIndex + 5, StringComparison.Ordinal);
+                            while (!isMessage)
+                            {
+                                if (nextFlagIndex == -1)
+                                    break;
+                                if (message[(nextFlagIndex - 5)..nextFlagIndex] == Utils.Esc)
+                                {
+                                    // if the message is of the form [ESC][FLAG], ignore and continue
+                                    nextFlagIndex = message.IndexOf(Utils.Flag, nextFlagIndex + 6,
+                                        StringComparison.Ordinal);
+                                    continue;
+                                }
+
+                                packetString = message[(flagIndex + 6)..nextFlagIndex];
+                                message = message[(nextFlagIndex + 6)..];
+                                isMessage = true;
+                            }
+
+                            if (isMessage)
+                            {
+                                packetString = packetString.Replace($"{Utils.Esc}{Utils.Esc}", $"{Utils.Esc}");
+                                packetString = packetString.Replace($"{Utils.Esc}{Utils.Flag}", $"{Utils.Flag}");
+                                var packet = GetPacket(packetString.Split(":"));
+                                PushToQueue(packet.SerializedData, packet.ModuleIdentifier);
+                                continue;
+                            }
+
+                            break;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     Trace.WriteLine(
-                        "[Networking] An Exception has been raised in ReceiveSocketListenerClient thread "
+                        "[Networking] An Exception has been raised in ReceiveSocketListener thread "
                         + ex.Message);
                 }
         }
@@ -121,7 +149,7 @@ namespace Networking
         public void Stop()
         {
             _listenRun = false;
-            Console.WriteLine("[Networking] Stopped ReceiveSocketListener thread.");
+            Trace.WriteLine("[Networking] Stopped ReceiveSocketListener thread.");
         }
 
         /// <summary>
@@ -133,7 +161,7 @@ namespace Networking
         private void PushToQueue(string data, string moduleIdentifier)
         {
             var packet = new Packet {ModuleIdentifier = moduleIdentifier, SerializedData = data};
-            Trace.WriteLine("[Networking] Received data: " + data);
+            Trace.WriteLine($"[Networking] Received data from {moduleIdentifier}");
             _queue.Enqueue(packet);
         }
     }

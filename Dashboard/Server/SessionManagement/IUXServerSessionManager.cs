@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 28/10/2021 </created>
+/// <summary>
+/// This file contains the interface for UX to access Client session manager's methods and fields.
+/// </summary>
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

@@ -1,20 +1,22 @@
-﻿using System.Security.Permissions;
+﻿/// <author>Suchitra Yechuri</author>
+/// <created>23/11/2021</created>
+/// <summary>
+///     Utility functions for unit testing.
+/// </summary>
+
 using System.Windows.Threading;
 
 namespace Testing.UX.Chat
 {
     public class ChatUtils
     {
+        // Utility function to get the dispatcher for unit testing.
         public static class DispatcherUtil
         {
-#pragma warning disable SYSLIB0003 // Type or member is obsolete
-            [SecurityPermissionAttribute(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-#pragma warning restore SYSLIB0003 // Type or member is obsolete
             public static void DoEvents()
             {
                 var frame = new DispatcherFrame();
-                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
-                                                         new DispatcherOperationCallback(ExitFrame), frame);
+                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
                 Dispatcher.PushFrame(frame);
             }
 
