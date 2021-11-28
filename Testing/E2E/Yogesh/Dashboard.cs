@@ -111,22 +111,19 @@ namespace Testing.E2E.Yogesh
         [Test]
         public void ClientDeparture()
         {
-            var authViewModel = new AuthViewModel();
-            authViewModel.SendForAuth("127.0.0.1", 8080, "ABC");
-            var serializedData = File.ReadAllText("networking_output.json");
-            _serverSessionManager.OnDataReceived(serializedData);
-            serializedData = File.ReadAllText("networking_output.json");
-            _clientSessionManager.OnDataReceived(serializedData);
-            
+            GetSummary();
+            GetTelemetry();
+
             var homePageViewModel = new HomePageViewModel();
             homePageViewModel.LeftClient();
-            serializedData = File.ReadAllText("networking_output.json");
+            var serializedData = File.ReadAllText("networking_output.json");
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
             Assert.AreEqual(dataSent.eventType, "removeClient");
             _serverSessionManager.OnDataReceived(serializedData);
+            
             serializedData = File.ReadAllText("networking_output.json");
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
-            Assert.AreEqual(dataReceived.eventType, "removeClient");
+            Assert.AreEqual(dataReceived.eventType, "endMeet"); // Since the only user is leaving
             _clientSessionManager.OnDataReceived(serializedData);
         }
 
