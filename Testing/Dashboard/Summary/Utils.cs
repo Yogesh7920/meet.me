@@ -12,8 +12,18 @@ using System.Collections.Generic;
 
 namespace Testing.Dashboard.Summary
 {
+	/// <summary>
+	/// Helper class for the Summary Logic module testing
+	/// </summary>
 	class Utils
 	{
+		/// <summary>
+		/// Based on the query the appropriate chat context is returned
+		/// </summary>
+		/// <param name="query"> The query for the chat context
+		/// </param>
+		/// <returns> The appropriate chat context array
+		/// </returns>
 		public static ChatContext[] GetChatContext(string query)
 		{
 			if (query == "Null Context")
@@ -26,6 +36,7 @@ namespace Testing.Dashboard.Summary
 				for (int i = 0; i < 50; i++)
 				{
 					ReceiveMessageData data = new();
+					// All null messages but users are initialized.
 					data.Message = "";
 					data.Type = MessageType.Chat;
 					data.Starred = false;
@@ -47,6 +58,7 @@ namespace Testing.Dashboard.Summary
 					for (int j = 0; j < 5; j++)
 					{
 						ReceiveMessageData data = new();
+						// A constant message CONST is sent by all the users.
 						data.Message = "CONST";
 						data.Type = MessageType.Chat;
 						data.Starred = false;
@@ -61,6 +73,7 @@ namespace Testing.Dashboard.Summary
 			{
 				List<ChatContext> chats = new();
 				ChatContext c = new();
+				// Just to check the working of the Porter Stemmer to obtain the lemmas.
 				List<ReceiveMessageData> receiveMessageDatas = new();
 				ReceiveMessageData step1 = new();
 				step1.Message = "caresses. plastered. troubled. happy";
@@ -96,6 +109,7 @@ namespace Testing.Dashboard.Summary
 				List<ChatContext> chats = new();
 				for (int i = 0; i < 50; i++)
 				{
+					// General chat context resembling real application cases.
 					ChatContext c = new();
 					List<ReceiveMessageData> receiveMessageDatas = new();
 					for (int j = 0; j < 5; j++)

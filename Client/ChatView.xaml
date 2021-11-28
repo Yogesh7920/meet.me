@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        MouseDown="OnWindowMouseDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:DesignWidth="363.639" d:DesignHeight="807.376">
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" d:DesignWidth="363.639" d:DesignHeight="807.376">
 
     <UserControl.Resources>
         <SolidColorBrush x:Key="DynamicTextClr" Color="{DynamicResource Color5}"/>
@@ -330,12 +330,14 @@
                 <Image Grid.Column="0" Width="20" Height="20" Margin="4" Source="/Icons/ChatUX/logo.png" />
                 <TextBlock Foreground="{DynamicResource DynamicTextClr}" Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="20" Text="Chat"/>
             </Grid>
+            
             <!--Grid layout for listbox and textbox-->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="670" />
                     <RowDefinition Height="95" />
                 </Grid.RowDefinitions>
+                
                 <!--ListBox-->
                 <Grid Grid.Row="0" Margin="5,5,5,0">
                     <ListBox Background="{DynamicResource DynamicChatBackGrd}" HorizontalAlignment="Stretch" BorderBrush="{DynamicResource DynamicChatBackGrd}" ScrollViewer.VerticalScrollBarVisibility="Auto" x:Name="myChat" ItemTemplateSelector="{StaticResource ChatBubbleTemplateSelector}">
