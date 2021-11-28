@@ -1,4 +1,14 @@
-﻿using System;
+﻿/// <author>Mitul Kataria</author>
+/// <created>19/11/2021</created>
+/// <summary>
+///		This file consists of DashboardViewModel class
+///		which handles the display logic of DashboardView.
+///		It works as a value converter by exposing 
+///		the data objects from Dashboard Server in such a way 
+///		that objects are easily managed and presented. 
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LiveCharts;
@@ -174,8 +184,6 @@ namespace Client.ViewModel
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-
 
         /// <summary>
         /// The summary of discussion done in the meeting so far
