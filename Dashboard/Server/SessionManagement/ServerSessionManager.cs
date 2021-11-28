@@ -150,6 +150,7 @@ namespace Dashboard.Server.SessionManagement
                 _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
 
                 // returning the summary
+                Trace.WriteLine("[Server Dashboard] Summary created.");
                 return new SummaryData(_sessionSummary);
             }
             catch (Exception e)
@@ -363,6 +364,17 @@ namespace Dashboard.Server.SessionManagement
             _communicator.AddClient<T>(userCount.ToString(), socketObject);
         }
 
+
+        /// <summary>
+        /// This method is called by the networking module when the user is disconnected from the meet.
+        /// <param name="userIDString">nhe ID of the leaving user in string format. </param>
+        public void OnClientLeft(string userIDString)
+        {
+            Trace.WriteLine("[Server Dashboard] Client disconnected.");
+            int userIDInt = int.Parse(userIDString);
+            RemoveClientProcedure(null, userIDInt);
+        }
+
         /// <summary>
         /// Networking module calls this function once the data is sent from the client side.
         /// The SerializedObject is the data sent by the client module which is first deserialized
@@ -371,6 +383,12 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="serializedObject">A string that is the serialized representation of the object sent by the client side. </param>
         public void OnDataReceived(string serializedObject)
         {
+            if (serializedObject == null)
+            {
+                Trace.WriteLine("[Server Dashboard] Null received from client");
+                return;
+            }
+
             // the object is obtained by deserializing the string and handling the cases 
             // based on the 'eventType' field of the deserialized object. 
             ClientToServerData deserializedObj = _serializer.Deserialize<ClientToServerData>(serializedObject);
@@ -416,38 +434,33 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         /// <param name="receivedObject"> A ClientToServerData object which contains the eventType for removing the user
         /// and the user who wants to leave. </param>
-        private void RemoveClientProcedure(ClientToServerData receivedObject)
+        private void RemoveClientProcedure(ClientToServerData receivedObject, int userID = -1)
         {
-            UserData userToRemove = new(receivedObject.username, receivedObject.userID);
-            RemoveUserFromSession(userToRemove);
-            NotifyTelemetryModule();
-            SendDataToClient("removeClient", _sessionData, null, null, userToRemove);
-        }
-
-        /// <summary>
-        /// Removes the user from the user list in the sessionData.
-        /// </summary>
-        /// <param name="userToRemove">A UserData object that denotes the used to remove. </param>
-        private void RemoveUserFromSession(UserData userToRemove)
-        {
-            if (_sessionData == null)
+            int userIDToRemove;
+            if (userID == -1)
             {
-                Trace.Write("Session is empty, cannot remove user");
+                userIDToRemove = receivedObject.userID;
+            }
+            else
+            {
+                userIDToRemove = userID;
+            }
+
+            if (userCount == 1)
+            {
+                EndMeetProcedure(receivedObject);
                 return;
             }
-            List<UserData> users = _sessionData.users;
-            for (int i = 0; i < users.Count; ++i)
+
+            UserData removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
+            if (removedUser != null)
             {
-                if (users[i].Equals(userToRemove))
-                {
-                    lock (this)
-                    {
-                        _sessionData.users.RemoveAt(i);
-                        break;
-                    }
-                }
+                Trace.WriteLine("[Server Dashboard] Removed from session: " + removedUser.ToString());
+                NotifyTelemetryModule();
+                SendDataToClient("removeClient", _sessionData, null, null, removedUser);
             }
         }
+        
 
         /// <summary>
         /// Function to send data from Server to client side of the session manager.
@@ -457,7 +470,6 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="summaryData">The summary of the session. </param>
         /// <param name="sessionaAnalytics">The analytics of the session.</param>
         /// <param name="user">The user to broadcast/reply. </param>
-        
         private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, SessionAnalytics sessionaAnalytics, UserData user)
         {
             ServerToClientData serverToClientData;
@@ -500,7 +512,7 @@ namespace Dashboard.Server.SessionManagement
         private ITelemetry _telemetry;
 
         public event NotifyEndMeet MeetingEnded;
-        private bool testmode;
+        private readonly bool  testmode;
 
     }
 }
