@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Networking
@@ -90,6 +91,7 @@ namespace Networking
         /// <summary>
         ///     Dequeues all the elements.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public void Clear()
         {
             Trace.WriteLine("[Networking] Clearing all packets from the queue");
@@ -155,6 +157,7 @@ namespace Networking
         /// </summary>
         /// <returns>Returns the peeked packet from the queue.</returns>
         /// <exception cref="Exception">Cannot peek an empty queue</exception>
+        [ExcludeFromCodeCoverage]
         public Packet Peek()
         {
             if (IsEmpty()) throw new Exception("[Networking] Cannot Peek into empty queue");
