@@ -26,7 +26,11 @@ namespace Whiteboard
         // Check if running as part of NUnit
         public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
 
-
+        
+        /// <summary>
+        /// Function to set mock communicator when running in test mode.
+        /// </summary>
+        /// <param name="clientBoardCommunicator">ClientBoardCommunicator instance</param>
         public void SetCommunicator(IClientBoardCommunicator communicator)
         {
             if (IsRunningFromNUnit)
