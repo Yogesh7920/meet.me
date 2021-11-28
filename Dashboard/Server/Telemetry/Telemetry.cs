@@ -57,6 +57,7 @@ namespace Dashboard.Server.Telemetry{
         /// <params name="allMessages"> Takes array of ChatContext object which contains information about Threads </params>
         public void GetUserVsChatCount(ChatContext[] allMessages)
         {
+            userIdChatCountDic = new();
             foreach(ChatContext currThread in allMessages)
             {
                 foreach(ReceiveMessageData currMessage in currThread.MsgList)
