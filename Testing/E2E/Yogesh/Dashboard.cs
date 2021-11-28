@@ -34,7 +34,6 @@ namespace Testing.E2E.Yogesh
             var chatViewModel = new ChatViewModel();
             chatViewModel.SendChat(message, -1);
             var serializedData = File.ReadAllText("networking_output.json");
-            var data = _serializer.Deserialize<MessageData>(serializedData);
             _contentServer.Receive(serializedData);
         }
             
@@ -45,13 +44,14 @@ namespace Testing.E2E.Yogesh
         public void ClientArrival(string ip, int port, string username, bool error)
         {
             var authViewModel = new AuthViewModel();
-            var valid = authViewModel.SendForAuth("127.0.0.1", 8080, username);
+            var valid = authViewModel.SendForAuth(ip, port, username);
             Assert.AreEqual(valid, !error);
             if (error) return;
             var serializedData = File.ReadAllText("networking_output.json");
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
             Assert.AreEqual(dataSent.eventType, "addClient");
             Assert.AreEqual(dataSent.username, username);
+            _serverSessionManager.OnClientJoined(1);
             _serverSessionManager.OnDataReceived(serializedData);
             serializedData = File.ReadAllText("networking_output.json");
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
@@ -65,17 +65,11 @@ namespace Testing.E2E.Yogesh
         public void GetTelemetry()
         {
             
-            var authViewModel = new AuthViewModel();
-            authViewModel.SendForAuth("127.0.0.1", 8080, "ABC");
-            var serializedData = File.ReadAllText("networking_output.json");
-            _serverSessionManager.OnClientJoined(1);
-            _serverSessionManager.OnDataReceived(serializedData);
-            serializedData = File.ReadAllText("networking_output.json");
-            _clientSessionManager.OnDataReceived(serializedData);
-            
+            ClientArrival("127.0.0.1", 8080, "ABC", false);
+
             var dashboardViewModel = new DashboardViewModel();
             dashboardViewModel.UpdateVM();
-            serializedData = File.ReadAllText("networking_output.json");
+            var serializedData = File.ReadAllText("networking_output.json");
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
             Assert.AreEqual(dataSent.eventType, "getAnalytics");
             _serverSessionManager.OnDataReceived(serializedData);
@@ -88,7 +82,7 @@ namespace Testing.E2E.Yogesh
         [Test]
         public void GetSummary()
         {
-            _clientSessionManager.SetUser("Yogesh");
+            ClientArrival("127.0.0.1", 8080, "Yogesh", false);
             _clientSessionManager.GetSummary();
             var serializedData = File.ReadAllText("networking_output.json");
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
@@ -109,17 +103,30 @@ namespace Testing.E2E.Yogesh
         }
 
         [Test]
+        [NonParallelizable]
         public void ClientDeparture()
         {
-            GetSummary();
-            GetTelemetry();
+            var serverSessionManager =
+                new ServerSessionManager(CommunicationFactory.GetCommunicator(false), _contentServer);
+            
+            var authViewModel = new AuthViewModel();
+            var valid = authViewModel.SendForAuth("127.0.0.1", 8080, "Yogesh");
+            var serializedData = File.ReadAllText("networking_output.json");
+            serverSessionManager.OnClientJoined(1);
+            serverSessionManager.OnDataReceived(serializedData);
+            serializedData = File.ReadAllText("networking_output.json");
+            _clientSessionManager.OnDataReceived(serializedData);
+            
+            AddChat("Hello");
+            AddChat("Hi");
 
             var homePageViewModel = new HomePageViewModel();
+            _clientSessionManager.SetUser("ABC");
             homePageViewModel.LeftClient();
-            var serializedData = File.ReadAllText("networking_output.json");
+            serializedData = File.ReadAllText("networking_output.json");
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
             Assert.AreEqual(dataSent.eventType, "removeClient");
-            _serverSessionManager.OnDataReceived(serializedData);
+            serverSessionManager.OnDataReceived(serializedData);
             
             serializedData = File.ReadAllText("networking_output.json");
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
