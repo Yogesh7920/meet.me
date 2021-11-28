@@ -61,6 +61,8 @@ namespace ScreenSharing
 		// stores the UserName of the client
 		public string UserName;
 
+		public bool IsSharing;
+
 
 		/// <summary>
 		/// Public Constructor which will initialize most of the attributes.
@@ -75,9 +77,13 @@ namespace ScreenSharing
 			Communicator.Subscribe("ScreenSharing", this);
 			Serializer = new Serializer();
 
+			OtherSharing = false;
+			IsSharing = true;
+			ThisSharing = false;
 			// creating a thread to capture and send the screen
 			SharingThread = new Thread(Capture);
-
+			// starting the execution of the sharing thread
+			SharingThread.Start();
 			// creating a thread to notify the UX and starting its execution
 			IsNotifying = true;
 			NotifyingThread = new Thread(NotifyUx);
@@ -102,8 +108,7 @@ namespace ScreenSharing
 			try
             {
 				ThisSharing = true;
-				// starting the execution of the sharing thread
-				SharingThread.Start();
+				
 			}
 			catch(Exception e)
             {
@@ -195,43 +200,40 @@ namespace ScreenSharing
 		{
 			try
             {
-				if (OtherSharing)
+				while (IsSharing)
 				{
-					ThisSharing = false;
-					Ux.OnScreenRecieved(UserId, UserName, -1, null);
-					return;
-				}
-				while (ThisSharing)
-				{
+					while (ThisSharing)
+					{
 
-					Bitmap bitmap = new Bitmap(
-						Screen.PrimaryScreen.Bounds.Width,
-						Screen.PrimaryScreen.Bounds.Height
-						);
+						Bitmap bitmap = new Bitmap(
+							Screen.PrimaryScreen.Bounds.Width,
+							Screen.PrimaryScreen.Bounds.Height
+							);
 
-					Graphics graphics = Graphics.FromImage(bitmap);
-					graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
-					Size curSize = new Size(32, 32);
-					Cursors.Default.Draw(graphics, new Rectangle(Cursor.Position, curSize));
-					Bitmap bitmap480p = new Bitmap(720, 480);
-					Graphics graphics480p = Graphics.FromImage(bitmap480p);
-					graphics480p.DrawImage(bitmap, 0, 0, 720, 480);
+						Graphics graphics = Graphics.FromImage(bitmap);
+						graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
+						Size curSize = new Size(32, 32);
+						Cursors.Default.Draw(graphics, new Rectangle(Cursor.Position, curSize));
+						Bitmap bitmap480p = new Bitmap(720, 480);
+						Graphics graphics480p = Graphics.FromImage(bitmap480p);
+						graphics480p.DrawImage(bitmap, 0, 0, 720, 480);
 
-					byte[] data = GetBytes(bitmap480p);
+						byte[] data = GetBytes(bitmap480p);
 
-					SharedScreen message;
-					
-					message = new SharedScreen(UserId, UserName, 1, data);
-					if(ThisSharing)
-                    { 
-						Send(message);
+						SharedScreen message;
+
+						message = new SharedScreen(UserId, UserName, 1, data);
+						if (ThisSharing)
+						{
+							Send(message);
+						}
+						else
+						{
+							return;
+						}
+
+						Thread.Sleep(1000);
 					}
-					else
-                    {
-						return;
-                    }
-
-					Thread.Sleep(1000);
 				}
 			}
 			catch(Exception e)
@@ -350,6 +352,7 @@ namespace ScreenSharing
 		~ScreenShareClient()
 		{
 			IsNotifying = false;
+			IsSharing = false;
 			ThisSharing = false;
 			Timer.Dispose();
 		}
