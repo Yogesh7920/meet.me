@@ -134,7 +134,8 @@ namespace Networking
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);
-            Trace.WriteLine($"[Networking] Module Registered with ModuleIdentifier: {identifier} and Priority: {priority.ToString()}");
+            Trace.WriteLine(
+                $"[Networking] Module Registered with ModuleIdentifier: {identifier} and Priority: {priority.ToString()}");
         }
     }
 }

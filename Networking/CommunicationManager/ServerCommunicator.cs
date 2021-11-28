@@ -198,7 +198,8 @@ namespace Networking
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);
-            Trace.WriteLine($"[Networking] Module Registered with ModuleIdentifier: {identifier} and Priority: {priority.ToString()}");
+            Trace.WriteLine(
+                $"[Networking] Module Registered with ModuleIdentifier: {identifier} and Priority: {priority.ToString()}");
         }
 
         /// <summary>
@@ -247,10 +248,7 @@ namespace Networking
                     var clientSocket = _serverSocket.AcceptTcpClient();
 
                     //notify subscribed Module handler
-                    foreach (var module in _subscribedModules)
-                    {
-                        module.Value.OnClientJoined(clientSocket);
-                    }
+                    foreach (var module in _subscribedModules) module.Value.OnClientJoined(clientSocket);
                     Trace.WriteLine("[Networking] New client joined! Notified all modules.");
                 }
                 catch (SocketException e)

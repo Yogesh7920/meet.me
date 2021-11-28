@@ -1,14 +1,18 @@
-﻿/// <author>Abdullah Khan</author>
+/// <author>Abdullah Khan</author>
 /// <created>14/10/2021</created>
+/// <summary>
+/// This file contains the class definitions of the serializer submodule.
+/// </summary>
 
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace Networking
 {
+    /// <summary>
+    ///     Wrapper object to store serilized object's type and serilized string representation.
+    /// </summary>
     public class MetaObject
     {
         public string data;
@@ -27,20 +31,24 @@ namespace Networking
 
     public class Serializer : ISerializer
     {
+        private JsonSerializerSettings _jsonSerializerSettings;
+
+        public Serializer()
+        {
+            _jsonSerializerSettings = new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All};
+        }
         /// <inheritdoc />
         string ISerializer.Serialize<T>(T objectToSerialize)
         {
             try
             {
-                var json = SerializeJSON(objectToSerialize);
+                var json = SerializeJson(objectToSerialize);
                 var obj = new MetaObject(typeof(T).ToString(), json);
-                return SerializeJSON(obj);
+                return SerializeJson(obj);
             }
-            catch
+            catch (Exception ex)
             {
-                var xml = SerializeXML(objectToSerialize);
-                var obj = new MetaObject(typeof(T).ToString(), xml);
-                return SerializeXML(obj);
+                Trace.WriteLine($"[Networking] Error while serializing: {ex.Message}");
                 throw;
             }
         }
@@ -48,21 +56,9 @@ namespace Networking
         /// <inheritdoc />
         string ISerializer.GetObjectType(string serializedString, string nameSpace)
         {
-            if (serializedString[0] == '<')
-            {
-                // xml string
-                var obj = deserializeXML<MetaObject>(serializedString);
-                return obj.typ;
-            }
-
-            if (serializedString[0] == '{')
-            {
-                // json string
-                var obj = deserializeJSON<MetaObject>(serializedString);
-                return obj.typ;
-            }
-
-            throw new InvalidDataException();
+            // json string
+            var obj = DeserializeJson<MetaObject>(serializedString);
+            return obj.typ;
         }
 
         /// <inheritdoc />
@@ -70,63 +66,36 @@ namespace Networking
         {
             try
             {
-                var obj = deserializeJSON<MetaObject>(serializedString);
-                return deserializeJSON<T>(obj.data);
-            }
-            catch (Exception ex1)
-            {
-                try
-                {
-                    var obj = deserializeXML<MetaObject>(serializedString);
-                    return deserializeXML<T>(obj.data);
-                }
-                catch (Exception ex2)
-                {
-                    Trace.WriteLine(ex2.Message);
-                    throw;
-                }
-
-                Trace.WriteLine(ex1.Message);
-                throw;
-            }
-        }
-
-        private string SerializeJSON<T>(T objectToSerialize)
-        {
-            var jset = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
-            var serializedString = JsonConvert.SerializeObject(objectToSerialize, jset);
-            return serializedString;
-        }
-
-        private string SerializeXML<T>(T objectToSerialize)
-        {
-            try
-            {
-                var serializer = new XmlSerializer(objectToSerialize.GetType());
-                using var stringStream = new StringWriter();
-                serializer.Serialize(stringStream, objectToSerialize);
-                return stringStream.ToString();
+                var obj = DeserializeJson<MetaObject>(serializedString);
+                return DeserializeJson<T>(obj.data);
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.WriteLine($"[Networking] Error while deserializing: {ex.Message}");
                 throw;
             }
         }
 
-        private T deserializeXML<T>(string xml)
+        /// <summary>
+        ///     JSON supported serialization
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objectToSerialize"></param>
+        /// <returns></returns>
+        private string SerializeJson<T>(T objectToSerialize)
         {
-            var serializer = new XmlSerializer(typeof(T));
-            using (var stringReader = new StringReader(xml))
-            {
-                return (T) serializer.Deserialize(stringReader);
-            }
+            return JsonConvert.SerializeObject(objectToSerialize, Formatting.Indented, _jsonSerializerSettings);
         }
 
-        private T deserializeJSON<T>(string json)
+        /// <summary>
+        ///     JSON supoorted deserialization.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        private T DeserializeJson<T>(string json)
         {
-            var jset = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
-            return JsonConvert.DeserializeObject<T>(json, jset);
+            return JsonConvert.DeserializeObject<T>(json, _jsonSerializerSettings);
         }
     }
 }

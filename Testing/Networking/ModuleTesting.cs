@@ -15,6 +15,7 @@ namespace Testing.Networking
         [OneTimeSetUp]
         public void Init_StartServerAndClients_ServerIsNotifiedAboutClients()
         {
+            Environment.SetEnvironmentVariable("TEST_MODE", "MODULE");
             // reset all expando objects of handlers
             _server.Reset();
             _clientA.Reset();
@@ -272,6 +273,38 @@ namespace Testing.Networking
             _clientB.WbHandler.Wait();
             Assert.AreEqual(OnDataReceived, _clientB.WbHandler.Event);
             Assert.AreEqual(message, _clientB.WbHandler.Data);
+        }
+
+        [Test]
+        public void Stop_ClientDisconnects_ServerShouldNotifyModules()
+        {
+            // client leaves the call abruptly
+            _clientA.Communicator.Stop();
+            // Next time when the server tries to send a message, it must detect try multiple times
+            // and notify other modules in case of complete disconnection.
+            _server.Communicator.Send(RandomMessage, Modules.WhiteBoard, FakeClientA.Id);
+            _server.WbHandler.Wait();
+            // verify client Id on whiteboard handler
+            Assert.AreEqual(OnClientLeft, _server.WbHandler.Event);
+            Assert.AreEqual(FakeClientA.Id, _server.WbHandler.Data);
+            _server.SsHandler.Wait();
+            // verify client Id on screen-share handler
+            Assert.AreEqual(OnClientLeft, _server.SsHandler.Event);
+            Assert.AreEqual(FakeClientA.Id, _server.SsHandler.Data);
+            // restore state for other unit tests
+            _clientA.Communicator = NewClientCommunicator;
+            _clientA.Communicator.Start(_serverIp, _serverPort);
+            _clientA.Subscribe();
+        }
+
+        [Test]
+        public void Send_MessageWithSpecialStrings_ShouldNotFail()
+        {
+            var message = $"Message with {Utils.Flag} and {Utils.Esc} should work.";
+            _clientA.Communicator.Send(message, Modules.WhiteBoard);
+            _server.WbHandler.Wait();
+            Assert.AreEqual(OnDataReceived, _server.WbHandler.Event);
+            Assert.AreEqual(message, _server.WbHandler.Data);
         }
     }
 }
