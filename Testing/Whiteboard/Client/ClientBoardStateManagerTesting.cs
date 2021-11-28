@@ -740,38 +740,6 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        public void OnMessageReceived_ClearStateCheckpointStateDiffers_DoNothing()
-        {
-            // Arrange
-            _clientBoardStateManager.SetUser("user-1");
-            Mock<IClientBoardStateListener> listener = new();
-            _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
-            _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
-            _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-
-            // creating previous state
-            List<BoardShape> prevState = StateManagerHelper.GetListCompleteBoardShapes(10, Operation.CREATE);
-            for (int i = 0; i < prevState.Count; i++)
-            {
-                _clientBoardStateManager.SaveOperation(prevState[i]);
-            }
-
-            // server update
-            BoardServerShape update = new(null, Operation.CLEAR_STATE, "user-1", 2, 1);
-
-            // Act
-            _clientBoardStateManager.OnMessageReceived(update);
-
-            // Assert
-            for (int i = 1; i < prevState.Count; i++)
-            {
-                Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
-            }
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
-        }
-
-        [Test]
         public void DoUndo_StackEmpty_ReturnsNull()
         {
             // Act and Assert
