@@ -102,7 +102,7 @@ namespace Content
             if (MsgList[index].Type != MessageType.Chat)
                 throw new ArgumentException("Message requested for update is not chat");
 
-            MsgList[index].Starred = !MsgList[index].Starred;
+            MsgList[index].Starred = true;
         }
 
         public int RetrieveMessageIndex(int messageId)
