@@ -378,6 +378,21 @@ namespace Testing.Dashboard
             Assert.IsTrue(_testWhiteBoard.isWhiteBoardInitialised);
         }
 
+        [Test]
+        [Description("The session manager will remove the user from session and broadcast the modified" + 
+                        "session object via networking")]
+        public void OnClientLeft_SuddenClientDeparture_RemovesClientFromSession()
+        {
+            int userSize = 10;
+            List<UserData> users = Utils.GenerateUserData(userSize);
+            AddUsersAtServer(users);
+            UserData leavingUser = users[userSize - 1];
+            serverSessionManager.OnClientLeft(leavingUser.userID.ToString());
+            ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            users.RemoveAt(userSize - 1);
+            Assert.AreEqual("removeClient", serverToClientData.eventType);
+            Assert.AreEqual(users, serverToClientData.sessionData.users);
+        }
 
         private void AddUserClientSide(string username, int userId, string ip = "192.168.1.1", string port = "8080")
         {
