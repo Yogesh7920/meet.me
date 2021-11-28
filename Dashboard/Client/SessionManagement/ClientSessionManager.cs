@@ -48,7 +48,8 @@ namespace Dashboard.Client.SessionManagement
             _contentClient = ContentClientFactory.GetInstance();
             clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
-            SSClient = ScreenShareFactory.GetScreenSharer();
+
+            _screenShareClient = ScreenShareFactory.GetScreenShareClient();
 
 
             if (_clients == null)
@@ -73,6 +74,8 @@ namespace Dashboard.Client.SessionManagement
             _serializer = new Serializer();
             _communicator = communicator;
             _communicator.Subscribe(moduleIdentifier, this);
+            _screenShareClient = ScreenShareFactory.GetScreenShareClient();
+
             if (whiteboardInstance != null)
                 clientBoardStateManager = whiteboardInstance;
             else
@@ -87,7 +90,7 @@ namespace Dashboard.Client.SessionManagement
             _clientSessionData = new SessionData();
             _chatSummary = null;
 
-            SSClient = ScreenShareFactory.GetScreenSharer();
+            _screenShareClient = ScreenShareFactory.GetScreenShareClient();
         }
 
         /// <summary>
@@ -382,13 +385,15 @@ namespace Dashboard.Client.SessionManagement
             if (_user == null)
             {
                 _user = user;
-                SSClient.SetUser(user.userID.ToString(), user.username);
+
                 Trace.WriteLine("[Client Dashboard] Client added to the client session.");
 
                 clientBoardStateManager.SetUser(user.userID.ToString());
                 Trace.WriteLine("[Client Dashboard] Whiteboard's user ID set.");
 
-                //_screenShareClient.SetUser(user.userID.ToString(),user.username);
+
+                _screenShareClient.SetUser(user.userID.ToString(), user.username);
+
                 Trace.WriteLine("[Client Dashboard] ScreenShare's user ID and username set.");
 
                 ContentClientFactory.SetUser(user.userID);
@@ -432,6 +437,8 @@ namespace Dashboard.Client.SessionManagement
         public event NotifySummaryCreated SummaryCreated;
         public event NotifyAnalyticsCreated AnalyticsCreated;
         private readonly IClientBoardStateManager clientBoardStateManager;
-        private ScreenShareClient SSClient;
+
+        private ScreenShareClient _screenShareClient;
+
     }
 }

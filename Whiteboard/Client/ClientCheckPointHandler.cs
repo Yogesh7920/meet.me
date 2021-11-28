@@ -9,19 +9,35 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Whiteboard
 {   
     /// <summary>
     /// Checkpoint handling at client side
     /// </summary>
-    internal class ClientCheckPointHandler : IClientCheckPointHandler
+    public sealed class ClientCheckPointHandler : IClientCheckPointHandler
     {
         // Instances of other class
         private IClientBoardCommunicator _clientBoardCommunicator =ClientBoardCommunicator.Instance;
 
         //no. of checkpoints stored on the server
         private int _checkpointNumber = 0;
+        // Check if running as part of NUnit
+        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
+
+
+        /// <summary>
+        /// Function to set mock communicator when running in test mode.
+        /// </summary>
+        /// <param name="clientBoardCommunicator">ClientBoardCommunicator instance</param>
+        public void SetCommunicator(IClientBoardCommunicator communicator)
+        {
+            if (IsRunningFromNUnit)
+            {
+                _clientBoardCommunicator = communicator;
+            }
+        }
 
         /// <summary>
         /// Gets and sets checkpoint number.
@@ -43,7 +59,7 @@ namespace Whiteboard
         {
             try
             {
-                if (checkpointNumber <= CheckpointNumber)
+                if (checkpointNumber <= _checkpointNumber)
                 {
                     //creating boardServerShape object with FETCH_CHECKPOINT object
                     List<BoardShape> boardShape = null;
