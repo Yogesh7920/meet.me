@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/25/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -80,7 +80,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Creating clone object of this class.
+        /// Creating clone object for this class.
         /// </summary>
         /// <returns>Clone of shape.</returns>
         public override MainShape Clone()
@@ -89,12 +89,24 @@ namespace Whiteboard
             return new Polyline(Height, Width, StrokeWidth, StrokeColor.Clone(), ShapeFill.Clone(), Start.Clone(), Center.Clone(), pointClone, AngleOfRotation);
         }
 
-
+        /// <summary>
+        /// Resizing about center for polyline.
+        /// </summary>
+        /// <param name="start">start of mouse drag.</param>
+        /// <param name="end">end of mouse drag.</param>
+        /// <param name="dragPos">The latch to resize about.</param>
+        /// <returns>Success flag for this operation.</returns>
         public override bool ResizeAboutCenter([NotNull] Coordinate start, [NotNull] Coordinate end, DragPos dragPos)
         {
             return false;
         }
 
+        /// <summary>
+        /// Rotating the shape about center.
+        /// </summary>
+        /// <param name="start">Start of mouse drag.</param>
+        /// <param name="end">End of mouse drag.</param>
+        /// <returns>Success of operation.</returns>
         public override bool Rotate(Coordinate start, Coordinate end)
         {
             return false;

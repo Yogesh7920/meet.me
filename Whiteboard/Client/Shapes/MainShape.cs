@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/22/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -136,7 +136,7 @@ namespace Whiteboard
                 }
                 if (_angleOfRotation > Math.PI)
                 {
-                    _angleOfRotation = - (float)(2 * Math.PI) + _angleOfRotation;
+                    _angleOfRotation = -(float)(2 * Math.PI) + _angleOfRotation;
                 }
                 if (_angleOfRotation <= -Math.PI)
                 {
@@ -150,19 +150,19 @@ namespace Whiteboard
         /// Add a coordinate to the list of points in the shape.
         /// </summary>
         /// <param name="c">Coordinate to add.</param>
-        public void AddToList([NotNull]Coordinate c)
+        public void AddToList([NotNull] Coordinate c)
         {
             if (Points == null)
             {
                 Points = new();
             }
             Points.Add(c);
-        } 
+        }
 
         /// <summary>
         /// Returns the Deep Copy of the list of Points.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Deep copy of the list of points.</returns>
         public List<Coordinate> GetPoints()
         {
             return Points?.ConvertAll(point => new Coordinate(point.R, point.C));
@@ -180,7 +180,7 @@ namespace Whiteboard
         /// <param name="start">The start coordinate of mouse drag.</param>
         /// <param name="end">End coordinate of mouse drag.</param>
         /// <param name="prevShape">Previous shape to modify, if any.</param>
-        /// <returns></returns>
+        /// <returns>The create shape.</returns>
         abstract public MainShape ShapeMaker(Coordinate start, Coordinate end, MainShape prevShape = null);
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace Whiteboard
         /// <returns>True if resizing successful, else false.</returns>
         public virtual bool ResizeAboutCenter([NotNull] Coordinate start, [NotNull] Coordinate end, DragPos dragPos)
         {
-            // Unit vector at an angle AngleOfRotation from x - axis.
+            // Unit vector at an angle AngleOfRotation from x - axis (C axis in this case).
             Vector centerVector = new(Math.Cos(AngleOfRotation), Math.Sin(AngleOfRotation));
 
             // Finding displacement vector.
@@ -247,16 +247,16 @@ namespace Whiteboard
                     Width += 2 * xDelta;
                     break;
                 case DragPos.LEFT:
-                    Width -= 2*xDelta;
+                    Width -= 2 * xDelta;
                     break;
                 case DragPos.RIGHT:
-                    Width += 2*xDelta;
+                    Width += 2 * xDelta;
                     break;
                 case DragPos.TOP:
-                    Height += 2*yDelta;
+                    Height += 2 * yDelta;
                     break;
                 case DragPos.BOTTOM:
-                    Height -= 2*yDelta;
+                    Height -= 2 * yDelta;
                     break;
                 default:
                     return false;

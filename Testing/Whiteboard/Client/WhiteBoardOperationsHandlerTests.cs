@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/27/2021
- * Date Modified: 11/27/2021
+ * Date Modified: 11/28/2021
 **/
 
 using Moq;
@@ -36,7 +36,7 @@ namespace Testing.Whiteboard
         [Test]
         public void ChangeShapeFill_ReceivesValue_ReturnsSameValue()
         {
-            List<UXShape> ret = new List<UXShape>() { new(), new() };
+            List<UXShape> ret = new() { new(), new() };
             _mockBoardOperationsState.Setup(m => m.ChangeShapeFill(It.IsAny<BoardColor>(), It.IsAny<string>())).Returns(ret);
 
             List<UXShape> operations = _handler.ChangeShapeFill(new(0, 0, 0), "<+_+>");
@@ -86,7 +86,7 @@ namespace Testing.Whiteboard
         {
             MockForCreation(new() { new(), new() });
 
-            List<UXShape> operations = _handler.CreateEllipse(new(0,0), new(0,0), 1, new(0,0,0), null, false);
+            List<UXShape> operations = _handler.CreateEllipse(new(0, 0), new(0, 0), 1, new(0, 0, 0), null, false);
             Assert.AreEqual(2, operations.Count);
 
             MockForCreation(null);
