@@ -173,8 +173,8 @@ namespace Testing.Dashboard
         }
 
         [Test]
+        //[TestCase(1, 1)]
         [TestCase(10, 5)]
-        [TestCase(1, 1)]
         [TestCase(2, 1)]
         public void RemoveClientProcedure_ClientDepartsServerSide_ReturnsModifiedSessionObject(int sampleSize, int userIndex)
         {
