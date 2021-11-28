@@ -18,8 +18,7 @@ namespace Testing.UX.Home
         [SetUp]
         public void SetUp()
         {
-            _homePageViewModel = new HomePageViewModel();
-            _viewModelLeave = new HomePageViewModel(new DummyClientSessionManager());
+            _homePageViewModel = new HomePageViewModel(new DummyClientSessionManager());
         }
         [Test]
         public void OnClientSessionChanged_UsersCountIsChanged()
@@ -42,7 +41,7 @@ namespace Testing.UX.Home
         [Test]
         public void OnLeaveClient()
         {
-            _viewModelLeave.LeftClient();
+            _homePageViewModel.LeftClient();
         }
         [Test]
         public void OnPropertyChanged_EventShouldBeRaised()

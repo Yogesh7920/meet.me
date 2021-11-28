@@ -13,6 +13,7 @@ namespace Client.ViewModel
 {
     public class HomePageViewModel : IClientSessionNotifications // Notifies change in list of users.
     {
+        public UserData client; // current client's data
         public List<UserViewData> users
         {
             get; private set;
@@ -22,6 +23,7 @@ namespace Client.ViewModel
             _model = SessionManagerFactory.GetClientSessionManager();
             _model.SubscribeSession(this);
             users = new List<UserViewData>();
+            client.userID = -1;
         }
         /// <summary>
         /// Constructor for testing
@@ -36,6 +38,10 @@ namespace Client.ViewModel
         /// <param name="session">New session object.</param>
         public void OnClientSessionChanged(SessionData session)
         {
+            if(client.userID == -1)
+            {
+                client.userID = (_model.GetUser()).userID;
+            }
             _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
                         DispatcherPriority.Normal,
                         new Action<SessionData>((session) =>
@@ -43,19 +49,29 @@ namespace Client.ViewModel
                             lock (this)
                             {
                                 users.Clear();
-                                foreach (UserData user in session.users)
+                                if (session != null)
                                 {
-                                    UserViewData usernew = new UserViewData();
-                                    usernew.username = user.username;
-                                    if (user.username.Length > 1)
+                                    foreach (UserData user in session.users)
                                     {
-                                        usernew.shortname = (user.username.Substring(0, 2)).ToUpper();
+                                        if(user != null)
+                                        {
+                                            UserViewData usernew = new UserViewData();
+                                            usernew.username = user.username;
+                                            if (user.userID == client.userID)
+                                            {
+                                                usernew.username += " (You)";
+                                            }
+                                            if (user.username.Length > 1)
+                                            {
+                                                usernew.shortname = (user.username.Substring(0, 2)).ToUpper();
+                                            }
+                                            else
+                                            {
+                                                usernew.shortname = (user.username.Substring(0, 1)).ToUpper();
+                                            }
+                                            users.Add(usernew);
+                                        }
                                     }
-                                    else
-                                    {
-                                        usernew.shortname = (user.username.Substring(0, 1)).ToUpper();
-                                    }
-                                    users.Add(usernew);
                                 }
                                 OnPropertyChanged("ListChanged");
                             }
