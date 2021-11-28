@@ -1,9 +1,5 @@
-﻿/**
- * owned by: Irene Casmir
- * created by: Irene Casmir
- * date created: 25/10/2021
- * date modified: 23/11/2021
-**/
+﻿/// <author>Irene Casmir</author>
+/// <created>25/10/2021</created>
 
 using Client.ViewModel;
 using System;
@@ -22,6 +18,7 @@ namespace Client
             AuthViewModel viewmodel = new AuthViewModel();
             this.DataContext = viewmodel;
         }
+        
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
         /// <summary>
         /// Function to launch the window on the center of the screen
@@ -35,10 +32,15 @@ namespace Client
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
         }
+        
+        /// <summary>
+        /// Drag functionality
+        /// </summary>
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
         }
+        
         /// <summary>
         /// Minimize button functionality
         /// </summary>  
@@ -53,24 +55,18 @@ namespace Client
                 this.WindowState = WindowState.Normal;
             }
         }
+        
         /// <summary>
         /// Maximize button functionality
         /// </summary>
         private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
         {
-            /*if (this.WindowState == WindowState.Normal)
-            {
-                this.WindowState = WindowState.Maximized;
-            }
-            else
-            {
-                this.WindowState = WindowState.Normal;
-            }*/
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             this.WindowState = WindowState.Maximized;
             MaximizeButton.Visibility = Visibility.Collapsed;
             RestoreButton.Visibility = Visibility.Visible;
         }
+        
         /// <summary>
         /// Restore button functionality
         /// </summary>
@@ -80,6 +76,7 @@ namespace Client
             RestoreButton.Visibility = Visibility.Collapsed;
             MaximizeButton.Visibility = Visibility.Visible;
         }
+        
         /// <summary>
         /// Close button functionality
         /// </summary>
@@ -87,6 +84,7 @@ namespace Client
         {
             Application.Current.Shutdown();
         }
+        
         /// <summary>
         /// Handler method for Join Room button click
         /// </summary>
@@ -107,7 +105,7 @@ namespace Client
            else
            {
                AuthViewModel viewmodel = this.DataContext as AuthViewModel;
-               var result =  viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
+               var result = viewmodel.SendForAuth(ip, Convert.ToInt32(port), username);
                if (result == true)
                {
                    obj.Show();

@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
- * Date Modified: 11/25/2021
+ * Date Modified: 11/28/2021
 **/
 
 using NUnit.Framework;
@@ -50,7 +50,7 @@ namespace Testing.Whiteboard
                 stopDrag = new Coordinate(4, 0);
                 expectedWidth = GetDiff(stopDrag, start);
                 center = GetCenter(start, stopDrag);
-                yield return new TestCaseData(expectedWidth, center, stopDrag, (float)(3 * Math.PI/4)).SetArgDisplayNames("TopLeftDrag");
+                yield return new TestCaseData(expectedWidth, center, stopDrag, (float)(3 * Math.PI / 4)).SetArgDisplayNames("TopLeftDrag");
                 stopDrag = new Coordinate(0, 0);
                 expectedWidth = GetDiff(stopDrag, start);
                 center = GetCenter(start, stopDrag);
@@ -62,12 +62,24 @@ namespace Testing.Whiteboard
             }
         }
 
+        /// <summary>
+        /// Finding Distance between two coordinates.
+        /// </summary>
+        /// <param name="a">Coordinate</param>
+        /// <param name="b">Coordinate</param>
+        /// <returns>Distance between coordinates.</returns>
         public static float GetDiff(Coordinate a, Coordinate b)
         {
             Coordinate delta = b - a;
             return (float)Math.Sqrt(Math.Pow(delta.R, 2) + Math.Pow(delta.C, 2));
         }
 
+        /// <summary>
+        /// Midpoint between 2 points.
+        /// </summary>
+        /// <param name="a">Coordinate</param>
+        /// <param name="b">Coordinate</param>
+        /// <returns>Midpoint between coordinates.</returns>
         public static Coordinate GetCenter(Coordinate a, Coordinate b)
         {
             return (a + b) / 2;
@@ -148,17 +160,17 @@ namespace Testing.Whiteboard
                 yield return new TestCaseData(new Coordinate(0, mag), 4 + deltaH, 4 + deltaW, dragPos).SetArgDisplayNames("BottomLeft_Inc_H_Inc_W");
 
                 dragPos = DragPos.TOP;
-                yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 + deltaH, 4,dragPos).SetArgDisplayNames("Top_Inc_H");
+                yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 + deltaH, 4, dragPos).SetArgDisplayNames("Top_Inc_H");
 
                 dragPos = DragPos.BOTTOM;
-                yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 - deltaH, 4,dragPos).SetArgDisplayNames("Bottom_Dec_H");
+                yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 - deltaH, 4, dragPos).SetArgDisplayNames("Bottom_Dec_H");
 
                 dragPos = DragPos.RIGHT;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4, 4 + deltaW, dragPos).SetArgDisplayNames("Right_Inc_W");
 
                 dragPos = DragPos.LEFT;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4, 4 - deltaW, dragPos).SetArgDisplayNames("Left_Dec_W");
-                
+
             }
         }
 
@@ -183,11 +195,11 @@ namespace Testing.Whiteboard
                 dragPos = DragPos.TOP_LEFT;
                 yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("TopLeft_W_Dec_1");
                 yield return new TestCaseData(w + changeW, new Coordinate(0, -mag), dragPos).SetArgDisplayNames("TopLeft_W_Inc_1");
-                yield return new TestCaseData(w + changeW, new Coordinate(-mag * sin60, -mag * cos60),  dragPos).SetArgDisplayNames("TopLeft_W_Inc_2");
+                yield return new TestCaseData(w + changeW, new Coordinate(-mag * sin60, -mag * cos60), dragPos).SetArgDisplayNames("TopLeft_W_Inc_2");
                 yield return new TestCaseData(w - changeW, new Coordinate(0, mag), dragPos).SetArgDisplayNames("TopLeft_W_Dec_2");
 
                 dragPos = DragPos.BOTTOM_LEFT;
-                yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60),  dragPos).SetArgDisplayNames("BottomLeft_W_Dec");
+                yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("BottomLeft_W_Dec");
 
                 dragPos = DragPos.BOTTOM_RIGHT;
                 yield return new TestCaseData(w + changeW, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames("BottomRight_W_Inc");

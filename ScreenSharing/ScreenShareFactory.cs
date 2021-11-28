@@ -13,9 +13,6 @@ namespace ScreenSharing
     /// </summary>
     public sealed class ScreenShareFactory
     {
-        private ScreenShareFactory()
-        {
-        }
         private static readonly Lazy<ScreenShareClient> ScreenSharer = new Lazy<ScreenShareClient>(() => new ScreenShareClient());
         public static ScreenShareClient GetScreenSharer(bool isTesting = false)
         {

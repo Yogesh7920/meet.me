@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -59,7 +59,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="dt">DataTime object to be cloned.</param>
         /// <returns>Cloned DateTime object.</returns>
-        private DateTime DataTimeClone(DateTime dt)
+        private static DateTime DataTimeClone(DateTime dt)
         {
             return new(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
         }
