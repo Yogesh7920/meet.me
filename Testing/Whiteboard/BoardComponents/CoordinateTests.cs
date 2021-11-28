@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/25/2021
- * Date Modified: 11/25/2021
+ * Date Modified: 11/28/2021
 **/
 
 using NUnit.Framework;
@@ -28,15 +28,16 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        public void Equals_()
+        public void Equals_CompareValues_ReturnsTrueThenFalse()
         {
             Coordinate a = new(1, 2);
-            Assert.IsTrue(a.Equals(new((float)1.001,(float)1.999)));
+            Assert.IsTrue(a.Equals(new((float)1.001, (float)1.999)));
             Assert.IsFalse(a.Equals(new((float)1.3, (float)2)));
         }
 
         [Test]
-        public void Clone_(){
+        public void Clone_CreateClone_ReturnsClone()
+        {
             Coordinate a = new(1, 2);
             Assert.IsFalse(ReferenceEquals(a, a.Clone()));
             Assert.IsTrue(a.Equals(a.Clone()));
@@ -60,9 +61,9 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        public void Subtract()
+        public void Subtract_SubtractTwoNumbers_ReturnResultant()
         {
-            Coordinate a = new(_random.Next(-5, 10), _random.Next(-5,10));
+            Coordinate a = new(_random.Next(-5, 10), _random.Next(-5, 10));
             Coordinate b = new(_random.Next(-5, 10), _random.Next(-5, 10));
             Coordinate result = new(a.R - b.R, a.C - b.C);
             a.Subtract(b);
@@ -70,7 +71,7 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        public void Add()
+        public void Add_AddTwoNumbers_ReturnsResultant()
         {
             Coordinate a = new(_random.Next(-5, 10), _random.Next(-5, 10));
             Coordinate b = new(_random.Next(-5, 10), _random.Next(-5, 10));
@@ -80,17 +81,26 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        public void Operators(){
+        public void Operators_TestAllOperatorOverloads_ReturnsResultant()
+        {
+
+            // Coordinates to perform operation on
             Coordinate a = new(_random.Next(-5, 10), _random.Next(-5, 10));
             Coordinate b = new(_random.Next(-5, 10), _random.Next(-5, 10));
+
+            // Testing + overload operator
             Coordinate c = a + b;
             Coordinate result = new(a.R + b.R, a.C + b.C);
             Assert.IsTrue(c.Equals(result));
+
+            // Testing - overload operator
             c = a - b;
             result = new(a.R - b.R, a.C - b.C);
             Assert.IsTrue(c.Equals(result));
             result = new(c.R / 2, c.C / 2);
-            c = c / 2;
+
+            // Testing division overload operator
+            c /= 2;
             Assert.IsTrue(c.Equals(result));
             Exception e = Assert.Throws<Exception>(delegate { Coordinate a = (c / 0); });
             Assert.That(e.Message, Is.EqualTo("Division of coordinate by 0."));

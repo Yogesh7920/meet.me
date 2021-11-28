@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
- * Date Modified: 11/25/2021
+ * Date Modified: 11/28/2021
 **/
 
 using NUnit.Framework;
@@ -37,8 +37,8 @@ namespace Testing.Whiteboard
             float strokeWidth = _random.Next(0, 3);
             BoardColor strokeColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
             BoardColor fillColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
-            Coordinate start = new (3, 4);
-            Coordinate center = new (4, 5);
+            Coordinate start = new(3, 4);
+            Coordinate center = new(4, 5);
             float angleOfRotation = (float)3.00;
 
             // creating a line to be cloned
@@ -62,8 +62,8 @@ namespace Testing.Whiteboard
 
             // verify if it is the expected ellipse
             float expectedWidth = (float)Math.Sqrt(8);
-            Comparators.Compare(newLine, new (-1, 2), new(0, 1), 0,
-                                expectedWidth, 1, new(0, 0, 0), new(255, 255, 255), (float)(3 * Math.PI/4));
+            Comparators.Compare(newLine, new(-1, 2), new(0, 1), 0,
+                                expectedWidth, 1, new(0, 0, 0), new(255, 255, 255), (float)(3 * Math.PI / 4));
         }
 
         [Test, TestCaseSource(typeof(TestIterators), "ShapeMaker_PreviousLine_ReturnsModifiedPreviousShape_TestCases")]
@@ -74,11 +74,11 @@ namespace Testing.Whiteboard
             float height = 0;
             float width = (float)Math.Sqrt(8);
             float strokeWidth = 1;
-            BoardColor strokeColor = new (34, 5, 6);
-            BoardColor fillColor = new (34, 5, 64);
+            BoardColor strokeColor = new(34, 5, 6);
+            BoardColor fillColor = new(34, 5, 64);
             Coordinate start = new(2, 2);
-            Coordinate center = new (3, 3);
-            float angleOfRotation = (float)Math.PI/4;
+            Coordinate center = new(3, 3);
+            float angleOfRotation = (float)Math.PI / 4;
 
             // creating a ellipse to be modified by shapeMaker.
             MainShape previousMainShape = new Line(height, width, strokeWidth, strokeColor.Clone(),
@@ -109,7 +109,7 @@ namespace Testing.Whiteboard
             MainShape previousMainShape = new Line(height, width, strokeWidth, strokeColor.Clone(),
                                                    fillColor.Clone(), start.Clone(), center.Clone(), null, angleOfRotation);
 
-            previousMainShape.ResizeAboutCenter(new Coordinate(0,0), end, drapgPos);
+            previousMainShape.ResizeAboutCenter(new Coordinate(0, 0), end, drapgPos);
 
             // check whether the state formed is correct
             Comparators.Compare(previousMainShape, start, center, 0, expectedWidth,
