@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Dashboard;
 
 namespace Testing.Dashboard.SessionManagement
 {
     public static class Utils
     {
-
         public static List<UserData> testUsers;
+
         public static List<UserData> GetUsers()
         {
             testUsers = new List<UserData>();
@@ -33,7 +29,7 @@ namespace Testing.Dashboard.SessionManagement
 
         public static SessionData GetSessionData()
         {
-            SessionData sessionData = new SessionData();
+            var sessionData = new SessionData();
 
             sessionData.AddUser(new UserData("Jake", 1));
             sessionData.AddUser(new UserData("Simon", 2));

@@ -1,5 +1,6 @@
 /// <author>Yuvraj Raghuvanshi</author>
 /// <created>01/11/2021</created>
+
 using System;
 using System.Collections.Generic;
 
@@ -12,26 +13,18 @@ namespace Content
         /// </summary>
         public DateTime CreationTime;
 
+        // dictionary mapping message id to its index in MsgList
+        public Dictionary<int, int> messageIds;
+
         /// <summary>
         ///     List of all the messages in the thread
         /// </summary>
         public List<ReceiveMessageData> MsgList;
 
         /// <summary>
-        ///     Number of messages in the thread
-        /// </summary>
-        public int NumOfMessages
-        {
-            get => MsgList.Count;
-        }
-
-        /// <summary>
         ///     Id of the thread
         /// </summary>
         public int ThreadId;
-
-        // dictionary mapping message id to its index in MsgList
-        public Dictionary<int, int> messageIds;
 
         public ChatContext()
         {
@@ -40,6 +33,11 @@ namespace Content
             ThreadId = -1;
             messageIds = new Dictionary<int, int>();
         }
+
+        /// <summary>
+        ///     Number of messages in the thread
+        /// </summary>
+        public int NumOfMessages => MsgList.Count;
 
         public void AddMessage(ReceiveMessageData msg)
         {
@@ -62,7 +60,7 @@ namespace Content
                 // ensure the message belongs to this chat context
                 if (msg.ReplyThreadId != ThreadId)
                     throw new ArgumentException("Invalid thread id, message doesn't belong in this thread");
-                
+
                 // ensure the message being replied to (if any) is also part of this chat context
                 if (msg.ReplyMsgId != -1 && !messageIds.ContainsKey(msg.ReplyMsgId))
                     throw new ArgumentException("Message being replied to isn't part of the same thread");
@@ -72,33 +70,30 @@ namespace Content
 
                 MsgList.Add(msg);
                 messageIds.Add(msg.MessageId, NumOfMessages - 1);
-
             }
         }
 
         public void UpdateMessage(int messageId, string newMessage)
         {
-
             if (!messageIds.ContainsKey(messageId))
                 throw new ArgumentException("Message with given message id doesn't exist in thread");
 
             if (!MessageIsValid(newMessage))
                 throw new ArgumentException("Invalid message string");
 
-            int index = messageIds[messageId];
+            var index = messageIds[messageId];
             if (MsgList[index].Type != MessageType.Chat)
                 throw new ArgumentException("Message requested for update is not chat");
-            
+
             MsgList[index].Message = newMessage;
         }
 
         public void StarMessage(int messageId)
         {
-
             if (!messageIds.ContainsKey(messageId))
                 throw new ArgumentException("Message with given message id doesn't exist in thread");
 
-            int index = messageIds[messageId];
+            var index = messageIds[messageId];
             if (MsgList[index].Type != MessageType.Chat)
                 throw new ArgumentException("Message requested for update is not chat");
 
@@ -116,15 +111,14 @@ namespace Content
         public bool ContainsMessageId(int messageId)
         {
             if (messageIds.ContainsKey(messageId)) return true;
-            else return false;
+            return false;
         }
 
         private bool MessageIsValid(string message)
         {
             if (message == null || message == "")
                 return false;
-            else
-                return true;
+            return true;
         }
     }
 }

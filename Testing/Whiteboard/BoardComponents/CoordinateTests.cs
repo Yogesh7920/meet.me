@@ -5,34 +5,29 @@
  * Date Modified: 11/28/2021
 **/
 
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NUnit.Framework;
 using Whiteboard;
 
 namespace Testing.Whiteboard
 {
     [TestFixture]
-    class CoordinateTests
+    internal class CoordinateTests
     {
-
-        private Random _random;
-
         [SetUp]
         public void SetUp()
         {
-            _random = new();
+            _random = new Random();
         }
+
+        private Random _random;
 
         [Test]
         public void Equals_CompareValues_ReturnsTrueThenFalse()
         {
             Coordinate a = new(1, 2);
-            Assert.IsTrue(a.Equals(new((float)1.001, (float)1.999)));
-            Assert.IsFalse(a.Equals(new((float)1.3, (float)2)));
+            Assert.IsTrue(a.Equals(new Coordinate((float) 1.001, (float) 1.999)));
+            Assert.IsFalse(a.Equals(new Coordinate((float) 1.3, 2)));
         }
 
         [Test]
@@ -83,26 +78,28 @@ namespace Testing.Whiteboard
         [Test]
         public void Operators_TestAllOperatorOverloads_ReturnsResultant()
         {
-
             // Coordinates to perform operation on
             Coordinate a = new(_random.Next(-5, 10), _random.Next(-5, 10));
             Coordinate b = new(_random.Next(-5, 10), _random.Next(-5, 10));
 
             // Testing + overload operator
-            Coordinate c = a + b;
+            var c = a + b;
             Coordinate result = new(a.R + b.R, a.C + b.C);
             Assert.IsTrue(c.Equals(result));
 
             // Testing - overload operator
             c = a - b;
-            result = new(a.R - b.R, a.C - b.C);
+            result = new Coordinate(a.R - b.R, a.C - b.C);
             Assert.IsTrue(c.Equals(result));
-            result = new(c.R / 2, c.C / 2);
+            result = new Coordinate(c.R / 2, c.C / 2);
 
             // Testing division overload operator
             c /= 2;
             Assert.IsTrue(c.Equals(result));
-            Exception e = Assert.Throws<Exception>(delegate { Coordinate a = (c / 0); });
+            var e = Assert.Throws<Exception>(delegate
+            {
+                var a = c / 0;
+            });
             Assert.That(e.Message, Is.EqualTo("Division of coordinate by 0."));
         }
     }

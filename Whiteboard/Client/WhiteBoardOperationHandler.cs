@@ -8,76 +8,47 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace Whiteboard
 {
     /// <summary>
-    /// Main Handler for Board Operations.
+    ///     Main Handler for Board Operations.
     /// </summary>
     public class WhiteBoardOperationHandler : IWhiteBoardOperationHandler
     {
         /// <summary>
-        /// Size of the Canvas.
+        ///     Checker if the module is running in test mode or not
         /// </summary>
-        private readonly Coordinate _canvasSize;
+        private static readonly bool _isRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies()
+            .Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
 
         /// <summary>
-        /// State the board is in.
-        /// </summary>
-        private BoardOperationsState _boardState;
-
-        /// <summary>
-        /// Storing Handler for Active State.
+        ///     Storing Handler for Active State.
         /// </summary>
         private readonly ActiveBoardOperationsHandler _activeBoardOperationsHandler;
 
         /// <summary>
-        /// Storing Handler for inactive State.
+        ///     Size of the Canvas.
+        /// </summary>
+        private readonly Coordinate _canvasSize;
+
+        /// <summary>
+        ///     Storing Handler for inactive State.
         /// </summary>
         private readonly InactiveBoardOperationsHandler _inactiveBoardOperationsHandler;
 
         /// <summary>
-        /// Identifier denoting the current state of the handler.
+        ///     State the board is in.
+        /// </summary>
+        private BoardOperationsState _boardState;
+
+        /// <summary>
+        ///     Identifier denoting the current state of the handler.
         /// </summary>
         private BoardState _boardStateIdentifier;
 
         /// <summary>
-        /// Checker if the module is running in test mode or not
-        /// </summary>
-        private static readonly bool _isRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
-
-        /// <summary>
-        /// Sets the OperationsHandler to another object for testing.
-        /// </summary>
-        /// <param name="boardState">BoardOperationState to be set.</param>
-        public void SetOperationHandler(BoardOperationsState boardState)
-        {
-            if (_isRunningFromNUnit)
-            {
-                _boardState = boardState;
-            }
-
-        }
-
-        /// <summary>
-        /// Get the current set BoardOperationState.
-        /// Used for testing.
-        /// </summary>
-        /// <returns></returns>
-        public BoardOperationsState GetBoardOperationsState()
-        {
-            if (_isRunningFromNUnit)
-            {
-                return _boardState;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Construction for WhiteBoardOperationHandler.
+        ///     Construction for WhiteBoardOperationHandler.
         /// </summary>
         /// <param name="canvasSize"></param>
         public WhiteBoardOperationHandler(Coordinate canvasSize)
@@ -91,7 +62,7 @@ namespace Whiteboard
 
 
         /// <summary>
-        /// Changes the Fill Color of the shape.
+        ///     Changes the Fill Color of the shape.
         /// </summary>
         /// <param name="shapeFill"> Shape Fill Color. </param>
         /// <param name="shapeId">Id of the shape. </param>
@@ -102,7 +73,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Changes the Stroke Color of the shape outline.
+        ///     Changes the Stroke Color of the shape outline.
         /// </summary>
         /// <param name="strokeColor"> Stroke Color. </param>
         /// <param name="shapeId">Id of the shape. </param>
@@ -113,7 +84,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Changes the thickness of the shape outline stroke.
+        ///     Changes the thickness of the shape outline stroke.
         /// </summary>
         /// <param name="strokeWidth"> Stroke Thickness. </param>
         /// <param name="shapeId">Id of the shape. </param>
@@ -124,7 +95,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Creates Ellipse/Circle.
+        ///     Creates Ellipse/Circle.
         /// </summary>
         /// <param name="start"> Coordinate of mouse down event. </param>
         /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
@@ -133,13 +104,14 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
+        public List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor,
+            string shapeId = null, bool shapeComp = false)
         {
             return _boardState.CreateShape(ShapeType.ELLIPSE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
         /// <summary>
-        /// Creates straight line.
+        ///     Creates straight line.
         /// </summary>
         /// <param name="start"> Coordinate of mouse down event. </param>
         /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
@@ -148,13 +120,14 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
+        public List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor,
+            string shapeId = null, bool shapeComp = false)
         {
             return _boardState.CreateShape(ShapeType.LINE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
         /// <summary>
-        /// Creates Polyline.
+        ///     Creates Polyline.
         /// </summary>
         /// <param name="start"> Coordinate of mouse down event. </param>
         /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
@@ -163,13 +136,15 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
+        public List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor,
+            string shapeId = null, bool shapeComp = false)
         {
-            return _boardState.CreateShape(ShapeType.POLYLINE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
+            return _boardState.CreateShape(ShapeType.POLYLINE, start, end, strokeWidth, strokeColor, shapeId,
+                shapeComp);
         }
 
         /// <summary>
-        /// Creates Rectangle/Square.
+        ///     Creates Rectangle/Square.
         /// </summary>
         /// <param name="start"> Coordinate of mouse down event. </param>
         /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
@@ -178,13 +153,15 @@ namespace Whiteboard
         /// <param name="shapeId"> Id of the shape. Null if shape creation just started. </param>
         /// <param name="shapeComp"> indicative of a mouse up event. </param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
+        public List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth,
+            BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
-            return _boardState.CreateShape(ShapeType.RECTANGLE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
+            return _boardState.CreateShape(ShapeType.RECTANGLE, start, end, strokeWidth, strokeColor, shapeId,
+                shapeComp);
         }
 
         /// <summary>
-        /// Delete the shape with given shape ID.
+        ///     Delete the shape with given shape ID.
         /// </summary>
         /// <param name="shapeId">Id of the shape.</param>
         /// <returns></returns>
@@ -194,7 +171,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Gets owner of the shape with a shape Id.
+        ///     Gets owner of the shape with a shape Id.
         /// </summary>
         /// <param name="shapeId"> Id of the shape. </param>
         /// <returns> User Name. </returns>
@@ -204,16 +181,16 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Performs Redo.
+        ///     Performs Redo.
         /// </summary>
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> Redo()
         {
-            return _boardState.Redo() ?? (new());
+            return _boardState.Redo() ?? new List<UXShape>();
         }
 
         /// <summary>
-        /// Resizes the shape with given shape ID.
+        ///     Resizes the shape with given shape ID.
         /// </summary>
         /// <param name="start"> Coordinate of mouse down event. </param>
         /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
@@ -221,13 +198,14 @@ namespace Whiteboard
         /// <param name="shapeComp"> Indicative of a mouse up event. </param>
         /// <param name="dragPos">The latch used for performing resizing.</param>
         /// <returns> List of UXShapes for UX to render. </returns>
-        public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false)
+        public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragPos,
+            bool shapeComp = false)
         {
             return _boardState.ModifyShapeRealTime(RealTimeOperation.RESIZE, start, end, shapeId, dragPos, shapeComp);
         }
 
         /// <summary>
-        /// Rotates the shape with given shape ID.
+        ///     Rotates the shape with given shape ID.
         /// </summary>
         /// <param name="start"> Coordinate of mouse down event. </param>
         /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
@@ -236,22 +214,26 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, DragPos.NONE, shapeComp);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, DragPos.NONE,
+                shapeComp);
         }
 
         /// <summary>
-        /// Switches WhiteBoard state from active to inactive and vice-versa.
+        ///     Switches WhiteBoard state from active to inactive and vice-versa.
         /// </summary>
         /// <returns> Denotes succesfull state switch. </returns>
         public bool SwitchState()
         {
-            _boardState = (_boardStateIdentifier == BoardState.ACTIVE) ? _inactiveBoardOperationsHandler : _activeBoardOperationsHandler;
-            _boardStateIdentifier = (_boardStateIdentifier == BoardState.ACTIVE) ? BoardState.INACTIVE : BoardState.ACTIVE;
+            _boardState = _boardStateIdentifier == BoardState.ACTIVE
+                ? _inactiveBoardOperationsHandler
+                : _activeBoardOperationsHandler;
+            _boardStateIdentifier =
+                _boardStateIdentifier == BoardState.ACTIVE ? BoardState.INACTIVE : BoardState.ACTIVE;
             return true;
         }
 
         /// <summary>
-        /// Translates the shape with given shape ID.
+        ///     Translates the shape with given shape ID.
         /// </summary>
         /// <param name="start"> Coordinate of mouse down event. </param>
         /// <param name="end"> Current cordinate to display real-time shape creation before/at mouse up event. </param>
@@ -260,25 +242,46 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, DragPos.NONE, shapeComp);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, DragPos.NONE,
+                shapeComp);
         }
 
         /// <summary>
-        /// Performs Undo.
+        ///     Performs Undo.
         /// </summary>
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> Undo()
         {
-            return _boardState.Undo() ?? (new());
+            return _boardState.Undo() ?? new List<UXShape>();
         }
 
         /// <summary>
-        /// Sets user level in operation handler.
+        ///     Sets user level in operation handler.
         /// </summary>
         /// <param name="userlevel">User level of client.</param>
         public void SetUserLevel(int userlevel)
         {
             _boardState.SetUserLevel(userlevel);
+        }
+
+        /// <summary>
+        ///     Sets the OperationsHandler to another object for testing.
+        /// </summary>
+        /// <param name="boardState">BoardOperationState to be set.</param>
+        public void SetOperationHandler(BoardOperationsState boardState)
+        {
+            if (_isRunningFromNUnit) _boardState = boardState;
+        }
+
+        /// <summary>
+        ///     Get the current set BoardOperationState.
+        ///     Used for testing.
+        /// </summary>
+        /// <returns></returns>
+        public BoardOperationsState GetBoardOperationsState()
+        {
+            if (_isRunningFromNUnit) return _boardState;
+            return null;
         }
     }
 }

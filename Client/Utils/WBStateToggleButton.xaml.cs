@@ -31,7 +31,7 @@ namespace Client
         {
             if (!Toggled1)
             {
-                Back.Fill = new SolidColorBrush((Color)Application.Current.Resources["Color4"]);
+                Back.Fill = new SolidColorBrush((Color) Application.Current.Resources["Color4"]);
                 Toggled1 = true;
                 Dot.Margin = RightSide;
             }
@@ -47,7 +47,7 @@ namespace Client
         {
             if (!Toggled1)
             {
-                Back.Fill = new SolidColorBrush((Color)Application.Current.Resources["Color4"]);
+                Back.Fill = new SolidColorBrush((Color) Application.Current.Resources["Color4"]);
                 Toggled1 = true;
                 Dot.Margin = RightSide;
             }

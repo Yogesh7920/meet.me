@@ -5,23 +5,21 @@
 ///		for testing purpose
 /// </summary>
 
-using Content;
 using System.Collections.Generic;
+using Content;
 
 namespace Testing.Dashboard.TestModels
 {
-    class TestContentServer : IContentServer
+    internal class TestContentServer : IContentServer
     {
+        public List<ChatContext> chats;
+
+        public bool gotNotificationToSendMessages;
+
         public TestContentServer()
         {
             gotNotificationToSendMessages = false;
-            chats = new();
-        }
-
-        public void Reset()
-        {
-            gotNotificationToSendMessages = false;
-            chats = new();
+            chats = new List<ChatContext>();
         }
 
         public List<ChatContext> SGetAllMessages()
@@ -36,10 +34,12 @@ namespace Testing.Dashboard.TestModels
 
         public void SSubscribe(IContentListener subscriber)
         {
-
         }
 
-        public bool gotNotificationToSendMessages;
-        public List<ChatContext> chats;
+        public void Reset()
+        {
+            gotNotificationToSendMessages = false;
+            chats = new List<ChatContext>();
+        }
     }
 }

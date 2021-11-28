@@ -6,16 +6,16 @@
 /// </summary>
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Networking;
 
 namespace Testing.Dashboard.SessionManagement.TestModules
 {
     public class FakeCommunicator : ICommunicator
     {
+        public string meetAddress;
+        public string transferredData;
+        public int userCount;
+
         public FakeCommunicator(string address = null)
         {
             userCount = 0;
@@ -24,6 +24,7 @@ namespace Testing.Dashboard.SessionManagement.TestModules
             else
                 meetAddress = address;
         }
+
         public void AddClient<T>(string clientId, T socketObject)
         {
             userCount++;
@@ -49,23 +50,17 @@ namespace Testing.Dashboard.SessionManagement.TestModules
             if (serverIp == null && serverPort == null)
                 return meetAddress;
 
-            if (meetAddress == (serverIp + ":" + serverPort))
+            if (meetAddress == serverIp + ":" + serverPort)
                 return "1";
             return "0";
         }
 
         public void Stop()
         {
-            
         }
 
         public void Subscribe(string identifier, INotificationHandler handler, int priority)
         {
-
         }
-
-        public string meetAddress;
-        public string transferredData;
-        public int userCount;
     }
 }

@@ -3,30 +3,15 @@
 /// <summary>
 ///     This file contains testcases for HomePage.
 /// </summary>
- 
-using System.Collections.Generic;
-using System;
-using System.Threading;
-using System.Net.Sockets;
-using System.ComponentModel;
-using System.IO;
-using NUnit.Framework;
-using Networking;
-using Dashboard;
-using Content;
-using Whiteboard;
-using ScreenSharing;
-using Client;
+
 using Client.ViewModel;
-using static Testing.E2E.Vishal.Utils;
+using NUnit.Framework;
 
 namespace Testing.E2E.Vishal
 {
     [TestFixture]
     public class E2ETestHomePage
     {
-        private HomePageViewModel _viewModel;
-
         [SetUp]
         public void Setup()
         {
@@ -39,6 +24,8 @@ namespace Testing.E2E.Vishal
         {
             // Environment.SetEnvironmentVariable("TEST_MODE", "false");
         }
+
+        private HomePageViewModel _viewModel;
 
         [Test]
         public void ClientJoin()

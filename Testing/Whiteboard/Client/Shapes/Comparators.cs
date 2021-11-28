@@ -5,23 +5,18 @@
  * Date Modified: 11/28/2021
 **/
 
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NUnit.Framework;
 using Whiteboard;
 
 namespace Testing.Whiteboard
 {
     public static class Comparators
     {
-
-        public const float _floatDiff = (float)0.02;
+        public const float _floatDiff = (float) 0.02;
 
         /// <summary>
-        /// Compare the params of shape provided.
+        ///     Compare the params of shape provided.
         /// </summary>
         /// <param name="newMainShape">Shape to be checked</param>
         /// <param name="start">Expected start of shape.</param>
@@ -32,8 +27,9 @@ namespace Testing.Whiteboard
         /// <param name="strokeColor">Expected strokecolor of the shape.</param>
         /// <param name="shapeFill">Expected shapefill of the shape.</param>
         /// <param name="angleOfRotation">Expected angle of rotation of the shape.</param>
-        public static void Compare(MainShape newMainShape, Coordinate start, Coordinate center, float height, float width,
-                            float strokeWidth, BoardColor strokeColor, BoardColor shapeFill, float angleOfRotation)
+        public static void Compare(MainShape newMainShape, Coordinate start, Coordinate center, float height,
+            float width,
+            float strokeWidth, BoardColor strokeColor, BoardColor shapeFill, float angleOfRotation)
         {
             // comparing all the parameters inside newMainShape, with the params, and checking their correctness
             Assert.IsNotNull(newMainShape);
@@ -52,7 +48,7 @@ namespace Testing.Whiteboard
         }
 
         /// <summary>
-        /// Comparing floats.
+        ///     Comparing floats.
         /// </summary>
         /// <param name="a">Float</param>
         /// <param name="b">Float</param>
@@ -64,30 +60,31 @@ namespace Testing.Whiteboard
 
 
         /// <summary>
-        /// Comparing rounded floats.
+        ///     Comparing rounded floats.
         /// </summary>
         /// <param name="a">float.</param>
         /// <param name="b">float.</param>
         /// <returns></returns>
         public static bool AreDecimalEqual(float a, float b)
         {
-            return (Math.Abs(Math.Round(a, 2) - Math.Round(b, 2)) < _floatDiff);
+            return Math.Abs(Math.Round(a, 2) - Math.Round(b, 2)) < _floatDiff;
         }
 
         /// <summary>
-        /// Checking UX shape with desired params.
+        ///     Checking UX shape with desired params.
         /// </summary>
         /// <param name="uxshape">Shape to be checked.</param>
         /// <param name="uXOperation">uxoperation.</param>
         /// <param name="shapetype">shapetype</param>
         /// <param name="translationCord">translation Coordinate.</param>
         /// <param name="angle">angle of rotation.</param>
-        public static void CheckUXShape(UXShape uxshape, UXOperation uXOperation, ShapeType shapetype, Coordinate translationCord, float angle)
+        public static void CheckUXShape(UXShape uxshape, UXOperation uXOperation, ShapeType shapetype,
+            Coordinate translationCord, float angle)
         {
             Assert.AreEqual(shapetype, uxshape.ShapeIdentifier);
             Assert.AreEqual(uXOperation, uxshape.UxOperation);
             Assert.IsTrue(uxshape.TranslationCoordinate.Equals(translationCord));
-            Comparators.CompareFloats(angle, uxshape.AngleOfRotation);
+            CompareFloats(angle, uxshape.AngleOfRotation);
         }
     }
 }

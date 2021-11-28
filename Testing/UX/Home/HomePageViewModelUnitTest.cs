@@ -1,31 +1,32 @@
 ﻿/// <author>P S Harikrishnan</author>
 /// <created>26/11/2021</created>
 
+using System.ComponentModel;
 using Client.ViewModel;
 using Dashboard;
 using NUnit.Framework;
-using System.ComponentModel;
 using static Testing.UX.Home.HomeUtils;
 
 namespace Testing.UX.Home
 {
     [TestFixture]
-    class HomePageViewModelUnitTest
+    internal class HomePageViewModelUnitTest
     {
-        private HomePageViewModel _homePageViewModel;
-
         [SetUp]
         public void SetUp()
         {
             _homePageViewModel = new HomePageViewModel(new DummyClientSessionManager());
         }
+
+        private HomePageViewModel _homePageViewModel;
+
         [Test]
         public void OnClientSessionChanged_UsersCountIsChanged()
         {
             // Arrange
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("User1", 1);
-            UserData sampleUser2 = new UserData("User2", 2);
+            var sampleSession = new SessionData();
+            var sampleUser1 = new UserData("User1", 1);
+            var sampleUser2 = new UserData("User2", 2);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
 
@@ -37,16 +38,18 @@ namespace Testing.UX.Home
             DispatcherUtil.DoEvents();
             Assert.AreEqual(_homePageViewModel.users.Count, 2);
         }
+
         [Test]
         public void OnLeaveClient()
         {
             _homePageViewModel.LeftClient();
         }
+
         [Test]
         public void OnPropertyChanged_EventShouldBeRaised()
         {
-            string samplePropertyName = "";
-            _homePageViewModel.UsersListChanged += delegate (object sender, PropertyChangedEventArgs e)
+            var samplePropertyName = "";
+            _homePageViewModel.UsersListChanged += delegate(object sender, PropertyChangedEventArgs e)
             {
                 samplePropertyName = e.PropertyName;
             };

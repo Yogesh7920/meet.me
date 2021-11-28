@@ -1,21 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net5.0-windows</TargetFramework>
+    <PropertyGroup>
+        <TargetFramework>net5.0-windows</TargetFramework>
 
-		<UseWindowsForms>true</UseWindowsForms>
+        <UseWindowsForms>true</UseWindowsForms>
 
-		<UseWPF>true</UseWPF>
-		<ApplicationIcon />
-		<OutputType>Library</OutputType>
-		<StartupObject />
-	</PropertyGroup>
+        <UseWPF>true</UseWPF>
+        <ApplicationIcon/>
+        <OutputType>Library</OutputType>
+        <StartupObject/>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Drawing.Common" Version="5.0.2"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Networking\Networking.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Networking\Networking.csproj"/>
+    </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 /// <summary>
 ///     This file handles all the chat messages
 /// </summary>
+
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -13,7 +14,7 @@ namespace Content
         private readonly ContentDatabase _contentDatabase;
 
         /// <summary>
-        /// Constructor for ChatContextServer, initializes the contentDatabse
+        ///     Constructor for ChatContextServer, initializes the contentDatabse
         /// </summary>
         /// <param name="contentDatabase"></param>
         public ChatContextServer(ContentDatabase contentDatabase)
@@ -22,7 +23,7 @@ namespace Content
         }
 
         /// <summary>
-        /// Handles the chat messages received based on the event
+        ///     Handles the chat messages received based on the event
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new message</returns>
@@ -43,7 +44,8 @@ namespace Content
 
                 case MessageEvent.Update:
                     Trace.WriteLine("[ChatContextServer] Event is Update, Updating message in existing Thread");
-                    receiveMessageData = UpdateMessage(messageData.ReplyThreadId, messageData.MessageId, messageData.Message);
+                    receiveMessageData = UpdateMessage(messageData.ReplyThreadId, messageData.MessageId,
+                        messageData.Message);
                     break;
 
                 default:
@@ -52,13 +54,10 @@ namespace Content
             }
 
             // If this is null that means message was not found, return null
-            if (receiveMessageData == null)
-            {
-                return null;
-            }
+            if (receiveMessageData == null) return null;
 
             // Else create a MessageData object from ReceiveMessageData and return that to be notified to clients
-            MessageData notifyMessageData = new MessageData(receiveMessageData)
+            var notifyMessageData = new MessageData(receiveMessageData)
             {
                 Event = messageData.Event
             };
@@ -66,7 +65,7 @@ namespace Content
         }
 
         /// <summary>
-        /// Gets all the messages on the server
+        ///     Gets all the messages on the server
         /// </summary>
         /// <returns>Returns List of all Chat Contexts</returns>
         public List<ChatContext> GetAllMessages()
@@ -75,18 +74,19 @@ namespace Content
         }
 
         /// <summary>
-        /// Stars a message
+        ///     Stars a message
         /// </summary>
         /// <param name="receiveMessageData"></param>
         /// <returns>Returns the message after starring it</returns>
         private ReceiveMessageData StarMessage(int replyThreadId, int messageId)
         {
-            ReceiveMessageData message = _contentDatabase.GetMessage(replyThreadId, messageId);
+            var message = _contentDatabase.GetMessage(replyThreadId, messageId);
 
             // If ContentDatabase returns null that means the message doesn't exists, return null
             if (message == null)
             {
-                Trace.WriteLine($"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
+                Trace.WriteLine(
+                    $"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
                 return null;
             }
 
@@ -96,18 +96,19 @@ namespace Content
         }
 
         /// <summary>
-        /// Updates the message
+        ///     Updates the message
         /// </summary>
         /// <param name="receiveMessageData"></param>
         /// <returns>Returns the message after updating it</returns>
         private ReceiveMessageData UpdateMessage(int replyThreadId, int messageId, string msgString)
         {
-            ReceiveMessageData message = _contentDatabase.GetMessage(replyThreadId, messageId);
+            var message = _contentDatabase.GetMessage(replyThreadId, messageId);
 
             // If ContentDatabase returns null that means the message doesn't exists, return null
             if (message == null)
             {
-                Trace.WriteLine($"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
+                Trace.WriteLine(
+                    $"[ChatContextServer] Message not found replyThreadID: {replyThreadId}, messageId: {messageId}.");
                 return null;
             }
 

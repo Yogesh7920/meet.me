@@ -4,20 +4,12 @@
 ///     This file contains testcases for ChatPage.
 /// </summary>
 
-using System.Collections.Generic;
 using System;
-using System.Threading;
-using System.Net.Sockets;
-using System.ComponentModel;
-using System.IO;
-using NUnit.Framework;
-using Networking;
-using Dashboard;
-using Content;
-using Whiteboard;
-using ScreenSharing;
-using Client;
+using System.Collections.Generic;
 using Client.ViewModel;
+using Content;
+using Dashboard;
+using NUnit.Framework;
 using static Testing.E2E.Vishal.Utils;
 
 namespace Testing.E2E.Vishal
@@ -25,8 +17,6 @@ namespace Testing.E2E.Vishal
     [TestFixture]
     public class E2ETestChatPage
     {
-        private ChatViewModel _viewModel;
-
         [SetUp]
         public void Setup()
         {
@@ -40,14 +30,16 @@ namespace Testing.E2E.Vishal
             //Environment.SetEnvironmentVariable("TEST_MODE", "false");
         }
 
+        private ChatViewModel _viewModel;
+
         [Test]
         public void ClientJoin()
         {
             // Arrange
-            SessionData sampleSession = new SessionData();
+            var sampleSession = new SessionData();
             // create users
-            UserData sampleUser1 = new UserData("Vishal", 46);
-            UserData sampleUser2 = new UserData("User2", 56);
+            var sampleUser1 = new UserData("Vishal", 46);
+            var sampleUser2 = new UserData("User2", 56);
             sampleSession.AddUser(sampleUser1);
 
             // Act
@@ -74,7 +66,7 @@ namespace Testing.E2E.Vishal
         public void SendingAndReceivingChat()
         {
             //Arrange
-            ReceiveMessageData sampleMessageData = new ReceiveMessageData();
+            var sampleMessageData = new ReceiveMessageData();
             sampleMessageData.Event = MessageEvent.NewMessage;
             sampleMessageData.Message = "Hey Vishal";
             sampleMessageData.MessageId = 1;
@@ -85,9 +77,9 @@ namespace Testing.E2E.Vishal
             sampleMessageData.Starred = false;
             sampleMessageData.Type = MessageType.Chat;
 
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("Vishal", 46);
-            UserData sampleUser2 = new UserData("User2", 56);
+            var sampleSession = new SessionData();
+            var sampleUser1 = new UserData("Vishal", 46);
+            var sampleUser2 = new UserData("User2", 56);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
 
@@ -105,17 +97,16 @@ namespace Testing.E2E.Vishal
             Assert.AreEqual(_viewModel.ReceivedMsg.TextMessage, "Hey Vishal");
             Assert.AreEqual(_viewModel.ReceivedMsg.ReplyMessage, "");
             Assert.AreEqual(_viewModel.ReceivedMsg.Type, true);
-
         }
 
         [Test]
         public void ChatAndReply()
         {
             //Arrange
-            List<ChatContext> sampleAllMessages = new List<ChatContext>();
-            ChatContext sampleChatContext = new ChatContext();
-            ReceiveMessageData sampleMessageData1 = new ReceiveMessageData();
-            ReceiveMessageData sampleMessageData2 = new ReceiveMessageData();
+            var sampleAllMessages = new List<ChatContext>();
+            var sampleChatContext = new ChatContext();
+            var sampleMessageData1 = new ReceiveMessageData();
+            var sampleMessageData2 = new ReceiveMessageData();
 
             sampleMessageData1.Event = MessageEvent.NewMessage;
             sampleMessageData1.Message = "Hey Vishal";
@@ -137,15 +128,15 @@ namespace Testing.E2E.Vishal
             sampleMessageData2.Starred = false;
             sampleMessageData2.Type = MessageType.Chat;
 
-            List<ReceiveMessageData> sampleMsgList = new List<ReceiveMessageData>();
+            var sampleMsgList = new List<ReceiveMessageData>();
             sampleMsgList.Add(sampleMessageData1);
             sampleMsgList.Add(sampleMessageData2);
             sampleChatContext.MsgList = sampleMsgList;
             sampleAllMessages.Add(sampleChatContext);
 
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("Vishal", 46);
-            UserData sampleUser2 = new UserData("User2", 56);
+            var sampleSession = new SessionData();
+            var sampleUser1 = new UserData("Vishal", 46);
+            var sampleUser2 = new UserData("User2", 56);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
 
@@ -169,7 +160,7 @@ namespace Testing.E2E.Vishal
         public void SendingAndReceivingFile()
         {
             //Arrange
-            ReceiveMessageData sampleMessageData = new ReceiveMessageData();
+            var sampleMessageData = new ReceiveMessageData();
             sampleMessageData.Event = MessageEvent.NewMessage;
             sampleMessageData.Message = "Foo.pdf";
             sampleMessageData.MessageId = 1;
@@ -180,9 +171,9 @@ namespace Testing.E2E.Vishal
             sampleMessageData.Starred = false;
             sampleMessageData.Type = MessageType.File;
 
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("Vishal", 46);
-            UserData sampleUser2 = new UserData("User2", 56);
+            var sampleSession = new SessionData();
+            var sampleUser1 = new UserData("Vishal", 46);
+            var sampleUser2 = new UserData("User2", 56);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
 

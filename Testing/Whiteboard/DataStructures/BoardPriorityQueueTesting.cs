@@ -7,23 +7,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using Whiteboard;
 
 namespace Testing.Whiteboard
 {
     [TestFixture]
-    class BoardPriorityQueueTesting
+    internal class BoardPriorityQueueTesting
     {
-        private BoardPriorityQueue _boardPriorityQueue;
-
         [SetUp]
         public void SetUp()
         {
-            _boardPriorityQueue = new();
+            _boardPriorityQueue = new BoardPriorityQueue();
         }
 
         [TearDown]
@@ -32,6 +27,8 @@ namespace Testing.Whiteboard
             _boardPriorityQueue = null;
             GC.Collect();
         }
+
+        private BoardPriorityQueue _boardPriorityQueue;
 
         [Test]
         public void Top_PriorityQueueEmpty_ReturnsNull()
@@ -46,7 +43,7 @@ namespace Testing.Whiteboard
         public void Top_PriorityQueueFilled_ReturnsLatest(int noOfInsertions)
         {
             // Arrange
-            List<QueueElement> queueElements = InsertNRandomUniqueElements(noOfInsertions);
+            var queueElements = InsertNRandomUniqueElements(noOfInsertions);
 
             // Act and Assert
             Assert.AreEqual(queueElements[noOfInsertions - 1], _boardPriorityQueue.Top());
@@ -94,7 +91,11 @@ namespace Testing.Whiteboard
         public void Insert_InsertList_SizeIncrease()
         {
             // Arrange
-            List<QueueElement> list = new() { GetRandomQueueElement(10, "1", "second"), GetRandomQueueElement(10, "2", "second"), GetRandomQueueElement(10, "3", "second") };
+            List<QueueElement> list = new()
+            {
+                GetRandomQueueElement(10, "1", "second"), GetRandomQueueElement(10, "2", "second"),
+                GetRandomQueueElement(10, "3", "second")
+            };
 
             // Act
             _boardPriorityQueue.Insert(list);
@@ -129,14 +130,16 @@ namespace Testing.Whiteboard
         [TestCase(2, 2)]
         [TestCase(2, 3)]
         [TestCase(0, 0)]
-        public void IncreaseTimestamp_QueueElementIndexOutOfRange_ThrowsIndexOutOfRangeException(int noOfInsertions, int index)
+        public void IncreaseTimestamp_QueueElementIndexOutOfRange_ThrowsIndexOutOfRangeException(int noOfInsertions,
+            int index)
         {
             // Arrange
             var list = InsertNRandomUniqueElements(noOfInsertions);
             QueueElement queueElement = new("1", DateTime.Now, index);
 
             // Act and Assert
-            Assert.Throws<IndexOutOfRangeException>(() => _boardPriorityQueue.IncreaseTimestamp(queueElement, DateTime.Now));
+            Assert.Throws<IndexOutOfRangeException>(() =>
+                _boardPriorityQueue.IncreaseTimestamp(queueElement, DateTime.Now));
         }
 
         [Test]
@@ -146,7 +149,8 @@ namespace Testing.Whiteboard
             var list = InsertNRandomUniqueElements(1);
 
             // Act
-            Assert.Throws<InvalidOperationException>(() => _boardPriorityQueue.IncreaseTimestamp(list[0], list[0].Timestamp.AddSeconds(-100)));
+            Assert.Throws<InvalidOperationException>(() =>
+                _boardPriorityQueue.IncreaseTimestamp(list[0], list[0].Timestamp.AddSeconds(-100)));
         }
 
         [Test]
@@ -154,11 +158,11 @@ namespace Testing.Whiteboard
         {
             // Arrange
             // q3 q1 q2
-            DateTime dateTime = DateTime.Now;
+            var dateTime = DateTime.Now;
             QueueElement q1 = new("1", dateTime);
             QueueElement q2 = new("2", dateTime.AddSeconds(10));
             QueueElement q3 = new("3", dateTime.AddSeconds(20));
-            _boardPriorityQueue.Insert(new List<QueueElement>() { q1, q2, q3 });
+            _boardPriorityQueue.Insert(new List<QueueElement> {q1, q2, q3});
 
             // Act`
             _boardPriorityQueue.IncreaseTimestamp(q1, dateTime.AddMinutes(1));
@@ -191,7 +195,7 @@ namespace Testing.Whiteboard
         public void DeleteElement_ValidIndex_SizeDecreaase(int noOfInsertions, int expected)
         {
             // Arrange
-            List<QueueElement> list = InsertNRandomUniqueElements(noOfInsertions);
+            var list = InsertNRandomUniqueElements(noOfInsertions);
 
             // Act 
             _boardPriorityQueue.DeleteElement(list[0]);
@@ -242,31 +246,27 @@ namespace Testing.Whiteboard
         private static QueueElement GetRandomQueueElement(int randomVal, string id, string specifier)
         {
             if (specifier == "second")
-            {
-                return new(id, DateTime.Now.AddSeconds(new Random().Next(randomVal)));
-            }
-            else if (specifier == "minutes")
-            {
-                return new(id, DateTime.Now.AddMinutes(new Random().Next(randomVal)));
-            }
-            else
-            {
-                return null;
-            }
+                return new QueueElement(id, DateTime.Now.AddSeconds(new Random().Next(randomVal)));
+            if (specifier == "minutes")
+                return new QueueElement(id, DateTime.Now.AddMinutes(new Random().Next(randomVal)));
+            return null;
         }
 
         private List<QueueElement> InsertNRandomUniqueElements(int n)
         {
             List<QueueElement> queueElements = new();
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
-                QueueElement queueElement = GetRandomQueueElement(100, i.ToString(), "minutes");
+                var queueElement = GetRandomQueueElement(100, i.ToString(), "minutes");
                 queueElements.Add(queueElement);
                 _boardPriorityQueue.Insert(queueElement);
             }
-            queueElements.Sort(delegate (QueueElement e1, QueueElement e2) { return e1.Timestamp.CompareTo(e2.Timestamp); });
-            return queueElements;
 
+            queueElements.Sort(delegate(QueueElement e1, QueueElement e2)
+            {
+                return e1.Timestamp.CompareTo(e2.Timestamp);
+            });
+            return queueElements;
         }
     }
 }

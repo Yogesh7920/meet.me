@@ -5,13 +5,13 @@
  * Date Modified: 26 Nov 2021
 **/
 
-using Whiteboard;
 using NUnit.Framework;
+using Whiteboard;
 
 namespace Testing.Whiteboard
 {
     [TestFixture]
-    class ServerBoardCommunicatorTesting
+    internal class ServerBoardCommunicatorTesting
     {
         [Test]
         public void Instance_Always_ReturnsSameInstance()

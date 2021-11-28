@@ -7,20 +7,31 @@
 
 namespace ScreenSharing
 {
-
     public class SharedScreen
     {
+        // Stores the type of message.
+        public int MessageType;
+
+        // Stores the screen
+        public byte[] Screen;
+
+        // Stores the user Id of the user sharing the screen
+        public string UserId;
+
+        // Stores the user name of the user sharing the screen
+        public string Username;
+
         /// <summary>
-        /// /// <summary>
-        /// unparametrized constructor necessary for serialization.
-        /// </summary>
+        ///     ///
+        ///     <summary>
+        ///         unparametrized constructor necessary for serialization.
+        ///     </summary>
         public SharedScreen()
         {
-
         }
 
         /// <summary>
-        /// parametrized constructor.
+        ///     parametrized constructor.
         /// </summary>
         public SharedScreen(string uid, string uname, int mtype, byte[] data)
         {
@@ -29,17 +40,5 @@ namespace ScreenSharing
             MessageType = mtype;
             Screen = data;
         }
-
-        // Stores the user Id of the user sharing the screen
-        public string UserId;
-
-        // Stores the user name of the user sharing the screen
-        public string Username;
-
-        // Stores the type of message.
-        public int MessageType;
-
-        // Stores the screen
-        public byte[] Screen;
     }
 }

@@ -5,43 +5,39 @@
  * Date Modified: 11/28/2021
 **/
 
+using System;
+using System.Threading;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Whiteboard;
 
 namespace Testing.Whiteboard
 {
     [TestFixture]
     [Apartment(ApartmentState.STA)]
-    class InactiveBoardOperationsHandlerTests
+    internal class InactiveBoardOperationsHandlerTests
     {
-        private InactiveBoardOperationsHandler _handler;
-        private Mock<IClientBoardStateManagerInternal> _mockStateManager;
-
         [SetUp]
         public void SetUp()
         {
             _handler = new InactiveBoardOperationsHandler();
-            _mockStateManager = new();
+            _mockStateManager = new Mock<IClientBoardStateManagerInternal>();
             _handler.SetStateManager(_mockStateManager.Object);
         }
+
+        private InactiveBoardOperationsHandler _handler;
+        private Mock<IClientBoardStateManagerInternal> _mockStateManager;
 
         [Test]
         public void ChangeShapeFill_RequestChange_ReturnsEmptyList()
         {
-            Assert.IsEmpty(_handler.ChangeShapeFill(new(0, 0, 0), "123"));
+            Assert.IsEmpty(_handler.ChangeShapeFill(new BoardColor(0, 0, 0), "123"));
         }
 
         [Test]
         public void ChangeStrokeColor_RequestChange_ReturnsEmptyList()
         {
-            Assert.IsEmpty(_handler.ChangeStrokeColor(new(0, 0, 0), "123"));
+            Assert.IsEmpty(_handler.ChangeStrokeColor(new BoardColor(0, 0, 0), "123"));
         }
 
         [Test]
@@ -53,22 +49,23 @@ namespace Testing.Whiteboard
         [Test]
         public void CreateShape_RequestChange_ReturnsEmptyList()
         {
-            Assert.IsEmpty(_handler.CreateShape(ShapeType.ELLIPSE, new(0, 0), new(0, 0), 1, new(0, 0, 0), "12"));
+            Assert.IsEmpty(_handler.CreateShape(ShapeType.ELLIPSE, new Coordinate(0, 0), new Coordinate(0, 0), 1,
+                new BoardColor(0, 0, 0), "12"));
         }
 
         [Test]
         public void ModifyShapeRealTime_InactiveStateCreation_ReturnUndoList()
         {
             // setup return value from manager.
-            string uid = "123";
-            MainShape mainShape = new Line(2, 2, new(1, 1), new(2, 2));
+            var uid = "123";
+            MainShape mainShape = new Line(2, 2, new Coordinate(1, 1), new Coordinate(2, 2));
             BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.CREATE);
             _mockStateManager.Setup(m => m.GetBoardShape(It.IsAny<string>())).Returns(shape);
 
             // shape creation.
             Coordinate start = new(1, 1);
             Coordinate end = new(2, 2);
-            List<UXShape> operations = _handler.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, uid, DragPos.NONE);
+            var operations = _handler.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, uid, DragPos.NONE);
 
             // Assertions to verify the correctness.
             Assert.AreEqual(2, operations.Count);
@@ -88,7 +85,7 @@ namespace Testing.Whiteboard
             // shape creation.
             Coordinate start = new(1, 1);
             Coordinate end = new(2, 2);
-            List<UXShape> operations = _handler.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, "uid", DragPos.NONE);
+            var operations = _handler.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, "uid", DragPos.NONE);
 
             // Assertions to verify the correctness.
             Assert.AreEqual(null, operations);
@@ -111,6 +108,5 @@ namespace Testing.Whiteboard
         {
             Assert.IsEmpty(_handler.Redo());
         }
-
     }
 }

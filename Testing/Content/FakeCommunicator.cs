@@ -5,20 +5,18 @@
 /// This file contains Fake communicator which will mimic network's ICommunicator for testing purpose 
 /// </summary>
 
-using System.Collections.Generic;
-using System.Diagnostics;
-using Networking;
-using Content;
 using System;
+using System.Collections.Generic;
+using Networking;
 
 namespace Testing.Content
 {
     public class FakeCommunicator : ICommunicator
     {
-        private string _sendSerializedStr;
-        private List<INotificationHandler> _subscribers;
         private bool _isBroadcast;
         private List<string> _receiverIds;
+        private string _sendSerializedStr;
+        private readonly List<INotificationHandler> _subscribers;
 
         public FakeCommunicator()
         {
@@ -69,13 +67,7 @@ namespace Testing.Content
             _sendSerializedStr = "";
             _sendSerializedStr = data;
             _isBroadcast = true;
-            _receiverIds = new List<string> { };
-        }
-
-        public void Reset()
-        {
-            _isBroadcast = false;
-            _receiverIds = new List<string> { };
+            _receiverIds = new List<string>();
         }
 
         /// <summary>
@@ -92,6 +84,23 @@ namespace Testing.Content
             _sendSerializedStr = data;
         }
 
+        /// <summary>
+        ///     Provides a subscription to the modules for listening for the data over the network.
+        /// </summary>
+        /// <param name="identifier">Module Identifier.</param>
+        /// <param name="handler">Module implementation of handler; called to notify about an incoming message.</param>
+        /// <param name="priority">Priority Number indicating the weight in queue to be given to the module.</param>
+        public void Subscribe(string identifier, INotificationHandler handler, int priority = 1)
+        {
+            _subscribers.Add(handler);
+        }
+
+        public void Reset()
+        {
+            _isBroadcast = false;
+            _receiverIds = new List<string>();
+        }
+
         public string GetSentData()
         {
             return _sendSerializedStr;
@@ -104,20 +113,9 @@ namespace Testing.Content
 
         public bool GetIsBroadcast()
         {
-            bool flag = _isBroadcast;
+            var flag = _isBroadcast;
             Reset();
             return flag;
-        }
-
-        /// <summary>
-        ///     Provides a subscription to the modules for listening for the data over the network.
-        /// </summary>
-        /// <param name="identifier">Module Identifier.</param>
-        /// <param name="handler">Module implementation of handler; called to notify about an incoming message.</param>
-        /// <param name="priority">Priority Number indicating the weight in queue to be given to the module.</param>
-        public void Subscribe(string identifier, INotificationHandler handler, int priority = 1)
-        {
-            _subscribers.Add(handler);
         }
 
         public void Notify(string data)

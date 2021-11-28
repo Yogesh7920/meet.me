@@ -14,15 +14,9 @@ using NUnit.Framework;
 
 namespace Testing.E2E.Yogesh
 {
-    
     [TestFixture]
     public class Dashboard
     {
-        private ISerializer _serializer;
-        private ServerSessionManager _serverSessionManager;
-        private ClientSessionManager _clientSessionManager;
-        private ContentServer _contentServer;
-        
         [OneTimeSetUp]
         public void Setup()
         {
@@ -33,14 +27,19 @@ namespace Testing.E2E.Yogesh
             _contentServer = new ContentServer();
         }
 
-        void AddChat(string message)
+        private ISerializer _serializer;
+        private ServerSessionManager _serverSessionManager;
+        private ClientSessionManager _clientSessionManager;
+        private ContentServer _contentServer;
+
+        private void AddChat(string message)
         {
             var chatViewModel = new ChatViewModel();
             chatViewModel.SendChat(message, -1);
             var serializedData = File.ReadAllText("networking_output.json");
             _contentServer.Receive(serializedData);
         }
-            
+
         [Test]
         [TestCase("127.0.0.1", 8080, "Yogesh", false)]
         [TestCase("127.0.0.1", 8080, "    ", true)] // username cannot be space.
@@ -68,7 +67,6 @@ namespace Testing.E2E.Yogesh
         [Test]
         public void GetTelemetry()
         {
-            
             ClientArrival("127.0.0.1", 8080, "ABC", false);
 
             var dashboardViewModel = new DashboardViewModel();
@@ -91,19 +89,18 @@ namespace Testing.E2E.Yogesh
             var serializedData = File.ReadAllText("networking_output.json");
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
             Assert.AreEqual(dataSent.eventType, "getSummary");
-            
+
             AddChat("Hello");
             AddChat("Hi");
-            
+
             var serverSessionManager =
                 new ServerSessionManager(CommunicationFactory.GetCommunicator(false), _contentServer);
-            
+
             serverSessionManager.OnDataReceived(serializedData);
             serializedData = File.ReadAllText("networking_output.json");
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
             Assert.AreEqual(dataReceived.eventType, "getSummary");
             _clientSessionManager.OnDataReceived(serializedData);
-            
         }
 
         [Test]
@@ -112,7 +109,7 @@ namespace Testing.E2E.Yogesh
         {
             var serverSessionManager =
                 new ServerSessionManager(CommunicationFactory.GetCommunicator(false), _contentServer);
-            
+
             var authViewModel = new AuthViewModel();
             var valid = authViewModel.SendForAuth("127.0.0.1", 8080, "Yogesh");
             var serializedData = File.ReadAllText("networking_output.json");
@@ -120,7 +117,7 @@ namespace Testing.E2E.Yogesh
             serverSessionManager.OnDataReceived(serializedData);
             serializedData = File.ReadAllText("networking_output.json");
             _clientSessionManager.OnDataReceived(serializedData);
-            
+
             AddChat("Hello");
             AddChat("Hi");
 
@@ -131,12 +128,11 @@ namespace Testing.E2E.Yogesh
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
             Assert.AreEqual(dataSent.eventType, "removeClient");
             serverSessionManager.OnDataReceived(serializedData);
-            
+
             serializedData = File.ReadAllText("networking_output.json");
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
             Assert.AreEqual(dataReceived.eventType, "endMeet"); // Since the only user is leaving
             _clientSessionManager.OnDataReceived(serializedData);
         }
-
     }
 }

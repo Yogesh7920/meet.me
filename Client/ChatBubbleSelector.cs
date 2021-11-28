@@ -33,7 +33,7 @@ namespace Client
         public DataTemplate FromFileBubble { get; set; }
 
         /// <summary>
-        ///     Checks whether the message is send or received and whether 
+        ///     Checks whether the message is send or received and whether
         ///     it's a chat or a file and returns the appropriate template
         /// </summary>
         /// <param name="item"> The message object </param>
@@ -41,16 +41,11 @@ namespace Client
         /// <returns> Appropriate DataTemplate </returns>
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            Message message = item as Message;
+            var message = item as Message;
 
             if (message.ToFrom)
-            {
-                return message.Type == true ? ToMsgBubble : ToFileBubble;
-            }
-            else
-            {
-                return message.Type == true ? FromMsgBubble : FromFileBubble;
-            }
+                return message.Type ? ToMsgBubble : ToFileBubble;
+            return message.Type ? FromMsgBubble : FromFileBubble;
         }
     }
 }

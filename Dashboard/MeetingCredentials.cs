@@ -4,19 +4,16 @@
 /// This file contains the MeetinCredentials class used for storing the meeting credentials of the user.
 /// </summary>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Dashboard
 {
     public class MeetingCredentials
     {
+        public string ipAddress;
+        public int port;
+
         /// <summary>
-        /// Instances of this class will store the 
-        /// credentrials required to join/start
+        ///     Instances of this class will store the
+        ///     credentrials required to join/start
         /// </summary>
         /// <param name="address"> String parameter to store the IP Address </param>
         /// <param name="portNumber"> Int parameter for the port number </param>
@@ -25,7 +22,5 @@ namespace Dashboard
             ipAddress = address;
             port = portNumber;
         }
-        public string ipAddress;
-        public int port;
     }
 }

@@ -1,8 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:local="clr-namespace:Client">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Color x:Key="Color1">#FF340051</Color>
     <Color x:Key="Color2">#FF8522BD</Color>
@@ -10,13 +7,13 @@
     <Color x:Key="Color4">#D500F9</Color>
     <Color x:Key="Color5">White</Color>
     <Color x:Key="Color6">#830394</Color>
-    
-    <SolidColorBrush x:Key="Color1Bg" Color="#FF340051"></SolidColorBrush>
-    <SolidColorBrush x:Key="Color2Bg" Color="#FF8522BD"></SolidColorBrush>
-    <SolidColorBrush x:Key="Color3Bg" Color="#FFCFCFCF"></SolidColorBrush>
-    <SolidColorBrush x:Key="Color4Bg" Color="#D500F9"></SolidColorBrush>
-    <SolidColorBrush x:Key="Color5Bg" Color="White"></SolidColorBrush>
-    <SolidColorBrush x:Key="Color6Bg" Color="#830394"></SolidColorBrush>
-    <SolidColorBrush x:Key="Color7Bg" Color="LightGray"></SolidColorBrush>
+
+    <SolidColorBrush x:Key="Color1Bg" Color="#FF340051" />
+    <SolidColorBrush x:Key="Color2Bg" Color="#FF8522BD" />
+    <SolidColorBrush x:Key="Color3Bg" Color="#FFCFCFCF" />
+    <SolidColorBrush x:Key="Color4Bg" Color="#D500F9" />
+    <SolidColorBrush x:Key="Color5Bg" Color="White" />
+    <SolidColorBrush x:Key="Color6Bg" Color="#830394" />
+    <SolidColorBrush x:Key="Color7Bg" Color="LightGray" />
 
 </ResourceDictionary>

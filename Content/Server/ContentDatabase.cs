@@ -3,6 +3,7 @@
 /// <summary>
 ///     This files handles storing and fecthing files and chats to and from memory
 /// </summary>
+
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -12,12 +13,12 @@ namespace Content
 {
     internal class ContentDatabase
     {
-        private readonly Dictionary<int, MessageData> _files;
         private readonly List<ChatContext> _chatContexts;
         private readonly Dictionary<int, int> _chatContextsMap;
+        private readonly Dictionary<int, MessageData> _files;
 
         /// <summary>
-        /// Constructor for ContentDatabase, initilizes all the member variables.
+        ///     Constructor for ContentDatabase, initilizes all the member variables.
         /// </summary>
         public ContentDatabase()
         {
@@ -29,35 +30,32 @@ namespace Content
         }
 
         /// <summary>
-        /// Stores Files in a map
+        ///     Stores Files in a map
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the data that was stored</returns>
         public MessageData StoreFile(MessageData messageData)
         {
-            MessageData message = StoreMessage(messageData);
+            var message = StoreMessage(messageData);
             _files[message.MessageId] = messageData;
             return message;
         }
 
         /// <summary>
-        /// Fectches the files from a map based on the messageId.
+        ///     Fectches the files from a map based on the messageId.
         /// </summary>
         /// <param name="messageId"></param>
         /// <returns>Returns the stored file</returns>
         public MessageData GetFiles(int messageId)
         {
             // If requested messageId is not in the map return null
-            if (!_files.ContainsKey(messageId))
-            {
-                return null;
-            }
+            if (!_files.ContainsKey(messageId)) return null;
             return _files[messageId];
         }
 
         /// <summary>
-        /// Stores a message in _chatContexts, if a message is part of already existing thread appends the message to it
-        /// else creates a new thread and appends the message to the new thread.
+        ///     Stores a message in _chatContexts, if a message is part of already existing thread appends the message to it
+        ///     else creates a new thread and appends the message to the new thread.
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Retuns the new message stored</returns>
@@ -67,16 +65,16 @@ namespace Content
             // If message is a part of already existing chatContext
             if (_chatContextsMap.ContainsKey(messageData.ReplyThreadId))
             {
-                int threadIndex = _chatContextsMap[messageData.ReplyThreadId];
-                ChatContext chatContext = _chatContexts[threadIndex];
+                var threadIndex = _chatContextsMap[messageData.ReplyThreadId];
+                var chatContext = _chatContexts[threadIndex];
                 ReceiveMessageData msg = messageData.Clone();
                 chatContext.AddMessage(msg);
             }
             // else create a new chatContext and add the message to it
             else
             {
-                ChatContext chatContext = new ChatContext();
-                int newThreadId = IdGenerator.GetChatContextId();
+                var chatContext = new ChatContext();
+                var newThreadId = IdGenerator.GetChatContextId();
                 messageData.ReplyThreadId = newThreadId;
                 ReceiveMessageData msg = messageData.Clone();
                 chatContext.AddMessage(msg);
@@ -84,11 +82,12 @@ namespace Content
                 _chatContexts.Add(chatContext);
                 _chatContextsMap[chatContext.ThreadId] = _chatContexts.Count - 1;
             }
+
             return messageData;
         }
 
         /// <summary>
-        /// Gets all the Chat Contexts
+        ///     Gets all the Chat Contexts
         /// </summary>
         /// <returns>Returns all the ChatContexts</returns>
         public List<ChatContext> GetChatContexts()
@@ -97,7 +96,7 @@ namespace Content
         }
 
         /// <summary>
-        /// Gets a particular message based on its messageId and replyThreadId
+        ///     Gets a particular message based on its messageId and replyThreadId
         /// </summary>
         /// <param name="replyThreadId"></param>
         /// <param name="messageId"></param>
@@ -105,22 +104,16 @@ namespace Content
         public ReceiveMessageData GetMessage(int replyThreadId, int messageId)
         {
             // If given ChatContext or Message doesn't exists return null
-            if (!_chatContextsMap.ContainsKey(replyThreadId))
-            {
-                return null;
-            }
+            if (!_chatContextsMap.ContainsKey(replyThreadId)) return null;
 
-            int threadIndex = _chatContextsMap[replyThreadId];
+            var threadIndex = _chatContextsMap[replyThreadId];
 
-            ChatContext chatContext = _chatContexts[threadIndex];
+            var chatContext = _chatContexts[threadIndex];
 
             // If given ChatContext doesn't contain the message return null
-            if (!chatContext.ContainsMessageId(messageId))
-            {
-                return null;
-            }
+            if (!chatContext.ContainsMessageId(messageId)) return null;
 
-            int messageIndex = chatContext.RetrieveMessageIndex(messageId);
+            var messageIndex = chatContext.RetrieveMessageIndex(messageId);
 
             return chatContext.MsgList[messageIndex];
         }

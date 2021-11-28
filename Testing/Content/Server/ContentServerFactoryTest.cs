@@ -3,9 +3,10 @@
 /// <summary>
 ///     This file contains tests for ContentServerFactory
 /// </summary>
+
+using System.Threading;
 using Content;
 using NUnit.Framework;
-using System.Threading;
 
 namespace Testing.Content
 {
@@ -22,8 +23,8 @@ namespace Testing.Content
         [Test]
         public void GetInstance_MustReturnSingletonInstance()
         {
-            IContentServer ref1 = ContentServerFactory.GetInstance();
-            IContentServer ref2 = ContentServerFactory.GetInstance();
+            var ref1 = ContentServerFactory.GetInstance();
+            var ref2 = ContentServerFactory.GetInstance();
 
             Assert.That(ReferenceEquals(ref1, ref2));
         }
@@ -35,15 +36,9 @@ namespace Testing.Content
             IContentServer ref2 = null;
 
             // make two separate threads and run (almost) simultaneously and check if the same reference is returned
-            Thread process1 = new Thread(() =>
-            {
-                ref1 = ContentServerFactory.GetInstance();
-            });
+            var process1 = new Thread(() => { ref1 = ContentServerFactory.GetInstance(); });
 
-            Thread process2 = new Thread(() =>
-            {
-                ref2 = ContentServerFactory.GetInstance();
-            });
+            var process2 = new Thread(() => { ref2 = ContentServerFactory.GetInstance(); });
 
             process1.Start();
             process2.Start();

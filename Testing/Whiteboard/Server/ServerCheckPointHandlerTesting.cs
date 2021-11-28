@@ -6,23 +6,21 @@
 **/
 
 using System;
-using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-using System.IO;  
+using NUnit.Framework;
 using Whiteboard;
 
 namespace Testing.Whiteboard
 {
-
-    class ServerCheckPointHandlerTesting
+    internal class ServerCheckPointHandlerTesting
     {
-        private IServerCheckPointHandler _serverCheckPointHandler;
-
         // Instantiate random number generator.  
-        private readonly Random _random = new Random();
+        private readonly Random _random = new();
+        private List<int> _checkpointNumbers;
+        private List<Tuple<int, string, List<BoardShape>>> _checkpointSummary;
+        private IServerCheckPointHandler _serverCheckPointHandler;
 
         // Utility function to Generates a random number within a range.      
         private int RandomNumber(int min, int max)
@@ -41,12 +39,12 @@ namespace Testing.Whiteboard
             // the second group containing the lowercase.  
 
             // char is a single Unicode character  
-            char offset = lowerCase ? 'a' : 'A';
+            var offset = lowerCase ? 'a' : 'A';
             const int lettersOffset = 26; // A...Z or a..z: length=26  
 
             for (var i = 0; i < size; i++)
             {
-                var @char = (char)_random.Next(offset, offset + lettersOffset);
+                var @char = (char) _random.Next(offset, offset + lettersOffset);
                 builder.Append(@char);
             }
 
@@ -58,26 +56,23 @@ namespace Testing.Whiteboard
         {
             List<BoardShape> boardShapes = new();
 
-            for (int i = 0; i < 5; i++)
-            {
-                boardShapes.Add(new(null,
-                                   RandomNumber(0, 2),
-                                   DateTime.Now,
-                                   DateTime.Now.AddMinutes(i),
-                                   RandomString(8),
-                                   RandomString(8),
-                                   Operation.CREATE));
-            }
+            for (var i = 0; i < 5; i++)
+                boardShapes.Add(new BoardShape(null,
+                    RandomNumber(0, 2),
+                    DateTime.Now,
+                    DateTime.Now.AddMinutes(i),
+                    RandomString(8),
+                    RandomString(8),
+                    Operation.CREATE));
             return boardShapes;
         }
 
         //Utility function to compare objects of List<BoardShape> type
-        private bool IsEqual(List<BoardShape> boardShapes1,List<BoardShape> boardShapes2)
+        private bool IsEqual(List<BoardShape> boardShapes1, List<BoardShape> boardShapes2)
         {
             if (boardShapes1.Count == boardShapes2.Count)
             {
-                for(int i = 0; i < boardShapes1.Count; i++)
-                {
+                for (var i = 0; i < boardShapes1.Count; i++)
                     if (boardShapes1[i].CreationTime != boardShapes2[i].CreationTime
                         || boardShapes1[i].LastModifiedTime != boardShapes2[i].LastModifiedTime
                         || boardShapes1[i].MainShapeDefiner != boardShapes2[i].MainShapeDefiner
@@ -85,20 +80,12 @@ namespace Testing.Whiteboard
                         || boardShapes1[i].Uid != boardShapes2[i].Uid
                         || boardShapes1[i].UserLevel != boardShapes2[i].UserLevel
                         || boardShapes1[i].RecentOperation != boardShapes2[i].RecentOperation)
-                    {
-
                         return false;
-                    }
-                }
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
-        private List<int> _checkpointNumbers ;
-        private List<Tuple<int, String, List<BoardShape>>> _checkpointSummary;
 
         [SetUp]
         public void SetUp()
@@ -106,88 +93,65 @@ namespace Testing.Whiteboard
             // common Arrange
             _serverCheckPointHandler = new ServerCheckPointHandler();
 
-            _checkpointSummary = new();
-            _checkpointNumbers = new();
-            for (int i = 1; i <= 4; i++)
-            {
-                _checkpointSummary.Add(new Tuple<int, string, List<BoardShape>>(i, RandomString(8), GenerateBoardShapes()));
-
-            }
+            _checkpointSummary = new List<Tuple<int, string, List<BoardShape>>>();
+            _checkpointNumbers = new List<int>();
+            for (var i = 1; i <= 4; i++)
+                _checkpointSummary.Add(
+                    new Tuple<int, string, List<BoardShape>>(i, RandomString(8), GenerateBoardShapes()));
             foreach (var checkpoint in _checkpointSummary)
             {
-                int current_CheckpointNumber = _serverCheckPointHandler.SaveCheckpoint(checkpoint.Item3, checkpoint.Item2);
+                var current_CheckpointNumber =
+                    _serverCheckPointHandler.SaveCheckpoint(checkpoint.Item3, checkpoint.Item2);
                 _checkpointNumbers.Add(current_CheckpointNumber);
             }
-
         }
 
         [Test]
         public void SaveCheckpoint_testing()
         {
-            
-
-            bool flag = true;
-            for(int i = 1; i <= 4; i++)
+            var flag = true;
+            for (var i = 1; i <= 4; i++)
             {
-                var filePath = i.ToString()+".json";
+                var filePath = i + ".json";
                 if (!File.Exists(filePath))
                 {
                     flag = false;
                     break;
                 }
 
-                if (_checkpointNumbers[i-1] != i)
-                {
-                    flag = false;
-                }
-
+                if (_checkpointNumbers[i - 1] != i) flag = false;
             }
-            
-            Assert.AreEqual(flag, true);
 
-            
+            Assert.AreEqual(flag, true);
         }
 
         [Test]
         public void GetCheckPointNumber_returns_checkPointNumber()
         {
-         
-            int checkpointNumbers = _serverCheckPointHandler.GetCheckpointsNumber();
-            Assert.AreEqual(4,checkpointNumbers);
+            var checkpointNumbers = _serverCheckPointHandler.GetCheckpointsNumber();
+            Assert.AreEqual(4, checkpointNumbers);
         }
 
         [Test]
         public void FetchCheckpoint_Testing()
         {
-
-
             List<List<BoardShape>> fetched_boardShapes = new();
-            for (int i = 1; i <= 4; i++)
-            {
-                fetched_boardShapes.Add(_serverCheckPointHandler.FetchCheckpoint(i));
-            }
+            for (var i = 1; i <= 4; i++) fetched_boardShapes.Add(_serverCheckPointHandler.FetchCheckpoint(i));
 
-            bool flag = true;
-            
-            for(int i = 0; i < 4; i++)
-            {
-                if (!IsEqual(fetched_boardShapes[i],_checkpointSummary[i].Item3))
-                {
+            var flag = true;
+
+            for (var i = 0; i < 4; i++)
+                if (!IsEqual(fetched_boardShapes[i], _checkpointSummary[i].Item3))
                     flag = false;
-                }
-            }
 
             Assert.AreEqual(flag, true);
-
         }
 
         [Test]
         public void FetchCheckpoint_Fails()
         {
-
-            var boardShape=_serverCheckPointHandler.FetchCheckpoint(5);
+            var boardShape = _serverCheckPointHandler.FetchCheckpoint(5);
             Assert.IsNull(boardShape);
-
         }
 
         [Test]
@@ -195,26 +159,14 @@ namespace Testing.Whiteboard
         {
             var CheckPointSummary = _serverCheckPointHandler.Summary();
 
-            bool flag = true;
+            var flag = true;
             if (CheckPointSummary.Count == _checkpointSummary.Count)
-            {
-                for(int i = 0; i < CheckPointSummary.Count; i++)
-                {
-                    if(CheckPointSummary[i].Item1!=_checkpointSummary[i].Item1 
-                       || CheckPointSummary[i].Item2!=_checkpointSummary[i].Item2
-                       || !IsEqual(CheckPointSummary[i].Item3, CheckPointSummary[i].Item3))
-                    {
+                for (var i = 0; i < CheckPointSummary.Count; i++)
+                    if (CheckPointSummary[i].Item1 != _checkpointSummary[i].Item1
+                        || CheckPointSummary[i].Item2 != _checkpointSummary[i].Item2
+                        || !IsEqual(CheckPointSummary[i].Item3, CheckPointSummary[i].Item3))
                         flag = false;
-                    }
-                }
-            }
             Assert.IsTrue(flag);
         }
-
-
     }
 }
-
-
-
-

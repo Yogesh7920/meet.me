@@ -52,7 +52,7 @@ namespace Whiteboard
         string GetUser();
 
         /// <summary>
-        /// Sets the user level of current user.
+        ///     Sets the user level of current user.
         /// </summary>
         /// <param name="userLevel">The user level.</param>
         void SetUserLevel(int userLevel);

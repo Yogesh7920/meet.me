@@ -9,46 +9,41 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
     /// <summary>
-    /// Base Class for Board Handlers
+    ///     Base Class for Board Handlers
     /// </summary>
-    abstract public class BoardOperationsState
+    public abstract class BoardOperationsState
     {
         /// <summary>
-        /// User Level of client.
+        ///     Checker if the module is running in test mode or not
         /// </summary>
-        protected int UserLevel { get; set; }
+        protected static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies()
+            .Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
 
         /// <summary>
-        /// state Manager instance.
+        ///     state Manager instance.
         /// </summary>
         protected IClientBoardStateManagerInternal StateManager;
 
         /// <summary>
-        /// Checker if the module is running in test mode or not
+        ///     User Level of client.
         /// </summary>
-        protected static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
+        protected int UserLevel { get; set; }
 
         /// <summary>
-        /// Allows setting stateManager handler when running as part of NUnit tests.
+        ///     Allows setting stateManager handler when running as part of NUnit tests.
         /// </summary>
         /// <param name="stateManager">state Manager object.</param>
         public void SetStateManager(IClientBoardStateManagerInternal stateManager)
         {
-            if (IsRunningFromNUnit)
-            {
-                StateManager = stateManager;
-            }
-
+            if (IsRunningFromNUnit) StateManager = stateManager;
         }
 
         /// <summary>
-        /// Sets user level of itself and state manager.
+        ///     Sets user level of itself and state manager.
         /// </summary>
         /// <param name="userLevel">user level.</param>
         public void SetUserLevel(int userLevel)
@@ -58,31 +53,31 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Changes the shape fill of the shape.
+        ///     Changes the shape fill of the shape.
         /// </summary>
         /// <param name="shapeFill">Modified fill color of the shape..</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId);
+        public abstract List<UXShape> ChangeShapeFill(BoardColor shapeFill, string shapeId);
 
         /// <summary>
-        /// Changes the stroke color of the shape.
+        ///     Changes the stroke color of the shape.
         /// </summary>
         /// <param name="strokeColor">Modified fill color of outline stroke of shape..</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> ChangeStrokeColor(BoardColor strokeColor, string shapeId);
+        public abstract List<UXShape> ChangeStrokeColor(BoardColor strokeColor, string shapeId);
 
         /// <summary>
-        /// Changes the stroke Width.
+        ///     Changes the stroke Width.
         /// </summary>
         /// <param name="strokeWidth">Width of stroke.</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> ChangeStrokeWidth(float strokeWidth, string shapeId);
+        public abstract List<UXShape> ChangeStrokeWidth(float strokeWidth, string shapeId);
 
         /// <summary>
-        /// Creates shape based on mouse drag.
+        ///     Creates shape based on mouse drag.
         /// </summary>
         /// <param name="shapeType">Denotes which shape to create.</param>
         /// <param name="start">Start of mouse drag.</param>
@@ -92,12 +87,12 @@ namespace Whiteboard
         /// <param name="shapeId">Id of the shape.</param>
         /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> CreateShape(ShapeType shapeType, Coordinate start, Coordinate end,
-                                                  float strokeWidth, BoardColor strokeColor, string shapeId = null,
-                                                  bool shapeComp = false);
+        public abstract List<UXShape> CreateShape(ShapeType shapeType, Coordinate start, Coordinate end,
+            float strokeWidth, BoardColor strokeColor, string shapeId = null,
+            bool shapeComp = false);
 
         /// <summary>
-        /// Perform real-time operation on shape.
+        ///     Perform real-time operation on shape.
         /// </summary>
         /// <param name="realTimeOperation">The RealTimeOperation to be performed.</param>
         /// <param name="start">Start of mouse drag.</param>
@@ -105,29 +100,30 @@ namespace Whiteboard
         /// <param name="shapeId">Id of the shape.</param>
         /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start, Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false);
+        public abstract List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start,
+            Coordinate end, string shapeId, DragPos dragPos, bool shapeComp = false);
 
         /// <summary>
-        /// Delete a shape with given shape Id.
+        ///     Delete a shape with given shape Id.
         /// </summary>
         /// <param name="shapeId">Id of the shape.</param>
         /// <returns>List of operations to be performed by UX.</returns>
-        abstract public List<UXShape> Delete(string shapeId);
+        public abstract List<UXShape> Delete(string shapeId);
 
         /// <summary>
-        /// Perform Redo Operation.
+        ///     Perform Redo Operation.
         /// </summary>
-        ///  <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> Redo();
+        /// <returns>The List of operations on Shapes for UX to render.</returns>
+        public abstract List<UXShape> Redo();
 
         /// <summary>
-        /// Perform Redo Operation.
+        ///     Perform Redo Operation.
         /// </summary>
-        ///  <returns>The List of operations on Shapes for UX to render.</returns>
-        abstract public List<UXShape> Undo();
+        /// <returns>The List of operations on Shapes for UX to render.</returns>
+        public abstract List<UXShape> Undo();
 
         /// <summary>
-        /// Gets the username for given shape Id.
+        ///     Gets the username for given shape Id.
         /// </summary>
         /// <param name="shapeId">Id of shape.</param>
         /// <returns>Username.</returns>
@@ -136,30 +132,27 @@ namespace Whiteboard
             try
             {
                 Trace.WriteLine("[Whiteboard] BoardOperationsState:GetUserName: Getting user for shape Id" + shapeId);
-                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+                var shapeFromManager = GetShapeFromManager(shapeId);
                 return shapeFromManager.ShapeOwnerId;
             }
             catch (Exception e)
             {
-                Trace.WriteLine("[Whiteboard] ActiveBoardOperationsHandler:Delete: Failure in getting user Name Operation.");
+                Trace.WriteLine(
+                    "[Whiteboard] ActiveBoardOperationsHandler:Delete: Failure in getting user Name Operation.");
                 Trace.WriteLine(e.Message);
                 return null;
             }
-
         }
 
         /// <summary>
-        /// Get shape from state Manager if BoardShape with shapeId exists.
+        ///     Get shape from state Manager if BoardShape with shapeId exists.
         /// </summary>
         /// <param name="shapeId">Id of shape to be fetched.</param>
         /// <returns>BoardShape returned from server, if exists, else raise exception.</returns>
         protected BoardShape GetShapeFromManager(string shapeId)
         {
-            BoardShape shapeFromManager = StateManager.GetBoardShape(shapeId);
-            if (shapeFromManager == null)
-            {
-                throw new Exception("Shape Id doesn't exist in server.");
-            }
+            var shapeFromManager = StateManager.GetBoardShape(shapeId);
+            if (shapeFromManager == null) throw new Exception("Shape Id doesn't exist in server.");
             return shapeFromManager;
         }
     }

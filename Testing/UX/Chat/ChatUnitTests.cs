@@ -4,14 +4,14 @@
 ///     This file contains all the chat unit tests.
 /// </summary>
 
-using Client.ViewModel;
-using Content;
-using Dashboard;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using Client.ViewModel;
+using Content;
+using Dashboard;
+using NUnit.Framework;
 using static Testing.UX.Chat.ChatUtils;
 
 namespace Testing.UX.Chat
@@ -19,14 +19,13 @@ namespace Testing.UX.Chat
     [TestFixture]
     public class ChatUnitTests
     {
-
-        private ChatViewModel _viewModel;
-
         [SetUp]
         public void SetUp()
         {
-            _viewModel = new ChatViewModel(testing: true);
+            _viewModel = new ChatViewModel(true);
         }
+
+        private ChatViewModel _viewModel;
 
         /// <summary>
         ///     Checking whether the OnClientSessionChanged function updates the user list
@@ -35,9 +34,9 @@ namespace Testing.UX.Chat
         public void OnClientSessionChanged_ShouldAddUsers()
         {
             // Arrange
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("Suchitra", 111801043);
-            UserData sampleUser2 = new UserData("Irene", 111801017);
+            var sampleSession = new SessionData();
+            var sampleUser1 = new UserData("Suchitra", 111801043);
+            var sampleUser2 = new UserData("Irene", 111801017);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
 
@@ -48,19 +47,19 @@ namespace Testing.UX.Chat
             // Without calling DispatcherUtil.DoEvents() the test will fail
             DispatcherUtil.DoEvents();
             Assert.AreEqual(_viewModel.Users.Count, 2);
-            Assert.AreEqual(_viewModel.Users[111801043],"Suchitra");
-            Assert.AreEqual(_viewModel.Users[111801017],"Irene");
+            Assert.AreEqual(_viewModel.Users[111801043], "Suchitra");
+            Assert.AreEqual(_viewModel.Users[111801017], "Irene");
         }
 
         /// <summary>
-        ///     Checking whether the message data received from the content module 
+        ///     Checking whether the message data received from the content module
         ///     through the OnMessage function matchs the ReceivedMsg object
         /// </summary>
         [Test]
         public void OnMessage_ReceivedMsgObj_ShouldMatchReceivedMsg()
         {
             //Arrange
-            ReceiveMessageData sampleMessageData = new ReceiveMessageData();
+            var sampleMessageData = new ReceiveMessageData();
             sampleMessageData.Event = MessageEvent.NewMessage;
             sampleMessageData.Message = "Hi Suchitra, how are you???";
             sampleMessageData.MessageId = 1;
@@ -70,9 +69,9 @@ namespace Testing.UX.Chat
             sampleMessageData.SentTime = DateTime.Now;
             sampleMessageData.Starred = false;
             sampleMessageData.Type = MessageType.Chat;
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("Suchitra", 111801043);
-            UserData sampleUser2 = new UserData("Irene", 111801017);
+            var sampleSession = new SessionData();
+            var sampleUser1 = new UserData("Suchitra", 111801043);
+            var sampleUser2 = new UserData("Irene", 111801017);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
             _viewModel.OnClientSessionChanged(sampleSession);
@@ -89,21 +88,20 @@ namespace Testing.UX.Chat
             Assert.AreEqual(_viewModel.ReceivedMsg.TextMessage, "Hi Suchitra, how are you???");
             Assert.AreEqual(_viewModel.ReceivedMsg.ReplyMessage, "");
             Assert.AreEqual(_viewModel.ReceivedMsg.Type, true);
-
         }
 
         /// <summary>
-        ///     Checking whether the messages data received from the content module 
+        ///     Checking whether the messages data received from the content module
         ///     through the OnAllMessages function matchs the ReceivedMsg object
         /// </summary>
         [Test]
         public void OnAllMessages_ReceivedMsgObj_ShouldMatchReceivedMsg()
         {
             //Arrange
-            List<ChatContext> sampleAllMessages = new List<ChatContext>();
-            ChatContext sampleChatContext = new ChatContext();
-            ReceiveMessageData sampleMessageData1 = new ReceiveMessageData();
-            ReceiveMessageData sampleMessageData2 = new ReceiveMessageData();
+            var sampleAllMessages = new List<ChatContext>();
+            var sampleChatContext = new ChatContext();
+            var sampleMessageData1 = new ReceiveMessageData();
+            var sampleMessageData2 = new ReceiveMessageData();
 
             sampleMessageData1.Event = MessageEvent.NewMessage;
             sampleMessageData1.Message = "Hi Suchitra, how are you???";
@@ -125,15 +123,15 @@ namespace Testing.UX.Chat
             sampleMessageData2.Starred = false;
             sampleMessageData2.Type = MessageType.Chat;
 
-            List<ReceiveMessageData> sampleMsgList = new List<ReceiveMessageData>();
+            var sampleMsgList = new List<ReceiveMessageData>();
             sampleMsgList.Add(sampleMessageData1);
             sampleMsgList.Add(sampleMessageData2);
             sampleChatContext.MsgList = sampleMsgList;
             sampleAllMessages.Add(sampleChatContext);
 
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("Suchitra", 111801043);
-            UserData sampleUser2 = new UserData("Irene", 111801017);
+            var sampleSession = new SessionData();
+            var sampleUser1 = new UserData("Suchitra", 111801043);
+            var sampleUser2 = new UserData("Irene", 111801017);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
             _viewModel.OnClientSessionChanged(sampleSession);
@@ -159,8 +157,8 @@ namespace Testing.UX.Chat
         public void OnPropertyChanged_EventShouldBeRaised()
         {
             //Arrange
-            string samplePropertyName = "";
-            _viewModel.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            var samplePropertyName = "";
+            _viewModel.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
             {
                 samplePropertyName = e.PropertyName;
             };
@@ -180,8 +178,8 @@ namespace Testing.UX.Chat
         public void SendChatMessage_ShouldMatchMsgToBeSent()
         {
             //Arrange
-            string sampleMessage = "Hello World!!";
-            int sampleReplyMsgId = -1;
+            var sampleMessage = "Hello World!!";
+            var sampleReplyMsgId = -1;
 
             //Act
             _viewModel.SendChat(sampleMessage, sampleReplyMsgId);
@@ -197,10 +195,10 @@ namespace Testing.UX.Chat
         public void SendFileMessage_ShouldMatchMsgToBeSent()
         {
             //Arrange
-            string currentDirectory = Directory.GetCurrentDirectory() as string;
-            string[] path = currentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string sampleMessage = path[0] + "\\Testing\\UX\\Chat\\Test_File.pdf";
-            int sampleReplyMsgId = -1;
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var path = currentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var sampleMessage = path[0] + "\\Testing\\UX\\Chat\\Test_File.pdf";
+            var sampleReplyMsgId = -1;
 
             //Act
             _viewModel.SendFile(sampleMessage, sampleReplyMsgId);

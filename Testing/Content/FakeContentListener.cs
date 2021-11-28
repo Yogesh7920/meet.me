@@ -6,17 +6,14 @@
 /// </summary>
 
 using System.Collections.Generic;
-using System.Diagnostics;
-using Networking;
 using Content;
-using System;
 
 namespace Testing.Content
 {
     public class FakeContentListener : IContentListener
     {
-        private ReceiveMessageData _rcvMsgData;
         private List<ChatContext> _chatContextList;
+        private ReceiveMessageData _rcvMsgData;
 
         public FakeContentListener()
         {
@@ -33,11 +30,6 @@ namespace Testing.Content
             _rcvMsgData = messageData;
         }
 
-        public ReceiveMessageData GetOnMessageData()
-        {
-            return _rcvMsgData;
-        }
-
         /// <summary>
         ///     Handler for the event of all messages sent to/from client being received at once
         ///     The Dashboard module may simply throw an excpetion in the body of
@@ -48,6 +40,11 @@ namespace Testing.Content
         public void OnAllMessages(List<ChatContext> allMessages)
         {
             _chatContextList = allMessages;
+        }
+
+        public ReceiveMessageData GetOnMessageData()
+        {
+            return _rcvMsgData;
         }
 
         public List<ChatContext> GetOnAllMessagesData()

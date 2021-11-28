@@ -5,8 +5,8 @@
  * date modified: 26/11/2021
 **/
 
-using ScreenSharing;
 using NUnit.Framework;
+using ScreenSharing;
 
 namespace Testing.ScreenSharing
 {

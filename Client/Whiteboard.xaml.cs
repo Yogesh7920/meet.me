@@ -5,7 +5,6 @@
  * Date Modified: 28/11/2021
 **/
 
-using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,150 +15,141 @@ using System.Windows.Shapes;
 namespace Client
 {
     /// <summary>
-    /// Interaction logic for Whiteboard.xaml
+    ///     Interaction logic for Whiteboard.xaml
     /// </summary>
     public partial class WhiteBoardView : UserControl
     {
         //init variables 
         private System.Windows.Controls.Primitives.ToggleButton activeMainToolbarButton;
         private Button activeSelectToolbarButton;
-        private RadioButton rbutton; 
-        private WhiteBoardViewModel viewModel;
-        public Canvas GlobCanvas;
-
-        private int mouseLeftBtnMoveFlag = 0;
-        private int mouseDownFlag = 0;
-        private Shape mouseDownSh;
-
-        //Button Dynamic Colors 
-        private string buttonDefaultColor = "#D500F9";
-        private string buttonSelectedColor = "#007C9C";
 
         //Color Palette 
-        private string Black = "#161B22";
-        private string White = "#FFFFFF";
-        private string Red = "#900604";
-        private string Green = "#1E5631";
-        private string Blue = "#005CC3";
-        private string Yellow = "#EFC002";
-        private string Gray = "#909090";
+        private readonly string Black = "#161B22";
+        private readonly string Blue = "#005CC3";
+
+        //Button Dynamic Colors 
+        private readonly string buttonDefaultColor = "#D500F9";
+        private readonly string buttonSelectedColor = "#007C9C";
 
         //Canvas BG available Colors 
-        private string canvasBg1 = "#FFFFFF";
-        private string canvasBg2 = "#fff0f5";
-        private string canvasBg3 = "#e7feff";
-        private string canvasBg4 = "#faf0e6";
-        private string canvasBg5 = "#ffffe0";
+        private readonly string canvasBg1 = "#FFFFFF";
+        private readonly string canvasBg2 = "#fff0f5";
+        private readonly string canvasBg3 = "#e7feff";
+        private readonly string canvasBg4 = "#faf0e6";
+        private readonly string canvasBg5 = "#ffffe0";
+        private bool close_popup = false;
 
         //pen and eraser properties 
         private string curCanvasBg = "#FFFFFF";
+        private readonly string curEraseColor = "#cfcfcf";
         private string curPenColor = "#000000";
-        private string curEraseColor = "#cfcfcf";
+        private readonly float eraserThickness = 5;
+        public Canvas GlobCanvas;
+        private string Gray = "#909090";
+        private readonly string Green = "#1E5631";
+        private int mouseDownFlag;
+        private Shape mouseDownSh;
+
+        private int mouseLeftBtnMoveFlag;
 
         private float penThickness = 5;
-        private float eraserThickness = 5;
+        private RadioButton rbutton;
+        private readonly string Red = "#900604";
 
         //variable to keep track for rotaion of shape is in progress or not 
-        bool rotation = false;
-        bool close_popup = false; 
+        private bool rotation;
+        private readonly WhiteBoardViewModel viewModel;
+        private readonly string White = "#FFFFFF";
+        private readonly string Yellow = "#EFC002";
 
         /// <summary>
-        /// Constructor for View in MVVM pattern
+        ///     Constructor for View in MVVM pattern
         /// </summary>
         public WhiteBoardView()
         {
             InitializeComponent();
 
-            this.GlobCanvas = MyCanvas;
+            GlobCanvas = MyCanvas;
             viewModel = new WhiteBoardViewModel(GlobCanvas);
-            this.DataContext = viewModel;
-            this.RestorFrameDropDown.SelectionChanged += RestorFrameDropDown_SelectionChanged;
+            DataContext = viewModel;
+            RestorFrameDropDown.SelectionChanged += RestorFrameDropDown_SelectionChanged;
         }
 
         /// <summary>
-        /// Checkpoint listbox selection changed event 
+        ///     Checkpoint listbox selection changed event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void RestorFrameDropDown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ListBox listbox = (ListBox)sender;
-            
-            if(this.RestorFrameDropDown.SelectedItem != null){
-                
-                string item = listbox.SelectedItem.ToString();
-                string numeric = new String(item.Where(Char.IsDigit).ToArray());
-                int cp = int.Parse(numeric);
+            var listbox = (ListBox) sender;
 
-                MessageBoxResult result = MessageBox.Show("Are you sure you want to load checkpoint " + numeric + " ? All progress since the last checkpoint would be lost!",
-                              "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if (RestorFrameDropDown.SelectedItem != null)
+            {
+                var item = listbox.SelectedItem.ToString();
+                var numeric = new string(item.Where(char.IsDigit).ToArray());
+                var cp = int.Parse(numeric);
+
+                var result = MessageBox.Show(
+                    "Are you sure you want to load checkpoint " + numeric +
+                    " ? All progress since the last checkpoint would be lost!",
+                    "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.OK)
                 {
                     viewModel.RestoreFrame(cp, GlobCanvas);
-                    this.RestorFrameDropDown.SelectedItem = null;
+                    RestorFrameDropDown.SelectedItem = null;
                     return;
                 }
-                else
-                {
-                    this.RestorFrameDropDown.SelectedItem = null;
-                    return;
-                }
-            }
-            else
-            {
-                return; 
-            }
 
+                RestorFrameDropDown.SelectedItem = null;
+                return;
+            }
         }
 
         /// <summary>
-        /// Function to clear flags and mouse variables to be called when a popup is opened/closed or active tool is changed
+        ///     Function to clear flags and mouse variables to be called when a popup is opened/closed or active tool is changed
         /// </summary>
         private void clearFlags()
         {
             mouseDownFlag = 0;
             mouseLeftBtnMoveFlag = 0;
             mouseDownSh = null;
-            rotation = false; 
-            viewModel.start = new Point { X = 0, Y = 0 };
-            viewModel.end = new Point { X = 0, Y = 0 };
-            return;
+            rotation = false;
+            viewModel.start = new Point {X = 0, Y = 0};
+            viewModel.end = new Point {X = 0, Y = 0};
         }
 
         /// <summary>
-        /// Function to switch to selection tool after creation of shape 
+        ///     Function to switch to selection tool after creation of shape
         /// </summary>
         private void switchToSelection()
         {
             if (activeMainToolbarButton != null)
             {
-                activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
-
+                activeMainToolbarButton.Background =
+                    (SolidColorBrush) new BrushConverter().ConvertFrom(buttonDefaultColor);
+                activeMainToolbarButton.ClearValue(BackgroundProperty);
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Collapsed)
-            {
-                this.SelectToolBar.Visibility = Visibility.Visible;
-            }
+            if (SelectToolBar.Visibility == Visibility.Collapsed) SelectToolBar.Visibility = Visibility.Visible;
 
-            activeMainToolbarButton = this.SelectTool;
-            activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
+            activeMainToolbarButton = SelectTool;
+            activeMainToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             GlobCanvas.Cursor = Cursors.Arrow;
-            return;
         }
 
         /// <summary>
-        /// Function to clear selected shapes
+        ///     Function to clear selected shapes
         /// </summary>
         private void clearSelectedShapes()
         {
-            this.viewModel.shapeManager.UnselectAllBB(GlobCanvas, this.viewModel.WBOps);
+            viewModel.shapeManager.UnselectAllBB(GlobCanvas, viewModel.WBOps);
         }
 
         /// <summary>
-        /// Canvas Mouse leave event 
+        ///     Canvas Mouse leave event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -167,194 +157,208 @@ namespace Client
         {
             switch (viewModel.GetActiveTool())
             {
-                case (WhiteBoardViewModel.WBTools.FreeHand):
+                case WhiteBoardViewModel.WBTools.FreeHand:
                     if (mouseDownFlag == 1)
                     {
-                        Point fh_pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, false, true);
+                        var fh_pt = e.GetPosition(GlobCanvas);
+                        GlobCanvas =
+                            viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, false, true);
                         mouseDownFlag = 0;
                     }
+
                     break;
-                case (WhiteBoardViewModel.WBTools.Eraser):
+                case WhiteBoardViewModel.WBTools.Eraser:
                     if (mouseDownFlag == 1)
                     {
-                        Point fh_pt = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, true, true);
+                        var fh_pt = e.GetPosition(GlobCanvas);
+                        GlobCanvas =
+                            viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false, true, true);
                     }
+
                     break;
 
-                case (WhiteBoardViewModel.WBTools.NewLine):
+                case WhiteBoardViewModel.WBTools.NewLine:
                     if (mouseDownFlag == 1)
                     {
-                        this.viewModel.end = e.GetPosition(GlobCanvas);
+                        viewModel.end = e.GetPosition(GlobCanvas);
                         //MessageBox.Show("NewLine: start = " + viewModel.start.ToString() + " end = " + viewModel.end.ToString());
-                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: true);
+                        GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                            WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, fillColor: curCanvasBg,
+                            shapeComp: true);
 
                         //select the shape after creation 
                         switchToSelection();
 
                         mouseDownFlag = 0;
                     }
+
                     break;
-                case (WhiteBoardViewModel.WBTools.NewRectangle):
+                case WhiteBoardViewModel.WBTools.NewRectangle:
                     if (mouseDownFlag == 1)
                     {
-                        this.viewModel.end = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: true);
+                        viewModel.end = e.GetPosition(GlobCanvas);
+                        GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                            WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end,
+                            fillColor: curCanvasBg, shapeComp: true);
 
                         //select the shape after creation 
                         switchToSelection();
 
                         mouseDownFlag = 0;
                     }
+
                     break;
-                case (WhiteBoardViewModel.WBTools.NewEllipse):
+                case WhiteBoardViewModel.WBTools.NewEllipse:
                     //sets the end point for the creation of new ellipse
                     if (mouseDownFlag == 1)
                     {
-                        this.viewModel.end = e.GetPosition(GlobCanvas);
-                        GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: true);
+                        viewModel.end = e.GetPosition(GlobCanvas);
+                        GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                            WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end,
+                            fillColor: curCanvasBg, shapeComp: true);
 
                         //select the shape after creation 
                         switchToSelection();
 
                         mouseDownFlag = 0;
                     }
+
                     break;
-                case (WhiteBoardViewModel.WBTools.Selection):
+                case WhiteBoardViewModel.WBTools.Selection:
                     mouseDownFlag = 0;
                     //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
                     if (mouseLeftBtnMoveFlag > 5)
-                    {
-                        if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                        if (viewModel.end.X != 0 && viewModel.end.Y != 0)
                         {
-
-                            if (rotation == true)
+                            if (rotation)
                             {
-                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start,
+                                    viewModel.end, mouseDownSh, true);
                                 rotation = false;
                             }
                             else
                             {
-                                this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start,
+                                    viewModel.end, mouseDownSh, true);
                             }
                         }
-                    }
-                    break;
-                default:
+
                     break;
             }
-
         }
 
         /// <summary>
-        /// Canvas mouse enter event 
+        ///     Canvas mouse enter event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnCanvasMouseEnter(object sender, MouseEventArgs e)
         {
-
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 mouseDownFlag = 1;
                 switch (viewModel.GetActiveTool())
                 {
-                    case (WhiteBoardViewModel.WBTools.FreeHand):
+                    case WhiteBoardViewModel.WBTools.FreeHand:
                         if (mouseDownFlag == 1)
                         {
-                            Point fh_pt = e.GetPosition(GlobCanvas);
-                            this.viewModel.freeHand.SetColor(curPenColor);
-                            this.viewModel.freeHand.SetThickness(penThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true);
+                            var fh_pt = e.GetPosition(GlobCanvas);
+                            viewModel.freeHand.SetColor(curPenColor);
+                            viewModel.freeHand.SetThickness(penThickness);
+                            GlobCanvas = viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true);
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.Eraser):
+                    case WhiteBoardViewModel.WBTools.Eraser:
                         if (mouseDownFlag == 1)
                         {
-                            Point fh_pt = e.GetPosition(GlobCanvas);
-                            this.viewModel.freeHand.SetColor(curEraseColor);
-                            this.viewModel.freeHand.SetThickness(eraserThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, true);
+                            var fh_pt = e.GetPosition(GlobCanvas);
+                            viewModel.freeHand.SetColor(curEraseColor);
+                            viewModel.freeHand.SetThickness(eraserThickness);
+                            GlobCanvas =
+                                viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, true);
 
-                            if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
+                            if (e.OriginalSource is Polyline && ((Shape) e.OriginalSource).Tag is not "ERASER")
                             {
-                                Polyline selectedLine = e.OriginalSource as Polyline;
-                                GlobCanvas = this.viewModel.freeHand.DeletePolyline(GlobCanvas, this.viewModel.WBOps, selectedLine);
+                                var selectedLine = e.OriginalSource as Polyline;
+                                GlobCanvas =
+                                    viewModel.freeHand.DeletePolyline(GlobCanvas, viewModel.WBOps, selectedLine);
                             }
                         }
-                        break;
-                    default:
+
                         break;
                 }
             }
         }
 
         /// <summary>
-        /// Canvas mouse down event 
+        ///     Canvas mouse down event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnCanvasMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
-            mouseLeftBtnMoveFlag = 0;   //init mouse move flag 
-            UIElement el = (UIElement)sender;
-            if (e.LeftButton == MouseButtonState.Pressed)   //check if left mouse button is pressed 
+            mouseLeftBtnMoveFlag = 0; //init mouse move flag 
+            var el = (UIElement) sender;
+            if (e.LeftButton == MouseButtonState.Pressed) //check if left mouse button is pressed 
             {
                 mouseDownFlag = 1;
                 switch (viewModel.GetActiveTool())
                 {
-                    case (WhiteBoardViewModel.WBTools.FreeHand):
+                    case WhiteBoardViewModel.WBTools.FreeHand:
                         if (mouseDownFlag == 1)
                         {
-                            Point fh_pt = e.GetPosition(GlobCanvas);
-                            this.viewModel.freeHand.SetColor(curPenColor);
-                            this.viewModel.freeHand.SetThickness(penThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: true);
+                            var fh_pt = e.GetPosition(GlobCanvas);
+                            viewModel.freeHand.SetColor(curPenColor);
+                            viewModel.freeHand.SetThickness(penThickness);
+                            GlobCanvas = viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true);
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.Eraser):
+                    case WhiteBoardViewModel.WBTools.Eraser:
                         if (mouseDownFlag == 1)
                         {
                             //Draw a trailing erase line 
-                            Point fh_pt = e.GetPosition(GlobCanvas);
-                            this.viewModel.freeHand.SetColor(curEraseColor);
-                            this.viewModel.freeHand.SetThickness(eraserThickness);
-                            GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: true, isEraser: true);
+                            var fh_pt = e.GetPosition(GlobCanvas);
+                            viewModel.freeHand.SetColor(curEraseColor);
+                            viewModel.freeHand.SetThickness(eraserThickness);
+                            GlobCanvas =
+                                viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, true, true);
 
-                            if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
+                            if (e.OriginalSource is Polyline && ((Shape) e.OriginalSource).Tag is not "ERASER")
                             {
-                                Polyline selectedLine = e.OriginalSource as Polyline;
-                                GlobCanvas = this.viewModel.freeHand.DeletePolyline(GlobCanvas, this.viewModel.WBOps, selectedLine);
+                                var selectedLine = e.OriginalSource as Polyline;
+                                GlobCanvas =
+                                    viewModel.freeHand.DeletePolyline(GlobCanvas, viewModel.WBOps, selectedLine);
                             }
-
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewLine):
+                    case WhiteBoardViewModel.WBTools.NewLine:
                         //sets the starting point for the creation of new line
-                        this.viewModel.start = e.GetPosition(GlobCanvas);
+                        viewModel.start = e.GetPosition(GlobCanvas);
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewRectangle):
+                    case WhiteBoardViewModel.WBTools.NewRectangle:
                         //sets the starting point for the creation of new rectangle
-                        this.viewModel.start = e.GetPosition(GlobCanvas);
+                        viewModel.start = e.GetPosition(GlobCanvas);
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewEllipse):
+                    case WhiteBoardViewModel.WBTools.NewEllipse:
                         //sets the starting point for the creation of new ellipse
-                        this.viewModel.start = e.GetPosition(GlobCanvas);
+                        viewModel.start = e.GetPosition(GlobCanvas);
                         break;
-                    case (WhiteBoardViewModel.WBTools.Selection):
+                    case WhiteBoardViewModel.WBTools.Selection:
                         //sets the starting point for usage in TranslateShape/RotateShape
-                        this.viewModel.start = e.GetPosition(GlobCanvas);
+                        viewModel.start = e.GetPosition(GlobCanvas);
 
                         if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
                         {
                             //setting the initial mouse down position for usage in shapeManager.MoveShape,
                             //as we need to send the server the very start and very end points during a final move operation
                             //since we are doing temporary rendering by using differential (start,end) points pair
-                            this.viewModel.setSelectMouseDownPos(e.GetPosition(GlobCanvas));
-                            Shape mouseDownShape = e.OriginalSource as Shape;
+                            viewModel.setSelectMouseDownPos(e.GetPosition(GlobCanvas));
+                            var mouseDownShape = e.OriginalSource as Shape;
                             mouseDownSh = mouseDownShape;
-                            this.viewModel.shapeManager.selectMouseStuck = e.GetPosition(GlobCanvas);
+                            viewModel.shapeManager.selectMouseStuck = e.GetPosition(GlobCanvas);
                         }
                         else
                         {
@@ -367,66 +371,75 @@ namespace Client
         }
 
         /// <summary>
-        /// Canvas Mouse Button Up event 
+        ///     Canvas Mouse Button Up event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnCanvasMouseButtonUp(object sender, MouseButtonEventArgs e)
         {
-            UIElement el = (UIElement)sender;
+            var el = (UIElement) sender;
             if (e.LeftButton == MouseButtonState.Released)
-            {
                 switch (viewModel.GetActiveTool())
                 {
-                    case (WhiteBoardViewModel.WBTools.FreeHand):
+                    case WhiteBoardViewModel.WBTools.FreeHand:
                         lock (this)
                         {
                             if (mouseDownFlag == 1)
                             {
-                                Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, shapeComp: true);
+                                var fh_pt = e.GetPosition(GlobCanvas);
+                                GlobCanvas = viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false,
+                                    shapeComp: true);
                                 mouseDownFlag = 0;
                             }
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.Eraser):
+                    case WhiteBoardViewModel.WBTools.Eraser:
                         lock (this)
                         {
                             if (mouseDownFlag == 1)
                             {
-                                Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, isEraser: true, shapeComp: true);
+                                var fh_pt = e.GetPosition(GlobCanvas);
+                                GlobCanvas = viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false,
+                                    true, true);
 
-                                if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
+                                if (e.OriginalSource is Polyline && ((Shape) e.OriginalSource).Tag is not "ERASER")
                                 {
-                                    Polyline selectedLine = e.OriginalSource as Polyline;
-                                    GlobCanvas = this.viewModel.freeHand.DeletePolyline(GlobCanvas, this.viewModel.WBOps, selectedLine);
+                                    var selectedLine = e.OriginalSource as Polyline;
+                                    GlobCanvas =
+                                        viewModel.freeHand.DeletePolyline(GlobCanvas, viewModel.WBOps, selectedLine);
                                 }
-                                mouseDownFlag = 0;
 
+                                mouseDownFlag = 0;
                             }
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewLine):
+                    case WhiteBoardViewModel.WBTools.NewLine:
                         if (mouseDownFlag == 1)
                         {
                             //sets the end point for the creation of new line
-                            this.viewModel.end = e.GetPosition(GlobCanvas);
+                            viewModel.end = e.GetPosition(GlobCanvas);
                             //MessageBox.Show("NewLine: start = " + viewModel.start.ToString() + " end = " + viewModel.end.ToString());
-                            GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: true);
+                            GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                                WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end,
+                                fillColor: curCanvasBg, shapeComp: true);
 
                             //select the shape after creation 
                             switchToSelection();
 
                             mouseDownFlag = 0;
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewRectangle):
+                    case WhiteBoardViewModel.WBTools.NewRectangle:
                         if (mouseDownFlag == 1)
                         {
                             //sets the end point for the creation of new rectangle
-                            this.viewModel.end = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: true);
+                            viewModel.end = e.GetPosition(GlobCanvas);
+                            GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                                WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end,
+                                fillColor: curCanvasBg, shapeComp: true);
 
                             //select the shape after creation 
                             switchToSelection();
@@ -436,20 +449,23 @@ namespace Client
                         }
 
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewEllipse):
+                    case WhiteBoardViewModel.WBTools.NewEllipse:
                         //sets the end point for the creation of new ellipse
                         if (mouseDownFlag == 1)
                         {
-                            this.viewModel.end = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: true);
+                            viewModel.end = e.GetPosition(GlobCanvas);
+                            GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                                WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end,
+                                fillColor: curCanvasBg, shapeComp: true);
 
                             //select the shape after creation 
                             switchToSelection();
 
                             mouseDownFlag = 0;
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.Selection):
+                    case WhiteBoardViewModel.WBTools.Selection:
                         mouseDownFlag = 0;
                         //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
                         if (mouseLeftBtnMoveFlag > 5)
@@ -457,29 +473,32 @@ namespace Client
                             //if ((e.OriginalSource is Shape && ((Shape)e.OriginalSource) == mouseDownSh) || rotation == true)
                             //{
 
-                                if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
-                                {
-                                    //sets the end point for usage in both TranslateShape/RotateShape when left mouse button is release
-                                    //this.viewModel.end = e.GetPosition(MyCanvas);
+                            if (viewModel.end.X != 0 && viewModel.end.Y != 0)
+                            {
+                                //sets the end point for usage in both TranslateShape/RotateShape when left mouse button is release
+                                //this.viewModel.end = e.GetPosition(MyCanvas);
 
-                                    if (rotation == true)
-                                    {
-                                        this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
-                                        rotation = false; 
-                                    }
-                                    /*else if (Keyboard.IsKeyUp(Key.LeftAlt) && rotation == true)
+                                if (rotation)
+                                {
+                                    viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start,
+                                        viewModel.end, mouseDownSh, true);
+                                    rotation = false;
+                                }
+                                /*else if (Keyboard.IsKeyUp(Key.LeftAlt) && rotation == true)
                                     {
                                         this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
                                         rotation = false;
                                     }*/
-                                    else
-                                    {
-                                        this.viewModel.end = e.GetPosition(MyCanvas);
-                                        this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
-                                    }
+                                else
+                                {
+                                    viewModel.end = e.GetPosition(MyCanvas);
+                                    viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start,
+                                        viewModel.end, mouseDownSh, true);
                                 }
-                                //Resetting the value of 'start' to perform the next Move functions
-                                this.viewModel.start = e.GetPosition(MyCanvas);
+                            }
+
+                            //Resetting the value of 'start' to perform the next Move functions
+                            viewModel.start = e.GetPosition(MyCanvas);
                             //}
                         }
 
@@ -487,12 +506,13 @@ namespace Client
                         else
                         {
                             //sets the starting point for usage in TranslateShape/RotateShape
-                            this.viewModel.start = e.GetPosition(MyCanvas);
+                            viewModel.start = e.GetPosition(MyCanvas);
 
                             if (e.OriginalSource is Shape && e.OriginalSource is not Polyline)
                             {
-                                Shape selectedShape = e.OriginalSource as Shape;
-                                GlobCanvas = viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps, 0);
+                                var selectedShape = e.OriginalSource as Shape;
+                                GlobCanvas =
+                                    viewModel.shapeManager.SelectShape(GlobCanvas, selectedShape, viewModel.WBOps);
                             }
                             else
                             {
@@ -502,14 +522,13 @@ namespace Client
 
                         break;
                 }
-            }
+
             //Resetting the flag for next usage
             mouseLeftBtnMoveFlag = 0;
-            return;
         }
 
         /// <summary>
-        /// Canvas Mouse Move event 
+        ///     Canvas Mouse Move event
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -521,113 +540,130 @@ namespace Client
                 mouseLeftBtnMoveFlag += 1;
                 switch (viewModel.GetActiveTool())
                 {
-                    case (WhiteBoardViewModel.WBTools.FreeHand):
+                    case WhiteBoardViewModel.WBTools.FreeHand:
                         lock (this)
                         {
                             if (mouseDownFlag == 1 && mouseLeftBtnMoveFlag > 5)
                             {
-                                Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false);
+                                var fh_pt = e.GetPosition(GlobCanvas);
+                                GlobCanvas = viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt);
                                 mouseLeftBtnMoveFlag = 0;
                             }
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.Eraser):
+                    case WhiteBoardViewModel.WBTools.Eraser:
                         lock (this)
                         {
                             if (mouseDownFlag == 1)
                             {
-                                Point fh_pt = e.GetPosition(GlobCanvas);
-                                GlobCanvas = this.viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, creation: false, isEraser: true);
+                                var fh_pt = e.GetPosition(GlobCanvas);
+                                GlobCanvas = viewModel.freeHand.DrawPolyline(GlobCanvas, viewModel.WBOps, fh_pt, false,
+                                    true);
 
 
-                                if (e.OriginalSource is Polyline && ((Shape)(e.OriginalSource)).Tag is not "ERASER")
+                                if (e.OriginalSource is Polyline && ((Shape) e.OriginalSource).Tag is not "ERASER")
                                 {
-                                    Polyline selectedLine = e.OriginalSource as Polyline;
-                                    GlobCanvas = this.viewModel.freeHand.DeletePolyline(GlobCanvas, this.viewModel.WBOps, selectedLine);
+                                    var selectedLine = e.OriginalSource as Polyline;
+                                    GlobCanvas =
+                                        viewModel.freeHand.DeletePolyline(GlobCanvas, viewModel.WBOps, selectedLine);
                                 }
                             }
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewLine):
+                    case WhiteBoardViewModel.WBTools.NewLine:
                         //sets the end point for the creation of new line
                         if (mouseDownFlag == 1)
                         {
-                            this.viewModel.end = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: false);
+                            viewModel.end = e.GetPosition(GlobCanvas);
+                            GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                                WhiteBoardViewModel.WBTools.NewLine, viewModel.start, viewModel.end,
+                                fillColor: curCanvasBg, shapeComp: false);
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewRectangle):
+                    case WhiteBoardViewModel.WBTools.NewRectangle:
                         //sets the end point for the creation of new rectangle
                         if (mouseDownFlag == 1)
                         {
-                            this.viewModel.end = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: false);
+                            viewModel.end = e.GetPosition(GlobCanvas);
+                            GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                                WhiteBoardViewModel.WBTools.NewRectangle, viewModel.start, viewModel.end,
+                                fillColor: curCanvasBg, shapeComp: false);
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.NewEllipse):
+                    case WhiteBoardViewModel.WBTools.NewEllipse:
                         //sets the end point for the creation of new ellipse
                         if (mouseDownFlag == 1)
                         {
-                            this.viewModel.end = e.GetPosition(GlobCanvas);
-                            GlobCanvas = this.viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps, WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end, fillColor: curCanvasBg, shapeComp: false);
+                            viewModel.end = e.GetPosition(GlobCanvas);
+                            GlobCanvas = viewModel.shapeManager.CreateShape(GlobCanvas, viewModel.WBOps,
+                                WhiteBoardViewModel.WBTools.NewEllipse, viewModel.start, viewModel.end,
+                                fillColor: curCanvasBg, shapeComp: false);
                         }
+
                         break;
-                    case (WhiteBoardViewModel.WBTools.Selection):
-                        if(e.OriginalSource is Shape && ((Shape)e.OriginalSource) == mouseDownSh)
+                    case WhiteBoardViewModel.WBTools.Selection:
+                        if (e.OriginalSource is Shape && (Shape) e.OriginalSource == mouseDownSh)
                         {
                             //sets the end point for usage in TranslateShape/RotateShape
-                            this.viewModel.end = e.GetPosition(MyCanvas);
+                            viewModel.end = e.GetPosition(MyCanvas);
 
-                            if ((this.viewModel.end.X != this.viewModel.start.X || this.viewModel.end.Y != this.viewModel.start.Y) && mouseDownFlag == 1)
-                            //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                            if ((viewModel.end.X != viewModel.start.X || viewModel.end.Y != viewModel.start.Y) &&
+                                mouseDownFlag == 1)
+                                //if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
                             {
                                 //MessageBox.Show(this.viewModel.start.ToString(), this.viewModel.end.ToString());
                                 if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
                                 {
                                     //if (e.OriginalSource is Shape)                                   
-                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start,
+                                        viewModel.end, mouseDownSh, false);
                                     //Resetting the value of 'start' to perform the next Move functions
-                                    this.viewModel.start = e.GetPosition(MyCanvas);
+                                    viewModel.start = e.GetPosition(MyCanvas);
 
                                     rotation = true;
-
-                                }else if(rotation == true)
+                                }
+                                else if (rotation)
                                 {
                                     //if (e.OriginalSource is Shape)                                   
-                                    this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start,
+                                        viewModel.end, mouseDownSh, false);
                                     //Resetting the value of 'start' to perform the next Move functions
-                                    this.viewModel.start = e.GetPosition(MyCanvas);
+                                    viewModel.start = e.GetPosition(MyCanvas);
 
                                     //rotation = true;
                                 }
                                 else
                                 {
-                                    this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, false);
+                                    viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start,
+                                        viewModel.end, mouseDownSh, false);
                                     //Resetting the value of 'start' to perform the next Move functions
-                                    this.viewModel.start = e.GetPosition(MyCanvas);
+                                    viewModel.start = e.GetPosition(MyCanvas);
                                 }
                             }
                         }
+
                         break;
                 }
             }
-            return;
         }
 
         /// <summary>
-        /// MouseWheel function to mock Canvas coordinate system
+        ///     MouseWheel function to mock Canvas coordinate system
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void MyCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            MessageBox.Show("Scrolled at X =" + e.GetPosition(GlobCanvas).X.ToString() + " ,Y = " + e.GetPosition(GlobCanvas).Y.ToString());
+            MessageBox.Show("Scrolled at X =" + e.GetPosition(GlobCanvas).X + " ,Y = " + e.GetPosition(GlobCanvas).Y);
             MessageBox.Show("Canvas has Width = " + GlobCanvas.ActualWidth + " , Height = " + GlobCanvas.ActualHeight);
 
-            SolidColorBrush blackBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom("#000000"));
+            var blackBrush = (SolidColorBrush) new BrushConverter().ConvertFrom("#000000");
 
-            System.Windows.Shapes.Rectangle shp = new System.Windows.Shapes.Rectangle { Width = 50, Height = 50, Stroke = blackBrush };
+            var shp = new Rectangle {Width = 50, Height = 50, Stroke = blackBrush};
             GlobCanvas.Children.Add(shp);
 
             //Check for Systems.Windows Canvas.SetLeft & SetTop
@@ -636,18 +672,18 @@ namespace Client
             MessageBox.Show("The Shape should be present at X=20 & Y=100 acc. to System.Windows convention");
 
             //Check for System.Windows Shapes Height & Width
-            double origHt = shp.Height;
-            double origWt = shp.Width;
+            var origHt = shp.Height;
+            var origWt = shp.Width;
             shp.Width = 150;
             shp.Height = 30;
 
-            MessageBox.Show("The Shape should be of Width=150 (parallel to X axis) & Height=30 (parallel to Y axis) acc. to System.Windows convention");
+            MessageBox.Show(
+                "The Shape should be of Width=150 (parallel to X axis) & Height=30 (parallel to Y axis) acc. to System.Windows convention");
 
             shp.Height = origHt;
             shp.Width = origWt;
 
             GlobCanvas.Children.Remove(shp);
-            return;
         }
 
 
@@ -773,54 +809,51 @@ namespace Client
         private void ColorBorder1Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Black, 0);
-            rbutton.IsChecked = false; 
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Black);
+            rbutton.IsChecked = false;
         }
 
         private void ColorBorder2Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Red, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Red);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder3Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Green, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Green);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder4Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Blue, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Blue);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder5Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Yellow, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Yellow);
             rbutton.IsChecked = false;
         }
 
         //Stroke Thickness Slider Control 
         private void StrokeThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            float thickness = (byte)StrokeThicknessSlider.Value;
+            float thickness = (byte) StrokeThicknessSlider.Value;
 
             if (thickness > 0 && viewModel != null)
-            {
-                this.viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "StrokeThickness", Black, thickness);
-            }
+                viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "StrokeThickness", Black, thickness);
         }
 
         //Main Toolbar Pop-Ups 
         //Free Hand Pop-Up
         private void OpenPopupFreeHandButton_MouseEnter(object sender, MouseEventArgs e)
         {
-
             FreeHandPopUp.StaysOpen = true;
         }
 
@@ -833,45 +866,44 @@ namespace Client
         //Pen Color Check Buttons 
         private void ColorPen1Checked(object sender, RoutedEventArgs e)
         {
-            this.viewModel.freeHand.SetColor(Black);
+            viewModel.freeHand.SetColor(Black);
             curPenColor = Black;
         }
 
         private void ColorPen2Checked(object sender, RoutedEventArgs e)
         {
-            this.viewModel.freeHand.SetColor(Red);
+            viewModel.freeHand.SetColor(Red);
             curPenColor = Red;
         }
 
         private void ColorPen3Checked(object sender, RoutedEventArgs e)
         {
-            this.viewModel.freeHand.SetColor(Green);
+            viewModel.freeHand.SetColor(Green);
             curPenColor = Green;
         }
 
         private void ColorPen4Checked(object sender, RoutedEventArgs e)
         {
-            this.viewModel.freeHand.SetColor(Blue);
+            viewModel.freeHand.SetColor(Blue);
             curPenColor = Blue;
         }
 
         private void ColorPen5Checked(object sender, RoutedEventArgs e)
         {
-            this.viewModel.freeHand.SetColor(Yellow);
+            viewModel.freeHand.SetColor(Yellow);
             curPenColor = Yellow;
         }
 
         //Stroke Thickness Slider Control 
         private void PenThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            float thickness = (byte)FreeHandThicknessSlider.Value;
+            float thickness = (byte) FreeHandThicknessSlider.Value;
 
             if (thickness > 0)
             {
-                this.viewModel.freeHand.SetThickness(thickness);
+                viewModel.freeHand.SetThickness(thickness);
                 penThickness = thickness;
             }
-
         }
 
         //Eraser Pop-up
@@ -901,7 +933,7 @@ namespace Client
         //Main Toolbar Here 
 
         /// <summary>
-        /// Toolbar selection tool 
+        ///     Toolbar selection tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -909,25 +941,23 @@ namespace Client
         {
             if (activeMainToolbarButton != null)
             {
-                activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
+                activeMainToolbarButton.Background =
+                    (SolidColorBrush) new BrushConverter().ConvertFrom(buttonDefaultColor);
+                activeMainToolbarButton.ClearValue(BackgroundProperty);
                 clearSelectedShapes();
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Collapsed)
-            {
-                this.SelectToolBar.Visibility = Visibility.Visible;
-            }
+            if (SelectToolBar.Visibility == Visibility.Collapsed) SelectToolBar.Visibility = Visibility.Visible;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
-            activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
+            activeMainToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             GlobCanvas.Cursor = Cursors.Arrow;
-            return;
         }
 
         /// <summary>
-        /// Toolbar Rectangle tool 
+        ///     Toolbar Rectangle tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -935,25 +965,23 @@ namespace Client
         {
             if (activeMainToolbarButton != null)
             {
-                activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
+                activeMainToolbarButton.Background =
+                    (SolidColorBrush) new BrushConverter().ConvertFrom(buttonDefaultColor);
+                activeMainToolbarButton.ClearValue(BackgroundProperty);
                 clearSelectedShapes();
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
-            activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
+            activeMainToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             GlobCanvas.Cursor = Cursors.Arrow;
-            return;
         }
 
         /// <summary>
-        /// Toolbar Ellipse tool 
+        ///     Toolbar Ellipse tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -961,25 +989,23 @@ namespace Client
         {
             if (activeMainToolbarButton != null)
             {
-                activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
+                activeMainToolbarButton.Background =
+                    (SolidColorBrush) new BrushConverter().ConvertFrom(buttonDefaultColor);
+                activeMainToolbarButton.ClearValue(BackgroundProperty);
                 clearSelectedShapes();
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
-            activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
+            activeMainToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             GlobCanvas.Cursor = Cursors.Arrow;
-            return;
         }
 
         /// <summary>
-        /// Toolbar FreeHand tool 
+        ///     Toolbar FreeHand tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -988,25 +1014,23 @@ namespace Client
             // Code for Un-Checked state
             if (activeMainToolbarButton != null)
             {
-                activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
+                activeMainToolbarButton.Background =
+                    (SolidColorBrush) new BrushConverter().ConvertFrom(buttonDefaultColor);
+                activeMainToolbarButton.ClearValue(BackgroundProperty);
                 clearSelectedShapes();
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
-            activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
+            activeMainToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             GlobCanvas.Cursor = Cursors.Pen;
-            return;
         }
 
         /// <summary>
-        /// Toolbar Eraser tool 
+        ///     Toolbar Eraser tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1014,25 +1038,23 @@ namespace Client
         {
             if (activeMainToolbarButton != null)
             {
-                activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
+                activeMainToolbarButton.Background =
+                    (SolidColorBrush) new BrushConverter().ConvertFrom(buttonDefaultColor);
+                activeMainToolbarButton.ClearValue(BackgroundProperty);
                 clearSelectedShapes();
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
-            activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
+            activeMainToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
-            GlobCanvas.Cursor = ((TextBlock)this.Resources["CursorErase32"]).Cursor;
-            return;
+            GlobCanvas.Cursor = ((TextBlock) Resources["CursorErase32"]).Cursor;
         }
 
         /// <summary>
-        /// Toolbar Line tool 
+        ///     Toolbar Line tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1040,188 +1062,180 @@ namespace Client
         {
             if (activeMainToolbarButton != null)
             {
-                activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonDefaultColor));
-                activeMainToolbarButton.ClearValue(System.Windows.Controls.Primitives.ToggleButton.BackgroundProperty);
+                activeMainToolbarButton.Background =
+                    (SolidColorBrush) new BrushConverter().ConvertFrom(buttonDefaultColor);
+                activeMainToolbarButton.ClearValue(BackgroundProperty);
                 clearSelectedShapes();
             }
 
-            if (this.SelectToolBar.Visibility == Visibility.Visible)
-            {
-                this.SelectToolBar.Visibility = Visibility.Collapsed;
-            }
+            if (SelectToolBar.Visibility == Visibility.Visible) SelectToolBar.Visibility = Visibility.Collapsed;
 
             activeMainToolbarButton = sender as System.Windows.Controls.Primitives.ToggleButton;
-            activeMainToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
+            activeMainToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
             viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             GlobCanvas.Cursor = Cursors.Arrow;
-            return;
         }
 
         //Selection Toolbar
         /// <summary>
-        /// Fill Border Tool 
+        ///     Fill Border Tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickedFillBorderTool(object sender, RoutedEventArgs e)
         {
             activeSelectToolbarButton = sender as Button;
-            activeSelectToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            activeSelectToolbarButton.ClearValue(Button.BackgroundProperty);
+            activeSelectToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
+            activeSelectToolbarButton.ClearValue(BackgroundProperty);
 
             //viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
-            return;
         }
 
         /// <summary>
-        /// Fill Shape Tool 
+        ///     Fill Shape Tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickedFillShapeTool(object sender, RoutedEventArgs e)
         {
             activeSelectToolbarButton = sender as Button;
-            activeSelectToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            activeSelectToolbarButton.ClearValue(Button.BackgroundProperty);
+            activeSelectToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
+            activeSelectToolbarButton.ClearValue(BackgroundProperty);
             //viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             //viewModel.shapeManager.SetBackgroundColor();
-            return;
         }
 
         /// <summary>
-        /// Duplicate Shape Tool 
+        ///     Duplicate Shape Tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickedDuplicateTool(object sender, RoutedEventArgs e)
         {
             activeSelectToolbarButton = sender as Button;
-            activeSelectToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            activeSelectToolbarButton.ClearValue(Button.BackgroundProperty);
+            activeSelectToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
+            activeSelectToolbarButton.ClearValue(BackgroundProperty);
             //viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
 
             viewModel.shapeManager.DuplicateShape(GlobCanvas, viewModel.WBOps);
-            return;
         }
 
         /// <summary>
-        /// Delete Shape Tool 
+        ///     Delete Shape Tool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickedDeleteTool(object sender, RoutedEventArgs e)
         {
             activeSelectToolbarButton = sender as Button;
-            activeSelectToolbarButton.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(buttonSelectedColor));
-            activeSelectToolbarButton.ClearValue(Button.BackgroundProperty);
+            activeSelectToolbarButton.Background =
+                (SolidColorBrush) new BrushConverter().ConvertFrom(buttonSelectedColor);
+            activeSelectToolbarButton.ClearValue(BackgroundProperty);
             //viewModel.ChangeActiveTool(activeMainToolbarButton.Name);
             GlobCanvas = viewModel.DeleteShape(GlobCanvas);
-            return;
         }
 
         //Whiteboard General tools 
 
         /// <summary>
-        /// Clear Frame Button Control 
+        ///     Clear Frame Button Control
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
-            if(Bu_P.Toggled1 == true)
+            if (Bu_P.Toggled1)
             {
-                MessageBoxResult result = MessageBox.Show("Are you sure you want to clear frame ? All progress since the last checkpoint would be lost.",
-                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                var result = MessageBox.Show(
+                    "Are you sure you want to clear frame ? All progress since the last checkpoint would be lost.",
+                    "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.OK)
                 {
                     GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
                     return;
                 }
-                else
-                {
-                    return;
-                }
+
+                return;
             }
-            else
-            {
-                MessageBox.Show("You must be a user of high priority to call clear canvas!");
-            }
+
+            MessageBox.Show("You must be a user of high priority to call clear canvas!");
         }
 
         /// <summary>
-        /// Save Frame Button Control
+        ///     Save Frame Button Control
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickedSaveFrame(object sender, RoutedEventArgs e)
         {
             //this.viewModel.NumCheckpoints += 1;
-            this.viewModel.SaveFrame();
-            return;
+            viewModel.SaveFrame();
         }
 
         /// <summary>
-        /// Undo Button Control
+        ///     Undo Button Control
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickedUndoButton(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("ClickedUndo");
-            this.viewModel.sendUndoRequest();
-            return;
+            viewModel.sendUndoRequest();
         }
 
         /// <summary>
-        /// Redo Button Control
+        ///     Redo Button Control
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ClickedRedoButton(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("ClickedRedo");
-            this.viewModel.sendRedoRequest();
-            return;
+            viewModel.sendRedoRequest();
         }
 
         /// <summary>
-        /// Toggle Button Control (Canvas State Lock)
+        ///     Toggle Button Control (Canvas State Lock)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Bu_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Bu.Toggled1 == true)
+            if (Bu.Toggled1)
             {
-                this.viewModel.ChangeActivityState();
-                this.ActivityBlock.Text = "Inactive";
+                viewModel.ChangeActivityState();
+                ActivityBlock.Text = "Inactive";
                 MessageBox.Show("Changed State to Inactive");
             }
             else
             {
-                this.viewModel.ChangeActivityState();
-                this.ActivityBlock.Text = "Active";
+                viewModel.ChangeActivityState();
+                ActivityBlock.Text = "Active";
                 MessageBox.Show("Changed State to Active");
             }
         }
 
         /// <summary>
-        /// Toggle Button Control (User Priority)
+        ///     Toggle Button Control (User Priority)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Bu_PMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Bu_P.Toggled1 == true)
+            if (Bu_P.Toggled1)
             {
-                this.viewModel.WBOps.SetUserLevel(1);
-                this.PriorityBlock.Text = "High PR";
+                viewModel.WBOps.SetUserLevel(1);
+                PriorityBlock.Text = "High PR";
                 MessageBox.Show("Switched to High Priority");
             }
             else
             {
-                this.viewModel.WBOps.SetUserLevel(0);
-                this.PriorityBlock.Text = "Medium PR";
+                viewModel.WBOps.SetUserLevel(0);
+                PriorityBlock.Text = "Medium PR";
                 MessageBox.Show("Switched to Medium Priority");
             }
         }

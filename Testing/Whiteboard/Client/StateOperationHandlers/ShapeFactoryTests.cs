@@ -5,32 +5,28 @@
  * Date Modified: 11/25/2021
 **/
 
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NUnit.Framework;
 using Whiteboard;
 
 namespace Testing.Whiteboard
 {
     [TestFixture]
-    class ShapeFactoryTests
+    internal class ShapeFactoryTests
     {
-        private Random _random;
-
         [SetUp]
         public void SetUp()
         {
-            _random = new();
+            _random = new Random();
         }
+
+        private Random _random;
 
         [Test]
         public void MainShapeCreatorFactory_createRectangle_ReturnsRectangle()
         {
-            ShapeType sType = ShapeType.RECTANGLE;
-            MainShape rectangle = CreateShape(sType);
+            var sType = ShapeType.RECTANGLE;
+            var rectangle = CreateShape(sType);
 
             // Checking the identity of the shape. Other params correctness checked in shape specific tests.
             Assert.AreEqual(sType, rectangle.ShapeIdentifier);
@@ -39,8 +35,8 @@ namespace Testing.Whiteboard
         [Test]
         public void MainShapeCreatorFactory_createEllipse_ReturnsEllipse()
         {
-            ShapeType sType = ShapeType.ELLIPSE;
-            MainShape ellipse = CreateShape(sType);
+            var sType = ShapeType.ELLIPSE;
+            var ellipse = CreateShape(sType);
 
             Assert.AreEqual(sType, ellipse.ShapeIdentifier);
         }
@@ -48,8 +44,8 @@ namespace Testing.Whiteboard
         [Test]
         public void MainShapeCreatorFactory_createLine_ReturnsLine()
         {
-            ShapeType sType = ShapeType.LINE;
-            MainShape line = CreateShape(sType);
+            var sType = ShapeType.LINE;
+            var line = CreateShape(sType);
 
             Assert.AreEqual(sType, line.ShapeIdentifier);
         }
@@ -57,8 +53,8 @@ namespace Testing.Whiteboard
         [Test]
         public void MainShapeCreatorFactory_createPolyLine_ReturnsPolyLine()
         {
-            ShapeType sType = ShapeType.POLYLINE;
-            MainShape polyline = CreateShape(sType);
+            var sType = ShapeType.POLYLINE;
+            var polyline = CreateShape(sType);
 
             Assert.AreEqual(sType, polyline.ShapeIdentifier);
         }
@@ -68,18 +64,15 @@ namespace Testing.Whiteboard
             Coordinate start = new(_random.Next(0, 10), _random.Next(0, 10));
             Coordinate end = new(_random.Next(0, 10), _random.Next(0, 10));
             return ShapeFactory.MainShapeCreatorFactory(shapeType, start, end, null);
-
         }
 
         [Test]
         public void MainShapeCreatorFactory_createUnknownShape_ThrowsException()
         {
-            ShapeType sType = ShapeType.NONE;
+            var sType = ShapeType.NONE;
 
-            Exception e = Assert.Throws<Exception>(delegate { CreateShape(sType); });
+            var e = Assert.Throws<Exception>(delegate { CreateShape(sType); });
             Assert.That(e.Message, Is.EqualTo("Invalid Object type"));
         }
-
-
     }
 }

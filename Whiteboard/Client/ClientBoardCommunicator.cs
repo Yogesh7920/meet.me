@@ -14,27 +14,30 @@ using Networking;
 namespace Whiteboard
 {
     /// <summary>
-    /// Bridge the gap between Server side White Board Modules and Networking module
+    ///     Bridge the gap between Server side White Board Modules and Networking module
     /// </summary>
-
     public sealed class ClientBoardCommunicator : IClientBoardCommunicator, INotificationHandler
     {
-        private static ClientBoardCommunicator instance = null;
+        private static ClientBoardCommunicator instance;
         private static ISerializer serializer;
         private static ICommunicator communicator;
-        private readonly static string moduleIdentifier = "Whiteboard";
+        private static readonly string moduleIdentifier = "Whiteboard";
         private static HashSet<IServerUpdateListener> subscribers;
 
 
         // Check if running as part of NUnit
-        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
-        /// <summary>
-        /// private constructor for a singleton
-        /// </summary>
-        private ClientBoardCommunicator() { }
+        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies()
+            .Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
 
         /// <summary>
-        /// instance getter
+        ///     private constructor for a singleton
+        /// </summary>
+        private ClientBoardCommunicator()
+        {
+        }
+
+        /// <summary>
+        ///     instance getter
         /// </summary>
         public static ClientBoardCommunicator Instance
         {
@@ -48,16 +51,47 @@ namespace Whiteboard
                     communicator.Subscribe(moduleIdentifier, instance);
                     subscribers = new HashSet<IServerUpdateListener>();
                 }
+
                 return instance;
             }
         }
 
-        public void SetCommunicatorAndSerializer(ICommunicator iCommunicator, ISerializer iSerializer) 
+        /// <summary>
+        ///     serializes the shape objects and passes it to communicator.send()
+        /// </summary>
+        /// <param name="clientUpdate"> the object to be passed to server</param>
+        public void Send(BoardServerShape clientUpdate)
         {
-            if (IsRunningFromNUnit)
+            try
             {
-                communicator = iCommunicator;
-                serializer = iSerializer;
+                Trace.WriteLine("ClientBoardCommunicator.Send: Sending objects to server");
+                var xml_obj = serializer.Serialize(clientUpdate);
+                communicator.Send(xml_obj, moduleIdentifier);
+                Trace.WriteLine("ClientBoardCommunicator.Send: Sent objects to server");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("ClientBoardCommunicator.Send: Exception Occured");
+                Trace.WriteLine(e.Message);
+            }
+        }
+
+        /// <summary>
+        ///     publishes deserialized objects to listeners
+        /// </summary>
+        /// <param name="listener">subscriber</param>
+        public void Subscribe(IServerUpdateListener listener)
+        {
+            try
+            {
+                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Adding Subcriber");
+                subscribers.Add(listener);
+                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Added Subcriber");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Exception Occured");
+                Trace.WriteLine(e.Message);
             }
         }
 
@@ -65,62 +99,23 @@ namespace Whiteboard
         {
             try
             {
-                BoardServerShape deserializedShape = serializer.Deserialize<BoardServerShape>(data);
-                foreach (var subscriber in subscribers)
-                {
-                    subscriber.OnMessageReceived(deserializedShape);
-                }
+                var deserializedShape = serializer.Deserialize<BoardServerShape>(data);
+                foreach (var subscriber in subscribers) subscriber.OnMessageReceived(deserializedShape);
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 Trace.WriteLine("ClientBoardCommunicator.OnDataReceived: Exception Occured");
                 Trace.WriteLine(e.Message);
             }
         }
 
-        /// <summary>
-        /// serializes the shape objects and passes it to communicator.send()
-        /// </summary>
-        /// <param name="clientUpdate"> the object to be passed to server</param>
-        public void Send(BoardServerShape clientUpdate) 
+        public void SetCommunicatorAndSerializer(ICommunicator iCommunicator, ISerializer iSerializer)
         {
-            try
+            if (IsRunningFromNUnit)
             {
-                Trace.WriteLine("ClientBoardCommunicator.Send: Sending objects to server");
-                string xml_obj = serializer.Serialize(clientUpdate);
-                communicator.Send(xml_obj, moduleIdentifier);
-                Trace.WriteLine("ClientBoardCommunicator.Send: Sent objects to server");
-
-            }
-            catch (Exception e) 
-            {
-                Trace.WriteLine("ClientBoardCommunicator.Send: Exception Occured");
-                Trace.WriteLine(e.Message);
-            }
-        }   
-        /// <summary>
-        /// publishes deserialized objects to listeners
-        /// </summary>
-        /// <param name="listener">subscriber</param>
-        public void Subscribe(IServerUpdateListener listener) 
-        {
-            try
-            {
-                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Adding Subcriber");
-                subscribers.Add(listener);
-                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Added Subcriber");
-
-            }
-            catch (Exception e) 
-            {
-                Trace.WriteLine("ClientBoardCommunicator.Subscribe: Exception Occured");
-                Trace.WriteLine(e.Message);
+                communicator = iCommunicator;
+                serializer = iSerializer;
             }
         }
-
-
-
     }
-
-
 }

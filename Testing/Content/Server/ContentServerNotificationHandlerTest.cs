@@ -3,24 +3,25 @@
 /// <summary>
 ///     This file contains tests for ContentServerNotificationHandler
 /// </summary>
-using Content;
-using Networking;
-using NUnit.Framework;
+
 using System;
 using System.IO;
 using System.Threading;
+using Content;
+using Networking;
+using NUnit.Framework;
 
 namespace Testing.Content
 {
     public class ContentServerNotificationHandlerTests
     {
-        private Utils utils;
+        private FakeCommunicator communicator;
         private ContentServer contentServer;
+        private FakeContentListener listener;
         private INotificationHandler notificationHandler;
         private ISerializer serializer;
-        private FakeContentListener listener;
-        private FakeCommunicator communicator;
         private int sleeptime;
+        private Utils utils;
 
         [SetUp]
         public void Setup()
@@ -40,15 +41,15 @@ namespace Testing.Content
         [Test]
         public void OnDataReceived_ChatDataIsReceived_CallReceiveMethodOfContentDatabase()
         {
-            MessageData messageData = utils.GenerateNewMessageData("Hello");
+            var messageData = utils.GenerateNewMessageData("Hello");
 
-            string serializedMessage = serializer.Serialize(messageData);
+            var serializedMessage = serializer.Serialize(messageData);
 
             notificationHandler.OnDataReceived(serializedMessage);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
+            var notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Hello", notifiedMessage.Message);
             Assert.AreEqual(messageData.Type, notifiedMessage.Type);
@@ -57,9 +58,9 @@ namespace Testing.Content
             Assert.AreEqual(messageData.Starred, notifiedMessage.Starred);
             Assert.AreEqual(messageData.ReceiverIds, notifiedMessage.ReceiverIds);
 
-            string sentMessage = communicator.GetSentData();
+            var sentMessage = communicator.GetSentData();
 
-            MessageData deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
+            var deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
 
             Assert.AreEqual("Hello", deserializesSentMessage.Message);
             Assert.AreEqual(messageData.Type, deserializesSentMessage.Type);
@@ -73,11 +74,11 @@ namespace Testing.Content
         [Test]
         public void OnDataReceived_FileDataIsReceived_CallReceiveMethodOfContentDatabase()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file = new MessageData
+            var file = new MessageData
             {
                 Message = "Test_File.pdf",
                 Type = MessageType.File,
@@ -88,13 +89,13 @@ namespace Testing.Content
                 ReceiverIds = new int[0]
             };
 
-            string serializedMessage = serializer.Serialize(file);
+            var serializedMessage = serializer.Serialize(file);
 
             notificationHandler.OnDataReceived(serializedMessage);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
+            var notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Test_File.pdf", notifiedMessage.Message);
             Assert.AreEqual(file.Type, notifiedMessage.Type);
@@ -103,9 +104,9 @@ namespace Testing.Content
             Assert.AreEqual(file.Starred, notifiedMessage.Starred);
             Assert.AreEqual(file.ReceiverIds, notifiedMessage.ReceiverIds);
 
-            string sentMessage = communicator.GetSentData();
+            var sentMessage = communicator.GetSentData();
 
-            MessageData deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
+            var deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
 
             Assert.AreEqual("Test_File.pdf", deserializesSentMessage.Message);
             Assert.AreEqual(file.Type, deserializesSentMessage.Type);
@@ -119,15 +120,15 @@ namespace Testing.Content
         [Test]
         public void OnDataReceived_InvalidDataIsReceived_CallReceiveMethodOfContentDatabase()
         {
-            ReceiveMessageData previousMessageToSubsribers = listener.GetOnMessageData();
-            string previousMessageToCommunicator = communicator.GetSentData();
+            var previousMessageToSubsribers = listener.GetOnMessageData();
+            var previousMessageToCommunicator = communicator.GetSentData();
 
-            string garbageData = " adfasfasfsadf";
+            var garbageData = " adfasfasfsadf";
             notificationHandler.OnDataReceived(garbageData);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
+            var currentMessageToSubscribers = listener.GetOnMessageData();
 
             Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);

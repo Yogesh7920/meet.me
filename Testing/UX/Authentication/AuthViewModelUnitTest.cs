@@ -1,8 +1,8 @@
 ﻿/// <author>Irene Casmir</author>
 /// <created>26/11/2021</created>
 
-using NUnit.Framework;
 using Client.ViewModel;
+using NUnit.Framework;
 using static Testing.UX.Authentication.AuthUtils;
 
 namespace Testing.UX.Authentication
@@ -10,13 +10,13 @@ namespace Testing.UX.Authentication
     [TestFixture]
     public class AuthViewModelUnitTest
     {
-        private AuthViewModel _viewModel;
-
         [SetUp]
         public void SetUp()
         {
-            _viewModel = new AuthViewModel(new FakeClientSessionManager()) ;
+            _viewModel = new AuthViewModel(new FakeClientSessionManager());
         }
+
+        private AuthViewModel _viewModel;
 
         [Test]
         public void OnUserLogin_ReturnBool()

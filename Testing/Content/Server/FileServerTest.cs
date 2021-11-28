@@ -3,10 +3,11 @@
 /// <summary>
 ///     This file contains tests for FileServer
 /// </summary>
-using Content;
-using NUnit.Framework;
+
 using System;
 using System.IO;
+using Content;
+using NUnit.Framework;
 
 namespace Testing.Content
 {
@@ -25,11 +26,11 @@ namespace Testing.Content
         [Test]
         public void Receive_StoringFile_ShouldBeAbleToStoreFile()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData
+            var file1 = new MessageData
             {
                 Message = "Test_File.pdf",
                 Type = MessageType.File,
@@ -39,7 +40,7 @@ namespace Testing.Content
                 Event = MessageEvent.NewMessage
             };
 
-            MessageData recv = fileServer.Receive(file1);
+            var recv = fileServer.Receive(file1);
 
             Assert.AreEqual(file1.Message, recv.Message);
             Assert.AreEqual(file1.Type, recv.Type);
@@ -51,11 +52,11 @@ namespace Testing.Content
         [Test]
         public void Receive_FetchingFile_ShouldBeAbleToFetchAStoredFile()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData
+            var file1 = new MessageData
             {
                 Message = "Test_File.pdf",
                 Type = MessageType.File,
@@ -65,7 +66,7 @@ namespace Testing.Content
                 Event = MessageEvent.NewMessage
             };
 
-            MessageData recv = fileServer.Receive(file1);
+            var recv = fileServer.Receive(file1);
 
             Assert.AreEqual(file1.Message, recv.Message);
             Assert.AreEqual(file1.Type, recv.Type);
@@ -73,7 +74,7 @@ namespace Testing.Content
             Assert.AreEqual(file1.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file = new MessageData
+            var file = new MessageData
             {
                 Message = "Test_File.pdf",
                 SenderId = 1,
@@ -98,11 +99,11 @@ namespace Testing.Content
         [Test]
         public void Receive_GivingInvalidEventForFileType_NullShouldBeReturned()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData
+            var file1 = new MessageData
             {
                 Message = "Test_File.pdf",
                 Type = MessageType.File,
@@ -112,7 +113,7 @@ namespace Testing.Content
                 Event = MessageEvent.NewMessage
             };
 
-            MessageData recv = fileServer.Receive(file1);
+            var recv = fileServer.Receive(file1);
 
             Assert.AreEqual(file1.Message, recv.Message);
             Assert.AreEqual(file1.Type, recv.Type);
@@ -120,7 +121,7 @@ namespace Testing.Content
             Assert.AreEqual(file1.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file = new MessageData
+            var file = new MessageData
             {
                 MessageId = 0,
                 Type = MessageType.File,
@@ -144,11 +145,11 @@ namespace Testing.Content
         [Test]
         public void Receive_FetchingAFilesThatDoesNotExist_NullShouldBeReturned()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file1 = new MessageData
+            var file1 = new MessageData
             {
                 Message = "Test_File.pdf",
                 Type = MessageType.File,
@@ -158,7 +159,7 @@ namespace Testing.Content
                 Event = MessageEvent.NewMessage
             };
 
-            MessageData recv = fileServer.Receive(file1);
+            var recv = fileServer.Receive(file1);
 
             Assert.AreEqual(file1.Message, recv.Message);
             Assert.AreEqual(file1.Type, recv.Type);
@@ -166,7 +167,7 @@ namespace Testing.Content
             Assert.AreEqual(file1.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file = new MessageData
+            var file = new MessageData
             {
                 MessageId = 10,
                 Type = MessageType.File,
@@ -180,13 +181,13 @@ namespace Testing.Content
         [Test]
         public void Receive_StoringAndFetchingMultipleFiles_ShouldBeAbleToStoreFilesAndFetchThem()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            string pathB = path[0] + "\\Testing\\Content\\Utils.cs";
+            var pathB = path[0] + "\\Testing\\Content\\Utils.cs";
 
-            MessageData file1 = new MessageData
+            var file1 = new MessageData
             {
                 Message = "Test_File.pdf",
                 Type = MessageType.File,
@@ -196,7 +197,7 @@ namespace Testing.Content
                 Event = MessageEvent.NewMessage
             };
 
-            MessageData recv = fileServer.Receive(file1);
+            var recv = fileServer.Receive(file1);
 
             Assert.AreEqual(file1.Message, recv.Message);
             Assert.AreEqual(file1.Type, recv.Type);
@@ -204,7 +205,7 @@ namespace Testing.Content
             Assert.AreEqual(file1.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file2 = new MessageData
+            var file2 = new MessageData
             {
                 Message = "Utils.cs",
                 Type = MessageType.File,
@@ -224,7 +225,7 @@ namespace Testing.Content
             Assert.AreEqual(file2.Event, recv.Event);
             Assert.IsNull(recv.FileData);
 
-            MessageData file3 = new MessageData
+            var file3 = new MessageData
             {
                 Message = "c.txt",
                 Type = MessageType.File,

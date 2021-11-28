@@ -26,6 +26,11 @@ namespace Content
         public int[] ReceiverIds;
 
         /// <summary>
+        ///     Id of the message being replied to
+        /// </summary>
+        public int ReplyMsgId;
+
+        /// <summary>
         ///     Id of thread to which this message belongs
         /// </summary>
         public int ReplyThreadId;
@@ -49,11 +54,6 @@ namespace Content
         ///     Message Type - File or Chat
         /// </summary>
         public MessageType Type;
-
-        /// <summary>
-        ///     Id of the message being replied to
-        /// </summary>
-        public int ReplyMsgId;
 
         public ReceiveMessageData()
         {

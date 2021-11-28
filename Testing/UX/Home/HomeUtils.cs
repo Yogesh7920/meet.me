@@ -3,32 +3,33 @@
 
 using System.Security.Permissions;
 using System.Windows.Threading;
-using Dashboard.Client.SessionManagement;
 using Dashboard;
+using Dashboard.Client.SessionManagement;
 
 namespace Testing.UX.Home
 {
-    class HomeUtils
+    internal class HomeUtils
     {
         public static class DispatcherUtil
         {
-            #pragma warning disable SYSLIB0003 // Type or member is obsolete
+#pragma warning disable SYSLIB0003 // Type or member is obsolete
             [SecurityPermissionAttribute(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-            #pragma warning restore SYSLIB0003 // Type or member is obsolete
+#pragma warning restore SYSLIB0003 // Type or member is obsolete
             public static void DoEvents()
             {
                 var frame = new DispatcherFrame();
                 Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
-                                                         new DispatcherOperationCallback(ExitFrame), frame);
+                    new DispatcherOperationCallback(ExitFrame), frame);
                 Dispatcher.PushFrame(frame);
             }
 
             private static object ExitFrame(object frame)
             {
-                ((DispatcherFrame)frame).Continue = false;
+                ((DispatcherFrame) frame).Continue = false;
                 return null;
             }
         }
+
         public class DummyClientSessionManager : IUXClientSessionManager
         {
             public bool AddClient(string ipAddress, int ports, string username)
@@ -37,48 +38,43 @@ namespace Testing.UX.Home
             }
 
             /// <summary>
-            /// Removes the user from the meeting by deleting their 
-            /// data from the session.
+            ///     Removes the user from the meeting by deleting their
+            ///     data from the session.
             /// </summary>
             public void RemoveClient()
             {
-
             }
 
             /// <summary>
-            /// End the meeting for all, creating and storing the summary and analytics.
+            ///     End the meeting for all, creating and storing the summary and analytics.
             /// </summary>
             public void EndMeet()
             {
-
             }
 
             /// <summary>
-            /// Get the summary of the chats that were sent from the start of the
-            /// meet till the function was called.
+            ///     Get the summary of the chats that were sent from the start of the
+            ///     meet till the function was called.
             /// </summary>
             /// <returns> Summary of the chats as a string. </returns>
             public void GetSummary()
             {
-
             }
 
             /// <summary>
-            /// Used to subcribe for any changes in the 
-            /// Session object.
+            ///     Used to subcribe for any changes in the
+            ///     Session object.
             /// </summary>
             /// <param name="listener"> The subscriber. </param>
             public void SubscribeSession(IClientSessionNotifications listener)
             {
-
             }
 
             /// <summary>
-            /// Gather analytics of the users and messages.
+            ///     Gather analytics of the users and messages.
             /// </summary>
             public void GetAnalytics()
             {
-
             }
 
             public UserData GetUser()

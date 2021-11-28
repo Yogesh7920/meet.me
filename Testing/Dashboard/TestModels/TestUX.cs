@@ -5,25 +5,34 @@
 ///		for testing purpose
 /// </summary>
 
+using System;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 using Dashboard.Server.Telemetry;
-using System;
 
 namespace Testing.Dashboard.TestModels
 {
-    class TestUX : IClientSessionNotifications
+    internal class TestUX : IClientSessionNotifications
     {
+        private readonly IUXClientSessionManager _sessionManager;
+        public bool gotNotified;
+        public bool meetingEndEvent;
+        public SessionAnalytics sessionAnalytics;
+        public SessionData sessionData;
+
+        public string summary;
+
         public TestUX(IUXClientSessionManager sessionManager)
         {
             _sessionManager = sessionManager;
             gotNotified = false;
-            _sessionManager.SummaryCreated += (summary) => UpdateSummary(summary);
+            _sessionManager.SummaryCreated += summary => UpdateSummary(summary);
             _sessionManager.MeetingEnded += () => OnMeetingEnds();
-            _sessionManager.AnalyticsCreated += (sessionAnalytics) => UpdateAnalytics(sessionAnalytics);
+            _sessionManager.AnalyticsCreated += sessionAnalytics => UpdateAnalytics(sessionAnalytics);
             summary = null;
             meetingEndEvent = false;
         }
+
         public void OnClientSessionChanged(SessionData session)
         {
             sessionData = session;
@@ -45,12 +54,5 @@ namespace Testing.Dashboard.TestModels
         {
             meetingEndEvent = true;
         }
-
-        public string summary;
-        public bool gotNotified;
-        public bool meetingEndEvent;
-        private IUXClientSessionManager _sessionManager;
-        public SessionData sessionData;
-        public SessionAnalytics sessionAnalytics;
     }
 }

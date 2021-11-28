@@ -3,6 +3,7 @@
 /// <summary>
 ///     This file handles all the file messages
 /// </summary>
+
 using System.Diagnostics;
 
 namespace Content
@@ -17,7 +18,7 @@ namespace Content
         }
 
         /// <summary>
-        /// Recevies the request related to files, will store the new file or return the file requested
+        ///     Recevies the request related to files, will store the new file or return the file requested
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the new file message without file data or the file requested</returns>
@@ -41,7 +42,7 @@ namespace Content
         }
 
         /// <summary>
-        /// Saves file in the contentDatabase.
+        ///     Saves file in the contentDatabase.
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the saved file message without the file data.</returns>
@@ -56,13 +57,13 @@ namespace Content
         }
 
         /// <summary>
-        /// Fetches a stored file.
+        ///     Fetches a stored file.
         /// </summary>
         /// <param name="messageData"></param>
         /// <returns>Returns the requested file message.</returns>
         private MessageData FetchFile(MessageData messageData)
         {
-            MessageData receiveMessageData = _contentDatabase.GetFiles(messageData.MessageId);
+            var receiveMessageData = _contentDatabase.GetFiles(messageData.MessageId);
 
             // If null is returned by contentDatabase that means it doesn't exist, return null
             if (receiveMessageData == null)
@@ -72,7 +73,7 @@ namespace Content
             }
 
             // Clone the object and add the required fields
-            MessageData downloadMessageData = receiveMessageData.Clone();
+            var downloadMessageData = receiveMessageData.Clone();
 
             // store file path on which the file will be downloaded on the client's system
             downloadMessageData.Message = messageData.Message;

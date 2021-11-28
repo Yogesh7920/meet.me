@@ -1,30 +1,31 @@
 ﻿/// <author>P S Harikrishnan</author>
 /// <created>06/11/2021</created>
 
-using System.Windows;
-using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
 using Client.ViewModel;
 
 namespace Client
 {
     /// <summary>
-    /// Interaction logic for UsersList.xaml
+    ///     Interaction logic for UsersList.xaml
     /// </summary>
     public partial class UsersList : UserControl
     {
+        private readonly HomePageViewModel _viewModelHomePage;
+        private readonly MainWindow obj;
         public bool userListHidden;
-        ObservableCollection<UserViewData> users;
-        MainWindow obj;
-        private HomePageViewModel _viewModelHomePage;
+        private ObservableCollection<UserViewData> users;
+
         public UsersList(MainWindow instance)
         {
             InitializeComponent();
             obj = instance;
 
             userListHidden = true;
-            UserListHead.Visibility = System.Windows.Visibility.Hidden;
+            UserListHead.Visibility = Visibility.Hidden;
 
             _viewModelHomePage = new HomePageViewModel();
             //subscribe to the property changed event
@@ -34,17 +35,19 @@ namespace Client
             users = new ObservableCollection<UserViewData>();
             UsersListView.ItemsSource = users;
         }
+
         /// <summary>
-        /// Listening to property changed event
-        /// Sets new object as ItemSource
+        ///     Listening to property changed event
+        ///     Sets new object as ItemSource
         /// </summary>
         private void Listener(object sender, PropertyChangedEventArgs e)
         {
             users = new ObservableCollection<UserViewData>(_viewModelHomePage.users);
             UsersListView.ItemsSource = users;
         }
+
         /// <summary>
-        /// Resizing users list based on button click
+        ///     Resizing users list based on button click
         /// </summary>
         private void UsersListClick(object sender, RoutedEventArgs e)
         {
@@ -52,18 +55,19 @@ namespace Client
             if (userListHidden)
             {
                 UsersListPane.SetValue(Grid.ColumnSpanProperty, 3);
-                UserListHead.Visibility = System.Windows.Visibility.Visible;
+                UserListHead.Visibility = Visibility.Visible;
                 userListHidden = false;
             }
             else
             {
                 UsersListPane.SetValue(Grid.ColumnSpanProperty, 1);
-                UserListHead.Visibility = System.Windows.Visibility.Hidden;
+                UserListHead.Visibility = Visibility.Hidden;
                 userListHidden = true;
             }
         }
+
         /// <summary>
-        /// Leave button clicked
+        ///     Leave button clicked
         /// </summary>
         public void OnLeaveButtonClick()
         {
