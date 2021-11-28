@@ -86,6 +86,11 @@ namespace Whiteboard
             }
         }
 
+        /// <summary>
+        /// Function to set mock communicator and checkpointHandler when running in test mode.
+        /// </summary>
+        /// <param name="clientBoardCommunicator">ClientBoardCommunicator instance</param>
+        /// <param name="clientCheckPointHandler">ClientCheckpointHandler instance</param>
         public void SetCommunicatorAndCheckpointHandler(IClientBoardCommunicator clientBoardCommunicator, IClientCheckPointHandler clientCheckPointHandler)
         {
             if (IsRunningFromNUnit)
