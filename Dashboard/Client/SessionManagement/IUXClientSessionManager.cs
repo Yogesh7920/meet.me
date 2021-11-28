@@ -1,4 +1,11 @@
-﻿using System;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 24/10/2021 </created>
+/// <summary>
+/// This file contains the interface for UX to access Client session manager's methods and fields.
+/// </summary>
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,6 +58,12 @@ namespace Dashboard.Client.SessionManagement
         /// Gather analytics of the users and messages.
         /// </summary>
         void GetAnalytics();
+
+        /// <summary>
+        /// Fetches the user data object from the client session manager.
+        /// </summary>
+        /// <returns>A userData object for that paritcular client.</returns>
+        UserData GetUser();
 
         // Event for notifying summary creation 
         public event NotifySummaryCreated SummaryCreated;

@@ -1,4 +1,7 @@
-﻿using System;
+﻿/// <authors>Irene Casmir and P S Harikrishnan</authors>
+/// <created>08/10/2021</created>
+
+using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
@@ -11,28 +14,29 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static WhiteBoardView _whiteboard;
+        private static WhiteBoardView s_whiteboard;
         public bool sharing = false;
-        private static ChatView _chat;
-        private static UsersList _userslist;
+        private static ChatView s_chat;
+        private static UsersList s_userslist;
         private bool _chatFlag = false;
         private bool _ssFlag = false;
         private bool _wbFlag = true;
-        private ScreenShareClient SSClient;
+        private ScreenShareClient _ssClient;
 
         public MainWindow()
         {
             InitializeComponent();
             CenterWindowOnScreen();
-            _whiteboard = new WhiteBoardView();
-            this.SSwb.Content = _whiteboard;
-            _chat = new ChatView();
-            this.Chat.Content = _chat;
-            _userslist = new UsersList(this);
-            this.UsersListControl.Content = _userslist;
+            s_whiteboard = new WhiteBoardView();
+            this.SSwb.Content = s_whiteboard;
+            s_chat = new ChatView();
+            this.Chat.Content = s_chat;
+            s_userslist = new UsersList(this);
+            this.UsersListControl.Content = s_userslist;
 
-            SSClient = ScreenShareFactory.GetScreenSharer();
+            _ssClient = ScreenShareFactory.GetScreenSharer();
         }
+        
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
         /// <summary>
         /// Function to launch the window on the center of the screen
@@ -46,6 +50,7 @@ namespace Client
             this.Left = (screenWidth / 2) - (windowWidth / 2);
             this.Top = (screenHeight / 2) - (windowHeight / 2);
         }
+        
         /// <summary>
         /// Function to change the theme
         /// </summary>
@@ -65,6 +70,7 @@ namespace Client
                 Application.Current.Resources.MergedDictionaries.Add(dict);
             }
         }
+        
         /// <summary>
         /// Drag functionality
         /// </summary>
@@ -72,6 +78,7 @@ namespace Client
         {
             DragMove();
         }
+        
         /// <summary>
         /// Minimize button functionality
         /// </summary>  
@@ -86,6 +93,7 @@ namespace Client
                 this.WindowState = WindowState.Normal;
             }
         }
+        
         /// <summary>
         /// Maximize button functionality
         /// </summary>
@@ -96,6 +104,7 @@ namespace Client
             MaximizeButton.Visibility = Visibility.Collapsed;
             RestoreButton.Visibility = Visibility.Visible;
         }
+        
         /// <summary>
         /// Restore button functionality
         /// </summary>
@@ -105,6 +114,7 @@ namespace Client
             RestoreButton.Visibility = Visibility.Collapsed;
             MaximizeButton.Visibility = Visibility.Visible;
         }
+        
         /// <summary>
         /// Close button functionality
         /// </summary>
@@ -112,24 +122,26 @@ namespace Client
         {
             Application.Current.Shutdown();
         }
+        
         /// <summary>
         /// Function to handle ScreenShare button click event
         /// </summary>
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
             _ssFlag = true;
+            this.SSwb.Content = new ScreenShareUX();
             if (!sharing)
             {
-                SSClient.StartSharing();
+                _ssClient.StartSharing();
                 sharing = true;
             }
             else
             {
-               SSClient.StopSharing();
+               _ssClient.StopSharing();
                sharing = false;
             }
-            this.SSwb.Content = new ScreenShareUX();
-            if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
+            //this.SSwb.Content = new ScreenShareUX();
+            if (_chatFlag.Equals(true) && s_userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 1);
@@ -139,7 +151,7 @@ namespace Client
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 3);
             }
-            else if (_userslist.UserListHidden.Equals(false))
+            else if (s_userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 3);
@@ -150,14 +162,15 @@ namespace Client
                 SSwb.SetValue(Grid.ColumnSpanProperty, 5);
             }
         }
+        
         /// <summary>
         /// Function to handle Whiteboard button click event
         /// </summary>
         private void OnWhiteboardClick(object sender, RoutedEventArgs e)
         {
             _wbFlag = true;
-            this.SSwb.Content = _whiteboard;
-            if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
+            this.SSwb.Content = s_whiteboard;
+            if (_chatFlag.Equals(true) && s_userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 1);
@@ -167,7 +180,7 @@ namespace Client
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 3);
             }
-            else if (_userslist.UserListHidden.Equals(false))
+            else if (s_userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 3);
@@ -178,6 +191,7 @@ namespace Client
                 SSwb.SetValue(Grid.ColumnSpanProperty, 5);
             }
         }
+        
         /// <summary>
         /// Function to handle Chat button click event
         /// </summary>
@@ -187,7 +201,7 @@ namespace Client
             {
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
-                    if (_userslist.UserListHidden.Equals(false))
+                    if (s_userslist.userListHidden.Equals(false))
                     {
                         SSwb.SetValue(Grid.ColumnProperty, 4);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 1);
@@ -208,7 +222,7 @@ namespace Client
                 _chatFlag = false;
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
-                    if (_userslist.UserListHidden.Equals(false))
+                    if (s_userslist.userListHidden.Equals(false))
                     {
                         SSwb.SetValue(Grid.ColumnProperty, 4);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
@@ -221,6 +235,7 @@ namespace Client
                 }
             }
         }
+        
         /// <summary>
         /// Function to handle Dashboard button click event
         /// </summary>
@@ -229,12 +244,13 @@ namespace Client
             DashboardView dashboard = new DashboardView();
             dashboard.Show();
         }
+        
         /// <summary>
         /// Function to handle UsersList expansion button click event
         /// </summary>
         public void OnUsersListClick()
         {
-            if (_userslist.UserListHidden.Equals(true))
+            if (s_userslist.userListHidden.Equals(true))
             {
                 UsersListControl.SetValue(Grid.ColumnSpanProperty, 3);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
@@ -262,19 +278,19 @@ namespace Client
                     }
                     else
                     {
-                        SSwb.SetValue(Grid.ColumnProperty, 1);
-                        SSwb.SetValue(Grid.ColumnSpanProperty, 5);
+                        SSwb.SetValue(Grid.ColumnProperty, 2);
+                        SSwb.SetValue(Grid.ColumnSpanProperty, 6);
                     }
                 }
             }
         }
+        
         /// <summary>
         /// Function to call OnLeaveButtonClick() when Leave button is clicked
         /// </summary>
         private void OnLeaveButtonClicked(object sender, RoutedEventArgs e)
         {
-            _userslist.OnLeaveButtonClick();
+            s_userslist.OnLeaveButtonClick();
         }
-        
     }
 }

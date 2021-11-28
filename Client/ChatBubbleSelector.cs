@@ -13,28 +13,28 @@ namespace Client
     public class ChatBubbleSelector : DataTemplateSelector
     {
         /// <summary>
-        /// The sent chat message data template
+        ///     The sent chat message data template
         /// </summary>
         public DataTemplate ToMsgBubble { get; set; }
 
         /// <summary>
-        /// The received chat message data template
+        ///     The received chat message data template
         /// </summary>
         public DataTemplate FromMsgBubble { get; set; }
 
         /// <summary>
-        /// The sent file message data template
+        ///     The sent file message data template
         /// </summary>
         public DataTemplate ToFileBubble { get; set; }
 
         /// <summary>
-        /// The received file message data template
+        ///     The received file message data template
         /// </summary>
         public DataTemplate FromFileBubble { get; set; }
 
         /// <summary>
-        /// Checks whether the message is send or received and whether 
-        /// it's a chat or a file and returns the appropriate template
+        ///     Checks whether the message is send or received and whether 
+        ///     it's a chat or a file and returns the appropriate template
         /// </summary>
         /// <param name="item"> The message object </param>
         /// <param name="container"> Container of the message object </param>

@@ -1,11 +1,9 @@
-﻿/**
- * owned by: Irene Casmir
- * created by: Irene Casmir
- * date created: 26/11/2021
- * date modified: 27/11/2021
-**/
+﻿/// <author>Irene Casmir</author>
+/// <created>26/11/2021</created>
+
 using System;
 using Dashboard.Client.SessionManagement;
+using Dashboard;
 
 namespace Testing.UX.Authentication
 {
@@ -68,6 +66,11 @@ namespace Testing.UX.Authentication
             public void GetAnalytics()
             {
 
+            }
+
+            public UserData GetUser()
+            {
+                throw new NotImplementedException();
             }
 
             // Event for notifying summary creation 
