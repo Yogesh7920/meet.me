@@ -23,7 +23,7 @@ using System.Windows.Threading;
 
 namespace Client.ViewModel
 {
-    class ScreenShareViewModel : INotifyPropertyChanged, IScreenShare
+    public class ScreenShareViewModel : INotifyPropertyChanged, IScreenShare
     {
         string home;
         string path;
@@ -42,6 +42,11 @@ namespace Client.ViewModel
         public string ReceivedMessage
         {
             get; private set;
+        }
+
+        public ScreenShareViewModel(bool testing)
+        {
+            this.testing = testing;
         }
 
         public ScreenShareViewModel()
@@ -167,7 +172,7 @@ namespace Client.ViewModel
         /// Handles the property changed event raised on a component.
         /// </summary>
         /// <param name="property">The name of the property.</param>
-        private void OnPropertyChanged(string property)
+        public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
@@ -183,5 +188,6 @@ namespace Client.ViewModel
                     Dispatcher.CurrentDispatcher;
 
         private ScreenShareClient model;
+        private bool testing;
     }
 }
