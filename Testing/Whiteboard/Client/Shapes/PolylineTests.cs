@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
- * Date Modified: 11/25/2021
+ * Date Modified: 11/28/2021
 **/
 
 using NUnit.Framework;
@@ -36,8 +36,8 @@ namespace Testing.Whiteboard
             float strokeWidth = _random.Next(0, 3);
             BoardColor strokeColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
             BoardColor fillColor = new(_random.Next(0, 200), _random.Next(0, 200), _random.Next(0, 200));
-            Coordinate start = new (3, 4);
-            Coordinate center = new (4, 5);
+            Coordinate start = new(3, 4);
+            Coordinate center = new(4, 5);
             float angleOfRotation = (float)3.00;
             List<Coordinate> elementList = new();
             elementList.Add(start);
@@ -61,8 +61,8 @@ namespace Testing.Whiteboard
         public void ShapeMaker_CreateNewShape_ReturnsNewShape()
         {
             // creation polyline from stratch based on start and end points
-            Coordinate start = new (1, 1);
-            Coordinate end = new (-3, -5);
+            Coordinate start = new(1, 1);
+            Coordinate end = new(-3, -5);
             MainShape newPolyline = _polyline.ShapeMaker(start, end, null);
 
             // check correctness of polyline
@@ -76,7 +76,7 @@ namespace Testing.Whiteboard
             List<Coordinate> elementList = new();
             elementList.Add(start);
             elementList.Add(end);
-            
+
             CollectionAssert.AreEqual(elementList, newPolyline.GetPoints());
 
         }
@@ -87,10 +87,10 @@ namespace Testing.Whiteboard
             // setting params for a new
             Coordinate start = new(1, 1);
             float strokeWidth = 1;
-            BoardColor strokeColor = new (34, 5, 6);
-            BoardColor fillColor = new (34, 5, 64);
+            BoardColor strokeColor = new(34, 5, 6);
+            BoardColor fillColor = new(34, 5, 64);
             float angleOfRotation = 0;
-            List<Coordinate> points = new ();
+            List<Coordinate> points = new();
             points.Add(start.Clone());
             points.Add(new Coordinate(2, 2));
             List<Coordinate> pointClone = points.Select(cord => new Coordinate(cord.R, cord.C)).ToList();
@@ -99,8 +99,8 @@ namespace Testing.Whiteboard
             MainShape previousMainShape = new Polyline(0, 0, strokeWidth, strokeColor.Clone(), fillColor.Clone(), new(0, 0), new Coordinate(0, 0), points, 0);
 
             // modifying and parameter checking
-            pointClone.Add(new (4,3));
-            MainShape modification1 = _polyline.ShapeMaker(new (2, 2), new (4,3), previousMainShape);
+            pointClone.Add(new(4, 3));
+            MainShape modification1 = _polyline.ShapeMaker(new(2, 2), new(4, 3), previousMainShape);
             Assert.That(ReferenceEquals(previousMainShape, modification1));
             Comparators.Compare(modification1, new Coordinate(0, 0), new Coordinate(0, 0), 0, 0, strokeWidth, strokeColor, fillColor, angleOfRotation);
 
