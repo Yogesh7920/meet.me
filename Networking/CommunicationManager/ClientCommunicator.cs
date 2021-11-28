@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 
@@ -90,11 +91,13 @@ namespace Networking
             _clientSocket.Close();
         }
 
+        [ExcludeFromCodeCoverage]
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
             throw new NotSupportedException();
         }
 
+        [ExcludeFromCodeCoverage]
         void ICommunicator.RemoveClient(string clientId)
         {
             throw new NotSupportedException();
@@ -120,6 +123,7 @@ namespace Networking
             }
         }
 
+        [ExcludeFromCodeCoverage]
         void ICommunicator.Send(string data, string identifier, string destination)
         {
             throw new NotSupportedException();

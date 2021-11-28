@@ -55,28 +55,26 @@ namespace Networking
         private void Listen()
         {
             while (_listenRun)
-            {
                 // If the queue is not empty, get a packet from the front of the queue
                 // and remove that packet from the queue
-                while (!_queue.IsEmpty())
-                {
-                    // Dequeue the front packet of the queue
-                    var packet = _queue.Dequeue();
+            while (!_queue.IsEmpty())
+            {
+                // Dequeue the front packet of the queue
+                var packet = _queue.Dequeue();
 
-                    //Call GetMessage function to form string msg from the packet object 
-                    var msg = Utils.GetMessage(packet);
-                    var outStream = Encoding.ASCII.GetBytes(msg);
-                    try
-                    {
-                        _tcpSocket.Client.Send(outStream);
-                        Trace.WriteLine($"[Networking] Data sent from client to server by {packet.ModuleIdentifier}.");
-                    }
-                    catch (Exception e)
-                    {
-                        Trace.WriteLine(
-                            "[Networking] An Exception has been raised in SendSocketListenerClientThread "
-                            + e.Message);
-                    }
+                //Call GetMessage function to form string msg from the packet object 
+                var msg = Utils.GetMessage(packet);
+                var outStream = Encoding.ASCII.GetBytes(msg);
+                try
+                {
+                    _tcpSocket.Client.Send(outStream);
+                    Trace.WriteLine($"[Networking] Data sent from client to server by {packet.ModuleIdentifier}.");
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(
+                        "[Networking] An Exception has been raised in SendSocketListenerClientThread "
+                        + e.Message);
                 }
             }
         }
