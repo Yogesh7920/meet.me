@@ -196,6 +196,7 @@ namespace Testing.Dashboard.Telemetry
             bool correctUserCount= currSessionSummary.userCount == totalUsers;
             bool correctChatCount= currSessionSummary.chatCount == totalChats;
             bool correctScore    = currSessionSummary.score == totalChats*totalUsers;
+            Directory.Delete("../../../Persistence", true);
             Assert.IsTrue(correctUserCount && correctChatCount && correctScore);
             
         }
