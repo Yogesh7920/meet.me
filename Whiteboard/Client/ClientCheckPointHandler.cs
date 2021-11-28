@@ -26,7 +26,7 @@ namespace Whiteboard
         // Check if running as part of NUnit
         public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
 
-        
+
         /// <summary>
         /// Function to set mock communicator when running in test mode.
         /// </summary>
@@ -57,25 +57,34 @@ namespace Whiteboard
         /// <param name="currentCheckpointState"></param>
         public void FetchCheckpoint(int checkpointNumber,string UserId, int currentCheckpointState)
         {
-
-            if (checkpointNumber > _checkpointNumber)
+            try
             {
-                throw new ArgumentException("invalid checkpointNumber");
+                if (checkpointNumber <= _checkpointNumber)
+                {
+                    //creating boardServerShape object with FETCH_CHECKPOINT object
+                    List<BoardShape> boardShape = null;
+                    BoardServerShape boardServerShape = new BoardServerShape(boardShape,
+                                                                            Operation.FETCH_CHECKPOINT,
+                                                                            UserId,
+                                                                            checkpointNumber,
+                                                                            currentCheckpointState);
+
+                    //sending boardServerShape object to _clientBoardCommunicator
+                    _clientBoardCommunicator.Send(boardServerShape);
+
+                }
+                else
+                {
+                    throw new ArgumentException("invalid checkpointNumber");
+                }
+
             }
-            else
+            catch (Exception e)
             {
-                //creating boardServerShape object with FETCH_CHECKPOINT object
-                List<BoardShape> boardShape = null;
-                BoardServerShape boardServerShape = new BoardServerShape(boardShape,
-                                                                        Operation.FETCH_CHECKPOINT,
-                                                                        UserId,
-                                                                        checkpointNumber,
-                                                                        currentCheckpointState);
-
-                //sending boardServerShape object to _clientBoardCommunicator
-                _clientBoardCommunicator.Send(boardServerShape);
-
+                Trace.WriteLine("ClientCheckPointHandler.FetchCheckPoint: An exception occured.");
+                Trace.WriteLine(e.Message);
             }
+
 
 
         }
