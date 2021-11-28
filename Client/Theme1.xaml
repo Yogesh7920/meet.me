@@ -17,5 +17,6 @@
     <SolidColorBrush x:Key="Color4Bg" Color="#D500F9"></SolidColorBrush>
     <SolidColorBrush x:Key="Color5Bg" Color="White"></SolidColorBrush>
     <SolidColorBrush x:Key="Color6Bg" Color="#830394"></SolidColorBrush>
+    <SolidColorBrush x:Key="Color7Bg" Color="LightGray"></SolidColorBrush>
 
 </ResourceDictionary>

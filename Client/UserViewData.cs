@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/// <author>P S Harikrishnan</author>
+/// <created>10/11/2021</created>
 
 namespace Client
 {
+    /// <summary>
+    /// UserViewData object contains information to be 
+    /// viewed per client in list of users.
+    /// </summary>
     public class UserViewData
     {
         public string username { get; set; }

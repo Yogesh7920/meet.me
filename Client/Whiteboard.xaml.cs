@@ -49,10 +49,10 @@ namespace Client
 
         //Canvas BG available Colors 
         private string canvasBg1 = "#FFFFFF";
-        private string canvasBg2 = "#FF0000";
-        private string canvasBg3 = "#00FF00";
-        private string canvasBg4 = "#0000FF";
-        private string canvasBg5 = "#FFFF00";
+        private string canvasBg2 = "#F8F8FF";
+        private string canvasBg3 = "#FFFAFA";
+        private string canvasBg4 = "#FFFFF0";
+        private string canvasBg5 = "#FFFAF0";
 
         //pen and eraser properties 
         private string curCanvasBg = "#FFFFFF";
@@ -63,6 +63,7 @@ namespace Client
         private float eraserThickness = 5;
 
         bool rotation = false;
+        bool close_popup = false; 
 
         //private ObservableCollection<string> _chk;
 
@@ -226,6 +227,26 @@ namespace Client
 
                         mouseDownFlag = 0;
                     }
+                    break;
+                case (WhiteBoardViewModel.WBTools.Selection):
+                    /*mouseDownFlag = 0;
+                    //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
+                    if (mouseLeftBtnMoveFlag > 5)
+                    {
+                        if (this.viewModel.end.X != 0 && this.viewModel.end.Y != 0)
+                        {
+
+                            if (rotation == true)
+                            {
+                                this.viewModel.shapeManager.RotateShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                                rotation = false;
+                            }
+                            else
+                            {
+                                this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
+                            }
+                        }
+                    }*/
                     break;
                 default:
                     break;
@@ -702,35 +723,35 @@ namespace Client
         private void ColorFill1Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg1, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", White, 1);
             rbutton.IsChecked = false;
         }
 
         private void ColorFill2Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg2, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", Red, 1);
             rbutton.IsChecked = false;
         }
 
         private void ColorFill3Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg3, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", Green, 1);
             rbutton.IsChecked = false;
         }
 
         private void ColorFill4Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg4, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", Blue, 1);
             rbutton.IsChecked = false;
         }
 
         private void ColorFill5Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", canvasBg5, 1);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Fill", Yellow, 1);
             rbutton.IsChecked = false;
         }
 
@@ -757,28 +778,28 @@ namespace Client
         private void ColorBorder2Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg2, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Red, 0);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder3Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg3, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Green, 0);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder4Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg4, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Blue, 0);
             rbutton.IsChecked = false;
         }
 
         private void ColorBorder5Checked(object sender, RoutedEventArgs e)
         {
             rbutton = sender as RadioButton;
-            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", canvasBg5, 0);
+            GlobCanvas = viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "Stroke", Yellow, 0);
             rbutton.IsChecked = false;
         }
 
@@ -791,13 +812,13 @@ namespace Client
             {
                 this.viewModel.shapeManager.CustomizeShape(GlobCanvas, viewModel.WBOps, "StrokeThickness", Black, thickness);
             }
-
         }
 
         //Main Toolbar Pop-Ups 
         //Free Hand Pop-Up
         private void OpenPopupFreeHandButton_MouseEnter(object sender, MouseEventArgs e)
         {
+
             FreeHandPopUp.StaysOpen = true;
         }
 
@@ -1060,19 +1081,24 @@ namespace Client
         //Clear Frame Button Control 
         private void ClickedClearFrame(object sender, RoutedEventArgs e)
         {
-
-            MessageBoxResult result = MessageBox.Show( "Are you sure you want to clear frame ? All progress since the last checkpoint would be lost.",
-                                      "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.OK)
+            if(Bu_P.Toggled1 == true)
             {
-                GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
-                return;
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to clear frame ? All progress since the last checkpoint would be lost.",
+                          "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    GlobCanvas = viewModel.ClearCanvas(GlobCanvas);
+                    return;
+                }
+                else
+                {
+                    return;
+                }
             }
             else
             {
-                return;
+                MessageBox.Show("You must be a user of high priority to call clear canvas!");
             }
-            
         }
 
         //Save Frame Button Control
