@@ -4,6 +4,7 @@
 using System.Security.Permissions;
 using System.Windows.Threading;
 using Dashboard.Client.SessionManagement;
+using Dashboard;
 
 namespace Testing.UX.Home
 {
@@ -78,6 +79,11 @@ namespace Testing.UX.Home
             public void GetAnalytics()
             {
 
+            }
+
+            public UserData GetUser()
+            {
+                return new UserData("User1", 1);
             }
 
             // Event for notifying summary creation 
