@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/11/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
@@ -100,8 +100,7 @@ namespace Whiteboard
             }
             else if (s.ShapeIdentifier == ShapeType.LINE)
             {
-                Coordinate dir = s.Center - s.Start;
-
+                TranslationCoordinate = new(0, 0);
                 System.Windows.Shapes.Line LineUXElement = new()
                 {
                     Y1 = s.Center.R,
@@ -114,6 +113,8 @@ namespace Whiteboard
             }
             else
             {
+                TranslationCoordinate = new(0, 0);
+                AngleOfRotation = 0;
                 System.Windows.Shapes.Polyline PolylineUXElement = new();
                 PointCollection PolyLinePointCollection = new();
                 foreach (Coordinate cord in s.GetPoints())
@@ -167,5 +168,31 @@ namespace Whiteboard
         {
         }
 
+        /// <summary>
+        /// Convert a single UXShapeHelper to UXShape.
+        /// </summary>
+        /// <param name="uXShapeHelper">The helper used to create.</param>
+        /// <returns>Returns UXShape</returns>
+        public static UXShape ToUXShape(UXShapeHelper uXShapeHelper)
+        {
+            return uXShapeHelper.MainShapeDefiner == null
+                ? (new(uXShapeHelper.CheckpointNumber, uXShapeHelper.OperationType))
+                : (new(uXShapeHelper.UxOperation, uXShapeHelper.MainShapeDefiner, uXShapeHelper.ShapeId, uXShapeHelper.CheckpointNumber, uXShapeHelper.OperationType));
+        }
+
+        /// <summary>
+        /// Overloaded method to convert to list of UXShapes.
+        /// </summary>
+        /// <param name="uXShapeHelpers">List of helpers to create.</param>
+        /// <returns>Returns list of UXShape</returns>
+        public static List<UXShape> ToUXShape(List<UXShapeHelper> uXShapeHelpers)
+        {
+            List<UXShape> uXShapes = new();
+            for (int i = 0; i < uXShapeHelpers.Count; i++)
+            {
+                uXShapes.Add(ToUXShape(uXShapeHelpers[i]));
+            }
+            return uXShapes;
+        }
     }
 }

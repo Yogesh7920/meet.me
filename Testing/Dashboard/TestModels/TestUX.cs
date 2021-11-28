@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/// <author>Siddharth Sha</author>
+/// <created>15/11/2021</created>
+/// <summary>
+///		This file contains the test UX
+///		for testing purpose
+/// </summary>
+
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 using Dashboard.Server.Telemetry;
+using System;
 
 namespace Testing.Dashboard.TestModels
 {
@@ -17,6 +20,7 @@ namespace Testing.Dashboard.TestModels
             gotNotified = false;
             _sessionManager.SummaryCreated += (summary) => UpdateSummary(summary);
             _sessionManager.MeetingEnded += () => OnMeetingEnds();
+            _sessionManager.AnalyticsCreated += (sessionAnalytics) => UpdateAnalytics(sessionAnalytics);
             summary = null;
             meetingEndEvent = false;
         }
@@ -30,6 +34,11 @@ namespace Testing.Dashboard.TestModels
         private void UpdateSummary(string recievedSummary)
         {
             summary = recievedSummary;
+        }
+
+        private void UpdateAnalytics(SessionAnalytics sessionAnalytics)
+        {
+            this.sessionAnalytics = sessionAnalytics;
         }
 
         private void OnMeetingEnds()

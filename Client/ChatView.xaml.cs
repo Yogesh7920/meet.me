@@ -1,51 +1,71 @@
-﻿using System;
+﻿/// <author>Suchitra Yechuri</author>
+/// <created>13/10/2021</created>
+/// <summary>
+/// Interaction logic for ChatView.xaml
+/// </summary>
+
+using Client.ViewModel;
+using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.ComponentModel;
-using Client.ViewModel;
 using System.Windows.Media;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for ChatView.xaml
-    /// </summary>
     public partial class ChatView : UserControl
     {
+        /// <summary>
+        ///     Message Id of the message replied it
+        /// </summary>
         public int ReplyMsgId { get; set; }
-        
-        ObservableCollection<Message> allmessages;
+
+        /// <summary>
+        ///     Collection of all the messages
+        /// </summary>
+        public ObservableCollection<Message> AllMessages;
+
+        /// <summary>
+        /// Creates an instance of the ChatView.
+        /// </summary>
         public ChatView()
         {
             InitializeComponent();
 
             ChatViewModel viewModel = new ChatViewModel();
-            //subscribe to the property changed event
+
+            // Subscribe to the property changed event
             viewModel.PropertyChanged += Listner;
             this.DataContext = viewModel;
 
-            allmessages = new ObservableCollection<Message>();
-            //allmessages.Add(new Message { TextMessage = "To File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
-            //allmessages.Add(new Message { TextMessage = "From Msg Check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
-            //allmessages.Add(new Message { TextMessage = "From File Check", Type = false, Time = DateTime.Now.ToShortTimeString(), ToFrom = false });
-            //allmessages.Add(new Message { TextMessage = "To Msg check", Type = true, Time = DateTime.Now.ToShortTimeString(), ToFrom = true });
-            this.myChat.ItemsSource = allmessages;
+            AllMessages = new ObservableCollection<Message>();
+            // Binding AllMessages
+            this.myChat.ItemsSource = AllMessages;
         }
+
         private void Listner(object sender, PropertyChangedEventArgs e)
         {
             string propertyName = e.PropertyName;
             ChatViewModel viewModel = this.DataContext as ChatViewModel;
             if (propertyName == "ReceivedMsg")
             {
-                allmessages.Add(viewModel.ReceivedMsg);
+                AllMessages.Add(viewModel.ReceivedMsg);
+                UpdateScrollBar(myChat);
             }
-            UpdateScrollBar(myChat);
+            else
+            {
+                AllMessages.Add(viewModel.ReceivedMsg);
+            }
+            
         }
+
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
-            //System.Diagnostics.Debug.WriteLine(this.SendTextBox.Text);
             if (!string.IsNullOrEmpty(this.SendTextBox.Text))
             {
                 ChatViewModel viewModel = this.DataContext as ChatViewModel;
@@ -84,6 +104,7 @@ namespace Client
                 this.ReplyTextBox.Text = "";
             }
         }
+
         private void OnReplyButtonClick(object sender, RoutedEventArgs e)
         {
             if (sender is Button)
@@ -118,18 +139,18 @@ namespace Client
             {
                 ChatViewModel viewModel = this.DataContext as ChatViewModel;
                 Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-                dlg.FileName = "Document"; // Default file name
-                dlg.DefaultExt = ".text"; // Default file extension
                 //dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
-
-                // Show save file dialog box
-                Nullable<bool> result = dlg.ShowDialog();
 
                 Button cmd = (Button)sender;
                 if (cmd.DataContext is Message)
                 {
                     Message m = (Message)cmd.DataContext;
-
+                    //dlg.FileName = "Document"; // Default file name
+                    //dlg.DefaultExt = ".text"; // Default file extension
+                    dlg.DefaultExt = Path.GetExtension(m.TextMessage);
+                    dlg.FileName = Path.GetFileNameWithoutExtension(m.TextMessage);
+                    // Show save file dialog box
+                    Nullable<bool> result = dlg.ShowDialog();
                     // Process save file dialog box results
                     if (result == true)
                     {
@@ -142,10 +163,6 @@ namespace Client
                 }
             }
             
-        }
-        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
-        {
-            Window.GetWindow(this).Close();
         }
         private void OnWindowMouseDown(object sender, MouseButtonEventArgs e)
         {

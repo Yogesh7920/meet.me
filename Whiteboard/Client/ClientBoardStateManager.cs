@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/11/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/26/2021
 **/
 
 using System;
@@ -106,26 +106,34 @@ namespace Whiteboard
                 lock (_stateLock)
                 {
                     Trace.WriteLine("ClientBoardStateManager.DoRedo: Redo is called.");
-                    
+
                     if (_redoStack.IsEmpty())
                     {
                         Trace.WriteLine("ClientBoardStateManager.DoRedo: Stack is empty.");
                         return null;
                     }
 
-                    // get the top element and put it in undo stack
-                    Tuple<BoardShape, BoardShape> tuple = _redoStack.Top();
-                    _redoStack.Pop();
-                    _undoStack.Push(tuple.Item2?.Clone(), tuple.Item1?.Clone());
+                    // updates for UX
+                    List<UXShape> uXShapes = new();
+                    int flag = 0;
 
-                    // do desired operation and send updates to UX and server
-                    List<UXShape> uXShapes = UndoRedoRollback(tuple);
-                    
-                    // if the shape got deleted from server updates, user can't undo-redo that, hence do redo on next entry.
-                    if(uXShapes.Count == 0)
+                    // if the shape got deleted from server updates, user can't undo-redo that, hence do redo on next entry.s
+                    while (uXShapes.Count == 0)
                     {
-                        _undoStack.Pop();
-                        DoRedo();
+                        if (flag != 0)
+                        {
+                            _undoStack.Pop();
+                        }
+                        if (_redoStack.IsEmpty())
+                        {
+                            Trace.WriteLine("ClientBoardStateManager.DoRedo: Stack got emptied. No valid shape available in state.");
+                            return null;
+                        }
+                        // get the top element and put it in undo stack
+                        Tuple<BoardShape, BoardShape> tuple = _redoStack.Top();
+                        _redoStack.Pop();
+                        _undoStack.Push(tuple.Item2?.Clone(), tuple.Item1?.Clone());
+                        uXShapes = UndoRedoRollback(tuple);
                     }
                     return uXShapes;
                 }
@@ -156,19 +164,27 @@ namespace Whiteboard
                         return null;
                     }
 
-                    // get the top element and put it in redo stack
-                    Tuple<BoardShape, BoardShape> tuple = _undoStack.Top();
-                    _undoStack.Pop();
-                    _redoStack.Push(tuple.Item2?.Clone(), tuple.Item1?.Clone());
+                    // updates for UX
+                    List<UXShape> uXShapes = new();
+                    int flag = 0;
 
-                    // do desired operation and send updates to UX and server
-                    List<UXShape> uXShapes = UndoRedoRollback(tuple);
-
-                    // if the shape got deleted from server updates, user can't undo-redo that, hence do undo on next entry.
-                    if (uXShapes.Count == 0)
+                    // if the shape got deleted from server updates, user can't undo-redo that, hence do redo on next entry.s
+                    while (uXShapes.Count == 0)
                     {
-                        _redoStack.Pop();
-                        DoUndo();
+                        if (flag != 0)
+                        {
+                            _redoStack.Pop();
+                        }
+                        if (_undoStack.IsEmpty())
+                        {
+                            Trace.WriteLine("ClientBoardStateManager.DoUndo: Stack got emptied. No valid shape available in state.");
+                            return null;
+                        }
+                        // get the top element and put it in redo stack
+                        Tuple<BoardShape, BoardShape> tuple = _undoStack.Top();
+                        _undoStack.Pop();
+                        _redoStack.Push(tuple.Item2?.Clone(), tuple.Item1?.Clone());
+                        uXShapes = UndoRedoRollback(tuple);
                     }
                     return uXShapes;
                 }
@@ -241,8 +257,8 @@ namespace Whiteboard
                     lock (_stateLock)
                     {
                         // converting network update to UXShapes and sending them to UX
-                        List<UXShape> uXShapes = UpdateStateOnFetch(serverUpdate);
-                        NotifyClients(uXShapes);
+                        List<UXShapeHelper> uXShapeHelpers = UpdateStateOnFetch(serverUpdate);
+                        NotifyClients(uXShapeHelpers);
                     }
                     Trace.WriteLine("ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
@@ -256,8 +272,8 @@ namespace Whiteboard
                         NullifyDataStructures();
 
                         // converting network update to UXShapes and sending them to UX
-                        List<UXShape> uXShapes = UpdateStateOnFetch(serverUpdate);
-                        NotifyClients(uXShapes);
+                        List<UXShapeHelper> uXShapeHelpers = UpdateStateOnFetch(serverUpdate);
+                        NotifyClients(uXShapeHelpers);
                     }
                     Trace.WriteLine("ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
@@ -276,7 +292,7 @@ namespace Whiteboard
                         _clientCheckPointHandler.CheckpointNumber = _checkpointsNumber;
 
                         // notify UX to display new number
-                        NotifyClients(new List<UXShape> { new(_checkpointsNumber, Operation.CREATE_CHECKPOINT) });
+                        NotifyClients(new List<UXShapeHelper> { new(_checkpointsNumber, Operation.CREATE_CHECKPOINT) });
                     }
                     Trace.WriteLine("ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
@@ -349,7 +365,7 @@ namespace Whiteboard
 
                         // clear the state and notify the UX for the same
                         NullifyDataStructures();
-                        NotifyClients(new List<UXShape> { new(_checkpointsNumber, Operation.CLEAR_STATE) });
+                        NotifyClients(new List<UXShapeHelper> { new(_checkpointsNumber, Operation.CLEAR_STATE) });
                     }
                     Trace.WriteLine("ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
@@ -556,7 +572,8 @@ namespace Whiteboard
         /// <summary>
         /// Clears the whiteboard state.
         /// </summary>
-        public void ClearWhiteBoard()
+        /// <returns>True to freeze state.</returns>
+        public bool ClearWhiteBoard()
         {
             Trace.WriteLine("ClientBoardStateManager.ClearWhiteBoard: Sending Clear_State request to server.");
 
@@ -565,7 +582,9 @@ namespace Whiteboard
             {
                 // reset state in sync to currentCheckpointState = 0.
                 _clientBoardCommunicator.Send(new(null, Operation.CLEAR_STATE, _currentUserId, currentCheckpointState: BoardConstants.INITIAL_CHECKPOINT_STATE));
+                return true;
             }
+            return false;
         }
 
         /// <summary>
@@ -612,12 +631,12 @@ namespace Whiteboard
         /// </summary>
         /// <param name="boardServerShape">BoardServerShape object having the whole update.</param>
         /// <returns>List of UXShape to notify client.</returns>
-        private List<UXShape> UpdateStateOnFetch(BoardServerShape boardServerShape)
+        private List<UXShapeHelper> UpdateStateOnFetch(BoardServerShape boardServerShape)
         {
             try
             {
                 List<BoardShape> boardShapes = boardServerShape.ShapeUpdates;
-                List<UXShape> uXShapes = new();
+                List<UXShapeHelper> uXShapeHelpers = new();
 
                 // Sorting boardShapes
                 boardShapes.Sort(delegate (BoardShape boardShape1, BoardShape boardShape2) { return boardShape1.LastModifiedTime.CompareTo(boardShape2.LastModifiedTime); });
@@ -654,9 +673,11 @@ namespace Whiteboard
                         _deletedShapeIds.Remove(boardShapeId);
                     }
                     // converting BoardShape to UXShape and adding it in the list
-                    uXShapes.Add(new(UXOperation.CREATE, boardShapes[i].MainShapeDefiner, boardShapeId, _checkpointsNumber, boardServerShape.OperationFlag));
+                    uXShapeHelpers.Add(new(UXOperation.CREATE, boardShapes[i].MainShapeDefiner, boardShapeId, _checkpointsNumber, boardServerShape.OperationFlag));
                 }
-                return uXShapes;
+                return (uXShapeHelpers.Count == 0) ?
+                    new List<UXShapeHelper>() { new(_checkpointsNumber, boardServerShape.OperationFlag) }
+                     : uXShapeHelpers;
             }
             catch (Exception e)
             {
@@ -671,7 +692,7 @@ namespace Whiteboard
         /// Notifies clients with List of UXShapes. 
         /// </summary>
         /// <param name="uXShapes">List of UX Shapes for UX to render</param>
-        private void NotifyClients(List<UXShape> uXShapes)
+        private void NotifyClients(List<UXShapeHelper> uXShapeHelpers)
         {
             try
             {
@@ -681,7 +702,7 @@ namespace Whiteboard
                     foreach (KeyValuePair<string, IClientBoardStateListener> entry in _clients)
                     {
                         Trace.WriteLine("ClientBoardStateManager.NotifyClient: Notifying client.");
-                        entry.Value.OnUpdateFromStateManager(uXShapes);
+                        entry.Value.OnUpdateFromStateManager(uXShapeHelpers);
                     }
                     Trace.WriteLine("ClientBoardStateManager.NotifyClient: All clients notified.");
                 }
@@ -746,20 +767,20 @@ namespace Whiteboard
         /// <param name="operationFlag">Operation which requires these changes.</param>
         /// <param name="uXShapes">List of UXShapes in which new UXShapes will be added.</param>
         /// <returns>List of UXShapes corresponding to boardShapes.</returns>
-        private List<UXShape> ToUXShapes(List<BoardShape> boardShapes, UXOperation uXOperation, Operation operationFlag, List<UXShape> uXShapes = null)
+        private List<UXShapeHelper> ToUXShapeHelpers(List<BoardShape> boardShapes, UXOperation uXOperation, Operation operationFlag, List<UXShapeHelper> uXShapeHelpers = null)
         {
             // if null then initialize
-            if (uXShapes == null)
+            if (uXShapeHelpers == null)
             {
-                uXShapes = new();
+                uXShapeHelpers = new();
             }
 
             // convert all BoardShapes to UXShapes
             for(int i = 0; i < boardShapes.Count; i++)
             {
-                uXShapes.Add(new(uXOperation, boardShapes[i].MainShapeDefiner, boardShapes[i].Uid, _checkpointsNumber, operationFlag));
+                uXShapeHelpers.Add(new(uXOperation, boardShapes[i].MainShapeDefiner, boardShapes[i].Uid, _checkpointsNumber, operationFlag));
             }
-            return uXShapes;
+            return uXShapeHelpers;
         }
 
         /// <summary>
@@ -768,7 +789,7 @@ namespace Whiteboard
         /// <param name="boardShape">The boardShape to be updated.</param>
         /// <param name="operation">The operation to be performed.</param>
         /// <returns>List of UXShapes to update UX.</returns>
-        private List<UXShape> ServerOperationUpdate([NotNull] BoardShape boardShape, [NotNull] Operation operation)
+        private List<UXShapeHelper> ServerOperationUpdate([NotNull] BoardShape boardShape, [NotNull] Operation operation)
         {
             // Only CREATE, MODIFY and DELETE is supported by this function
             if(operation != Operation.CREATE && operation != Operation.DELETE && operation != Operation.MODIFY)
@@ -796,13 +817,13 @@ namespace Whiteboard
                 _deletedShapeIds.Add(boardShape.Uid);
 
                 Trace.WriteLine("ClientBoardStateManager.ServerOperationUpdate: Delete case - state successfully updated.");
-                return new List<UXShape> { new(UXOperation.DELETE, tempShape.MainShapeDefiner, tempShape.Uid, operationType: Operation.DELETE) };
+                return new List<UXShapeHelper> { new(UXOperation.DELETE, tempShape.MainShapeDefiner, tempShape.Uid, operationType: Operation.DELETE) };
             }
             else
             {
                 // Shapes having last modified time before the current update needs to be deleted in UX first
                 Tuple<List<BoardShape>, List<QueueElement>> tuple = LaterShapes(boardShape.LastModifiedTime);
-                List<UXShape> uXShapes = ToUXShapes(tuple.Item1, UXOperation.DELETE, operation);
+                List<UXShapeHelper> uXShapeHelpers = ToUXShapeHelpers(tuple.Item1, UXOperation.DELETE, operation);
 
                 if(operation == Operation.CREATE)
                 {
@@ -818,7 +839,7 @@ namespace Whiteboard
                 else
                 {
                     // delete previous shape
-                    uXShapes.Add(new(UXOperation.DELETE, _mapIdToBoardShape[boardShape.Uid].MainShapeDefiner, boardShape.Uid, operationType: Operation.MODIFY));
+                    uXShapeHelpers.Add(new(UXOperation.DELETE, _mapIdToBoardShape[boardShape.Uid].MainShapeDefiner, boardShape.Uid, operationType: Operation.MODIFY));
 
                     // update data structures
                     _mapIdToBoardShape[boardShape.Uid] = boardShape;
@@ -828,12 +849,12 @@ namespace Whiteboard
                 }
 
                 // Inserting new shape and reinserting temporarily deleted shapes
-                uXShapes.Add(new(UXOperation.CREATE, boardShape.MainShapeDefiner, boardShape.Uid, _checkpointsNumber, operationType: operation));
-                uXShapes = ToUXShapes(tuple.Item1, UXOperation.CREATE, operation, uXShapes);
+                uXShapeHelpers.Add(new(UXOperation.CREATE, boardShape.MainShapeDefiner, boardShape.Uid, _checkpointsNumber, operationType: operation));
+                uXShapeHelpers = ToUXShapeHelpers(tuple.Item1, UXOperation.CREATE, operation, uXShapeHelpers);
 
                 // populating the priority queue back
                 _priorityQueue.Insert(tuple.Item2);
-                return uXShapes;
+                return uXShapeHelpers;
             }
         }
 
@@ -874,7 +895,7 @@ namespace Whiteboard
                 Trace.WriteLine("ClientBoardStateManager.UndoRedoRollback: Sent delete request to server.");
 
                 // update state and send UXShapes to UX
-                return ServerOperationUpdate(boardShape, Operation.DELETE);
+                return UXShape.ToUXShape(ServerOperationUpdate(boardShape, Operation.DELETE));
             }
 
             // when original operation was delete
@@ -891,7 +912,7 @@ namespace Whiteboard
                 Trace.WriteLine("ClientBoardStateManager.UndoRedoRollback: Sent create request to server.");
 
                 // update state and send UXShapes to UX
-                return ServerOperationUpdate(boardShape, Operation.CREATE);
+                return UXShape.ToUXShape(ServerOperationUpdate(boardShape, Operation.CREATE));
             }
 
             // when original operation was modify
@@ -919,8 +940,8 @@ namespace Whiteboard
                 Trace.WriteLine("ClientBoardStateManager.UndoRedoRollback: Sent create request to server for old.");
 
                 // Get respective UXShapes and update state
-                List<UXShape> uXShapes = ServerOperationUpdate(boardShapeNew, Operation.DELETE);
-                uXShapes.AddRange(ServerOperationUpdate(boardShapePrev, Operation.CREATE));
+                List<UXShape> uXShapes = UXShape.ToUXShape(ServerOperationUpdate(boardShapeNew, Operation.DELETE));
+                uXShapes.AddRange(UXShape.ToUXShape(ServerOperationUpdate(boardShapePrev, Operation.CREATE)));
                 return uXShapes;
             }
         }

@@ -1,7 +1,7 @@
-﻿using System;
-using AutoFixture;
+﻿using AutoFixture;
 using FluentAssertions;
 using Networking;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Testing.Networking.Objects;
 
@@ -68,7 +68,9 @@ namespace Testing.Networking
         public void NonSerializableAttributeError()
         {
             var serObj = new Fixture().Create<NonSerializableAttribute>();
-            Assert.Throws<InvalidOperationException>(() => _ser.Serialize(serObj));
+            var xml = _ser.Serialize(serObj);
+            var des = _ser.Deserialize<NonSerializableAttribute>(xml);
+            des.Should().BeEquivalentTo(serObj);
         }
 
         [Test]
@@ -77,9 +79,9 @@ namespace Testing.Networking
             // Serialize
             var serObj = new Fixture().Create<SimpleObject>();
             var xml = _ser.Serialize(serObj);
-            // Corrupt xml string
-            xml = xml[50..];
-            Assert.Throws<InvalidOperationException>(() => _ser.Deserialize<SimpleObject>(xml));
+            // Corupt xml string
+            xml = xml.Substring(50);
+            Assert.Throws<JsonSerializationException>(() => _ser.Deserialize<SimpleObject>(xml));
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Whiteboard
     internal class ClientCheckPointHandler : IClientCheckPointHandler
     {
         // Instances of other class
-        private IClientBoardCommunicator _clientBoardCommunicator;
+        private IClientBoardCommunicator _clientBoardCommunicator =ClientBoardCommunicator.Instance;
 
         //no. of checkpoints stored on the server
         private int _checkpointNumber = 0;
@@ -41,25 +41,36 @@ namespace Whiteboard
         /// <param name="currentCheckpointState"></param>
         public void FetchCheckpoint(int checkpointNumber,string UserId, int currentCheckpointState)
         {
-            if (checkpointNumber <= CheckpointNumber)
+            try
             {
-                //creating boardServerShape object with FETCH_CHECKPOINT object
-                List<BoardShape> boardShape = null;
-                BoardServerShape boardServerShape = new BoardServerShape(boardShape,
-                                                                        Operation.FETCH_CHECKPOINT,
-                                                                        UserId,
-                                                                        checkpointNumber,
-                                                                        currentCheckpointState);
+                if (checkpointNumber <= CheckpointNumber)
+                {
+                    //creating boardServerShape object with FETCH_CHECKPOINT object
+                    List<BoardShape> boardShape = null;
+                    BoardServerShape boardServerShape = new BoardServerShape(boardShape,
+                                                                            Operation.FETCH_CHECKPOINT,
+                                                                            UserId,
+                                                                            checkpointNumber,
+                                                                            currentCheckpointState);
 
-                //sending boardServerShape object to _clientBoardCommunicator
-                _clientBoardCommunicator.Send(boardServerShape);
+                    //sending boardServerShape object to _clientBoardCommunicator
+                    _clientBoardCommunicator.Send(boardServerShape);
+
+                }
+                else
+                {
+                    throw new ArgumentException("invalid checkpointNumber");
+                }
 
             }
-            else
+            catch (Exception e)
             {
-                throw new ArgumentException("invalid checkpointNumber");
+                Trace.WriteLine("ClientCheckPointHandler.FetchCheckPoint: An exception occured.");
+                Trace.WriteLine(e.Message);
             }
-            
+
+
+
         }
 
         /// <summary>
@@ -69,20 +80,32 @@ namespace Whiteboard
         /// <param name="currentCheckpointState"></param>
         public void SaveCheckpoint(string UserId, int currentCheckpointState)
         {
-        // increasing the checkpoint number by one
-        _checkpointNumber++;
+            try
+            {
+                // increasing the checkpoint number by one
+                _checkpointNumber++;
 
-        //creating boardServerShape object with CREATE_CHECKPOINT object
-        List<BoardShape> boardShape =null;
-        BoardServerShape boardServerShape = new BoardServerShape(boardShape,
-                                                                Operation.CREATE_CHECKPOINT,
-                                                                UserId,
-                                                                _checkpointNumber,
-                                                                currentCheckpointState);
-         
-        //sending boardServerShape object to _clientBoardCommunicator
-        _clientBoardCommunicator.Send(boardServerShape);
+                //creating boardServerShape object with CREATE_CHECKPOINT object
+                List<BoardShape> boardShape = null;
+                BoardServerShape boardServerShape = new BoardServerShape(boardShape,
+                                                                        Operation.CREATE_CHECKPOINT,
+                                                                        UserId,
+                                                                        _checkpointNumber,
+                                                                        currentCheckpointState);
 
+                //sending boardServerShape object to _clientBoardCommunicator
+                _clientBoardCommunicator.Send(boardServerShape);
+
+            }
+            
+            catch (Exception e)
+            {
+                Trace.WriteLine("ClientCheckPointHandler.SaveCheckPoint: An exception occured.");
+                Trace.WriteLine(e.Message);
+            }
         }
+
+            
+        
     }
 }

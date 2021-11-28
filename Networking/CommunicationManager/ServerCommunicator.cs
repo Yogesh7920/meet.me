@@ -1,3 +1,9 @@
+/// <author>Tausif Iqbal</author>
+/// <created>13/10/2021</created>
+/// <summary>
+///     This file contains the class definition of ServerCommunicator.
+/// </summary>
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,6 +51,8 @@ namespace Networking
         /// <summary>
         ///     start the server and return ip and port
         /// </summary>
+        /// <param name="serverIp"> Ip of server</param>
+        /// <param name="serverPort"> port of server</param>
         /// <returns> String</returns>
         string ICommunicator.Start(string serverIp, string serverPort)
         {
@@ -56,7 +64,7 @@ namespace Networking
             _serverSocket.Start();
 
             //start sendSocketListener of server for sending message 
-            _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket);
+            _sendSocketListenerServer = new SendSocketListenerServer(_sendQueue, _clientIdSocket, _subscribedModules);
             _sendSocketListenerServer.Start();
 
             _receiveQueueListener = new ReceiveQueueListener(_receiveQueue, _subscribedModules);
@@ -99,6 +107,8 @@ namespace Networking
         ///     It adds client socket to a map and starts listening on that socket
         ///     also adds corresponding listener to a set
         /// </summary>
+        /// <param name="clientId"> Id of client</param>
+        /// <param name="socketObject"> TcpSocket of client</param>
         /// <returns> void </returns>
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
@@ -117,6 +127,7 @@ namespace Networking
         /// <summary>
         ///     It removes client from server
         /// </summary>
+        /// <param name="clientId"> Id of client</param>
         /// <returns> void </returns>
         void ICommunicator.RemoveClient(string clientId)
         {
@@ -139,6 +150,8 @@ namespace Networking
         ///     forms packet object  and push to the
         ///     sending queue for broadcast
         /// </summary>
+        /// <param name="data"> data to be sent</param>
+        /// <param name="identifier"> module Id</param>
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier)
         {
@@ -149,7 +162,7 @@ namespace Networking
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.WriteLine($"[Networking] {ex.Message}");
             }
         }
 
@@ -158,6 +171,9 @@ namespace Networking
         ///     forms packet object and push to the
         ///     sending queue for private messaging
         /// </summary>
+        /// <param name="data"> data to be sent</param>
+        /// <param name="identifier"> module Id</param>
+        /// <param name="destination"> client id</param>
         /// <returns> void </returns>
         void ICommunicator.Send(string data, string identifier, string destination)
         {
@@ -169,12 +185,12 @@ namespace Networking
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.WriteLine($"[Networking] {ex.Message}");
             }
         }
 
         /// <summary>
-        ///     It adds notification handler of module
+        ///     This method registers different handler
         /// </summary>
         /// <returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
@@ -182,12 +198,14 @@ namespace Networking
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);
+            Trace.WriteLine(
+                $"[Networking] Module Registered with ModuleIdentifier: {identifier} and Priority: {priority.ToString()}");
         }
 
         /// <summary>
         ///     It finds IP4 address of machine which does not end with .1
         /// </summary>
-        /// <returns>IP4 address </returns>
+        /// <returns>String </returns>
         private static string GetLocalIpAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -200,12 +218,13 @@ namespace Networking
                     if (address.Split(".")[3] != "1") return ip.ToString();
                 }
 
-            throw new Exception("No network adapters with an IPv4 address in the system!");
+            throw new Exception("[Networking] No network adapters with an IPv4 address in the system!");
         }
 
         /// <summary>
         ///     scan for free Tcp port.
         /// </summary>
+        /// <param name="ip"> IP for scanning free port</param>
         /// <returns>integer </returns>
         private static int FreeTcpPort(IPAddress ip)
         {
@@ -230,11 +249,18 @@ namespace Networking
 
                     //notify subscribed Module handler
                     foreach (var module in _subscribedModules) module.Value.OnClientJoined(clientSocket);
+                    Trace.WriteLine("[Networking] New client joined! Notified all modules.");
                 }
                 catch (SocketException e)
                 {
                     if (e.SocketErrorCode == SocketError.Interrupted)
-                        Trace.WriteLine("socket blocking listener has been closed");
+                        Trace.WriteLine("[Networking] Socket listener has been closed");
+                    else
+                        Trace.WriteLine("[Networking] An Exception has been raised in AcceptRequest :" + e);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("[Networking] An Exception has been raised in AcceptRequest :" + e);
                 }
         }
     }

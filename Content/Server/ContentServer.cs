@@ -8,6 +8,7 @@ using Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Content
 {
@@ -105,6 +106,11 @@ namespace Content
                         receiveMessageData = _fileServer.Receive(messageData);
                         break;
 
+                    case MessageType.HistoryRequest:
+                        Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
+                        SSendAllMessagesToClient(messageData.SenderId);
+                        return;
+
                     default:
                         Trace.WriteLine("[ContentServer] Unknown Message Type");
                         return;
@@ -118,19 +124,27 @@ namespace Content
                 return;
             }
 
-            // If Event is Download then send the file to client
-            if (messageData.Event == MessageEvent.Download)
+            try
             {
-                Trace.WriteLine("[ContentServer] Sending File to client");
-                SendFile(receiveMessageData);
+                // If Event is Download then send the file to client
+                if (messageData.Event == MessageEvent.Download)
+                {
+                    Trace.WriteLine("[ContentServer] Sending File to client");
+                    SendFile(receiveMessageData);
+                }
+                // Else send the message to all the receivers and notify the subscribers
+                else
+                {
+                    Trace.WriteLine("[ContentServer] Notifying subscribers");
+                    Notify(receiveMessageData);
+                    Trace.WriteLine("[ContentServer] Sending message to clients");
+                    Send(receiveMessageData);
+                }
             }
-            // Else send the message to all the receivers and notify the subscribers
-            else
+            catch (Exception e)
             {
-                Trace.WriteLine("[ContentServer] Notifying subscribers");
-                Notify(receiveMessageData);
-                Trace.WriteLine("[ContentServer] Sending message to clients");
-                Send(receiveMessageData);
+                Trace.WriteLine($"[ContentServer] Something went wrong while sending message. Exception {e}");
+                return;
             }
 
             Trace.WriteLine("[ContentServer] Message sent");
@@ -179,7 +193,7 @@ namespace Content
         {
             foreach (IContentListener subscriber in _subscribers)
             {
-                subscriber.OnMessage(receiveMessageData);
+                _ = Task.Run(() => { subscriber.OnMessage(receiveMessageData); });
             }
         }
 
