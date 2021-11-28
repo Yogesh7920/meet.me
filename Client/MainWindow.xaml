@@ -49,7 +49,7 @@
                                     <RemoveStoryboard BeginStoryboardName="rightt"></RemoveStoryboard>
                                     <BeginStoryboard Storyboard="{StaticResource left}" x:Name="leftt" ></BeginStoryboard>
                                 </Trigger.ExitActions>
-                                <Setter TargetName="button" Property="Background" Value="{DynamicResource Color1Bg}"></Setter>
+                                <Setter TargetName="button" Property="Background" Value="{DynamicResource Color4Bg}"></Setter>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -73,12 +73,15 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="3*"/>
+            <RowDefinition Height="2*"/>
             <RowDefinition Height="687*"/>
             <RowDefinition Height="0.75"/>
             <RowDefinition Height="82*"/>
             <RowDefinition Height="15*"/>
         </Grid.RowDefinitions>
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="20" Color="DimGray" RenderingBias="Quality" ShadowDepth="1"/>
+        </Grid.Effect>
 
         <!-- Title Bar -->
         <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown" >

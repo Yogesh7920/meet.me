@@ -14,6 +14,7 @@ using Dashboard.Server.Telemetry;
 using Whiteboard;
 using ScreenSharing;
 using Content;
+using ScreenSharing;
 
 
 namespace Dashboard.Client.SessionManagement
@@ -47,8 +48,9 @@ namespace Dashboard.Client.SessionManagement
             _contentClient = ContentClientFactory.GetInstance();
             clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
-            //_screenShareClient = ScreenShareFactory.GetScreenSharer();
-            
+            SSClient = ScreenShareFactory.GetScreenSharer();
+
+
             if (_clients == null)
             {
                 _clients = new List<IClientSessionNotifications>();
@@ -84,6 +86,8 @@ namespace Dashboard.Client.SessionManagement
             }
             _clientSessionData = new SessionData();
             _chatSummary = null;
+
+            SSClient = ScreenShareFactory.GetScreenSharer();
         }
 
         /// <summary>
@@ -378,6 +382,7 @@ namespace Dashboard.Client.SessionManagement
             if (_user == null)
             {
                 _user = user;
+                SSClient.SetUser(user.userID.ToString(), user.username);
                 Trace.WriteLine("[Client Dashboard] Client added to the client session.");
 
                 clientBoardStateManager.SetUser(user.userID.ToString());
@@ -427,6 +432,6 @@ namespace Dashboard.Client.SessionManagement
         public event NotifySummaryCreated SummaryCreated;
         public event NotifyAnalyticsCreated AnalyticsCreated;
         private readonly IClientBoardStateManager clientBoardStateManager;
-        //private ScreenShareClient _screenShareClient;
+        private ScreenShareClient SSClient;
     }
 }

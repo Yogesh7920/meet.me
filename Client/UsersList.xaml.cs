@@ -14,22 +14,22 @@ namespace Client
     /// </summary>
     public partial class UsersList : UserControl
     {
-        public bool UserListHidden;
+        public bool userListHidden;
         ObservableCollection<UserViewData> users;
         MainWindow obj;
-        HomePageViewModel viewModelHomePage;
+        private HomePageViewModel _viewModelHomePage;
         public UsersList(MainWindow instance)
         {
             InitializeComponent();
             obj = instance;
 
-            UserListHidden = true;
+            userListHidden = true;
             UserListHead.Visibility = System.Windows.Visibility.Hidden;
 
-            viewModelHomePage = new HomePageViewModel();
+            _viewModelHomePage = new HomePageViewModel();
             //subscribe to the property changed event
-            viewModelHomePage.UsersListChanged += Listener;
-            DataContext = viewModelHomePage;
+            _viewModelHomePage.UsersListChanged += Listener;
+            DataContext = _viewModelHomePage;
 
             users = new ObservableCollection<UserViewData>();
             UsersListView.ItemsSource = users;
@@ -40,7 +40,7 @@ namespace Client
         /// </summary>
         private void Listener(object sender, PropertyChangedEventArgs e)
         {
-            users = new ObservableCollection<UserViewData>(viewModelHomePage.users);
+            users = new ObservableCollection<UserViewData>(_viewModelHomePage.users);
             UsersListView.ItemsSource = users;
         }
         /// <summary>
@@ -49,17 +49,17 @@ namespace Client
         private void UsersListClick(object sender, RoutedEventArgs e)
         {
             obj.OnUsersListClick();
-            if (UserListHidden)
+            if (userListHidden)
             {
                 UsersListPane.SetValue(Grid.ColumnSpanProperty, 3);
                 UserListHead.Visibility = System.Windows.Visibility.Visible;
-                UserListHidden = false;
+                userListHidden = false;
             }
             else
             {
                 UsersListPane.SetValue(Grid.ColumnSpanProperty, 1);
                 UserListHead.Visibility = System.Windows.Visibility.Hidden;
-                UserListHidden = true;
+                userListHidden = true;
             }
         }
         /// <summary>
@@ -67,7 +67,7 @@ namespace Client
         /// </summary>
         public void OnLeaveButtonClick()
         {
-            viewModelHomePage.LeftClient();
+            _viewModelHomePage.LeftClient();
         }
     }
 }
