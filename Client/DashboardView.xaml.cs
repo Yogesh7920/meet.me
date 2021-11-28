@@ -35,17 +35,14 @@ namespace Client
         /// </summary>
         private void OnRefreshButtonClick(object sender, RoutedEventArgs e)
         {
-            lock (this)
-            {
-                this.DashboardVM.UpdateVM();
-                usersVsTimeChart.Series[0].Values = this.DashboardVM.usersCountList;
-                usersVsTimeChart.AxisX[0].Labels = this.DashboardVM.timestampList;
-                usersVsTimeChart.Update();
+            this.DashboardVM.UpdateVM();
+            usersVsTimeChart.Series[0].Values = this.DashboardVM.usersCountList;
+            usersVsTimeChart.AxisX[0].Labels = this.DashboardVM.timestampList;
+            usersVsTimeChart.Update();
 
-                usersVsMessagesPlot.AxisX[0].Labels = this.DashboardVM.usersList;
-                usersVsMessagesPlot.Series[0].Values = this.DashboardVM.messagesCountList;
-                usersVsMessagesPlot.Update();
-            }
+            usersVsMessagesPlot.AxisX[0].Labels = this.DashboardVM.usersList;
+            usersVsMessagesPlot.Series[0].Values = this.DashboardVM.messagesCountList;
+            usersVsMessagesPlot.Update();
         }
 
         /// <summary>

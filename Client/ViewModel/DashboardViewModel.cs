@@ -21,7 +21,7 @@ namespace Client.ViewModel
     {
 
         /// <summary>
-        /// Constructs the Dashboard ViewModel and 
+        /// Constructs the intial setup
         /// subscribes to Client Session Manager for summary and telemetry updates
         /// </summary>
         public DashboardViewModel()
@@ -37,7 +37,7 @@ namespace Client.ViewModel
             _clientSM.SummaryCreated += (latestSummary) => OnSummaryChanged(latestSummary);
             _clientSM.AnalyticsCreated += (latestAnalytics) => OnAnalyticsChanged(latestAnalytics);
 
-//            UpdateVM();
+            //UpdateVM();
         
             // Default Setup
             _chatSummary = "Refresh to get the latest stats!";
@@ -60,14 +60,22 @@ namespace Client.ViewModel
         }
 
         /// <summary>
-        /// Returns Client Session Manager Object
+        /// To fetch client session manager for unit testing 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns Client Session Manager Object</returns>
         public IUXClientSessionManager GetClientSM()
         {
             return _clientSM;
         }
 
+        /// <summary>
+        /// To fetch session analytics object for unit testing 
+        /// </summary>
+        /// <returns>Returns Session Anaytics Object</returns>
+        public SessionAnalytics GetSessionAnalytics()
+        {
+            return _sessionAnalytics;
+        }
 
         /// <summary>
         /// Fetches the latest telemetry data and discussion summary from the session manager 
@@ -126,7 +134,7 @@ namespace Client.ViewModel
         private string CalculateEngagementRate()
         {
 
-            Trace.Assert(participantsCount >= 0);
+            //Trace.Assert(participantsCount >= 0);
 
             if (participantsCount == 0)
             {
