@@ -8,6 +8,7 @@ using Networking;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Threading;
 
 namespace Testing.Content
 {
@@ -19,6 +20,7 @@ namespace Testing.Content
         private ISerializer serializer;
         private FakeContentListener listener;
         private FakeCommunicator communicator;
+        private int sleeptime;
 
         [SetUp]
         public void Setup()
@@ -32,6 +34,7 @@ namespace Testing.Content
             communicator = new FakeCommunicator();
             contentServer.Communicator = communicator;
             contentServer.SSubscribe(listener);
+            sleeptime = 50;
         }
 
         [Test]
@@ -42,6 +45,8 @@ namespace Testing.Content
             string serializedMessage = serializer.Serialize(messageData);
 
             notificationHandler.OnDataReceived(serializedMessage);
+
+            Thread.Sleep(sleeptime);
 
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
@@ -87,6 +92,8 @@ namespace Testing.Content
 
             notificationHandler.OnDataReceived(serializedMessage);
 
+            Thread.Sleep(sleeptime);
+
             ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Test_File.pdf", notifiedMessage.Message);
@@ -118,7 +125,11 @@ namespace Testing.Content
             string garbageData = " adfasfasfsadf";
             notificationHandler.OnDataReceived(garbageData);
 
-            Assert.AreEqual(listener.GetOnMessageData(), previousMessageToSubsribers);
+            Thread.Sleep(sleeptime);
+
+            ReceiveMessageData currentMessageToSubscribers = listener.GetOnMessageData();
+
+            Assert.AreEqual(currentMessageToSubscribers, previousMessageToSubsribers);
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
         }
     }

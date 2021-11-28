@@ -4,24 +4,20 @@
  * date created: 25/11/2021
  * date modified: 25/11/2021
 **/
+using System;
 
 namespace ScreenSharing
 {
     /// <summary>
     /// Factory for the ScreenShareClient object.
     /// </summary>
-    public static class ScreenShareFactory
+    public sealed class ScreenShareFactory
     {
-        // Singleton ScreenShareClient instance.
-        private static ScreenShareClient ScreenSharer = new ScreenShareClient();
-
-        /// <summary>
-        /// Gets an instance of the ScreenShareClient.
-        /// </summary>
-        /// <returns>ScreenShareClient instance.</returns>
-        public static ScreenShareClient GetScreenSharer()
+        private static readonly Lazy<ScreenShareClient> ScreenSharer = new Lazy<ScreenShareClient>(() => new ScreenShareClient());
+        public static ScreenShareClient GetScreenSharer(bool isTesting = false)
         {
-            return ScreenSharer;
+            return isTesting? new ScreenShareClient() : ScreenSharer.Value;
+            
         }
     }
 }

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 14/10/2021 </created>
+/// <summary>
+/// This file contains the implementation of Server session manager.
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +33,9 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         public ServerSessionManager()
         {
-            TraceManager traceManager = new();
+            _ = new TraceManager();
+
+            Trace.WriteLine("[Server Dashboard] Server Dashboard initialised.");
 
             moduleIdentifier = "Dashboard";
             summarySaved = false;
@@ -43,6 +51,7 @@ namespace Dashboard.Server.SessionManagement
             userCount = 0;
 
             _communicator = CommunicationFactory.GetCommunicator(false);
+            Trace.WriteLine("[Server Dashboard] Subscribed to communicator.");
             _communicator.Subscribe(moduleIdentifier, this);
 
             //_telemetry = new Telemetry.Telemetry();
@@ -59,6 +68,7 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
+            //_ = new ScreenShareServer();
 
             TraceManager traceManager = new();
             traceManager.TraceListener();
@@ -80,6 +90,7 @@ namespace Dashboard.Server.SessionManagement
         {
             lock (this)
             {
+                Trace.WriteLine("[Server Dashboard] Client added to the server session.");
                 _sessionData.users.Add(user);
             }
         }
@@ -97,6 +108,8 @@ namespace Dashboard.Server.SessionManagement
             AddUserToSession(user);
 
             // Notify Telemetry about the change in the session object.
+            Trace.WriteLine("[Server Dashboard] Notifying Telemetry module about the session changes.");
+
             NotifyTelemetryModule();
 
             // serialize and broadcast the data back to the client side.
@@ -137,11 +150,12 @@ namespace Dashboard.Server.SessionManagement
                 _sessionSummary = _summarizer.GetSummary(allChatsTillNow);
 
                 // returning the summary
+                Trace.WriteLine("[Server Dashboard] Summary created.");
                 return new SummaryData(_sessionSummary);
             }
             catch (Exception e)
             {
-                Trace.WriteLine("Summary Creation Failed: " + e.Message);
+                Trace.WriteLine("[Server Dashboard] Summary Creation Failed: " + e.Message);
                 return null;
             }
         }
@@ -171,19 +185,20 @@ namespace Dashboard.Server.SessionManagement
 
                     tries--;
                 }
+                
                 SendDataToClient("endMeet", _sessionData, null, null, user);
-
             }
             catch (Exception e)
             {
                 // In case of any exception, the meeting is ended without saving the summary.
                 // The user is notified about this
-                Trace.WriteLine("The summary/analytics could not be saved: ", e.Message);
+                Trace.WriteLine("[Server Dashboard] The summary/analytics could not be saved: ", e.Message);
                 SendDataToClient("endMeet", _sessionData, null, null, user);
             }
 
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
+            Trace.WriteLine("[Server Dashboard] Notifying server UX about the end of the meet.");
             MeetingEnded?.Invoke();
         }
 
@@ -201,12 +216,13 @@ namespace Dashboard.Server.SessionManagement
                 // Fetching the chats and creating analytics on them
                 ChatContext[] allChats = _contentServer.SGetAllMessages().ToArray();
                 _sessionAnalytics = _telemetry.GetTelemetryAnalytics(allChats);
+                Trace.WriteLine("[Server Dashboard] Got analytics from Telemetry.");
                 SendDataToClient("getAnalytics", null, null, _sessionAnalytics, user);
             }
             catch (Exception e)
             {
                 // In case of a failure, the user is returned a null object
-                Trace.WriteLine("Unable to create analytics: " + e.Message);
+                Trace.WriteLine("[Server Dashboard] Unable to create analytics: " + e.Message);
                 SendDataToClient("getAnalytics", null, null, null, user);
             }
         }
@@ -220,18 +236,18 @@ namespace Dashboard.Server.SessionManagement
         {
             try
             {
-                Trace.WriteLine("Fetching IP Address and port from the networking module");
+                Trace.WriteLine("[Server Dashboard] Fetching IP Address and port from the networking module");
                 string meetAddress = _communicator.Start();
 
                 // Invalid credentials results in a returnign a null object
                 if (IsValidIPAddress(meetAddress) != true)
                 {
-                    Trace.WriteLine("IP Address is not valid, returning null");
+                    Trace.WriteLine("[Server Dashboard] IP Address is not valid, returning null");
                     return null;
                 }
 
                 // For valid IP address, a MeetingCredentials Object is created and returned
-                Trace.WriteLine("Returning the IP Address to the UX");
+                Trace.WriteLine("[Server Dashboard] Returning the IP Address to the UX");
                 string ipAddress = meetAddress[0..meetAddress.IndexOf(':')];
                 int port = Convert.ToInt32(meetAddress[(meetAddress.IndexOf(':') + 1)..]);
 
@@ -291,7 +307,7 @@ namespace Dashboard.Server.SessionManagement
             }
 
             // Take the part after the colon as the port number and check the range
-            string port = IPAddress.Substring(IPAddress.LastIndexOf(':') + 1);
+            string port = IPAddress[(IPAddress.LastIndexOf(':') + 1)..];
             if (Int32.TryParse(port, out int portNumber))
             {
                 if (portNumber < 0 || portNumber > 65535)
@@ -326,6 +342,7 @@ namespace Dashboard.Server.SessionManagement
             {
                 lock (this)
                 {
+                    Trace.WriteLine("[Server Dashboard] Notifying Telemetry module about the session data changes.");
                     _telemetrySubscribers[i].OnAnalyticsChanged(_sessionData);
                 }
             }
@@ -347,6 +364,17 @@ namespace Dashboard.Server.SessionManagement
             _communicator.AddClient<T>(userCount.ToString(), socketObject);
         }
 
+
+        /// <summary>
+        /// This method is called by the networking module when the user is disconnected from the meet.
+        /// <param name="userIDString">nhe ID of the leaving user in string format. </param>
+        public void OnClientLeft(string userIDString)
+        {
+            Trace.WriteLine("[Server Dashboard] Client disconnected.");
+            int userIDInt = int.Parse(userIDString);
+            RemoveClientProcedure(null, userIDInt);
+        }
+
         /// <summary>
         /// Networking module calls this function once the data is sent from the client side.
         /// The SerializedObject is the data sent by the client module which is first deserialized
@@ -355,6 +383,12 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="serializedObject">A string that is the serialized representation of the object sent by the client side. </param>
         public void OnDataReceived(string serializedObject)
         {
+            if (serializedObject == null)
+            {
+                Trace.WriteLine("[Server Dashboard] Null received from client");
+                return;
+            }
+
             // the object is obtained by deserializing the string and handling the cases 
             // based on the 'eventType' field of the deserialized object. 
             ClientToServerData deserializedObj = _serializer.Deserialize<ClientToServerData>(serializedObject);
@@ -362,7 +396,7 @@ namespace Dashboard.Server.SessionManagement
             // If a null object or username is received, return without further processing.
             if (deserializedObj == null || deserializedObj.username == null)
             {
-                Trace.WriteLine("Null object provided by the client.");
+                Trace.WriteLine("[Server Dashboard] Null object provided by the client.");
                 return;
             }
 
@@ -389,7 +423,7 @@ namespace Dashboard.Server.SessionManagement
                     return;
 
                 default:
-                    Trace.WriteLine("Incorrect Event type specified");
+                    Trace.WriteLine("[Server Dashboard] Incorrect Event type specified");
                     return;
             }
         }
@@ -400,38 +434,33 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         /// <param name="receivedObject"> A ClientToServerData object which contains the eventType for removing the user
         /// and the user who wants to leave. </param>
-        private void RemoveClientProcedure(ClientToServerData receivedObject)
+        private void RemoveClientProcedure(ClientToServerData receivedObject, int userID = -1)
         {
-            UserData userToRemove = new(receivedObject.username, receivedObject.userID);
-            RemoveUserFromSession(userToRemove);
-            NotifyTelemetryModule();
-            SendDataToClient("removeClient", _sessionData, null, null, userToRemove);
-        }
-
-        /// <summary>
-        /// Removes the user from the user list in the sessionData.
-        /// </summary>
-        /// <param name="userToRemove">A UserData object that denotes the used to remove. </param>
-        private void RemoveUserFromSession(UserData userToRemove)
-        {
-            if (_sessionData == null)
+            int userIDToRemove;
+            if (userID == -1)
             {
-                Trace.Write("Session is empty, cannot remove user");
+                userIDToRemove = receivedObject.userID;
+            }
+            else
+            {
+                userIDToRemove = userID;
+            }
+
+            if (userCount == 1)
+            {
+                EndMeetProcedure(receivedObject);
                 return;
             }
-            List<UserData> users = _sessionData.users;
-            for (int i = 0; i < users.Count; ++i)
+
+            UserData removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
+            if (removedUser != null)
             {
-                if (users[i].Equals(userToRemove))
-                {
-                    lock (this)
-                    {
-                        _sessionData.users.RemoveAt(i);
-                        break;
-                    }
-                }
+                Trace.WriteLine("[Server Dashboard] Removed from session: " + removedUser.ToString());
+                NotifyTelemetryModule();
+                SendDataToClient("removeClient", _sessionData, null, null, removedUser);
             }
         }
+        
 
         /// <summary>
         /// Function to send data from Server to client side of the session manager.
@@ -441,7 +470,6 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="summaryData">The summary of the session. </param>
         /// <param name="sessionaAnalytics">The analytics of the session.</param>
         /// <param name="user">The user to broadcast/reply. </param>
-        
         private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData, SessionAnalytics sessionaAnalytics, UserData user)
         {
             ServerToClientData serverToClientData;
@@ -449,6 +477,7 @@ namespace Dashboard.Server.SessionManagement
             {
                 serverToClientData = new ServerToClientData(eventName, sessionData, summaryData, sessionaAnalytics, user);
                 string serializedSessionData = _serializer.Serialize<ServerToClientData>(serverToClientData);
+                Trace.WriteLine("[Server Dashboard] Sending data to the client.");
                 _communicator.Send(serializedSessionData, moduleIdentifier);
             }
         }
@@ -483,7 +512,7 @@ namespace Dashboard.Server.SessionManagement
         private ITelemetry _telemetry;
 
         public event NotifyEndMeet MeetingEnded;
-        private bool testmode;
+        private readonly bool  testmode;
 
     }
 }

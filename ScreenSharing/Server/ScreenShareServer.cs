@@ -46,13 +46,13 @@ namespace ScreenSharing
 		public ScreenShareServer()
 		{
 			UserId = "-";
-			Timer = new System.Timers.Timer(2000);
+			Timer = new System.Timers.Timer(10000);
 			Timer.Elapsed += OnTimeout;
 			Timer.AutoReset = true;
+            FrameQueue = new Queue<SharedScreen>();
 
-
-			Communicator = CommunicationFactory.GetCommunicator();
-			Communicator.Subscribe(this.GetType().Namespace, this);
+            Communicator = CommunicationFactory.GetCommunicator(false);
+			Communicator.Subscribe("ScreenSharing", this);
 			Serializer = new Serializer();
 
 			IsSharing = true;
@@ -69,6 +69,7 @@ namespace ScreenSharing
 			{
 				SharedScreen scrn = Serializer.Deserialize<SharedScreen>(data);
 				FrameQueue.Enqueue(scrn);
+				Trace.WriteLine("[ScreenSharingServer] Data received from Networking");
 			}
 			catch (Exception e)
 			{
@@ -87,7 +88,7 @@ namespace ScreenSharing
 				while (IsSharing)
 				{
 					while (FrameQueue.Count == 0) ;
-					Timer.Interval = 2000;
+					Timer.Interval = 10000;
 					if (Timer.Enabled == false)
 						Timer.Start();
 					SharedScreen currScreen = FrameQueue.Dequeue();
@@ -95,6 +96,16 @@ namespace ScreenSharing
 					{
 						// this is the case when server is idle and someone wants to share screen
 						UserId = currScreen.UserId;
+						if (currScreen.MessageType == 0)
+						{
+							UserId="-";
+							Timer.Stop();
+							Timer.Interval = 10000;
+						}
+						// Broadcasting the screen
+						string data = Serializer.Serialize<SharedScreen>(currScreen);
+						Communicator.Send(data, "ScreenSharing");
+						Trace.WriteLine("[ScreenSharingServer] Data sent to Networking");
 					}
 					else if (currScreen.UserId != UserId)
 					{
@@ -107,11 +118,12 @@ namespace ScreenSharing
 						{
 							UserId="-";
 							Timer.Stop();
-							Timer.Interval = 2000;
+							Timer.Interval = 10000;
 						}
 						// Broadcasting the screen
 						string data = Serializer.Serialize<SharedScreen>(currScreen);
-						Communicator.Send(data, MethodInfo.GetCurrentMethod().ReflectedType.Namespace);
+						Communicator.Send(data, "ScreenSharing");
+						Trace.WriteLine("[ScreenSharingServer] Data sent to Networking");
 					}
 				}
 			}

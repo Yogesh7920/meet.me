@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/22/2021
- * Date Modified: 11/23/2021
+ * Date Modified: 11/28/2021
 **/
 
 using Moq;
@@ -50,13 +50,13 @@ namespace Testing.Whiteboard
             _handler.SetLastDrawn(null);
 
             // Creation from stratch
-            List<UXShape> operations = _handler.CreateShape(ShapeType.RECTANGLE, start, end, strokeWidth, strokecolor, null);
+            List<UXShape> operations = _handler.CreateShape(ShapeType.ELLIPSE, start, end, strokeWidth, strokecolor, null);
             _mockStateManager.Verify(m => m.GetUser(), Times.Once());
             Assert.IsNotNull(operations);
             Assert.IsTrue(operations.Count == 1);
 
             // Verifying the UXShape received
-            CheckUXShape(operations[0], UXOperation.CREATE, ShapeType.RECTANGLE, new Coordinate(2, 2), 0);
+            Comparators.CheckUXShape(operations[0], UXOperation.CREATE, ShapeType.ELLIPSE, new Coordinate(2, 2), 0);
             Assert.IsNotNull(operations[0].WindowsShape.Uid);
             Assert.AreEqual(2, operations[0].WindowsShape.Width);
             Assert.AreEqual(2, operations[0].WindowsShape.Height);
@@ -66,7 +66,7 @@ namespace Testing.Whiteboard
             Assert.IsNotNull(lastDrawn);
             Assert.AreEqual(operations[0].WindowsShape.Uid, lastDrawn.Uid);
             Assert.AreEqual(Operation.CREATE, lastDrawn.RecentOperation);
-            Assert.AreEqual(ShapeType.RECTANGLE, lastDrawn.MainShapeDefiner.ShapeIdentifier);
+            Assert.AreEqual(ShapeType.ELLIPSE, lastDrawn.MainShapeDefiner.ShapeIdentifier);
         }
 
         [Test]
@@ -87,18 +87,18 @@ namespace Testing.Whiteboard
             BoardColor strokecolor = new(2, 3, 4);
             float strokeWidth = 2;
 
-            List<UXShape> operations = _handler.CreateShape(ShapeType.RECTANGLE,start, end, strokeWidth, strokecolor, uid);
+            List<UXShape> operations = _handler.CreateShape(ShapeType.RECTANGLE, start, end, strokeWidth, strokecolor, uid);
             Assert.IsTrue(operations.Count == 2);
 
             //Verifying the UXShape received
             // The UXobject at list position 1 should be the one to be deleted
-            CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.RECTANGLE, new(2, 2), 0);
+            Comparators.CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.RECTANGLE, new(2, 2), 0);
             Assert.IsNotNull(operations[0].WindowsShape.Uid);
             Assert.AreEqual(uid, operations[0].WindowsShape.Uid);
 
 
             // The UXObject at list position 2 should be the one to be created.
-            CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.RECTANGLE, new(3, 3), 0);
+            Comparators.CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.RECTANGLE, new(3, 3), 0);
             Assert.AreEqual(uid, operations[1].WindowsShape.Uid);
             Assert.AreEqual(4, operations[1].WindowsShape.Width);
             Assert.AreEqual(4, operations[1].WindowsShape.Height);
@@ -154,7 +154,7 @@ namespace Testing.Whiteboard
             SetHandlerLastDrawn(uid, RealTimeOperation.CREATE, Operation.CREATE);
 
             // user gives invalid id to the shape id to continue the real time create operation in progress.
-            List<UXShape> operations = _handler.CreateShape(ShapeType.RECTANGLE, new(3, 3), new(5,5), 2, new(2, 3, 4), "12", true);
+            List<UXShape> operations = _handler.CreateShape(ShapeType.RECTANGLE, new(3, 3), new(5, 5), 2, new(2, 3, 4), "12", true);
             Assert.IsNull(operations);
         }
 
@@ -190,16 +190,16 @@ namespace Testing.Whiteboard
 
             //Verifying the UXShape received
             // The UXobject at list position 1 should be the one to be deleted
-            CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.LINE, new(2, 2), angleOfRotation);
+            Comparators.CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.LINE, new(0, 0), angleOfRotation);
             Assert.IsNotNull(operations[0].WindowsShape.Uid);
             Assert.AreEqual(uid, operations[0].WindowsShape.Uid);
 
 
             // The UXObject at list position 2 should be the one to be created.
-            CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.LINE, new(3, 3), angleOfRotation);
+            Comparators.CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.LINE, new(0, 0), angleOfRotation);
             Assert.AreEqual(uid, operations[1].WindowsShape.Uid);
 
-            System.Windows.Shapes.Line operationLine = (System.Windows.Shapes.Line) operations[1].WindowsShape;
+            System.Windows.Shapes.Line operationLine = (System.Windows.Shapes.Line)operations[1].WindowsShape;
             Assert.AreEqual(2, operationLine.X1);
             Assert.AreEqual(3, operationLine.Y1);
             Assert.AreEqual(4, operationLine.X2);
@@ -226,11 +226,11 @@ namespace Testing.Whiteboard
 
             //Verifying the UXShape received
             // The UXobject at list position 1 should be the one to be deleted
-            CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.RECTANGLE, new(2, 2), 0);
+            Comparators.CheckUXShape(operations[0], UXOperation.DELETE, ShapeType.RECTANGLE, new(2, 2), 0);
             Assert.AreEqual(uid, operations[0].WindowsShape.Uid);
 
             // The UXObject at list position 2 should be the one to be created.
-            CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.RECTANGLE, new(2, 2), (float)-Math.PI/4);
+            Comparators.CheckUXShape(operations[1], UXOperation.CREATE, ShapeType.RECTANGLE, new(2, 2), (float)-Math.PI / 4);
             Assert.AreEqual(uid, operations[1].WindowsShape.Uid);
 
             // checking the _lastDrawn Object has correct details
@@ -375,7 +375,7 @@ namespace Testing.Whiteboard
         {
             string uid = "123";
             SetupManagerForNonRealTimeOperations(uid, false);
-            List<UXShape> operations = _handler.ChangeStrokeColor(new(1,2,3), "123");
+            List<UXShape> operations = _handler.ChangeStrokeColor(new(1, 2, 3), "123");
 
             Assert.IsNull(operations);
         }
@@ -415,15 +415,21 @@ namespace Testing.Whiteboard
         public void Delete_ValidIdSuccessDelete_ReturnsList()
         {
             // setup stateManager with an object to return
-            string uid = "123";
-            SetupManagerForNonRealTimeOperations(uid);
+            string uid = "<+_+>";
+            // setup return value from manager.
+            MainShape mainShape = new Polyline(new(1, 1));
+            BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.CREATE);
+            _mockStateManager.Setup(m => m.GetBoardShape(It.IsAny<string>())).Returns(shape);
+            // set up the response of server on update
+            _mockStateManager.Setup(m => m.SaveOperation(It.IsAny<BoardShape>())).Returns(true);
+
             List<UXShape> operations = _handler.Delete(uid);
             Assert.IsTrue(operations.Count == 1);
             Assert.AreEqual(uid, operations[0].WindowsShape.Uid);
             Assert.AreEqual(UXOperation.DELETE, operations[0].UxOperation);
 
             _mockStateManager.Verify(m => m.SaveOperation(
-                It.Is<BoardShape>(obj => (obj.Uid.Equals("123") && (obj.RecentOperation == Operation.DELETE)))
+                It.Is<BoardShape>(obj => (obj.Uid.Equals(uid) && (obj.RecentOperation == Operation.DELETE)))
                 ), Times.Once());
 
         }
@@ -434,7 +440,7 @@ namespace Testing.Whiteboard
             // set up the manager to retun false in save state.
             string uid = "123";
             SetupManagerForNonRealTimeOperations(uid, false);
-            List<UXShape> operations = _handler.Delete( "123");
+            List<UXShape> operations = _handler.Delete("123");
 
             Assert.IsNull(operations);
 
@@ -443,7 +449,7 @@ namespace Testing.Whiteboard
         [Test]
         public void GetUserName()
         {
-            
+
             // setup return value from manager.
             MainShape mainShape = new Line(2, 2, new(1, 1), new(2, 2));
             BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, "123", "alice", Operation.CREATE);
@@ -491,14 +497,6 @@ namespace Testing.Whiteboard
             MainShape mainShape = new Rectangle(2, 2, new(1, 1), new(2, 2));
             BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", recentOperation);
             _handler.SetLastDrawn(shape, new(3, 3), operation);
-        }
-
-        public void CheckUXShape(UXShape uxshape, UXOperation uXOperation, ShapeType shapetype, Coordinate translationCord, float angle)
-        {
-            Assert.AreEqual(shapetype, uxshape.ShapeIdentifier);
-            Assert.AreEqual(uXOperation, uxshape.UxOperation);
-            Assert.IsTrue(uxshape.TranslationCoordinate.Equals(translationCord));
-            Comparators.CompareFloats(angle, uxshape.AngleOfRotation);
         }
 
     }

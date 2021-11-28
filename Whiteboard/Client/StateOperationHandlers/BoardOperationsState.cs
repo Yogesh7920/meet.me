@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/26/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -47,6 +47,10 @@ namespace Whiteboard
 
         }
 
+        /// <summary>
+        /// Sets user level of itself and state manager.
+        /// </summary>
+        /// <param name="userLevel">user level.</param>
         public void SetUserLevel(int userLevel)
         {
             UserLevel = userLevel;
@@ -131,17 +135,17 @@ namespace Whiteboard
         {
             try
             {
-                Trace.WriteLine("BoardOperationsState:GetUserName: Getting user for shape Id" + shapeId);
+                Trace.WriteLine("[Whiteboard] BoardOperationsState:GetUserName: Getting user for shape Id" + shapeId);
                 BoardShape shapeFromManager = GetShapeFromManager(shapeId);
                 return shapeFromManager.ShapeOwnerId;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Trace.WriteLine("ActiveBoardOperationsHandler:Delete: Failure in getting user Name Operation.");
+                Trace.WriteLine("[Whiteboard] ActiveBoardOperationsHandler:Delete: Failure in getting user Name Operation.");
                 Trace.WriteLine(e.Message);
                 return null;
             }
-           
+
         }
 
         /// <summary>

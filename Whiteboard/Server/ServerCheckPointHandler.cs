@@ -7,19 +7,22 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.Diagnostics;
-using System.Xml.Serialization;
 using System.IO;
+using Newtonsoft;
+using Newtonsoft.Json;
+using System.Text.Json;
+
+
 
 namespace Whiteboard
 {
-    internal class ServerCheckPointHandler : IServerCheckPointHandler
+    public sealed class ServerCheckPointHandler : IServerCheckPointHandler
     {
-        private int CheckpointNumber = 0;
+        private int _checkpointNumber = 0;
 
         //List of checkpoints to keep track of checkpoint number and corressponding userId and boardShape
-        private readonly List<Tuple<int, String, List<BoardShape>>> CheckpointSummary = new List<Tuple<int, String, List<BoardShape>>>();
+        private readonly List<Tuple<int, String, List<BoardShape>>> _checkpointSummary = new List<Tuple<int, String, List<BoardShape>>>();
 
         /// <summary>
         /// Fetches the checkpoint corresponding to the checkPointNumber
@@ -29,22 +32,30 @@ namespace Whiteboard
         public List<BoardShape> FetchCheckpoint(int checkpointNumber)
         {
             try
-            {   // Construct path from the checkpointNumber
-                string boardShapesPath = checkpointNumber.ToString() + ".xml";
+            {
+                if (checkpointNumber > _checkpointNumber)
+                {
+                    throw new ArgumentException("invalid checkpointNumber");
+                }
+                // Construct path from the checkpointNumber
+                string boardShapesPath = checkpointNumber.ToString() + ".json";
+
 
                 // Get the file corresponding to the path
-                StreamReader streamReader = new StreamReader(boardShapesPath);
+                string jsonString = File.ReadAllText(boardShapesPath);
 
                 //Deserializing the file
-                XmlSerializer xml = new XmlSerializer(typeof(List<BoardShape>));
-                var boardShapes = (List<BoardShape>)xml.Deserialize(streamReader);
+                List<BoardShape> boardShapes = JsonConvert.DeserializeObject<List<BoardShape>>(jsonString, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                });
                 return boardShapes;
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Trace.WriteLine("invalid checkpointNumber");
-                Trace.WriteLine(e.Message);
+                Trace.WriteLine("Error Occured: ServerCheckPointHandler:FetchCheckPoint");
+                Trace.WriteLine(ex.Message);
             }
             return null;
 
@@ -56,7 +67,7 @@ namespace Whiteboard
         /// <returns>Number corresponding to the total number of checkpoints at server.</returns>
         public int GetCheckpointsNumber()
         {
-            return CheckpointNumber;
+            return _checkpointNumber;
         }
 
         /// <summary>
@@ -67,23 +78,36 @@ namespace Whiteboard
         /// <returns>The number/identifier corresponding to the created checkpoint.</returns>
         public int SaveCheckpoint(List<BoardShape> boardShapes, string userId)
         {
-            //increase the checkpoint number by one
-            CheckpointNumber = CheckpointNumber + 1;
 
-            //Added checkpoint number, userId and boardShapes in the checkpoint summery list
-            CheckpointSummary.Add(new Tuple<int, string, List<BoardShape>>(CheckpointNumber, userId, boardShapes));
+            try
+            {
+                //increase the checkpoint number by one
+                _checkpointNumber = _checkpointNumber + 1;
 
-            //Construct path from the corresopnding checkpoint number
-            string boardShapesPath = CheckpointNumber.ToString() + ".xml";
+                //Added checkpoint number, userId and boardShapes in the checkpoint summery list
+                _checkpointSummary.Add(new Tuple<int, string, List<BoardShape>>(_checkpointNumber, userId, boardShapes));
 
-            // Serializing boardShapes object and saving them at the boardShapesPath
-            XmlSerializer xml = new XmlSerializer(typeof(List<BoardShape>));
-            StreamWriter streamWriter = new StreamWriter(boardShapesPath);
+                //Construct path from the corresopnding checkpoint number
+                string boardShapesPath = _checkpointNumber.ToString() + ".json";
 
-            xml.Serialize(streamWriter, boardShapes);
+                // Serializing boardShapes object and saving them at the boardShapesPath
+                string jsonString = JsonConvert.SerializeObject(boardShapes, Formatting.Indented, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                });
+                File.WriteAllText(boardShapesPath, jsonString);
 
-            streamWriter.Close();
-            return CheckpointNumber;
+
+                return _checkpointNumber;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("Error Occured: ServerCheckPointHandler:SaveCheckPoint");
+                Trace.WriteLine(ex.Message);
+            }
+            return 0;
+
+
         }
         /// <summary>
         /// returns the list of created checkpoints and corressponding userId and boardshape
@@ -91,9 +115,9 @@ namespace Whiteboard
         /// <returns></returns>
         public List<Tuple<int, String, List<BoardShape>>> Summary()
         {
-            return CheckpointSummary;
+            return _checkpointSummary;
         }
     }
-        
-    
+
+
 }

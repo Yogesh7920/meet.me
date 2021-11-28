@@ -98,7 +98,9 @@ namespace Testing.Content
             Assert.AreEqual("Invalid MessageType field. Must be one of MessageType.Chat or MessageType.File", ex.Message);
         }
 
-
+        /// <summary>
+        /// In this test, we are giving reply thread Id that doesn't exist in CSend method
+        /// </summary>
         [Test]
         public void CSend_ReplyThreadIdDoesNotExist_ShouldThrowException()
         {
@@ -191,7 +193,7 @@ namespace Testing.Content
         /// Sending null msg in CSend method, which is invalid, exception will be thrown
         /// </summary>
         [Test]
-        public void CSend_ChatSendingMsgWithNullString_SerializedStringShouldMatchInputMsg()
+        public void CSend_ChatSendingMsgWithNullString_InvalidExceptionShouldThrown()
         {
             int userId = 1001;
             SendMessageData sampleData = util.GenerateChatSendMsgData(null, new int[] { 1002 }, type: MessageType.Chat);
@@ -199,6 +201,145 @@ namespace Testing.Content
             contentClient.Communicator = fakeCommunicator;
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
             Assert.AreEqual("Invalid Message String", ex.Message);
+        }
+
+        /// <summary>
+        /// Sending msg in CSend method, which is replying to thread that doesn't exist , exception will be thrown
+        /// </summary>
+        [Test]
+        public void CSend_ChatSendingMsgWithNotExistReplyThreadId_ExceptionWillRaise()
+        {
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData(null, new int[] { 1002 }, type: MessageType.Chat);
+            sampleData.ReplyThreadId = 1001;
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
+            Assert.AreEqual(ex.Message.Contains("Thread with given reply thread id"), true);
+        }
+
+        /// <summary>
+        /// Sending msg in CSend method, which is replying to message id that doesn't exist, exception will be thrown
+        /// </summary>
+        [Test]
+        public void CSend_ChatSendingMsgWithFalseReplyMsgId_ExceptionWillRaise()
+        {
+            int userId = 1001;
+            SendMessageData sampleData = util.GenerateChatSendMsgData(null, new int[] { 1002 }, type: MessageType.Chat);
+            sampleData.ReplyMsgId = 1001;
+            contentClient.UserId = userId;
+            contentClient.Communicator = fakeCommunicator;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
+            Assert.AreEqual(ex.Message.Contains("Invalid reply message id"), true);
+        }
+
+        /// <summary>
+        /// In this test we are trying to send reply to exist thread id but non exist message Id which will throw exception
+        /// </summary>
+        [Test]
+        public void CSend_ReplyToExistThreadIdInvalidReplyMsgId_ExceptionWillRaise()
+        {
+            // Generating content client instance with fake communicator and also generating iContentClient using contentClient
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator newFakeCommunicator = new FakeCommunicator();
+            contentClient.Communicator = newFakeCommunicator;
+            int userId = 1001;
+            contentClient.UserId = userId;
+            IContentClient iContentClient = contentClient;
+
+            // Subscribing to content client
+            iContentClient.CSubscribe(iFakeListener);
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 512, ReplyThreadId: 13);
+
+            // Notifying client with msg
+            newFakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
+            System.Threading.Thread.Sleep(50);
+
+            // Fetching listened data from listener
+            ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
+
+            // Generating and sending msg to reply thread of received msg but incorrect replyMsgId
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] { }, type: MessageType.Chat);
+            sampleData.ReplyMsgId = 1203;
+            sampleData.ReplyThreadId = listenedData.ReplyThreadId;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CSend(sampleData));
+            Assert.AreEqual(ex.Message.Contains("Invalid reply message id"), true);
+        }
+
+        /// <summary>
+        /// In this test we are trying to send reply to exist message which is private and hence when we are sending reply request to server then receiver Id field of message data
+        /// should have sender of message that we are replying to
+        /// </summary>
+        [Test]
+        public void CSend_ReplyToExistPrivateMessage_ReceiverIdFieldsMustHaveMsgSenderId()
+        {
+            // Generating content client instance with fake communicator and also generating iContentClient using contentClient
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator newFakeCommunicator = new FakeCommunicator();
+            contentClient.Communicator = newFakeCommunicator;
+            int userId = 1001;
+            contentClient.UserId = userId;
+            IContentClient iContentClient = contentClient;
+
+            // Subscribing to content client
+            iContentClient.CSubscribe(iFakeListener);
+            // Generating private message where user 2001 sending hello to user 1001
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 490, ReplyThreadId: 6, rcvIds: new int[] {userId}, SenderId: 2001);
+
+            // Notifying client with msg
+            newFakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
+            System.Threading.Thread.Sleep(50);
+
+            // Fetching listened data from listener
+            ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
+
+            // Generating and sending msg to reply thread of received msg but incorrect replyMsgId
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] {2001 }, type: MessageType.Chat);
+            sampleData.ReplyMsgId = listenedData.MessageId;
+            sampleData.ReplyThreadId = listenedData.ReplyThreadId;
+            iContentClient.CSend(sampleData);
+            var sendSerializedMsg = newFakeCommunicator.GetSentData();
+            var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
+            Assert.AreEqual(deserialized.Message, sampleData.Message);
+            Assert.AreEqual(deserialized.ReceiverIds, sampleData.ReceiverIds);
+        }
+
+        /// <summary>
+        /// In this test we are trying to send reply to exist message which is private and hence when we are sending reply request to server then receiver Id field of message data
+        /// should have all users that are msg was sent to
+        /// </summary>
+        [Test]
+        public void CSend_ReplyToExistPrivateMessageWithMultipleReceivers_ReceiverIdFieldsMustHaveAllUsersRelatedToMsg()
+        {
+            // Generating content client instance with fake communicator and also generating iContentClient using contentClient
+            ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
+            FakeCommunicator newFakeCommunicator = new FakeCommunicator();
+            contentClient.Communicator = newFakeCommunicator;
+            int userId = 1001;
+            contentClient.UserId = userId;
+            IContentClient iContentClient = contentClient;
+
+            // Subscribing to content client
+            iContentClient.CSubscribe(iFakeListener);
+            // Generating private message where user 2001 sending hello to user 1001, 1002 and 1003
+            MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 491, ReplyThreadId: 5, rcvIds: new int[] { userId, 1002, 1003 }, SenderId: 2001);
+
+            // Notifying client with msg
+            newFakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
+            System.Threading.Thread.Sleep(50);
+
+            // Fetching listened data from listener
+            ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
+
+            // Generating and sending msg to reply all users related to msgId
+            SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] { 2001, 1002, 1003}, type: MessageType.Chat);
+            sampleData.ReplyMsgId = listenedData.MessageId;
+            sampleData.ReplyThreadId = listenedData.ReplyThreadId;
+            iContentClient.CSend(sampleData);
+            var sendSerializedMsg = newFakeCommunicator.GetSentData();
+            var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
+            Assert.AreEqual(deserialized.Message, sampleData.Message);
+            Assert.AreEqual(deserialized.ReceiverIds, sampleData.ReceiverIds);
         }
 
         /// <summary>
@@ -399,13 +540,17 @@ namespace Testing.Content
             int userId = 1001;
             int otherUserId = 1005;
             int msgId = 18;
+            // Generating Message Data with sender Id as other user Id i.e 1005
             MessageData sampleMsgDataSend = util.GenerateChatMessageData(MessageEvent.NewMessage,"Hello", new int[] { }, type: MessageType.Chat, replyId: 1);
             sampleMsgDataSend.MessageId = msgId;
             sampleMsgDataSend.SenderId = otherUserId;
+            // Setting user Id of client as 1001
             contentClient.UserId = userId;
             contentClient.Communicator = fakeCommunicator;
+            // Notifying fakecommunicator abt other user's message to notify content client which will update its own memory tables
             fakeCommunicator.Notify(serializer.Serialize(sampleMsgDataSend));
             System.Threading.Thread.Sleep(10);
+            // updating othe user's msg using CUpdateChat method
             ArgumentException ex = Assert.Throws<ArgumentException>(() => iContentClient.CUpdateChat(msgId, "Hi"));
             Assert.AreEqual("Update not allowed for messages from another sender", ex.Message);
         }
@@ -601,25 +746,61 @@ namespace Testing.Content
         }
 
         /// <summary>
+        /// giving null messageData object to client, should throw exception
+        /// </summary>
+        [Test]
+        public void OnDataReceived_NullMessageDataObject_ShouldThrowException()
+        {
+            // Subscribing to communicator
+            fakeCommunicator.Subscribe("Content", notificationHandler);
+            MessageData dataToSerialize = null;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => fakeCommunicator.Notify(serializer.Serialize(dataToSerialize)));
+            Console.WriteLine(ex.Message);
+            Assert.AreEqual(ex.Message.Contains("Received null message"), true);
+        }
+
+        /// <summary>
+        /// giving null list of chatcontext object to client, should throw exception
+        /// </summary>
+        [Test]
+        public void OnDataReceived_NullChatContextListObject_ShouldThrowException()
+        {
+            // Subscribing to communicator
+            fakeCommunicator.Subscribe("Content", notificationHandler);
+            List<ChatContext> dataToSerialize = null;
+            ArgumentException ex = Assert.Throws<ArgumentException>(() => fakeCommunicator.Notify(serializer.Serialize(dataToSerialize)));
+            Console.WriteLine(ex.Message);
+            Assert.AreEqual(ex.Message.Contains("Null message in argument"), true);
+        }
+
+        /// <summary>
         /// This test will check INotification handler for content client and IListener which will be used by UX in case of single msg arrival from server
+        /// We also replying to received message by listener using thread ID and msg ID of listened msg using replyThreadId and replyMsgId field
         /// </summary>
         [Test]
         public void OnDataReceived_NewMessageWithReply_SameMsgShouldReceivedToSubscriber()
         {
+            // Generating content client instance with fake communicator and also generating iContentClient using contentClient
             ContentClient contentClient = ContentClientFactory.GetInstance() as ContentClient;
             FakeCommunicator newFakeCommunicator = new FakeCommunicator();
             contentClient.Communicator = newFakeCommunicator;
             int userId = 1001;
             contentClient.UserId = userId;
             IContentClient iContentClient = contentClient;
+
             // Subscribing to content client
             iContentClient.CSubscribe(iFakeListener);
             MessageData dataToSerialize = util.GenerateNewMessageData("Hello", MessageId: 489, ReplyThreadId: 1);
+
+            // Notifying client with msg
             newFakeCommunicator.Notify(serializer.Serialize(dataToSerialize));
             System.Threading.Thread.Sleep(50);
+
             // Fetching listened data from listener
             ReceiveMessageData listenedData = fakeListener.GetOnMessageData();
             Assert.AreEqual(listenedData.Message, dataToSerialize.Message);
+
+            // Generating and sending msg to reply received msg
             SendMessageData sampleData = util.GenerateChatSendMsgData("Hello, How are you?", new int[] {}, type: MessageType.Chat);
             MessageData sampleMsgData = util.GenerateChatMessageData(MessageEvent.NewMessage, "Hello, How are you?", new int[] {}, type: MessageType.Chat);
             sampleData.ReplyMsgId = listenedData.MessageId;
@@ -628,6 +809,8 @@ namespace Testing.Content
             sampleMsgData.ReplyThreadId = listenedData.ReplyThreadId;
             contentClient.CSend(sampleData);
             System.Threading.Thread.Sleep(50);
+
+            // Fetching data from communicator that sending request to server
             var sendSerializedMsg = newFakeCommunicator.GetSentData();
             var deserialized = serializer.Deserialize<MessageData>(sendSerializedMsg);
             if (deserialized is MessageData)
@@ -673,6 +856,10 @@ namespace Testing.Content
             Assert.AreEqual(listenedData2.Message, dataToSerialize2.Message);
         }
 
+        /// <summary>
+        /// In this test, we giving client custom made server response on download request, and checks whether client download that file to mentioned local directory
+        /// First we are sending request to server using CSend and then changing event of msg to download and message to savepath and giving it back to client as server response
+        /// </summary>
         [Test]
         public void OnDataReceived_DownloadMessage_FileShouldBeSaved()
         {            
@@ -785,6 +972,13 @@ namespace Testing.Content
         /// Here we are testing SGetAllMessages and SSendAllMessages of server by sending it three new message
         /// starring first message, updating second message and keeping third same which will be replies in context of first message
         /// This test will check new arrival message, broadcast, private sending, starring msg for chats
+        /// Approach:
+        /// 1. Generating three msg data
+        /// 2. Server receiving msg 1 and star request for msg 1 using Receive function of server and then we also checking response send by server to client using
+        /// GetMsgFromCommunicator method
+        /// 3. similarly receiving msg 2 and update request over it and checking it with same method
+        /// 4. last we sending msg3 which is a reply to msg1 and checking as mentioned above
+        /// 5. then we are building chatcontext list over it and comparing that with one received via SGetAllMessages and SSendAllMessagesToClient 
         /// </summary>
         public void SGetAllMessagesAndSendAllMessages_GettingAllMsgsFromServer_ShouldMatchSentMsgsToServer()
         {
@@ -848,6 +1042,13 @@ namespace Testing.Content
         [Test]
         ///<summary>
         /// Here we are testing file related functionality of server, i.e storing new file message and handling donwload request
+        /// Approach:
+        /// 1. first we are sending file via CSend method of clinet
+        /// 2. Receiving same serialized msg sent by client on server using Receive method
+        /// 3. Fetching response sent by server using GetMsgFromCommunicator method and Sending it to client using OnReceive method of INotificationHandler
+        /// 4. Client makes download request of same file using CDownload method and server receives it using Receive method
+        /// 5. Server sends response which is fetched using GetMsgFromCommunicator method and received by client using OnReceive method
+        /// 6. File is getting downloaded to local system which we are testing using File.Exists method
         /// </summary>
         public void SendingAndReceivingFileServer_NewFileMessageAndDownloadRequest_FileShouldBeDownloadedOnClient()
         {
@@ -890,6 +1091,7 @@ namespace Testing.Content
                 Assert.Fail();
             }
         }
+
 
         /// <summary>
         /// helper function to check file data of message data field
@@ -996,8 +1198,6 @@ namespace Testing.Content
         /// <summary>
         /// This function compares receiveMsgData
         /// </summary>
-        /// <param name="m1"></param>
-        /// <param name="m2"></param>
         public void CompareReceiveMessageData(ReceiveMessageData m1, ReceiveMessageData m2)
         {
             Assert.AreEqual(m1.Message, m2.Message);
@@ -1012,8 +1212,6 @@ namespace Testing.Content
         /// <summary>
         /// This function compares chat contexts
         /// </summary>
-        /// <param name="c1"></param>
-        /// <param name="c2"></param>
         public void CompareChatContext(ChatContext c1, ChatContext c2)
         {
             Assert.AreEqual(c1.ThreadId, c2.ThreadId);

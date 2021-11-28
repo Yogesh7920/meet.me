@@ -1,9 +1,6 @@
-﻿/**
- * owned by: Irene Casmir
- * created by: Irene Casmir
- * date created: 25/10/2021
- * date modified: 23/11/2021
-**/
+﻿/// <author>Irene Casmir</author>
+/// <created>25/10/2021</created>
+
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 using System;
@@ -18,7 +15,11 @@ namespace Client.ViewModel
         {
             _model = SessionManagerFactory.GetClientSessionManager();
         }
-
+        
+        /// <summary>
+        /// Constructor for testing purpose
+        /// </summary>
+        /// <param name="model"> Instance of type IUXClientSessionManager. </param>
         public AuthViewModel(IUXClientSessionManager model)
         {
             _model = model;

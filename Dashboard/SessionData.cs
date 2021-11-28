@@ -1,4 +1,10 @@
-﻿using System;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 14/10/2021 </created>
+/// <summary>
+/// This file contains the SessionData class used to store the list of users in the session.
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,6 +51,31 @@ namespace Dashboard
                 output += "\n";
             }
             return output;
+        }
+
+        /// <summary>
+        /// Removes the user from the user list in the sessionData.
+        /// </summary>
+        /// <param name="userID">The UserID of the user who is to be removed</param>
+        /// <param name="username"> An optional paramter indicating the name of the user. </param>
+        /// <returns></returns>
+        public UserData RemoveUserFromSession(int userID, string username = null)
+        {
+            // Check if the user is in the list and if so, then remove it and return true
+            for (int i = 0; i < users.Count; ++i)
+            {
+                if (users[i].userID.Equals(userID))
+                {
+                    lock (this)
+                    {
+                        UserData removedUser = new (users[i].username, users[i].userID);
+                        users.RemoveAt(i);
+                        return removedUser;
+                    }
+                }
+            }
+
+            return null;
         }
 
         // the List of users in the meeting 

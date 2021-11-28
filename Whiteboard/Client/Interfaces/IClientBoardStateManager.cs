@@ -56,6 +56,7 @@ namespace Whiteboard
         /// <summary>
         /// Clears the whiteboard to fresh.
         /// </summary>
-        void ClearWhiteBoard();
+        /// <returns>Boolean to freeze whiteboard or not.</returns>
+        bool ClearWhiteBoard();
     }
 }
