@@ -16,8 +16,8 @@
         <StackPanel Orientation="Vertical">
             <Image Width = "720" Height = "480" Source = "{Binding ReceivedImage, Mode=OneWay}" 
             VerticalAlignment = "Center" Margin = "20"/>
-            <TextBlock Name="ReceivedMessage" VerticalAlignment = "bottom" Text="{Binding ReceivedMessage, Mode=OneWay}" 
-                    Foreground="Yellow" FontSize="25" Padding="10,10,10,10" Margin="220 0 0 0"/>
+            <TextBlock Name="ReceivedMessage" VerticalAlignment = "Center" HorizontalAlignment="Center" Text="{Binding ReceivedMessage, Mode=OneWay}" 
+                    Foreground="BlueViolet" FontSize="25" Padding="10,10,10,10"/>
         </StackPanel>
     </Grid>
 </UserControl>
