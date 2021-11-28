@@ -374,10 +374,25 @@ namespace Testing.UX.Whiteboard
             //mouse move 
             for (int i = 1; i <= 20; i++)
             {
-                end.X = strt.X + i;
-                end.Y = strt.Y + i;
-                drawingPoints.Add(end);
+                if (end.X < _globCanvas.Width && end.X > 0)
+                {
+                    end.X = strt.X + i;
+                }
+                else
+                {
+                    break;
+                }
 
+                if (end.Y < _globCanvas.Height && end.Y > 0)
+                {
+                    end.Y = strt.Y + i;
+                }
+                else
+                {
+                    break;
+                }
+
+                drawingPoints.Add(end);
                 _globCanvas = _viewModel.freeHand.DrawPolyline(_globCanvas, _WBOps, end, false, false, false);
             }
 
@@ -413,29 +428,21 @@ namespace Testing.UX.Whiteboard
             strt.Y = r.Next(1, (int)_globCanvas.Height - 1);
             drawingPoints.Add(strt);
 
-            _viewModel.freeHand.SetColor(Red);
-            _viewModel.freeHand.SetThickness(2);
-            _globCanvas = _viewModel.freeHand.DrawPolyline(_globCanvas, _WBOps, strt, true, false, false);
-
-            //set mouse down i.e. starting point  
-            end = strt;
-
             //mouse move 
             for (int i = 1; i <= 20; i++)
             {
                 end.X = strt.X + i;
                 end.Y = strt.Y + i;
                 drawingPoints.Add(end);
-
-                _globCanvas = _viewModel.freeHand.DrawPolyline(_globCanvas, _WBOps, end, false, false, false);
             }
 
-            //mouse up 
-            _globCanvas = _viewModel.freeHand.DrawPolyline(_globCanvas, _WBOps, end, false, false, true);
-
-            //get the created Line
-            Shape sh = (Shape)_globCanvas.Children.OfType<UIElement>().Where(x => x.Uid == "auniquepoly").ToList()[0];
-            System.Windows.Shapes.Polyline line = ((System.Windows.Shapes.Polyline)sh);
+            // Create a polyline  
+            string shUid = "auniquepoly";
+            System.Windows.Shapes.Polyline line = new System.Windows.Shapes.Polyline();
+            line.StrokeThickness = 2;
+            line.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(Red)); 
+            line.Uid = shUid;
+            line.Points = drawingPoints;
 
             Assert.AreEqual(line.StrokeThickness, 2);
             Assert.AreEqual(((SolidColorBrush)line.Stroke).Color, ((SolidColorBrush)(new BrushConverter().ConvertFrom(Red))).Color);
