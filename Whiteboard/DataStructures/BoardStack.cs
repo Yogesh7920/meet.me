@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 10/26/2021
- * Date Modified: 11/12/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -82,7 +82,7 @@ namespace Whiteboard
             if (GetSize() == s_capacity)
             {
                 Trace.Indent();
-                Trace.WriteLine("Whiteboard.BoardStack.Push: Stack is at full capacity. Removing first inserted element.");
+                Trace.WriteLine("[Whiteboard] BoardStack.Push: Stack is at full capacity. Removing first inserted element.");
                 Trace.Unindent();
                 RemoveFirstInserted();
             }
@@ -98,7 +98,7 @@ namespace Whiteboard
             if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 Trace.Indent();
-                Trace.WriteLine("Whiteboard.BoardStack.Top: Stack is empty.");
+                Trace.WriteLine("[Whiteboard] BoardStack.Top: Stack is empty.");
                 Trace.Unindent();
                 throw new IndexOutOfRangeException("Stack is empty");
             }
@@ -113,7 +113,7 @@ namespace Whiteboard
             if (GetSize() == BoardConstants.EMPTY_SIZE)
             {
                 Trace.Indent();
-                Trace.WriteLine("Whiteboard.BoardStack.Pop: Stack is empty.");
+                Trace.WriteLine("[Whiteboard] BoardStack.Pop: Stack is empty.");
                 Trace.Unindent();
                 throw new IndexOutOfRangeException("Stack is empty");
             }

@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 11/13/2021
- * Date Modified: 11/13/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -239,7 +239,7 @@ namespace Testing.Whiteboard
         }
 
 
-        private QueueElement GetRandomQueueElement(int randomVal, string id, string specifier)
+        private static QueueElement GetRandomQueueElement(int randomVal, string id, string specifier)
         {
             if (specifier == "second")
             {
