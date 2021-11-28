@@ -132,7 +132,7 @@ namespace Client
                sharing = false;
             }
             this.SSwb.Content = new ScreenShareUX();
-            if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
+            if (_chatFlag.Equals(true) && _userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 1);
@@ -142,7 +142,7 @@ namespace Client
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 3);
             }
-            else if (_userslist.UserListHidden.Equals(false))
+            else if (_userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 3);
@@ -160,7 +160,7 @@ namespace Client
         {
             _wbFlag = true;
             this.SSwb.Content = _whiteboard;
-            if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
+            if (_chatFlag.Equals(true) && _userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 1);
@@ -170,7 +170,7 @@ namespace Client
                 SSwb.SetValue(Grid.ColumnProperty, 2);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 3);
             }
-            else if (_userslist.UserListHidden.Equals(false))
+            else if (_userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 3);
@@ -190,7 +190,7 @@ namespace Client
             {
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
-                    if (_userslist.UserListHidden.Equals(false))
+                    if (_userslist.userListHidden.Equals(false))
                     {
                         SSwb.SetValue(Grid.ColumnProperty, 4);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 1);
@@ -211,7 +211,7 @@ namespace Client
                 _chatFlag = false;
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
                 {
-                    if (_userslist.UserListHidden.Equals(false))
+                    if (_userslist.userListHidden.Equals(false))
                     {
                         SSwb.SetValue(Grid.ColumnProperty, 4);
                         SSwb.SetValue(Grid.ColumnSpanProperty, 3);
@@ -237,7 +237,7 @@ namespace Client
         /// </summary>
         public void OnUsersListClick()
         {
-            if (_userslist.UserListHidden.Equals(true))
+            if (_userslist.userListHidden.Equals(true))
             {
                 UsersListControl.SetValue(Grid.ColumnSpanProperty, 3);
                 if (_ssFlag.Equals(true) || _wbFlag.Equals(true))
