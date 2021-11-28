@@ -6,6 +6,7 @@
 **/
 using System;
 using Dashboard.Client.SessionManagement;
+using Dashboard;
 
 namespace Testing.UX.Authentication
 {
@@ -68,6 +69,11 @@ namespace Testing.UX.Authentication
             public void GetAnalytics()
             {
 
+            }
+
+            public UserData GetUser()
+            {
+                throw new NotImplementedException();
             }
 
             // Event for notifying summary creation 
