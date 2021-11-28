@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 10/13/2021
- * Date Modified: 10/25/2021
+ * Date Modified: 10/28/2021
 **/
 
 using System;
@@ -44,7 +44,7 @@ namespace Whiteboard
         /// </summary>
         /// <param name="otherCord">Coordinate to be compared with.</param>
         /// <returns>True if equal, else false.</returns>
-        public bool Equals( Coordinate otherCord)
+        public bool Equals(Coordinate otherCord)
         {
             return ((Math.Abs(this.R - otherCord.R) < BoardConstants.ALLOWED_DELTA) && (Math.Abs(this.C - otherCord.C) < BoardConstants.ALLOWED_DELTA));
         }
@@ -56,7 +56,7 @@ namespace Whiteboard
         /// <returns>Clone of object,</returns>
         public Coordinate Clone()
         {
-            return new Coordinate(R,C);
+            return new Coordinate(R, C);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Whiteboard
         /// <param name="x">First coordinate.</param>
         /// <param name="y">Second coordinate.</param>
         /// <returns>Result of Addition.</returns>
-        public static Coordinate operator + (Coordinate x, Coordinate y)
+        public static Coordinate operator +(Coordinate x, Coordinate y)
         {
             return new Coordinate(x.R + y.R, x.C + y.C);
         }
@@ -123,7 +123,7 @@ namespace Whiteboard
             {
                 throw new Exception("Division of coordinate by 0.");
             }
-            return new Coordinate(x.R/y, x.C/y);
+            return new Coordinate(x.R / y, x.C / y);
         }
 
     }

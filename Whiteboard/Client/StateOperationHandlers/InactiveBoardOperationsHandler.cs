@@ -2,7 +2,7 @@
  * Owned By: Parul Sangwan
  * Created By: Parul Sangwan
  * Date Created: 11/01/2021
- * Date Modified: 11/26/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -93,15 +93,19 @@ namespace Whiteboard
         {
             try
             {
+                Trace.WriteLine("[Whiteboard] InactiveBoardOperationsHandler:ModifyShapeRealTime: Sending original shape stored in Manager to re-render");
+
                 // This requirement is very specified to the UX team.
                 BoardShape shapeFromManager = GetShapeFromManager(shapeId);
                 UXShape oldShape = new(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeId);
                 UXShape newShape = new(UXOperation.CREATE, shapeFromManager.MainShapeDefiner, shapeId);
 
                 List<UXShape> grey = new() { oldShape, newShape };
+
+                Trace.WriteLine("[Whiteboard] InactiveBoardOperationsHandler:ModifyShapeRealTime: Original Shape sent!");
                 return grey;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Trace.WriteLine(e.Message);
                 return null;

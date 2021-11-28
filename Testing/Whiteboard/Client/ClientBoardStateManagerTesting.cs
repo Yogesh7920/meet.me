@@ -2,7 +2,7 @@
  * Owned By: Ashish Kumar Gupta
  * Created By: Ashish Kumar Gupta
  * Date Created: 11/20/2021
- * Date Modified: 11/24/2021
+ * Date Modified: 11/28/2021
 **/
 
 using System;
@@ -32,7 +32,7 @@ namespace Testing.Whiteboard
             _mockCommunicator = new();
             _mockCheckpointHandler = new();
             _mockCommunicator.Setup(m => m.Subscribe(It.IsAny<IServerUpdateListener>()));
-            
+
             _clientBoardStateManager.Start();
             _clientBoardStateManager.SetCommunicatorAndCheckpointHandler(_mockCommunicator.Object, _mockCheckpointHandler.Object);
         }
@@ -79,7 +79,7 @@ namespace Testing.Whiteboard
             // Arrange
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
             _clientBoardStateManager.SetUserLevel(BoardConstants.LOW_USER_LEVEL);
-            
+
             // Act
             _clientBoardStateManager.ClearWhiteBoard();
 
@@ -149,7 +149,7 @@ namespace Testing.Whiteboard
 
             BoardShape createShapeNew = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
             createShapeNew.Uid = createShape.Uid;
-            
+
             // Act
             var ret = _clientBoardStateManager.SaveOperation(createShapeNew);
 
@@ -281,9 +281,9 @@ namespace Testing.Whiteboard
             // Act and assert
             _clientBoardStateManager.FetchCheckpoint(1);
             _mockCheckpointHandler.Verify(m => m.FetchCheckpoint(
-                It.Is<int>(num => num==1),
+                It.Is<int>(num => num == 1),
                 It.Is<string>(str => str == "user-id"),
-                It.Is<int>(num => num==0)
+                It.Is<int>(num => num == 0)
                 ), Times.Once());
         }
 
@@ -319,7 +319,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.OnMessageReceived(update);
 
             // Assert
-            for(int i = 0; i < boardShapes.Count; i++)
+            for (int i = 0; i < boardShapes.Count; i++)
             {
                 // asserting on state
                 BoardShape shapeStored = _clientBoardStateManager.GetBoardShape(boardShapes[i].Uid);
@@ -328,7 +328,7 @@ namespace Testing.Whiteboard
             }
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) && 
+                It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) &&
                 obj[0].OperationType == Operation.FETCH_STATE && obj[0].CheckpointNumber == 2)
                 ), Times.Once());
         }
@@ -511,17 +511,17 @@ namespace Testing.Whiteboard
             // server update
             List<BoardShape> boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.CREATE);
             BoardServerShape update = new(boardShapes, Operation.CREATE, "user-2", 2, 0);
-            
+
             // finding epected order of outcomes
             List<BoardShape> expected = GetExpectedOrder(prevState, boardShapes);
-            
+
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
 
             // Assert
             // asserting on state
             Assert.IsTrue(StateManagerHelper.CompareBoardShapes(boardShapes[0], _clientBoardStateManager.GetBoardShape(boardShapes[0].Uid)));
-            for(int i = 0; i < prevState.Count; i++)
+            for (int i = 0; i < prevState.Count; i++)
             {
                 Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             }
@@ -647,7 +647,7 @@ namespace Testing.Whiteboard
                 Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             }
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShapeHelper>>(obj => obj.Count==1 && obj[0].OperationType == Operation.DELETE && obj[0].ShapeId==boardShapes[0].Uid)
+                It.Is<List<UXShapeHelper>>(obj => obj.Count == 1 && obj[0].OperationType == Operation.DELETE && obj[0].ShapeId == boardShapes[0].Uid)
                 ), Times.Once());
         }
 
@@ -737,38 +737,6 @@ namespace Testing.Whiteboard
             listener.Verify(m => m.OnUpdateFromStateManager(
                 It.Is<List<UXShapeHelper>>(obj => obj.Count == 1 && obj[0].OperationType == Operation.CLEAR_STATE)
                 ), Times.Once());
-        }
-
-        [Test]
-        public void OnMessageReceived_ClearStateCheckpointStateDiffers_DoNothing()
-        {
-            // Arrange
-            _clientBoardStateManager.SetUser("user-1");
-            Mock<IClientBoardStateListener> listener = new();
-            _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
-            listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
-            _mockCheckpointHandler.Setup(m => m.CheckpointNumber);
-            _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-
-            // creating previous state
-            List<BoardShape> prevState = StateManagerHelper.GetListCompleteBoardShapes(10, Operation.CREATE);
-            for (int i = 0; i < prevState.Count; i++)
-            {
-                _clientBoardStateManager.SaveOperation(prevState[i]);
-            }
-
-            // server update
-            BoardServerShape update = new(null, Operation.CLEAR_STATE, "user-1", 2, 1);
-
-            // Act
-            _clientBoardStateManager.OnMessageReceived(update);
-
-            // Assert
-            for (int i = 1; i < prevState.Count; i++)
-            {
-                Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
-            }
-            listener.Verify(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()), Times.Never);
         }
 
         [Test]
@@ -961,7 +929,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.OnMessageReceived(update);
 
             // Assert
-            for(int i = 0; i < prevState.Count; i++)
+            for (int i = 0; i < prevState.Count; i++)
             {
                 Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             }
@@ -1099,13 +1067,13 @@ namespace Testing.Whiteboard
             // Fetch Checkpoint server update
             BoardServerShape fetchCheckpoint = new(prevState, Operation.FETCH_CHECKPOINT, "user-4", 2, 1);
             _clientBoardStateManager.OnMessageReceived(fetchCheckpoint);
-            for(int i = 0; i < prevState.Count; i++)
+            for (int i = 0; i < prevState.Count; i++)
             {
                 Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             }
         }
 
-        private static List<BoardShape> GetExpectedOrder(List<BoardShape> prevState, List<BoardShape> boardShapes, Operation operation=Operation.CREATE, int indexOfModify=0)
+        private static List<BoardShape> GetExpectedOrder(List<BoardShape> prevState, List<BoardShape> boardShapes, Operation operation = Operation.CREATE, int indexOfModify = 0)
         {
             List<BoardShape> expected = new();
             for (int i = 0; i < prevState.Count; i++)
@@ -1115,7 +1083,8 @@ namespace Testing.Whiteboard
                     expected.Add(prevState[i]);
                 }
             }
-            if (operation == Operation.MODIFY) {
+            if (operation == Operation.MODIFY)
+            {
                 expected.Add(prevState[indexOfModify]);
             }
             expected.Add(boardShapes[0]);
