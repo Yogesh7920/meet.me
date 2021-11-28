@@ -361,7 +361,7 @@ namespace Whiteboard
                     lock (_stateLock)
                     {
                         // set checkpoint state
-                        _currentCheckpointState = 0;
+                        _currentCheckpointState = BoardConstants.INITIAL_CHECKPOINT_STATE;
 
                         // clear the state and notify the UX for the same
                         NullifyDataStructures();
