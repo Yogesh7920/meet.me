@@ -750,39 +750,40 @@ namespace Client
 
                 Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
 
-                int topleft_x = (int)Canvas.GetLeft(iterat.ToList()[0]);
-                int topleft_y = (int)Canvas.GetTop(iterat.ToList()[0]);
+                double topleft_x = (double)Canvas.GetLeft(iterat.ToList()[0]);
+                double topleft_y = (double)Canvas.GetTop(iterat.ToList()[0]);
 
                 //MessageBox.Show("Entered MoveShape event");
                 //MessageBox.Show(topleft_x.ToString(), topleft_y.ToString());
 
-                int diff_topleft_x = (int)strt.X - (int)end.X;
-                int diff_topleft_y = (int)strt.Y - (int)end.Y;
-                int center_x, center_y;
+                double diff_topleft_x = (double)strt.X - (double)end.X;
+                double diff_topleft_y = (double)strt.Y - (double)end.Y;
+                double center_x, center_y;
 
                 if (sh is not System.Windows.Shapes.Line)
                 {
-                    center_x = (int)(topleft_x - diff_topleft_x + sh.Width / 2);
-                    center_y = (int)(topleft_y - diff_topleft_y + sh.Height / 2);
+                    center_x = (double)(topleft_x - diff_topleft_x + sh.Width / 2);
+                    center_y = (double)(topleft_y - diff_topleft_y + sh.Height / 2);
+
 
                     if (center_x > 0 && center_x < cn.Width)
                     {
-                        //selectMouseStuck.X = strt.X;
+                        selectMouseStuck.X = end.X;
                         Canvas.SetLeft(sh, topleft_x - diff_topleft_x);
                     }
                     else Canvas.SetLeft(sh, Canvas.GetLeft(sh));
 
                     if (center_y > 0 && center_y < cn.Height)
                     {
-                        //selectMouseStuck.Y = strt.Y;
+                        selectMouseStuck.Y = end.Y;
                         Canvas.SetTop(sh, topleft_y - diff_topleft_y);
                     }
                     else Canvas.SetTop(sh, Canvas.GetTop(sh));
                 }
                 else
                 {
-                    center_x = (int)(Canvas.GetLeft(sh) - diff_topleft_x + +((System.Windows.Shapes.Line)sh).X2 / 2);
-                    center_y = (int)(Canvas.GetTop(sh) - diff_topleft_y + ((System.Windows.Shapes.Line)sh).Y2 / 2);
+                    center_x = (double)(Canvas.GetLeft(sh) - diff_topleft_x + +((System.Windows.Shapes.Line)sh).X2 / 2);
+                    center_y = (double)(Canvas.GetTop(sh) - diff_topleft_y + ((System.Windows.Shapes.Line)sh).Y2 / 2);
 
                     if (center_x > 0 && center_x < cn.Width) Canvas.SetLeft(sh, topleft_x - diff_topleft_x);
                     else Canvas.SetLeft(sh, Canvas.GetLeft(sh));
@@ -796,15 +797,69 @@ namespace Client
             }
             else
             {
-                //Coordinate C_strt = new Coordinate(((float)strt.X), ((float)strt.Y));
-                //Coordinate C_strt = new Coordinate(((float)selectMouseDownPos.X), ((float)selectMouseDownPos.Y));
-                //Coordinate C_end = new Coordinate(((float)end.X), ((float)end.Y));
+                //if(!testing) Debug.Assert(selectedShapes.Count == 1);
+                string shUID = selectedShapes[0];
+
+                /* Temporary WB Module code to test functionality */
+                IEnumerable<UIElement> iterat = cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID);
+
+                //Check Condition 
+                //if (!testing) Debug.Assert(iterat.Count() == 1);
+
+                Shape sh = (Shape)cn.Children.OfType<UIElement>().Where(x => x.Uid == shUID).ToList()[0];
+
+                double topleft_x = (double)Canvas.GetLeft(iterat.ToList()[0]);
+                double topleft_y = (double)Canvas.GetTop(iterat.ToList()[0]);
+
+                //MessageBox.Show("Entered MoveShape event");
+                //MessageBox.Show(topleft_x.ToString(), topleft_y.ToString());
+
+                double diff_topleft_x = (double)selectMouseStuck.X - (double)end.X;
+                double diff_topleft_y = (double)selectMouseStuck.Y - (double)end.Y;
+                double center_x, center_y;
+
+                if (sh is not System.Windows.Shapes.Line)
+                {
+                    center_x = (double)(topleft_x - diff_topleft_x + sh.Width / 2);
+                    center_y = (double)(topleft_y - diff_topleft_y + sh.Height / 2);
+
+
+                    if (center_x > 0 && center_x < cn.Width)
+                    {
+                        selectMouseStuck.X = end.X;
+                    }
+
+                    if (center_y > 0 && center_y < cn.Height)
+                    {
+                        selectMouseStuck.Y = end.Y;
+                    }
+                }
+                else
+                {
+                    center_x = (double)(Canvas.GetLeft(sh) - diff_topleft_x + +((System.Windows.Shapes.Line)sh).X2 / 2);
+                    center_y = (double)(Canvas.GetTop(sh) - diff_topleft_y + ((System.Windows.Shapes.Line)sh).Y2 / 2);
+
+                    if (center_x > 0 && center_x < cn.Width)
+                    {
+                        selectMouseStuck.X = end.X;
+                    }
+
+                    if (center_y > 0 && center_y < cn.Height)
+                    {
+                        selectMouseStuck.Y = end.Y;
+                    }
+
+                }
+
 
                 Coordinate C_strt = new Coordinate(((int)(cn.Height - selectMouseDownPos.Y)), ((int)selectMouseDownPos.X));
-                Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
+                //Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
+                Coordinate C_end = new Coordinate(((int)(cn.Height - selectMouseStuck.Y)), ((int)selectMouseStuck.X));
+                
 
                 toRender = new List<UXShape>();
                 toRender = WBOps.TranslateShape(C_strt, C_end, mouseDownSh.Uid, shapeComp: true);
+
                 //removing the local temporary render and only acknowledging the CREATE UXShape request as we cleaned up temporary render
                 cn = UnselectAllBB(cn, WBOps);
                 //cn.Children.Remove(sh);
@@ -1836,7 +1891,7 @@ namespace Client
         private WBTools activeTool;
         public ShapeManager shapeManager;
         public FreeHand freeHand;
-        private Canvas GlobCanvas;
+        public Canvas GlobCanvas;
         private IClientBoardStateManager manager;
 
         private bool isSubscribedToWBState;
@@ -1916,20 +1971,11 @@ namespace Client
         /// <param name="cn"> Canvas instance to be altered </param>
         /// <param name="hexCode"> Shape operation handler class instance provided by the Whiteboard library </param>
         /// <returns> The updated Canvas </returns>
-        public Canvas ChangeWbBackground(Canvas cn, String WbhexCode)
+        public void ChangeWbBackground(String WbhexCode)
         {
-            cn.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(WbhexCode));
+            this.GlobCanvas.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom(WbhexCode));
 
-            //Setting the color of the Eraser polylines to be the same as the new canvas background color LOCALLY
-            foreach (Shape sh in cn.Children)
-            {
-                if (sh is System.Windows.Shapes.Polyline && (string)sh.Tag == "ERASER")
-                {
-                    sh.Fill = cn.Background;
-                    sh.Stroke = cn.Background;
-                }
-            }
-            return cn;
+            return;
         }
         /// <summary>
         /// Update the activeTool based on selected function on Toolbar 
@@ -2184,7 +2230,7 @@ namespace Client
                     case Operation.CLEAR_STATE:
                         //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO CLEAR FRAME, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
                         //based on above assumption that current server update batch can only have one CLEAR_STATE request
-
+ 
                         GlobCanvas.Children.Clear();
                         //Enabling Canvas as it is now consistent with the server state
                         this.GlobCanvas.IsEnabled = true;

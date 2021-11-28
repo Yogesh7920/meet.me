@@ -229,7 +229,7 @@ namespace Client
                     }
                     break;
                 case (WhiteBoardViewModel.WBTools.Selection):
-                    /*mouseDownFlag = 0;
+                    mouseDownFlag = 0;
                     //If mouse has actually moved between press and release of left click, the selected shapes are either moved or rotated WITHOUT unselecting any shape
                     if (mouseLeftBtnMoveFlag > 5)
                     {
@@ -246,7 +246,7 @@ namespace Client
                                 this.viewModel.shapeManager.MoveShape(GlobCanvas, viewModel.WBOps, viewModel.start, viewModel.end, mouseDownSh, true);
                             }
                         }
-                    }*/
+                    }
                     break;
                 default:
                     break;
@@ -352,6 +352,7 @@ namespace Client
                             this.viewModel.setSelectMouseDownPos(e.GetPosition(GlobCanvas));
                             Shape mouseDownShape = e.OriginalSource as Shape;
                             mouseDownSh = mouseDownShape;
+                            this.viewModel.shapeManager.selectMouseStuck = e.GetPosition(GlobCanvas);
                         }
                         else
                         {
@@ -666,31 +667,31 @@ namespace Client
         //Radio Button (Set Background Pop-Up)
         private void ColorBtn1Checked(object sender, RoutedEventArgs e)
         {
-            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg1);
+            viewModel.ChangeWbBackground(canvasBg1);
             curCanvasBg = canvasBg1;
         }
 
         private void ColorBtn2Checked(object sender, RoutedEventArgs e)
         {
-            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg2);
+            viewModel.ChangeWbBackground(canvasBg2);
             curCanvasBg = canvasBg2;
         }
 
         private void ColorBtn3Checked(object sender, RoutedEventArgs e)
         {
-            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg3);
+            viewModel.ChangeWbBackground(canvasBg3);
             curCanvasBg = canvasBg3;
         }
 
         private void ColorBtn4Checked(object sender, RoutedEventArgs e)
         {
-            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg4);
+            viewModel.ChangeWbBackground(canvasBg4);
             curCanvasBg = canvasBg4;
         }
 
         private void ColorBtn5Checked(object sender, RoutedEventArgs e)
         {
-            GlobCanvas = viewModel.ChangeWbBackground(GlobCanvas, canvasBg5);
+            viewModel.ChangeWbBackground(canvasBg5);
             curCanvasBg = canvasBg5;
         }
 
