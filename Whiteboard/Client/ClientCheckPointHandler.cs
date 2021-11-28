@@ -9,19 +9,31 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Whiteboard
 {   
     /// <summary>
     /// Checkpoint handling at client side
     /// </summary>
-    internal class ClientCheckPointHandler : IClientCheckPointHandler
+    public sealed class ClientCheckPointHandler : IClientCheckPointHandler
     {
         // Instances of other class
         private IClientBoardCommunicator _clientBoardCommunicator =ClientBoardCommunicator.Instance;
 
         //no. of checkpoints stored on the server
         private int _checkpointNumber = 0;
+        // Check if running as part of NUnit
+        public static readonly bool IsRunningFromNUnit = AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.ToLowerInvariant().StartsWith("nunit.framework"));
+
+
+        public void SetCommunicator(IClientBoardCommunicator communicator)
+        {
+            if (IsRunningFromNUnit)
+            {
+                _clientBoardCommunicator = communicator;
+            }
+        }
 
         /// <summary>
         /// Gets and sets checkpoint number.
@@ -41,34 +53,25 @@ namespace Whiteboard
         /// <param name="currentCheckpointState"></param>
         public void FetchCheckpoint(int checkpointNumber,string UserId, int currentCheckpointState)
         {
-            try
+
+            if (checkpointNumber > _checkpointNumber)
             {
-                if (checkpointNumber <= CheckpointNumber)
-                {
-                    //creating boardServerShape object with FETCH_CHECKPOINT object
-                    List<BoardShape> boardShape = null;
-                    BoardServerShape boardServerShape = new BoardServerShape(boardShape,
-                                                                            Operation.FETCH_CHECKPOINT,
-                                                                            UserId,
-                                                                            checkpointNumber,
-                                                                            currentCheckpointState);
+                throw new ArgumentException("invalid checkpointNumber");
+            }
+            else
+            {
+                //creating boardServerShape object with FETCH_CHECKPOINT object
+                List<BoardShape> boardShape = null;
+                BoardServerShape boardServerShape = new BoardServerShape(boardShape,
+                                                                        Operation.FETCH_CHECKPOINT,
+                                                                        UserId,
+                                                                        checkpointNumber,
+                                                                        currentCheckpointState);
 
-                    //sending boardServerShape object to _clientBoardCommunicator
-                    _clientBoardCommunicator.Send(boardServerShape);
-
-                }
-                else
-                {
-                    throw new ArgumentException("invalid checkpointNumber");
-                }
+                //sending boardServerShape object to _clientBoardCommunicator
+                _clientBoardCommunicator.Send(boardServerShape);
 
             }
-            catch (Exception e)
-            {
-                Trace.WriteLine("ClientCheckPointHandler.FetchCheckPoint: An exception occured.");
-                Trace.WriteLine(e.Message);
-            }
-
 
 
         }
