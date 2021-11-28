@@ -1,3 +1,9 @@
+/// <author>Harsh Parihar</author>
+/// <created> 10/11/2021 </created>
+/// <summary>
+/// Returns an instance of Telemetry
+/// </summary>
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

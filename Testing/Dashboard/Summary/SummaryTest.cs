@@ -13,14 +13,23 @@ using System.IO;
 
 namespace Testing.Dashboard.Summary
 {
+	/// <summary>
+	/// The test class for the Summary logic module
+	/// </summary>
 	public class SummaryTest
 	{
+		/// <summary>
+		/// Setup the summarizer from the Summarizer factory
+		/// </summary>
 		[SetUp]
 		public void Setup()
 		{
 			_summarizer = SummarizerFactory.GetSummarizer();
 		}
 
+		/// <summary>
+		/// Null chat should give empty string
+		/// </summary>
 		[Test]
 		public void GetSummary_NullChatContext_EmptyString()
 		{
@@ -28,6 +37,9 @@ namespace Testing.Dashboard.Summary
 			Assert.AreEqual(_summarizer.GetSummary(chats), "");
 		}
 
+		/// <summary>
+		/// Empty chat context should give empty string
+		/// </summary>
 		[Test]
 		public void GetSummary_EmptyChatContext_EmptyString()
 		{
@@ -35,6 +47,9 @@ namespace Testing.Dashboard.Summary
 			Assert.AreEqual(_summarizer.GetSummary(chats), "");
 		}
 
+		/// <summary>
+		/// Empty chat context should give empty string
+		/// </summary>
 		[Test]
 		public void GetSummary_EmptyChats_EmptyString()
 		{
@@ -42,6 +57,9 @@ namespace Testing.Dashboard.Summary
 			Assert.AreEqual(_summarizer.GetSummary(chats), "");
 		}
 
+		/// <summary>
+		/// We only check on constant string since it is a probabilistic algorithm to give a string of constants.
+		/// </summary>
 		[Test]
 		public void GetSummary_ValidChatsFixedLength_ConstString()
 		{
@@ -50,6 +68,9 @@ namespace Testing.Dashboard.Summary
 			Assert.AreEqual(_summarizer.GetSummary(chats), output);
 		}
 
+		/// <summary>
+		/// On the general string we can only check fi the output summary is not null
+		/// </summary>
 		[Test]
 		public void GetSummary_ValidChatsSmall_NonEmptyString()
 		{
@@ -57,6 +78,9 @@ namespace Testing.Dashboard.Summary
 			Assert.IsTrue(_summarizer.GetSummary(chats).Length > 0);
 		}
 
+		/// <summary>
+		/// On the general string we can only check fi the output summary is not null
+		/// </summary>
 		[Test]
 		public void GetSummary_ValidChatsGeneral_NonEmptyString()
 		{
@@ -64,6 +88,9 @@ namespace Testing.Dashboard.Summary
 			Assert.IsTrue(_summarizer.GetSummary(chats).Length > 0);
 		}
 
+		/// <summary>
+		/// Test the save summary function on a general chat
+		/// </summary>
 		[Test]
 		public void SaveSummary_ValidChatsGeneral_ReturnsTrue()
 		{
