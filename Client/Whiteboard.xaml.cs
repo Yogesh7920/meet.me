@@ -46,10 +46,10 @@ namespace Client
 
         //Canvas BG available Colors 
         private string canvasBg1 = "#FFFFFF";
-        private string canvasBg2 = "#F8F8FF";
-        private string canvasBg3 = "#FFFAFA";
-        private string canvasBg4 = "#FFFFF0";
-        private string canvasBg5 = "#FFFAF0";
+        private string canvasBg2 = "#fff0f5";
+        private string canvasBg3 = "#e7feff";
+        private string canvasBg4 = "#faf0e6";
+        private string canvasBg5 = "#ffffe0";
 
         //pen and eraser properties 
         private string curCanvasBg = "#FFFFFF";
