@@ -180,7 +180,6 @@ namespace Testing.Dashboard
         }
 
         [Test]
-        //[TestCase(1, 1)]
         [TestCase(10, 5)]
         [TestCase(2, 1)]
         public void RemoveClientProcedure_ClientDepartsServerSide_ReturnsModifiedSessionObject(int sampleSize, int userIndex)
@@ -206,6 +205,32 @@ namespace Testing.Dashboard
             CollectionAssert.AreEqual(expectedUsers, recievedSessionData.users);
             CollectionAssert.AreEqual(expectedEventType, recievedServerData.eventType);
         }
+
+        [Test]
+        public void EndMeetProcedure_WhenLastClientLeaves_BroadCastsEndMeetEvent()
+        {
+            List<UserData> users = Utils.GenerateUserData(1);
+            UserData userLeavingLast = users[0];
+            AddUsersAtServer(users);
+            ClientToServerData sampleClientLeaveRequest = new("removeClient", userLeavingLast.username, userLeavingLast.userID);
+            serverSessionManager.OnDataReceived(_serializer.Serialize(sampleClientLeaveRequest));
+            ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            Assert.AreEqual("endMeet", serverToClientData.eventType);
+            Directory.Delete("../../../Persistence", true);
+        }
+
+        [Test]
+        public void EndMeetProcedure_WhenLastClientCannotBeReached_BroadCastsEndMeetEvent()
+        {
+            List<UserData> users = Utils.GenerateUserData(1);
+            UserData userLeavingLast = users[0];
+            AddUsersAtServer(users);
+            serverSessionManager.OnClientLeft(userLeavingLast.userID.ToString());
+            ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            Assert.AreEqual("endMeet", serverToClientData.eventType);
+            Directory.Delete("../../../Persistence", true);
+        }
+
 
         [Test]
         public void EndMeet_EndMeetingClientSide_SendsEndMeetingEventToServer()
@@ -378,6 +403,21 @@ namespace Testing.Dashboard
             Assert.IsTrue(_testWhiteBoard.isWhiteBoardInitialised);
         }
 
+        [Test]
+        [Description("The session manager will remove the user from session and broadcast the modified" + 
+                        "session object via networking")]
+        public void OnClientLeft_SuddenClientDeparture_RemovesClientFromSession()
+        {
+            int userSize = 10;
+            List<UserData> users = Utils.GenerateUserData(userSize);
+            AddUsersAtServer(users);
+            UserData leavingUser = users[userSize - 1];
+            serverSessionManager.OnClientLeft(leavingUser.userID.ToString());
+            ServerToClientData serverToClientData = _serializer.Deserialize<ServerToClientData>(_testCommunicator.sentData);
+            users.RemoveAt(userSize - 1);
+            Assert.AreEqual("removeClient", serverToClientData.eventType);
+            Assert.AreEqual(users, serverToClientData.sessionData.users);
+        }
 
         private void AddUserClientSide(string username, int userId, string ip = "192.168.1.1", string port = "8080")
         {
