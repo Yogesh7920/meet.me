@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Input;
 using Client.ViewModel;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace Client
 {
@@ -32,9 +34,16 @@ namespace Client
         /// Refreshes the dashboard window  with latest analytics
         /// </summary>
         private void OnRefreshButtonClick(object sender, RoutedEventArgs e)
-            {
-                this.DashboardVM.UpdateVM();
-            }
+        {
+            this.DashboardVM.UpdateVM();
+            usersVsTimeChart.Series[0].Values = this.DashboardVM.usersCountList;
+            usersVsTimeChart.AxisX[0].Labels = this.DashboardVM.timestampList;
+            usersVsTimeChart.Update();
+
+            usersVsMessagesPlot.AxisX[0].Labels = this.DashboardVM.usersList;
+            usersVsMessagesPlot.Series[0].Values = this.DashboardVM.messagesCountList;
+            usersVsMessagesPlot.Update();
+        }
 
         /// <summary>
         /// Window Minimize Functionality

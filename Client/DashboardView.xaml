@@ -113,7 +113,7 @@
 
 
         <!--Main content area starts-->
-        <Grid Grid.Column="1" Grid.Row="1" Background="#FFCFCFCF">
+        <Grid Grid.Column="1" Grid.Row="1" Background="{DynamicResource Color3Bg}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
@@ -133,7 +133,7 @@
                         <Grid.OpacityMask>
                             <VisualBrush Visual="{ Binding ElementName=BorderG4 }"/>
                         </Grid.OpacityMask>
-                        <Border x:Name="BorderG4" CornerRadius="15" Background="#FF340051"/>
+                        <Border x:Name="BorderG4" CornerRadius="15" Background="{DynamicResource Color1Bg}"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="50 10 50 10">
                             <TextBlock Text="Chat Summary" FontFamily="Champagne &amp; Limousines" FontSize="16" 
                                        HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" />
@@ -193,14 +193,14 @@
                         <Grid.OpacityMask>
                             <VisualBrush Visual="{ Binding ElementName=BorderG2 }"/>
                         </Grid.OpacityMask>
-                        <Border x:Name="BorderG2" CornerRadius="15" Background="#FF340051"/>
+                        <Border x:Name="BorderG2" CornerRadius="15" Background="{DynamicResource Color1Bg}"/>
 
-                        <lvc:CartesianChart Zoom="X" Pan="X"> 
+                        <lvc:CartesianChart x:Name="usersVsTimeChart" Zoom="X" Pan="X"> 
                             <lvc:CartesianChart.Series>
-                                <lvc:LineSeries Title="Users vs Time" Values="{Binding usersCountList}"/>
+                                <lvc:LineSeries Title="Users vs Time" Values="{Binding usersCountList}" />
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Time" Labels="{Binding timestampList}" MinValue="0">
+                                <lvc:Axis Title="Time" Labels="{Binding timestampList}">
                                     <!--<lvc:Axis.Separator>
                                         <lvc:Separator Step="1"/>
                                     </lvc:Axis.Separator>-->
@@ -246,11 +246,11 @@
                         </StackPanel>
 
                     </Grid>
-                    <Grid Margin="50 20 50 100">
+                    <Grid x:Name="UserVsMsgGrid" Margin="50 20 50 100">
                         <Grid.OpacityMask>
                             <VisualBrush Visual="{ Binding ElementName=BorderG2_2 }"/>
                         </Grid.OpacityMask>
-                        <Border x:Name="BorderG2_2" CornerRadius="15" Background="#FF340051"/>
+                        <Border x:Name="BorderG2_2" CornerRadius="15" Background="{DynamicResource Color1Bg}"/>
 
                         <!-- Chart: Users vs Sent Messages (If Function defined in VM) -->
 
@@ -269,7 +269,7 @@
                             </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>-->
 
-                        <lvc:CartesianChart Zoom="X" Pan="X">
+                        <lvc:CartesianChart x:Name="usersVsMessagesPlot" Zoom="X" Pan="X">
                             <lvc:CartesianChart.Series>
                                 <lvc:ColumnSeries Title="Users vs Sent Messages" Values="{Binding messagesCountList}"/>
                             </lvc:CartesianChart.Series>
@@ -296,8 +296,8 @@
         <Grid Grid.Row="1">
             <Grid.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="LightGray" Offset="1"/>
-                    <GradientStop Color="#FFE6E6E6"/>
+                    <GradientStop Color="{DynamicResource Color3}" Offset="1"/>
+                    <GradientStop Color="{DynamicResource Color3}"/>
                 </LinearGradientBrush>
             </Grid.Background>
             <Grid.RowDefinitions>
@@ -310,17 +310,17 @@
                 <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" RenderingBias="Quality" ShadowDepth="1"/>
             </Grid.Effect>
 
-            <Grid Background="#3B185F">
+            <Grid Background="{DynamicResource Color1Bg}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
-                <Image Name="Logo" Source="Icons/logo.png" Margin="0 5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Image Name="Logo" Source="Icons/logo.png" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Grid>
                 <Grid Grid.Column="1">                
                     <TextBlock Text="Meet.me" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                           FontFamily="WS Simple Gallifreyan"  FontSize="24" FontWeight="Bold" Foreground="White"/>
+                           FontFamily="WS Simple Gallifreyan"  FontSize="24" FontWeight="Bold" Foreground="{DynamicResource Color3Bg}"/>
                 </Grid>
 
             </Grid>
@@ -406,6 +406,7 @@
                     </StackPanel>
                 </Grid>
             </Grid>
+
         </Grid>
         <!--Sidebar View ends-->
 
@@ -413,43 +414,43 @@
         <!--Titlebar View starts-->
 
         <!--The title bar of the Dashboard window contains the window title and utility buttons-->
-        <Grid x:Name="Title" Grid.ColumnSpan="2" Background="#FF8522BD" MouseDown="TitleBar_MouseDown">
+        <Grid x:Name="Title" Grid.ColumnSpan="2" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown">
             <!--Grid Title-->
             <TextBlock Text="Meet.me Dashboard" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="5" 
-                       FontWeight="Bold" FontFamily="Champagne &amp; Limousines"  FontSize="18" Foreground="White"/>
+                       FontWeight="Bold" FontFamily="Champagne &amp; Limousines"  FontSize="18" Foreground="{DynamicResource Color3Bg}"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0">
                 
                 <!--Refresh button-->
                 <Button x:Name="RefreshButton" Click="OnRefreshButtonClick"
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Refresh" ToolTipService.ShowDuration="3000">
                     <materialDesign:PackIcon Kind="Refresh"/>
                 </Button>
 
                 <!--Miniimize button-->
                 <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Minimize" ToolTipService.ShowDuration="3000">
                     <materialDesign:PackIcon Kind="WindowMinimize"/>
                 </Button>
 
                 <!--Maximize button-->
                 <Button x:Name="MaximizeButton" Click="OnMaximizeButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Maximize" ToolTipService.ShowDuration="3000" Visibility="Visible">
                     <materialDesign:PackIcon Kind="WindowMaximize"/>
                 </Button>
 
                 <!--Restore button -->
                 <Button x:Name="RestoreButton" Click="OnRestoreButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Restore" ToolTipService.ShowDuration="3000" Visibility="Collapsed">
                     <materialDesign:PackIcon Kind="WindowRestore"/>
                 </Button>
 
                 <!--Close button-->
                 <Button x:Name="CloseButton" Click="OnCloseButtonClick"
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
                         ToolTip="Close" ToolTipService.ShowDuration="3000">
                     <materialDesign:PackIcon Kind="Close"/>
                 </Button>
