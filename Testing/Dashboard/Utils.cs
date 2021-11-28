@@ -1,11 +1,16 @@
-﻿using System;
+﻿/// <author>Siddharth Sha</author>
+/// <created>15/11/2021</created>
+/// <summary>
+///		This file contains the utility
+///		functions for testing purpose
+/// </summary>
+
+using Content;
+using Dashboard;
+using Dashboard.Server.Telemetry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dashboard;
-using Content;
-using Dashboard.Server.Telemetry;
 
 namespace Testing.Dashboard
 {
@@ -31,11 +36,11 @@ namespace Testing.Dashboard
         public static MeetingCredentials GenerateMeetingCreds(string ipAddressAndPort)
         {
             int colonIndex = ipAddressAndPort.IndexOf(':');
-            if(colonIndex == -1)
+            if (colonIndex == -1)
                 return null;
             string ipAddress = ipAddressAndPort.Substring(0, colonIndex);
             int port = int.Parse(ipAddressAndPort.Substring(colonIndex + 1));
-            MeetingCredentials _meetCreds = new MeetingCredentials(ipAddress,port);
+            MeetingCredentials _meetCreds = new MeetingCredentials(ipAddress, port);
             return _meetCreds;
         }
 
@@ -59,12 +64,12 @@ namespace Testing.Dashboard
         /// Generates random user data
         /// </summary>
         /// <returns>returns list of users for testing</returns>
-        public static List<UserData> GenerateUserData(int size =10)
+        public static List<UserData> GenerateUserData(int size = 10)
         {
             List<UserData> users = new List<UserData>();
-            for(int i=0;i<size; i++)
+            for (int i = 0; i < size; i++)
             {
-                users.Add(new(GetRandomString(random.Next(10)),i+1));
+                users.Add(new(GetRandomString(random.Next(10)), i + 1));
             }
             return users;
         }
@@ -90,7 +95,7 @@ namespace Testing.Dashboard
         /// </summary>
         /// <param name="size"> size of chats in chat context </param>a
         /// <returns>Sample Chat Context List</returns>
-        public static List<ChatContext> GetSampleChatContext(int size=50)
+        public static List<ChatContext> GetSampleChatContext(int size = 50)
         {
             List<ChatContext> chats = new();
             for (int i = 0; i < size; i++)
@@ -114,7 +119,7 @@ namespace Testing.Dashboard
         }
 
 
-        public static List<ChatContext> GetSampleChatContextForUsers(List<UserData>users, int size=5)
+        public static List<ChatContext> GetSampleChatContextForUsers(List<UserData> users, int size = 5)
         {
             List<ChatContext> chats = new();
             for (int i = 0; i < size; i++)

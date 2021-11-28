@@ -1,3 +1,10 @@
+/// <author>Siddharth Sha</author>
+/// <created>15/11/2021</created>
+/// <summary>
+///		This file contains the modular tests
+///		for dashboard module
+/// </summary>
+
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 using Dashboard.Server.Persistence;
