@@ -14,7 +14,7 @@ namespace Client
     {
         private readonly Thickness LeftSide = new(-39, 0, 0, 0);
         private readonly SolidColorBrush Off = new(Color.FromRgb(160, 160, 160));
-        private readonly SolidColorBrush On = new(Color.FromRgb(213, 0, 249));
+        private readonly SolidColorBrush On = new(Color.FromRgb(160, 160, 160));
         private readonly Thickness RightSide = new(0, 0, -39, 0);
 
         public ToggleButton()
@@ -31,7 +31,7 @@ namespace Client
         {
             if (!Toggled1)
             {
-                Back.Fill = On;
+                Back.Fill = new SolidColorBrush((Color)Application.Current.Resources["Color4"]);
                 Toggled1 = true;
                 Dot.Margin = RightSide;
             }
@@ -47,7 +47,7 @@ namespace Client
         {
             if (!Toggled1)
             {
-                Back.Fill = On;
+                Back.Fill = new SolidColorBrush((Color)Application.Current.Resources["Color4"]);
                 Toggled1 = true;
                 Dot.Margin = RightSide;
             }

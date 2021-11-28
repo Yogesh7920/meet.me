@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/// <author>Siddharth Sha</author>
+/// <created>15/11/2021</created>
+/// <summary>
+///		This file contains the test communicator
+///		for testing purpose
+/// </summary>
+
 using Networking;
+using System;
 
 namespace Testing.Dashboard.TestModels
 {
-    public class TestCommunicator : ICommunicator 
+    public class TestCommunicator : ICommunicator
     {
         public TestCommunicator()
         {
@@ -41,7 +44,7 @@ namespace Testing.Dashboard.TestModels
         /// <returns> string port and IP needed for testing </returns>
         public string Start(string serverIP = null, string serverPort = null)
         {
-            if(serverIP == null && serverPort == null)
+            if (serverIP == null && serverPort == null)
                 return ipAddressAndPort;
             if (serverIP + ":" + serverPort == ipAddressAndPort)
                 return "1";
@@ -53,9 +56,9 @@ namespace Testing.Dashboard.TestModels
             isCommunicatorStopped = true;
         }
 
-        public void Subscribe(string identifier, INotificationHandler handler, int priority=1)
+        public void Subscribe(string identifier, INotificationHandler handler, int priority = 1)
         {
-            
+
         }
 
         public int clientCount;

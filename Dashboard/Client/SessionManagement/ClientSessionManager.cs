@@ -1,4 +1,10 @@
-﻿using System;
+﻿/// <author> Rajeev Goyal </author>
+/// <created> 14/10/2021 </created>
+/// <summary>
+/// This file contains the implementation of Client session manager.
+/// </summary>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +12,9 @@ using System.Threading.Tasks;
 using Networking;
 using Dashboard.Server.Telemetry;
 using Whiteboard;
+using ScreenSharing;
 using Content;
+using ScreenSharing;
 
 
 namespace Dashboard.Client.SessionManagement
@@ -32,7 +40,7 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public ClientSessionManager()
         {
-            TraceManager session = new();
+            _ = new TraceManager();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = CommunicationFactory.GetCommunicator();
@@ -40,6 +48,7 @@ namespace Dashboard.Client.SessionManagement
             _contentClient = ContentClientFactory.GetInstance();
             clientBoardStateManager = ClientBoardStateManager.Instance;
             clientBoardStateManager.Start();
+            SSClient = ScreenShareFactory.GetScreenSharer();
 
 
             if (_clients == null)
@@ -59,7 +68,7 @@ namespace Dashboard.Client.SessionManagement
         /// </param>
         public ClientSessionManager(ICommunicator communicator, IClientBoardStateManager whiteboardInstance = null)
         {
-            TraceManager session = new();
+            _ = new TraceManager();
             moduleIdentifier = "Dashboard";
             _serializer = new Serializer();
             _communicator = communicator;
@@ -77,6 +86,8 @@ namespace Dashboard.Client.SessionManagement
             }
             _clientSessionData = new SessionData();
             _chatSummary = null;
+
+            SSClient = ScreenShareFactory.GetScreenSharer();
         }
 
         /// <summary>
@@ -91,6 +102,7 @@ namespace Dashboard.Client.SessionManagement
             // Null or whitespace named users are not allowed
             if (String.IsNullOrWhiteSpace(username))
             {
+                Trace.WriteLine("[Client Dashboard] Null user name or whitespace given.");
                 return false;
             }
 
@@ -102,13 +114,14 @@ namespace Dashboard.Client.SessionManagement
                 // if the IP address and/or the port number are incorrect
                 if (connectionStatus == "0")
                 {
+                    Trace.WriteLine("[Client Dashboard] Incorrect credentials given. Client cannot connect to the server.");
                     return false;
                 }
-
             }
 
             // upon successfull connection, the request to add the client is sent to the server side.
             SendDataToServer("addClient", username);
+            Trace.WriteLine("[Client Dashboard] Adding Client to the session");
             return true;
         }
 
@@ -117,6 +130,7 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void EndMeet()
         {
+            Trace.WriteLine("[Client Dashboard] Asking the server to end the meeting.");
             SendDataToServer("endMeet", _user.username, _user.userID);
         }
 
@@ -125,6 +139,8 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void GetAnalytics()
         {
+            Trace.WriteLine("[Client Dashboard] Getting the analytics from the server.");
+
             SendDataToServer("getAnalytics", _user.username, _user.userID);
         }
 
@@ -158,6 +174,8 @@ namespace Dashboard.Client.SessionManagement
         /// <returns> Summary of the chats as a string. </returns>
         public void GetSummary()
         {
+            Trace.WriteLine("[Client Dashboard] Getting the summary from the server.");
+
             SendDataToServer("getSummary", _user.username, _user.userID);
         }
 
@@ -175,10 +193,13 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void NotifyUXSession()
         {
+
             for (int i = 0; i < _clients.Count; ++i)
             {
                 lock (this)
                 {
+                    Trace.WriteLine("[Client Dashboard] Notifying UX about the session change.");
+
                     _clients[i].OnClientSessionChanged(_clientSessionData);
                 }
             }
@@ -191,6 +212,14 @@ namespace Dashboard.Client.SessionManagement
         /// <param name="serializedData"> The serialized string sent by the networking module </param>
         public void OnDataReceived(string serializedData)
         {
+            Trace.WriteLine("[Client Dashboard] Received data from the server.");
+
+            if (serializedData == null)
+            {
+                Trace.WriteLine("[Client Dashboard] Null string received from the server.");
+                return;
+            }
+
             // Deserialize the data when it arrives
             ServerToClientData deserializedObject = _serializer.Deserialize<ServerToClientData>(serializedData);
 
@@ -232,7 +261,11 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         public void RemoveClient()
         {
+            Trace.WriteLine("[Client Dashboard] Asking the server to remove client from the server side.");
+
             SendDataToServer("removeClient", _user.username, _user.userID);
+
+            Trace.WriteLine("[Client Dashboard] Removed the client from the client side.");
         }
 
         /// <summary>
@@ -277,6 +310,9 @@ namespace Dashboard.Client.SessionManagement
         {
             _sessionAnalytics = receivedData.sessionAnalytics;
             UserData receiveduser = receivedData.GetUser();
+
+            Trace.WriteLine("[Client Dashboard] Notifying UX about the Analytics.");
+
             AnalyticsCreated?.Invoke(_sessionAnalytics);
         }
 
@@ -290,6 +326,7 @@ namespace Dashboard.Client.SessionManagement
         {
             lock (this)
             {
+                Trace.WriteLine("[Client Dashboard] A subscription was made for client side session data");
                 _clients.Add(listener);
             }
         }
@@ -308,7 +345,7 @@ namespace Dashboard.Client.SessionManagement
 
             if (receivedSummary == null)
             {
-                Trace.WriteLine("Null summary received.");
+                Trace.WriteLine("[Client Dashboard] Null summary received.");
             }
 
             // check if the current user is the one who requested to get the summary
@@ -317,6 +354,7 @@ namespace Dashboard.Client.SessionManagement
                 lock (this)
                 {
                     _chatSummary = receivedSummary.summary;
+                    Trace.WriteLine("[Client Dashboard] Notifying UX about the summary.");
                     SummaryCreated?.Invoke(_chatSummary);
                 }
             }
@@ -339,17 +377,23 @@ namespace Dashboard.Client.SessionManagement
             if (receivedSessionData != null && _clientSessionData != null && receivedSessionData.users.Equals(_clientSessionData.users))
                 return;
 
-            //Console.WriteLine("The numbers of users are :" + receivedSessionData.users.Count);
-            //if(receivedSessionData.users.Count > 0)
-            //Console.WriteLine(receivedSessionData.users[0]);
-
             // a null _user denotes that the user is new and has not be set because all 
             // the old user (already present in the meeting) have their _user set.
             if (_user == null)
             {
                 _user = user;
+                SSClient.SetUser(user.userID.ToString(), user.username);
+                Trace.WriteLine("[Client Dashboard] Client added to the client session.");
+
                 clientBoardStateManager.SetUser(user.userID.ToString());
+                Trace.WriteLine("[Client Dashboard] Whiteboard's user ID set.");
+
+                //_screenShareClient.SetUser(user.userID.ToString(),user.username);
+                Trace.WriteLine("[Client Dashboard] ScreenShare's user ID and username set.");
+
                 ContentClientFactory.SetUser(user.userID);
+                Trace.WriteLine("[Client Dashboard] Content's user ID set.");
+
             }
 
             // The user received from the server side is equal to _user only in the case of 
@@ -357,7 +401,10 @@ namespace Dashboard.Client.SessionManagement
             else if (_user.Equals(user))
             {
                 _user = null;
+                Trace.WriteLine("[Client Dashboard] Client removed from the client session data.");
                 receivedSessionData = null;
+
+                Trace.WriteLine("[Client Dashboard] Stopping the network communicator.");
                 _communicator.Stop();
             }
 
@@ -365,7 +412,6 @@ namespace Dashboard.Client.SessionManagement
             lock (this)
             {
                 _clientSessionData = (SessionData)receivedSessionData;
-                //Console.WriteLine(recievedSessionData.users[0]);
             }
             NotifyUXSession();
         }
@@ -376,7 +422,7 @@ namespace Dashboard.Client.SessionManagement
         private readonly List<IClientSessionNotifications> _clients;
 
         private string _chatSummary;
-        private IContentClient _contentClient;
+        private readonly IContentClient _contentClient;
         private readonly ISerializer _serializer;
         private readonly ICommunicator _communicator;
 
@@ -385,6 +431,7 @@ namespace Dashboard.Client.SessionManagement
         public event NotifyEndMeet MeetingEnded;
         public event NotifySummaryCreated SummaryCreated;
         public event NotifyAnalyticsCreated AnalyticsCreated;
-        private IClientBoardStateManager clientBoardStateManager;
+        private readonly IClientBoardStateManager clientBoardStateManager;
+        private ScreenShareClient SSClient;
     }
 }
