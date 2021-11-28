@@ -277,8 +277,8 @@ namespace Client
                     }
                     else
                     {
-                        SSwb.SetValue(Grid.ColumnProperty, 1);
-                        SSwb.SetValue(Grid.ColumnSpanProperty, 5);
+                        SSwb.SetValue(Grid.ColumnProperty, 2);
+                        SSwb.SetValue(Grid.ColumnSpanProperty, 6);
                     }
                 }
             }
