@@ -12,12 +12,19 @@ namespace ScreenSharing
     /// <summary>
     /// Factory for the ScreenShareClient object.
     /// </summary>
-    public sealed class ScreenShareFactory
+    public static class ScreenShareFactory
     {
-        private static readonly Lazy<ScreenShareClient> ScreenSharer = new Lazy<ScreenShareClient>(() => new ScreenShareClient());
-        public static ScreenShareClient GetScreenSharer(bool isTesting = false)
+        private static readonly Lazy<ScreenShareClient> s_clientScreenSharer = new Lazy<ScreenShareClient>(() => new ScreenShareClient());
+        private static readonly Lazy<ScreenShareServer> s_serverScreenSharer = new Lazy<ScreenShareServer>(() => new ScreenShareServer());
+
+        public static ScreenShareClient GetScreenShareClient()
         {
-            return isTesting? new ScreenShareClient() : ScreenSharer.Value;   
+           return s_clientScreenSharer.Value;        
+        }
+
+        public static ScreenShareServer GetScreenShareServer()
+        {
+            return s_serverScreenSharer.Value;
         }
     }
 }

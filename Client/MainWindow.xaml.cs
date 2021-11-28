@@ -34,7 +34,9 @@ namespace Client
             s_userslist = new UsersList(this);
             this.UsersListControl.Content = s_userslist;
 
-            _ssClient = ScreenShareFactory.GetScreenSharer();
+
+            SSClient = ScreenShareFactory.GetScreenShareClient();
+
         }
         
         //taken from https://stackoverflow.com/questions/4019831/how-do-you-center-your-main-window-in-wpf
