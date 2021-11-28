@@ -141,7 +141,7 @@ namespace Client
                sharing = false;
             }
             //this.SSwb.Content = new ScreenShareUX();
-            if (_chatFlag.Equals(true) && _userslist.UserListHidden.Equals(false))
+            if (_chatFlag.Equals(true) && s_userslist.userListHidden.Equals(false))
             {
                 SSwb.SetValue(Grid.ColumnProperty, 4);
                 SSwb.SetValue(Grid.ColumnSpanProperty, 1);
