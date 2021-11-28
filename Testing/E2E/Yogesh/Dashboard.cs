@@ -57,7 +57,7 @@ namespace Testing.E2E.Yogesh
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
             Assert.AreEqual(dataReceived.eventType, "addClient");
             var users = dataReceived.sessionData.users;
-            Assert.AreEqual(users[0].username, username);
+            Assert.IsTrue(users.Exists(user => user.username == username));
             _clientSessionManager.OnDataReceived(serializedData);
         }
 

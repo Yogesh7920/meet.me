@@ -97,19 +97,13 @@ namespace Testing.E2E.Yogesh
         [TestCase("Hello World", 0)]
         public void SendChatWithReply(string message, int replyId)
         {
-            var chatViewModel = new ChatViewModel();
-            chatViewModel.SendChat("Hello world", -1);
+            SendChat("Hello world", -1, false);
+
+            _contentClient.CSend(CreateChatReply(message, replyId));
             var serializedData = File.ReadAllText("networking_output.json");
             _contentServer.Receive(serializedData);
             serializedData = File.ReadAllText("networking_output.json");
             var data = _serializer.Deserialize<MessageData>(serializedData);
-            _contentClient.OnReceive(data);
-
-            _contentClient.CSend(CreateChatReply(message, replyId));
-            serializedData = File.ReadAllText("networking_output.json");
-            _contentServer.Receive(serializedData);
-            serializedData = File.ReadAllText("networking_output.json");
-            data = _serializer.Deserialize<MessageData>(serializedData);
             _contentClient.OnReceive(data);
         }
 
@@ -131,19 +125,13 @@ namespace Testing.E2E.Yogesh
         [TestCase("../../../../DesignSpec.pdf", "DesignSpec.pdf", 0)]
         public void SendFileWithReply(string filepath, string filename, int replyId)
         {
-            var chatViewModel = new ChatViewModel();
-            chatViewModel.SendChat("Hello world", -1);
+            SendChat("Hello world", -1, false);
+            
+            _contentClient.CSend(CreateFileReply(filepath, 0));
             var serializedData = File.ReadAllText("networking_output.json");
             _contentServer.Receive(serializedData);
             serializedData = File.ReadAllText("networking_output.json");
             var data = _serializer.Deserialize<MessageData>(serializedData);
-            _contentClient.OnReceive(data);
-            
-            _contentClient.CSend(CreateFileReply(filepath, 0));
-            serializedData = File.ReadAllText("networking_output.json");
-            _contentServer.Receive(serializedData);
-            serializedData = File.ReadAllText("networking_output.json");
-            data = _serializer.Deserialize<MessageData>(serializedData);
             _contentClient.OnReceive(data);
         }
 
@@ -152,13 +140,7 @@ namespace Testing.E2E.Yogesh
         [TestCase("../../../../DesignSpec.pdf", "DesignSpec.pdf")]
         public void FetchFile(string filepath, string filename)
         {
-            // var chatViewModel = new ChatViewModel();
-            // chatViewModel.SendFile(filepath, -1);
-            // var serializedData = File.ReadAllText("networking_output.json");
-            // _contentServer.Receive(serializedData);
-            // serializedData = File.ReadAllText("networking_output.json");
-            // var data = _serializer.Deserialize<MessageData>(serializedData);
-            // _contentClient.OnReceive(data);
+            // SendChat("Hello world", -1, false);
             //
             // _contentClient.CDownload(0, "."); // TODO : Non-writable path.
             // serializedData = File.ReadAllText("networking_output.json");
@@ -171,19 +153,13 @@ namespace Testing.E2E.Yogesh
         [Test]
         public void StarMessage()
         {
-            var chatViewModel = new ChatViewModel();
-            chatViewModel.SendChat("Hello world", -1);
+            SendChat("Hello world", -1, false);
+            
+            _contentClient.CMarkStar(0);
             var serializedData = File.ReadAllText("networking_output.json");
             _contentServer.Receive(serializedData);
             serializedData = File.ReadAllText("networking_output.json");
             var data = _serializer.Deserialize<MessageData>(serializedData);
-            _contentClient.OnReceive(data);
-            
-            _contentClient.CMarkStar(0);
-            serializedData = File.ReadAllText("networking_output.json");
-            _contentServer.Receive(serializedData);
-            serializedData = File.ReadAllText("networking_output.json");
-            data = _serializer.Deserialize<MessageData>(serializedData);
             _contentClient.OnReceive(data);
         }
     }
