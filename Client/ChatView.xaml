@@ -328,7 +328,7 @@
                     <!--<ColumnDefinition Width="Auto" />-->
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="0" Width="20" Height="20" Margin="4" Source="/Icons/ChatUX/logo.png" />
-                <TextBlock Foreground="{DynamicResource DynamicTextClr}" Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="20" Text="Chat"/>
+                <TextBlock Foreground="White" Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="20" Text="Chat"/>
             </Grid>
             
             <!--Grid layout for listbox and textbox-->
@@ -376,7 +376,7 @@
                                         <TextBlock Name="ReplyTextBox" Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicTextClr}" TextWrapping="Wrap" Width="425" FontSize="16" Padding="8,5,8,5"/>
                                     </Border>
                                 </Grid>
-                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="{DynamicResource DynamicTextClr}" Background="Transparent" BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom" Text=""/>
+                                <TextBox Grid.Row="1" Name="SendTextBox" Foreground="White" Background="Transparent" BorderThickness="0" Height="30" FontSize="15" VerticalAlignment="Bottom" Text=""/>
                             </Grid>
                             <Button Background="Transparent" HorizontalAlignment="Right" Width="30" Margin="3,5,2,6" Click="OnUploadButtonClick" VerticalAlignment="Bottom">
                                 <Image Source="Icons/ChatUX/upload1.png" Width="20" Height="20"/>

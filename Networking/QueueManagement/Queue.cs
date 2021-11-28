@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Networking
@@ -90,6 +91,7 @@ namespace Networking
         /// <summary>
         ///     Dequeues all the elements.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public void Clear()
         {
             Trace.WriteLine("[Networking] Clearing all packets from the queue");
@@ -139,10 +141,11 @@ namespace Networking
 
             var moduleIdentifier = _moduleIdentifiers[_currentQueue];
             _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
-            _currentWeight -= 1;
-            _avoidStateChange = 1;
+            
             lock (_lockObj)
             {
+                _currentWeight -= 1;
+                _avoidStateChange = 1;
                 _queueSize -= 1;
             }
 
@@ -155,6 +158,7 @@ namespace Networking
         /// </summary>
         /// <returns>Returns the peeked packet from the queue.</returns>
         /// <exception cref="Exception">Cannot peek an empty queue</exception>
+        [ExcludeFromCodeCoverage]
         public Packet Peek()
         {
             if (IsEmpty()) throw new Exception("[Networking] Cannot Peek into empty queue");
@@ -184,19 +188,20 @@ namespace Networking
             while (true)
             {
                 var moduleIdentifier = _moduleIdentifiers[_currentQueue];
-
+                
+                // If the current queue completed its round move to the next queue
                 if (_currentWeight == 0)
                 {
-                    // Go to the next queue and set the _currentWeight
                     _currentQueue = (_currentQueue + 1) % _multiLevelQueue.Count;
                     moduleIdentifier = _moduleIdentifiers[_currentQueue];
                     _currentWeight = _priorityMap[moduleIdentifier];
                     _currentModuleIdentifier = moduleIdentifier;
                     continue;
                 }
-
-                // If the current queue has no packets, otherwise do nothing
+            
                 if (!_multiLevelQueue[moduleIdentifier].IsEmpty) return;
+            
+                // If the next queue has no packets, then search for the first queue that has a packet
                 while (_multiLevelQueue[moduleIdentifier].IsEmpty)
                 {
                     _currentQueue = (_currentQueue + 1) % _moduleIdentifiers.Count;
