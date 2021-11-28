@@ -89,6 +89,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Stop()
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             //stop acceptRequest thread
             _acceptRequestRun = false;
             _serverSocket.Stop();
@@ -114,6 +115,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.AddClient<T>(string clientId, T socketObject)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             // add clientID and socketObject into Dictionary 
             _clientIdSocket[clientId] = (TcpClient) (object) socketObject;
 
@@ -208,6 +210,8 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
+            
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);

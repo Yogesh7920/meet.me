@@ -81,6 +81,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Stop()
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             if (!_clientSocket.Connected) return;
             // stop the listener of the client 
             _sendSocketListenerClient.Stop();
@@ -138,6 +139,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);
