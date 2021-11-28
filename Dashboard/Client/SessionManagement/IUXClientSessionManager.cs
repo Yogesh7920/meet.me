@@ -59,6 +59,12 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         void GetAnalytics();
 
+        /// <summary>
+        /// Fetches the user data object from the client session manager.
+        /// </summary>
+        /// <returns>A userData object for that paritcular client.</returns>
+        UserData GetUser();
+
         // Event for notifying summary creation 
         public event NotifySummaryCreated SummaryCreated;
 
