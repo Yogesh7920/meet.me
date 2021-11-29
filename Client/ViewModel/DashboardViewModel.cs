@@ -29,9 +29,8 @@ namespace Client.ViewModel
     /// </summary>
     public class DashboardViewModel : INotifyPropertyChanged
     {
-        private string _chatSummary;
-
         private readonly IUXClientSessionManager _clientSM;
+        private string _chatSummary;
         private string _engagementRate;
         private List<int> _insincereMembers;
 

@@ -19,10 +19,6 @@ namespace Client
     /// </summary>
     public partial class WhiteBoardView : UserControl
     {
-        //init variables 
-        private System.Windows.Controls.Primitives.ToggleButton activeMainToolbarButton;
-        private Button activeSelectToolbarButton;
-
         //Color Palette 
         private readonly string Black = "#161B22";
         private readonly string Blue = "#005CC3";
@@ -37,16 +33,25 @@ namespace Client
         private readonly string canvasBg3 = "#e7feff";
         private readonly string canvasBg4 = "#faf0e6";
         private readonly string canvasBg5 = "#ffffe0";
+        private readonly string curEraseColor = "#cfcfcf";
+        private readonly float eraserThickness = 5;
+        private readonly string Green = "#1E5631";
+        private readonly string Red = "#900604";
+        private readonly WhiteBoardViewModel viewModel;
+        private readonly string White = "#FFFFFF";
+
+        private readonly string Yellow = "#EFC002";
+
+        //init variables 
+        private System.Windows.Controls.Primitives.ToggleButton activeMainToolbarButton;
+        private Button activeSelectToolbarButton;
         private bool close_popup = false;
 
         //pen and eraser properties 
         private string curCanvasBg = "#FFFFFF";
-        private readonly string curEraseColor = "#cfcfcf";
         private string curPenColor = "#000000";
-        private readonly float eraserThickness = 5;
         public Canvas GlobCanvas;
         private string Gray = "#909090";
-        private readonly string Green = "#1E5631";
         private int mouseDownFlag;
         private Shape mouseDownSh;
 
@@ -54,13 +59,9 @@ namespace Client
 
         private float penThickness = 5;
         private RadioButton rbutton;
-        private readonly string Red = "#900604";
 
         //variable to keep track for rotaion of shape is in progress or not 
         private bool rotation;
-        private readonly WhiteBoardViewModel viewModel;
-        private readonly string White = "#FFFFFF";
-        private readonly string Yellow = "#EFC002";
 
         /// <summary>
         ///     Constructor for View in MVVM pattern
@@ -102,7 +103,6 @@ namespace Client
                 }
 
                 RestorFrameDropDown.SelectedItem = null;
-                return;
             }
         }
 

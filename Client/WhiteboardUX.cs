@@ -52,24 +52,24 @@ namespace Client
     public class BorderAdorner : Adorner
     {
         private readonly UIElement adornedShape;
+        private readonly Thumb bottomLeft;
+        private readonly Thumb bottomRight;
         private readonly Canvas cn;
-
-        private Point dragStart, dragEnd, permissibleDragEnd;
-        private AdornerDragPos lastDraggedCorner;
         private readonly ShapeManager shapeManager;
-
-        private bool testing;
 
         //use thumb for resizing elements
         private readonly Thumb topLeft;
-        private readonly Thumb bottomRight;
         private readonly Thumb topRight;
-        private readonly Thumb bottomLeft;
 
         //visual child collection for adorner
         private readonly VisualCollection visualChilderns;
 
         private readonly IWhiteBoardOperationHandler WbOp;
+
+        private Point dragStart, dragEnd, permissibleDragEnd;
+        private AdornerDragPos lastDraggedCorner;
+
+        private bool testing;
 
         public BorderAdorner(UIElement element, ShapeManager shapeManager, Canvas cn, IWhiteBoardOperationHandler WbOp,
             bool testing = false) : base(element)
@@ -281,17 +281,15 @@ namespace Client
     /// </summary>
     public class ShapeManager
     {
-        public AdornerLayer adornerLayer;
-
-
         //THIS IS SUPPOSED TO BE A UNIQUE UID THAT IS NOT USED BY THE CLIENT MODULE
         //for assigning temporary UID to the shape being created
         private readonly int counter = 0;
+        private readonly bool testing;
+        public AdornerLayer adornerLayer;
 
         public List<string> selectedShapes = new();
         public Point selectMouseDownPos;
         public Point selectMouseStuck;
-        private readonly bool testing;
 
         //Variable to keep track of the Uid of the new shape that is currently under creation
         private string uidShapeCreate;
@@ -1552,13 +1550,13 @@ namespace Client
     /// </summary>
     public class FreeHand
     {
+        private readonly bool testing;
         private string assgn_uid;
         private Coordinate C_end;
         private Polyline poly;
         private SolidColorBrush polyLineColor;
         private float polyLineThickness;
         private Coordinate prev;
-        private readonly bool testing;
 
         //Consructor for the class 
         public FreeHand(bool testing = false)
@@ -1808,10 +1806,12 @@ namespace Client
             FreeHand
         }
 
+        private readonly IUXClientSessionManager _modelDb;
+        private readonly IClientBoardStateManager manager;
+        private readonly bool testing;
+
         //private List<string> ckptList;
         public ObservableCollection<string> _chk;
-
-        private readonly IUXClientSessionManager _modelDb;
 
         //To be bound to the number of "Checkpoint #n" in Restore Checkpoint dropdown in Whiteboard.xaml
         private int _numCheckpoints;
@@ -1821,11 +1821,9 @@ namespace Client
         public Canvas GlobCanvas;
 
         private bool isSubscribedToWBState;
-        private readonly IClientBoardStateManager manager;
         public ShapeManager shapeManager;
 
         public Point start;
-        private readonly bool testing;
 
         public IWhiteBoardOperationHandler WBOps;
 

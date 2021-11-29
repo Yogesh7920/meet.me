@@ -2,6 +2,7 @@
 /// <created>08/10/2021</created>
 
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,17 +18,20 @@ namespace Client
         private static WhiteBoardView s_whiteboard;
         private static ChatView s_chat;
         private static UsersList s_userslist;
-        private bool _chatFlag;
+        private static ScreenShareUX s_screenshare;
+        public static bool s_sharing = false;
         private readonly ScreenShareClient _ssClient;
+        private bool _chatFlag;
         private bool _ssFlag;
         private bool _wbFlag = true;
-        public bool sharing;
 
         public MainWindow()
         {
             InitializeComponent();
             CenterWindowOnScreen();
             s_whiteboard = new WhiteBoardView();
+            s_screenshare = new ScreenShareUX();
+            SSwb.Content = s_screenshare;
             SSwb.Content = s_whiteboard;
             s_chat = new ChatView();
             Chat.Content = s_chat;
@@ -126,17 +130,12 @@ namespace Client
         private void OnScreenShareClick(object sender, RoutedEventArgs e)
         {
             _ssFlag = true;
-            SSwb.Content = new ScreenShareUX();
-            if (!sharing)
-            {
+            SSwb.Content = s_screenshare;
+            Trace.WriteLine("[MainWindow]" + s_sharing);
+            if (!s_sharing)
                 _ssClient.StartSharing();
-                sharing = true;
-            }
             else
-            {
                 _ssClient.StopSharing();
-                sharing = false;
-            }
 
             //this.SSwb.Content = new ScreenShareUX();
             if (_chatFlag.Equals(true) && s_userslist.userListHidden.Equals(false))

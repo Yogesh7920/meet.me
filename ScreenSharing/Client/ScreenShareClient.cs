@@ -223,7 +223,7 @@ namespace ScreenSharing
                     if (ThisSharing)
                         Send(message);
                     else
-                        return;
+                        continue;
 
                     Thread.Sleep(1000);
                 }

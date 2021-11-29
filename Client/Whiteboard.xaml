@@ -29,8 +29,7 @@
              Background="{DynamicResource Color3Bg}">
 
     <UserControl.Resources>
-        <ResourceDictionary>
-        </ResourceDictionary>
+        <ResourceDictionary />
     </UserControl.Resources>
 
     <!--Parent Grid-->
