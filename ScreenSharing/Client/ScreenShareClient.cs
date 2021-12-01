@@ -200,32 +200,34 @@ namespace ScreenSharing
             try
             {
                 while (IsSharing)
-                while (ThisSharing)
                 {
-                    var bitmap = new Bitmap(
-                        Screen.PrimaryScreen.Bounds.Width,
-                        Screen.PrimaryScreen.Bounds.Height
-                    );
+                    while (ThisSharing)
+                    {
+                        var bitmap = new Bitmap(
+                            Screen.PrimaryScreen.Bounds.Width,
+                            Screen.PrimaryScreen.Bounds.Height
+                        );
 
-                    var graphics = Graphics.FromImage(bitmap);
-                    graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
-                    var curSize = new Size(32, 32);
-                    Cursors.Default.Draw(graphics, new Rectangle(Cursor.Position, curSize));
-                    var bitmap480p = new Bitmap(720, 480);
-                    var graphics480p = Graphics.FromImage(bitmap480p);
-                    graphics480p.DrawImage(bitmap, 0, 0, 720, 480);
+                        var graphics = Graphics.FromImage(bitmap);
+                        graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
+                        var curSize = new Size(32, 32);
+                        Cursors.Default.Draw(graphics, new Rectangle(Cursor.Position, curSize));
+                        var bitmap480p = new Bitmap(720, 480);
+                        var graphics480p = Graphics.FromImage(bitmap480p);
+                        graphics480p.DrawImage(bitmap, 0, 0, 720, 480);
 
-                    var data = GetBytes(bitmap480p);
+                        var data = GetBytes(bitmap480p);
 
-                    SharedScreen message;
+                        SharedScreen message;
 
-                    message = new SharedScreen(UserId, UserName, 1, data);
-                    if (ThisSharing)
-                        Send(message);
-                    else
-                        continue;
+                        message = new SharedScreen(UserId, UserName, 1, data);
+                        if (ThisSharing)
+                            Send(message);
+                        else
+                            continue;
 
-                    Thread.Sleep(1000);
+                        Thread.Sleep(1000);
+                    }
                 }
             }
             catch (Exception e)
@@ -279,37 +281,38 @@ namespace ScreenSharing
             {
                 while (IsNotifying)
                 {
-                    while (FrameQueue.Count == 0) ;
-
-                    // if the queue is not empty take the screen from the queue and pass it to the ux
-                    Timer.Interval = 10000;
-                    if (Timer.Enabled == false)
-                        Timer.Start();
-                    OtherSharing = true;
-                    var currScreen = FrameQueue.Dequeue();
-                    var mtype = currScreen.MessageType;
-                    var uid = currScreen.UserId;
-                    var uname = currScreen.Username;
-                    if (mtype == 0)
-                    {
-                        Timer.Stop();
+                    while (FrameQueue.Count > 0)
+                    { 
+                        // if the queue is not empty take the screen from the queue and pass it to the ux
                         Timer.Interval = 10000;
-                        OtherSharing = false;
-                        Ux.OnScreenRecieved(uid, uname, mtype, null);
-                    }
-                    else
-                    {
-                        var screen = GetImage(currScreen.Screen);
-                        Ux.OnScreenRecieved(uid, uname, mtype, screen);
-                    }
+                        if (Timer.Enabled == false)
+                            Timer.Start();
+                        OtherSharing = true;
+                        var currScreen = FrameQueue.Dequeue();
+                        var mtype = currScreen.MessageType;
+                        var uid = currScreen.UserId;
+                        var uname = currScreen.Username;
+                        if (mtype == 0)
+                        {
+                            Timer.Stop();
+                            Timer.Interval = 10000;
+                            OtherSharing = false;
+                            Ux.OnScreenRecieved(uid, uname, mtype, null);
+                        }
+                        else
+                        {
+                            var screen = GetImage(currScreen.Screen);
+                            Ux.OnScreenRecieved(uid, uname, mtype, screen);
+                        }
 
-                    if (ThisSharing && uid != UserId)
-                    {
-                        ThisSharing = false;
-                        Ux.OnScreenRecieved(UserId, UserName, -1, null);
-                    }
+                        if (ThisSharing && uid != UserId)
+                        {
+                            ThisSharing = false;
+                            Ux.OnScreenRecieved(UserId, UserName, -1, null);
+                        }
 
-                    Trace.WriteLine("[ScreenSharingClient] Ux has been notified");
+                        Trace.WriteLine("[ScreenSharingClient] Ux has been notified");
+                    }
                 }
             }
             catch (Exception e)

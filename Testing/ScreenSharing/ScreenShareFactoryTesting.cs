@@ -1,10 +1,12 @@
-﻿/**
+﻿// ReSharper disable once InvalidXmlDocComment
+/**
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
  * date modified: 26/11/2021
 **/
 
+using System.Text;
 using NUnit.Framework;
 using ScreenSharing;
 
@@ -23,6 +25,14 @@ namespace Testing.ScreenSharing
 
             Assert.That(ReferenceEquals(clientScreenSharer1, clientScreenSharer2));
             Assert.That(ReferenceEquals(serverScreenSharer1, serverScreenSharer2));
+
+            clientScreenSharer1.IsSharing = false;
+            clientScreenSharer1.IsNotifying = false;
+            clientScreenSharer2.IsSharing = false;
+            clientScreenSharer2.IsNotifying = false;
+
+            serverScreenSharer1.IsSharing = false;
+            serverScreenSharer1.IsSharing = false;
         }
     }
 }

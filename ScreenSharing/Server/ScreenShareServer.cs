@@ -87,44 +87,46 @@ namespace ScreenSharing
             {
                 while (IsSharing)
                 {
-                    while (FrameQueue.Count == 0) ;
-                    Timer.Interval = 10000;
-                    if (Timer.Enabled == false)
-                        Timer.Start();
-                    var currScreen = FrameQueue.Dequeue();
-                    if (UserId == "-")
-                    {
-                        // this is the case when server is idle and someone wants to share screen
-                        UserId = currScreen.UserId;
-                        if (currScreen.MessageType == 0)
+                    while (FrameQueue.Count > 0)
+                    { 
+                        Timer.Interval = 10000;
+                        if (Timer.Enabled == false)
+                            Timer.Start();
+                        var currScreen = FrameQueue.Dequeue();
+                        if (UserId == "-")
                         {
-                            UserId = "-";
-                            Timer.Stop();
-                            Timer.Interval = 10000;
-                        }
+                            // this is the case when server is idle and someone wants to share screen
+                            UserId = currScreen.UserId;
+                            if (currScreen.MessageType == 0)
+                            {
+                                UserId = "-";
+                                Timer.Stop();
+                                Timer.Interval = 10000;
+                            }
 
-                        // Broadcasting the screen
-                        var data = Serializer.Serialize(currScreen);
-                        Communicator.Send(data, "ScreenSharing");
-                        Trace.WriteLine("[ScreenSharingServer] Data sent to Networking");
-                    }
-                    else if (currScreen.UserId != UserId)
-                    {
-                        // this is a case of simultaneous sharing and the user who is trying to share has to be rejected
-                    }
-                    else
-                    {
-                        if (currScreen.MessageType == 0)
+                            // Broadcasting the screen
+                            var data = Serializer.Serialize(currScreen);
+                            Communicator.Send(data, "ScreenSharing");
+                            Trace.WriteLine("[ScreenSharingServer] Data sent to Networking");
+                        }
+                        else if (currScreen.UserId != UserId)
                         {
-                            UserId = "-";
-                            Timer.Stop();
-                            Timer.Interval = 10000;
+                            // this is a case of simultaneous sharing and the user who is trying to share has to be rejected
                         }
+                        else
+                        {
+                            if (currScreen.MessageType == 0)
+                            {
+                                UserId = "-";
+                                Timer.Stop();
+                                Timer.Interval = 10000;
+                            }
 
-                        // Broadcasting the screen
-                        var data = Serializer.Serialize(currScreen);
-                        Communicator.Send(data, "ScreenSharing");
-                        Trace.WriteLine("[ScreenSharingServer] Data sent to Networking");
+                            // Broadcasting the screen
+                            var data = Serializer.Serialize(currScreen);
+                            Communicator.Send(data, "ScreenSharing");
+                            Trace.WriteLine("[ScreenSharingServer] Data sent to Networking");
+                        }
                     }
                 }
             }
