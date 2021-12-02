@@ -359,6 +359,8 @@ namespace ScreenSharing
 
         public void Dispose()
         {
+            thisSharing=false;
+            frameQueue.Clear();
             isSharing.Cancel();
             isNotifying.Cancel();
             timer.Dispose();

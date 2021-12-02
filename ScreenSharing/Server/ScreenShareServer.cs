@@ -157,6 +157,7 @@ namespace ScreenSharing
 
         public void Dispose()
         {
+            frameQueue.Clear();
             isSharing.Cancel();
             timer.Dispose();
         }
