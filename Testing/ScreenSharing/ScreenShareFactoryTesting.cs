@@ -26,13 +26,11 @@ namespace Testing.ScreenSharing
             Assert.That(ReferenceEquals(clientScreenSharer1, clientScreenSharer2));
             Assert.That(ReferenceEquals(serverScreenSharer1, serverScreenSharer2));
 
-            clientScreenSharer1.IsSharing = false;
-            clientScreenSharer1.IsNotifying = false;
-            clientScreenSharer2.IsSharing = false;
-            clientScreenSharer2.IsNotifying = false;
+            clientScreenSharer1.Dispose();
+            clientScreenSharer2.Dispose();
 
-            serverScreenSharer1.IsSharing = false;
-            serverScreenSharer1.IsSharing = false;
+            serverScreenSharer1.Dispose();
+            serverScreenSharer2.Dispose();
         }
     }
 }
