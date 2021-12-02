@@ -121,6 +121,7 @@ namespace Client
         /// </summary>
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
+            s_userslist.OnLeaveButtonClick();
             Application.Current.Shutdown();
         }
 
