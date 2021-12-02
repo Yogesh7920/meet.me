@@ -73,7 +73,7 @@ namespace Testing.ScreenSharing
 
             ssClient.OnDataReceived(data);
 
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             Assert.AreEqual(ux.UserId, uid);
             Assert.AreEqual(ux.UserName, uname);
             Assert.AreEqual(ux.MessageType, mtype);
@@ -107,7 +107,7 @@ namespace Testing.ScreenSharing
             ssClient.SetUser(uid, uname);
             ssClient.Subscribe(ux);
             ssClient.timer.Start();
-            Thread.Sleep(10100);
+            Thread.Sleep(20000);
 
             Assert.AreEqual(ux.UserId, uid);
             Assert.AreEqual(ux.UserName, uname);
