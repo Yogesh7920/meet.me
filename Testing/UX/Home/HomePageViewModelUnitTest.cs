@@ -26,8 +26,10 @@ namespace Testing.UX.Home
             SessionData sampleSession = new SessionData();
             UserData sampleUser1 = new UserData("User1", 1);
             UserData sampleUser2 = new UserData("User2", 2);
+            UserData sampleUser3 = new UserData("3", 3);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
+            sampleSession.AddUser(sampleUser3);
 
             // Act
             _homePageViewModel.OnClientSessionChanged(sampleSession);
@@ -35,7 +37,7 @@ namespace Testing.UX.Home
             // Assert
             // Without calling DispatcherUtil.DoEvents() the test will fail
             DispatcherUtil.DoEvents();
-            Assert.AreEqual(_homePageViewModel.users.Count, 2);
+            Assert.AreEqual(_homePageViewModel.users.Count, 3);
         }
         [Test]
         public void OnLeaveClient()
