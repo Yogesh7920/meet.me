@@ -10,16 +10,16 @@ namespace ScreenSharing
     public class SharedScreen
     {
         // Stores the type of message.
-        public int MessageType;
+        public int messageType;
 
         // Stores the screen
-        public byte[] Screen;
+        public byte[] screen;
 
         // Stores the user Id of the user sharing the screen
-        public string UserId;
+        public string userId;
 
         // Stores the user name of the user sharing the screen
-        public string Username;
+        public string userName;
 
         /// <summary>
         ///     ///
@@ -35,10 +35,10 @@ namespace ScreenSharing
         /// </summary>
         public SharedScreen(string uid, string uname, int mtype, byte[] data)
         {
-            UserId = uid;
-            Username = uname;
-            MessageType = mtype;
-            Screen = data;
+            userId = uid;
+            userName = uname;
+            messageType = mtype;
+            screen = data;
         }
     }
 }

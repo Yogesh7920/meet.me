@@ -6,6 +6,7 @@
 **/
 
 using System;
+using Networking;
 
 namespace ScreenSharing
 {
@@ -17,14 +18,14 @@ namespace ScreenSharing
         private static readonly Lazy<ScreenShareClient> s_clientScreenSharer = new(() => new ScreenShareClient());
         private static readonly Lazy<ScreenShareServer> s_serverScreenSharer = new(() => new ScreenShareServer());
 
-        public static ScreenShareClient GetScreenShareClient()
+        public static ScreenShareClient GetScreenShareClient(bool isTesting = false, ICommunicator communicator = null)
         {
-            return s_clientScreenSharer.Value;
+            return isTesting ? new ScreenShareClient(communicator) : s_clientScreenSharer.Value;
         }
 
-        public static ScreenShareServer GetScreenShareServer()
+        public static ScreenShareServer GetScreenShareServer(bool isTesting = false, ICommunicator communicator = null)
         {
-            return s_serverScreenSharer.Value;
+            return isTesting ? new ScreenShareServer(communicator) : s_serverScreenSharer.Value;
         }
     }
 }
