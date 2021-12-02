@@ -45,4 +45,8 @@
     <ItemGroup>
         <Folder Include="E2E"/>
     </ItemGroup>
+
+    <PropertyGroup>
+        <UseDataCollector/>
+    </PropertyGroup>
 </Project>
