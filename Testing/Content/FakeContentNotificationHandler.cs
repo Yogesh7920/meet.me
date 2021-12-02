@@ -3,18 +3,19 @@
 /// <summary>
 /// This file mimics the function of a ContentHandler in the Content in order to test its functions
 /// </summary>
-using Content;
-using System;
+
 using System.Collections.Generic;
+using Content;
 using Networking;
 
 namespace Testing.Content
 {
-    public class FakeNotifier: ContentClientNotificationHandler
+    public class FakeNotifier : ContentClientNotificationHandler
     {
-        private MessageData _msgData;
         private List<ChatContext> _listChatContext;
+        private MessageData _msgData;
         private ISerializer _serializer;
+
         public FakeNotifier(IContentClient contentClient) : base(contentClient)
         {
             _msgData = new MessageData();
@@ -31,14 +32,14 @@ namespace Testing.Content
         public MessageData GetMessageData()
         {
             Reset();
-            _msgData = base._receivedMessage;
+            _msgData = _receivedMessage;
             return _msgData;
         }
 
         public List<ChatContext> GetAllMessageData()
         {
             Reset();
-            _listChatContext = base._allMessages;
+            _listChatContext = _allMessages;
             return _listChatContext;
         }
     }

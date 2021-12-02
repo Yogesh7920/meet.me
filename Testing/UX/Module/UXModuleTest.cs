@@ -1,28 +1,27 @@
-﻿using NUnit.Framework;
-using Client.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 using Client;
+using Client.ViewModel;
+using Content;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
-using Content;
+using NUnit.Framework;
 using Testing.UX.Chat;
-
 
 namespace Testing.UX.Module
 {
-
     public class FakeUxClientSessionManager : IUXClientSessionManager
     {
-        public event NotifySummaryCreated SummaryCreated;
-        public event NotifyEndMeet MeetingEnded;
-        public event NotifyAnalyticsCreated AnalyticsCreated;
         public string ipAddress;
         public int port;
         public string username;
+        public event NotifySummaryCreated SummaryCreated;
+        public event NotifyEndMeet MeetingEnded;
+        public event NotifyAnalyticsCreated AnalyticsCreated;
+
         public bool AddClient(string ipAddress, int ports, string username)
         {
             this.ipAddress = ipAddress;
@@ -30,24 +29,29 @@ namespace Testing.UX.Module
             this.username = username;
             return true;
         }
-        
-        public void RemoveClient(){
+
+        public void RemoveClient()
+        {
             throw new NotImplementedException();
         }
 
-        public void EndMeet(){
+        public void EndMeet()
+        {
             throw new NotImplementedException();
         }
-        
-        public void GetSummary(){
+
+        public void GetSummary()
+        {
             throw new NotImplementedException();
         }
-        
-        public void SubscribeSession(IClientSessionNotifications listener){
+
+        public void SubscribeSession(IClientSessionNotifications listener)
+        {
             throw new NotImplementedException();
         }
-        
-        public void GetAnalytics(){
+
+        public void GetAnalytics()
+        {
             throw new NotImplementedException();
         }
 
@@ -55,45 +59,42 @@ namespace Testing.UX.Module
         {
             throw new NotImplementedException();
         }
-        
     }
 
     public class FakeChatViewModel : IClientSessionNotifications, IContentListener
     {
         public IDictionary<int, string> Messages;
         public IDictionary<int, int> ThreadIds;
-        
-        public Message ReceivedMsg
-        {
-            get; private set;
-        }
 
         public IDictionary<int, string> Users;
+
+        public Message ReceivedMsg { get; private set; }
+
+        private Dispatcher ApplicationMainThreadDispatcher =>
+            Application.Current?.Dispatcher != null ? Application.Current.Dispatcher : Dispatcher.CurrentDispatcher;
+
         public void OnClientSessionChanged(SessionData session)
         {
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
                 DispatcherPriority.Normal,
                 new Action<SessionData>(session =>
                 {
                     lock (this)
                     {
-                        if(session != null)
+                        if (session != null)
                         {
                             Trace.WriteLine("[UX] Received users list");
                             Users.Clear();
-                            foreach (UserData user in session.users)
-                            {
-                                Users.Add(user.userID, user.username);
-                            }
+                            foreach (var user in session.users) Users.Add(user.userID, user.username);
                         }
                     }
                 }),
                 session);
         }
-        
+
         public void OnMessage(ReceiveMessageData messageData)
         {
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
                 DispatcherPriority.Normal,
                 new Action<ReceiveMessageData>(messageData =>
                 {
@@ -109,7 +110,8 @@ namespace Testing.UX.Module
                             ReceivedMsg.TextMessage = messageData.Message;
                             ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                             ReceivedMsg.ToFrom = true;
-                            ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
+                            ReceivedMsg.ReplyMessage =
+                                messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
                             ReceivedMsg.Type = messageData.Type == MessageType.Chat;
                         }
                     }
@@ -119,62 +121,54 @@ namespace Testing.UX.Module
 
         public void OnAllMessages(List<ChatContext> allMessages)
         {
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<List<ChatContext>>(allMessages =>
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new Action<List<ChatContext>>(allMessages =>
+                {
+                    lock (this)
+                    {
+                        Messages.Clear();
+                        ThreadIds.Clear();
+                        foreach (var msgLst in allMessages)
+                        foreach (var messageData in msgLst.MsgList)
                         {
-                            lock (this)
-                            {
-                                Messages.Clear();
-                                ThreadIds.Clear();
-                                foreach (ChatContext msgLst in allMessages)
-                                {
-                                    foreach (ReceiveMessageData messageData in msgLst.MsgList)
-                                    {
-                                        Trace.WriteLine("[UX] Received all messages");
-                                        Messages.Add(messageData.MessageId, messageData.Message);
-                                        ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
+                            Trace.WriteLine("[UX] Received all messages");
+                            Messages.Add(messageData.MessageId, messageData.Message);
+                            ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
 
-                                        // Create the ReceivedMsg object and update the fields accordingly
-                                        ReceivedMsg = new Message();
-                                        ReceivedMsg.MessageId = messageData.MessageId;
-                                        ReceivedMsg.UserName = Users[messageData.SenderId];
-                                        ReceivedMsg.TextMessage = messageData.Message;
-                                        ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
-                                        ReceivedMsg.ToFrom = true;
-                                        ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
-                                        ReceivedMsg.Type = messageData.Type == MessageType.Chat;
-                                    }
-                                }
-                            }
-                        }),
-                        allMessages);
-           
+                            // Create the ReceivedMsg object and update the fields accordingly
+                            ReceivedMsg = new Message();
+                            ReceivedMsg.MessageId = messageData.MessageId;
+                            ReceivedMsg.UserName = Users[messageData.SenderId];
+                            ReceivedMsg.TextMessage = messageData.Message;
+                            ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
+                            ReceivedMsg.ToFrom = true;
+                            ReceivedMsg.ReplyMessage =
+                                messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
+                            ReceivedMsg.Type = messageData.Type == MessageType.Chat;
+                        }
+                    }
+                }),
+                allMessages);
         }
-        
-        private Dispatcher ApplicationMainThreadDispatcher =>
-            (Application.Current?.Dispatcher != null) ?
-                Application.Current.Dispatcher :
-                Dispatcher.CurrentDispatcher;
-
     }
 
     [TestFixture]
     public class UxClientModuleTesting
     {
-        private AuthViewModel _authViewModel;
-        private ChatViewModel _chatViewModel;
-
-        private FakeUxClientSessionManager sm = new();
-        private FakeChatViewModel cm = new();
-
         [OneTimeSetUp]
         public void Setup()
         {
             _authViewModel = new AuthViewModel(sm);
-            _chatViewModel = new ChatViewModel(testing:true);
+            _chatViewModel = new ChatViewModel(true);
         }
-        
+
+        private AuthViewModel _authViewModel;
+        private ChatViewModel _chatViewModel;
+
+        private readonly FakeUxClientSessionManager sm = new();
+        private FakeChatViewModel cm = new();
+
         [Test]
         public void OnLogin_ShouldMatchCredentials()
         {
@@ -186,15 +180,14 @@ namespace Testing.UX.Module
             Assert.AreEqual(port, sm.port);
             Assert.AreEqual(username, sm.username);
         }
-        
+
         [Test]
-        
         public void OnClientSessionChanged_ShouldAddUsers()
         {
             // Arrange
-            SessionData testSession = new SessionData();
-            UserData testUser1 = new UserData("David",1);
-            UserData testUser2 = new UserData("Goliath", 2);
+            var testSession = new SessionData();
+            var testUser1 = new UserData("David", 1);
+            var testUser2 = new UserData("Goliath", 2);
             testSession.AddUser(testUser1);
             testSession.AddUser(testUser2);
 
@@ -204,21 +197,20 @@ namespace Testing.UX.Module
 
             // Assert
             // Without calling DispatcherUtil.DoEvents() the test will fail
-            
+
             Assert.AreEqual(_chatViewModel.Users.Count, 2);
-            Assert.AreEqual(_chatViewModel.Users[1],"David");
-            Assert.AreEqual(_chatViewModel.Users[2],"Goliath");
+            Assert.AreEqual(_chatViewModel.Users[1], "David");
+            Assert.AreEqual(_chatViewModel.Users[2], "Goliath");
         }
 
         [Test]
-        
         public void OnAllMessages_ReceivedMsgObj_ShouldMatchReceivedMsg()
         {
             //Arrange
-            List<ChatContext> sampleAllMessages = new List<ChatContext>();
-            ChatContext sampleChatContext = new ChatContext();
-            ReceiveMessageData sampleMessageData1 = new ReceiveMessageData();
-            ReceiveMessageData sampleMessageData2 = new ReceiveMessageData();
+            var sampleAllMessages = new List<ChatContext>();
+            var sampleChatContext = new ChatContext();
+            var sampleMessageData1 = new ReceiveMessageData();
+            var sampleMessageData2 = new ReceiveMessageData();
 
             sampleMessageData1.Event = MessageEvent.NewMessage;
             sampleMessageData1.Message = "Hi how are you???";
@@ -240,15 +232,15 @@ namespace Testing.UX.Module
             sampleMessageData2.Starred = false;
             sampleMessageData2.Type = MessageType.Chat;
 
-            List<ReceiveMessageData> sampleMsgList = new List<ReceiveMessageData>();
+            var sampleMsgList = new List<ReceiveMessageData>();
             sampleMsgList.Add(sampleMessageData1);
             sampleMsgList.Add(sampleMessageData2);
             sampleChatContext.MsgList = sampleMsgList;
             sampleAllMessages.Add(sampleChatContext);
 
-            SessionData sampleSession = new SessionData();
-            UserData sampleUser1 = new UserData("David", 1);
-            UserData sampleUser2 = new UserData("Goliath", 2);
+            var sampleSession = new SessionData();
+            var sampleUser1 = new UserData("David", 1);
+            var sampleUser2 = new UserData("Goliath", 2);
             sampleSession.AddUser(sampleUser1);
             sampleSession.AddUser(sampleUser2);
             _chatViewModel.OnClientSessionChanged(sampleSession);
@@ -266,6 +258,5 @@ namespace Testing.UX.Module
             Assert.AreEqual(_chatViewModel.ReceivedMsg.ReplyMessage, "Hi how are you???");
             Assert.AreEqual(_chatViewModel.ReceivedMsg.Type, true);
         }
-
     }
 }

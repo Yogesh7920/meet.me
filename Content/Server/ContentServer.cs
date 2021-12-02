@@ -4,24 +4,25 @@
 ///     This file handles all the messages that come to server (files and chats)
 ///     and passes them to their respective classes
 /// </summary>
-using Networking;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Networking;
 
 namespace Content
 {
     internal class ContentServer : IContentServer
     {
-        private List<IContentListener> _subscribers;
-        private ICommunicator _communicator;
-        private readonly INotificationHandler _notificationHandler;
-        private ContentDatabase _contentDatabase;
-        private ISerializer _serializer;
-        private FileServer _fileServer;
-        private ChatContextServer _chatContextServer;
         private static readonly object _lock = new();
+        private readonly INotificationHandler _notificationHandler;
+        private ChatContextServer _chatContextServer;
+        private ICommunicator _communicator;
+        private ContentDatabase _contentDatabase;
+        private FileServer _fileServer;
+        private ISerializer _serializer;
+        private List<IContentListener> _subscribers;
 
         public ContentServer()
         {
@@ -36,7 +37,7 @@ namespace Content
         }
 
         /// <summary>
-        /// Get and Set Communicator, Meant to be only used for testing
+        ///     Get and Set Communicator, Meant to be only used for testing
         /// </summary>
         internal ICommunicator Communicator
         {
@@ -66,12 +67,12 @@ namespace Content
         /// <inheritdoc />
         public void SSendAllMessagesToClient(int userId)
         {
-            string allMessagesSerialized = _serializer.Serialize(SGetAllMessages());
+            var allMessagesSerialized = _serializer.Serialize(SGetAllMessages());
             _communicator.Send(allMessagesSerialized, "Content", userId.ToString());
         }
 
         /// <summary>
-        /// Receives data from ContentServerNotificationHandler and processes it accordingly
+        ///     Receives data from ContentServerNotificationHandler and processes it accordingly
         /// </summary>
         /// <param name="data"></param>
         public void Receive(string data)
@@ -87,6 +88,7 @@ namespace Content
                 Trace.WriteLine($"[ContentServer] Exception occured while deserialsing data. Exception: {e}");
                 return;
             }
+
             MessageData receiveMessageData;
 
             Trace.WriteLine("[ContentServer] Received messageData from ContentServerNotificationHandler");
@@ -107,7 +109,8 @@ namespace Content
                         break;
 
                     case MessageType.HistoryRequest:
-                        Trace.WriteLine("[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
+                        Trace.WriteLine(
+                            "[ContentServer] MessageType is HistoryRequest, Calling ContentServer.SSendAllMessagesToClient");
                         SSendAllMessagesToClient(messageData.SenderId);
                         return;
 
@@ -151,12 +154,12 @@ namespace Content
         }
 
         /// <summary>
-        /// Sends the message to clients.
+        ///     Sends the message to clients.
         /// </summary>
         /// <param name="messageData"></param>
         private void Send(MessageData messageData)
         {
-            string message = _serializer.Serialize(messageData);
+            var message = _serializer.Serialize(messageData);
 
             // If length of ReceiverIds is 0 that means its a broadcast.
             if (messageData.ReceiverIds.Length == 0)
@@ -166,39 +169,34 @@ namespace Content
             // Else send the message to the receivers in ReceiversIds.
             else
             {
-                foreach (int userId in messageData.ReceiverIds)
-                {
+                foreach (var userId in messageData.ReceiverIds)
                     _communicator.Send(message, "Content", userId.ToString());
-                }
                 // Sending the message back to the sender.
                 _communicator.Send(message, "Content", messageData.SenderId.ToString());
             }
         }
 
         /// <summary>
-        /// Sends the file back to the requester.
+        ///     Sends the file back to the requester.
         /// </summary>
         /// <param name="messageData"></param>
         private void SendFile(MessageData messageData)
         {
-            string message = _serializer.Serialize(messageData);
+            var message = _serializer.Serialize(messageData);
             _communicator.Send(message, "Content", messageData.SenderId.ToString());
         }
 
         /// <summary>
-        /// Notifies all the subscribed modules.
+        ///     Notifies all the subscribed modules.
         /// </summary>
         /// <param name="receiveMessageData"></param>
         private void Notify(ReceiveMessageData receiveMessageData)
         {
-            foreach (IContentListener subscriber in _subscribers)
-            {
-                _ = Task.Run(() => { subscriber.OnMessage(receiveMessageData); });
-            }
+            foreach (var subscriber in _subscribers) _ = Task.Run(() => { subscriber.OnMessage(receiveMessageData); });
         }
 
         /// <summary>
-        /// Resets the ContentServer, Meant to be used only for Testing
+        ///     Resets the ContentServer, Meant to be used only for Testing
         /// </summary>
         internal void Reset()
         {

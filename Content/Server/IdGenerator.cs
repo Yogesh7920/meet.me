@@ -3,6 +3,7 @@
 /// <summary>
 ///     This file generates unqiue ids for message and ChatContexts
 /// </summary>
+
 namespace Content
 {
     internal class IdGenerator
@@ -11,18 +12,18 @@ namespace Content
         private static int _chatContextId;
 
         /// <summary>
-        /// Generates a unique id for messages.
+        ///     Generates a unique id for messages.
         /// </summary>
         /// <returns>Returns the generated unique id.</returns>
         public static int GetMessageId()
         {
-            int prevId = _messageId;
+            var prevId = _messageId;
             _messageId++;
             return prevId;
         }
 
         /// <summary>
-        /// Resets the uniqie id for messages.
+        ///     Resets the uniqie id for messages.
         /// </summary>
         public static void ResetMessageId()
         {
@@ -30,18 +31,18 @@ namespace Content
         }
 
         /// <summary>
-        /// Generates unique id for chat contexts.
+        ///     Generates unique id for chat contexts.
         /// </summary>
         /// <returns>Returns the generated unique id.</returns>
         public static int GetChatContextId()
         {
-            int prevId = _chatContextId;
+            var prevId = _chatContextId;
             _chatContextId++;
             return prevId;
         }
 
         /// <summary>
-        /// Resets the unique id for chat contexts
+        ///     Resets the unique id for chat contexts
         /// </summary>
         public static void ResetChatContextId()
         {

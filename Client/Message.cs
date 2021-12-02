@@ -10,6 +10,17 @@ namespace Client
 {
     public class Message
     {
+        public Message()
+        {
+            MessageId = -1;
+            UserName = null;
+            Type = true;
+            TextMessage = null;
+            Time = DateTime.Now.ToShortTimeString();
+            ReplyMessage = null;
+            ToFrom = false;
+        }
+
         /// <summary>
         ///     Message Id of the message
         /// </summary>
@@ -22,7 +33,7 @@ namespace Client
 
         /// <summary>
         ///     Type of the message
-        ///     True if the message type is a chat 
+        ///     True if the message type is a chat
         ///     False if the message type is a file
         /// </summary>
         public bool Type { get; set; }
@@ -47,16 +58,5 @@ namespace Client
         ///     True, if the message was sent by the current user, else false
         /// </summary>
         public bool ToFrom { get; set; }
-
-        public Message()
-        {
-            MessageId = -1;
-            UserName = null;
-            Type = true;
-            TextMessage = null;
-            Time = DateTime.Now.ToShortTimeString();
-            ReplyMessage = null;
-            ToFrom = false;
-        }
     }
 }

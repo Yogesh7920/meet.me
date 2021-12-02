@@ -8,41 +8,45 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoFixture" Version="4.17.0" />
+        <PackageReference Include="AutoFixture" Version="4.17.0"/>
         <PackageReference Include="coverlet.collector" Version="3.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="6.2.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-        <PackageReference Include="Moq" Version="4.16.1" />
-        <PackageReference Include="NUnit" Version="3.13.2" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+        <PackageReference Include="FluentAssertions" Version="6.2.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0"/>
+        <PackageReference Include="Moq" Version="4.16.1"/>
+        <PackageReference Include="NUnit" Version="3.13.2"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="4.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Client\Client.csproj" />
-        <ProjectReference Include="..\Content\Content.csproj" />
-        <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
-        <ProjectReference Include="..\Networking\Networking.csproj" />
-        <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
-        <ProjectReference Include="..\Server\Server.csproj" />
-        <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
+        <ProjectReference Include="..\Client\Client.csproj"/>
+        <ProjectReference Include="..\Content\Content.csproj"/>
+        <ProjectReference Include="..\Dashboard\Dashboard.csproj"/>
+        <ProjectReference Include="..\Networking\Networking.csproj"/>
+        <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj"/>
+        <ProjectReference Include="..\Server\Server.csproj"/>
+        <ProjectReference Include="..\Whiteboard\Whiteboard.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Persistence\**" />
+        <Compile Remove="Persistence\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="Persistence\**" />
+        <EmbeddedResource Remove="Persistence\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Persistence\**" />
+        <None Remove="Persistence\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="E2E" />
+        <Folder Include="E2E"/>
     </ItemGroup>
+
+    <PropertyGroup>
+        <UseDataCollector/>
+    </PropertyGroup>
 </Project>

@@ -5,13 +5,18 @@
 ///		for testing purpose
 /// </summary>
 
-using Networking;
 using System;
+using Networking;
 
 namespace Testing.Dashboard.TestModels
 {
     public class TestCommunicator : ICommunicator
     {
+        public int clientCount;
+        public string ipAddressAndPort;
+        public bool isCommunicatorStopped;
+        public string sentData;
+
         public TestCommunicator()
         {
             sentData = null;
@@ -39,7 +44,7 @@ namespace Testing.Dashboard.TestModels
         }
 
         /// <summary>
-        /// start function for testing room creation
+        ///     start function for testing room creation
         /// </summary>
         /// <returns> string port and IP needed for testing </returns>
         public string Start(string serverIP = null, string serverPort = null)
@@ -58,12 +63,6 @@ namespace Testing.Dashboard.TestModels
 
         public void Subscribe(string identifier, INotificationHandler handler, int priority = 1)
         {
-
         }
-
-        public int clientCount;
-        public string ipAddressAndPort;
-        public string sentData;
-        public bool isCommunicatorStopped;
     }
 }

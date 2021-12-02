@@ -5,13 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="ScottPlot" Version="4.1.27" />
+        <PackageReference Include="ScottPlot" Version="4.1.27"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Content\Content.csproj" />
-        <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj" />
-        <ProjectReference Include="..\Whiteboard\Whiteboard.csproj" />
+        <ProjectReference Include="..\Content\Content.csproj"/>
+        <ProjectReference Include="..\ScreenSharing\ScreenSharing.csproj"/>
+        <ProjectReference Include="..\Whiteboard\Whiteboard.csproj"/>
     </ItemGroup>
 
 </Project>

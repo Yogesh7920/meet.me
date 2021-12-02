@@ -7,25 +7,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using Whiteboard;
 
 namespace Testing.Whiteboard
 {
     [TestFixture]
-    class BoardStackTesting
+    internal class BoardStackTesting
     {
-        private BoardStack _boardStack;
-        private int _capacity;
-
         [SetUp]
         public void SetUp()
         {
             _capacity = BoardConstants.UNDO_REDO_STACK_SIZE;
-            _boardStack = new(_capacity);
+            _boardStack = new BoardStack(_capacity);
         }
 
         [TearDown]
@@ -34,6 +28,9 @@ namespace Testing.Whiteboard
             _boardStack = null;
             GC.Collect();
         }
+
+        private BoardStack _boardStack;
+        private int _capacity;
 
         [Test]
         public void IsEmpty_EmptyStack_ReturnsTrue()
@@ -90,7 +87,7 @@ namespace Testing.Whiteboard
         public void Pop_FilledStack_SizeDecrease()
         {
             // Arrange
-            List<Tuple<string, string>> listOfIds = PushNUniqueElements(2);
+            var listOfIds = PushNUniqueElements(2);
 
             // Act and Assert
             _boardStack.Pop();
@@ -115,7 +112,7 @@ namespace Testing.Whiteboard
         public void Top_FilledStack_TopElement(int noOfInsertions)
         {
             // Arrange
-            List<Tuple<string, string>> listOfIds = PushNUniqueElements(noOfInsertions);
+            var listOfIds = PushNUniqueElements(noOfInsertions);
 
             // Act and Assert
             Assert.AreEqual(listOfIds[noOfInsertions - 1].Item1, _boardStack.Top().Item1.Uid);
@@ -139,12 +136,12 @@ namespace Testing.Whiteboard
         public void Push_StackFull_SizeConstant(int noOfInsertions)
         {
             // Act
-            List<Tuple<string, string>> listOfIds = PushNUniqueElements(noOfInsertions);
+            var listOfIds = PushNUniqueElements(noOfInsertions);
 
             // Assert
             Assert.AreEqual(_capacity, _boardStack.GetSize());
 
-            for (int i = noOfInsertions - 1; i >= noOfInsertions - _capacity; i--)
+            for (var i = noOfInsertions - 1; i >= noOfInsertions - _capacity; i--)
             {
                 Assert.AreEqual(listOfIds[i].Item1, _boardStack.Top().Item1.Uid);
                 Assert.AreEqual(listOfIds[i].Item2, _boardStack.Top().Item2.Uid);
@@ -171,19 +168,20 @@ namespace Testing.Whiteboard
         private List<Tuple<string, string>> PushNUniqueElements(int n)
         {
             List<Tuple<string, string>> listOfIds = new();
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 BoardShape first = new();
                 BoardShape second = new();
 
-                string firstId = i.ToString() + "_first";
-                string secondId = i.ToString() + "_second";
+                var firstId = i + "_first";
+                var secondId = i + "_second";
                 first.Uid = firstId;
                 second.Uid = secondId;
 
                 _boardStack.Push(first, second);
-                listOfIds.Add(new(firstId, secondId));
+                listOfIds.Add(new Tuple<string, string>(firstId, secondId));
             }
+
             return listOfIds;
         }
     }

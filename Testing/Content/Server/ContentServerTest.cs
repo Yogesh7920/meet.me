@@ -3,24 +3,25 @@
 /// <summary>
 ///     This file contains tests for ContentServer
 /// </summary>
-using Content;
-using Networking;
-using NUnit.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using Content;
+using Networking;
+using NUnit.Framework;
 
 namespace Testing.Content
 {
     public class ContentServerTests
     {
-        private ContentServer contentServer;
-        private Utils utils;
-        private FakeContentListener listener;
         private FakeCommunicator communicator;
+        private ContentServer contentServer;
+        private FakeContentListener listener;
         private ISerializer serializer;
         private int sleeptime;
+        private Utils utils;
 
         [SetUp]
         public void Setup()
@@ -36,15 +37,15 @@ namespace Testing.Content
             serializer = new Serializer();
             sleeptime = 50;
 
-            MessageData messageData = utils.GenerateNewMessageData("First Message");
-            string serializedMessage = serializer.Serialize(messageData);
+            var messageData = utils.GenerateNewMessageData("First Message");
+            var serializedMessage = serializer.Serialize(messageData);
             contentServer.Receive(serializedMessage);
 
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file = new MessageData
+            var file = new MessageData
             {
                 Message = "Test_File.pdf",
                 Type = MessageType.File,
@@ -63,15 +64,15 @@ namespace Testing.Content
         [Test]
         public void SSubscribe_SubsribingToNotification_ShouldBeAbleToGetNotificationOfNewMessages()
         {
-            MessageData messageData = utils.GenerateNewMessageData("Hello");
+            var messageData = utils.GenerateNewMessageData("Hello");
 
-            string serializesMessage = serializer.Serialize(messageData);
+            var serializesMessage = serializer.Serialize(messageData);
 
             contentServer.Receive(serializesMessage);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
+            var notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Hello", notifiedMessage.Message);
             Assert.AreEqual(messageData.Type, notifiedMessage.Type);
@@ -82,17 +83,18 @@ namespace Testing.Content
         }
 
         [Test]
-        public void Receive_HandlingNewMessage_ShouldSaveTheNewMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
+        public void
+            Receive_HandlingNewMessage_ShouldSaveTheNewMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
-            MessageData messageData = utils.GenerateNewMessageData("Hello");
+            var messageData = utils.GenerateNewMessageData("Hello");
 
-            string serializesMessage = serializer.Serialize(messageData);
+            var serializesMessage = serializer.Serialize(messageData);
 
             contentServer.Receive(serializesMessage);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
+            var notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Hello", notifiedMessage.Message);
             Assert.AreEqual(messageData.Type, notifiedMessage.Type);
@@ -101,9 +103,9 @@ namespace Testing.Content
             Assert.AreEqual(messageData.Starred, notifiedMessage.Starred);
             Assert.AreEqual(messageData.ReceiverIds, notifiedMessage.ReceiverIds);
 
-            string sentMessage = communicator.GetSentData();
+            var sentMessage = communicator.GetSentData();
 
-            MessageData deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
+            var deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
 
             Assert.AreEqual("Hello", deserializesSentMessage.Message);
             Assert.AreEqual(messageData.Type, deserializesSentMessage.Type);
@@ -115,13 +117,14 @@ namespace Testing.Content
         }
 
         [Test]
-        public void Receive_HandlingNewFile_ShouldSaveTheNewFileAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
+        public void
+            Receive_HandlingNewFile_ShouldSaveTheNewFileAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            MessageData file = new MessageData
+            var file = new MessageData
             {
                 Message = "Test_File.pdf",
                 Type = MessageType.File,
@@ -132,13 +135,13 @@ namespace Testing.Content
                 ReceiverIds = new int[0]
             };
 
-            string serializesMessage = serializer.Serialize(file);
+            var serializesMessage = serializer.Serialize(file);
 
             contentServer.Receive(serializesMessage);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
+            var notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Test_File.pdf", notifiedMessage.Message);
             Assert.AreEqual(file.Type, notifiedMessage.Type);
@@ -147,9 +150,9 @@ namespace Testing.Content
             Assert.AreEqual(file.Starred, notifiedMessage.Starred);
             Assert.AreEqual(file.ReceiverIds, notifiedMessage.ReceiverIds);
 
-            string sentMessage = communicator.GetSentData();
+            var sentMessage = communicator.GetSentData();
 
-            MessageData deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
+            var deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
 
             Assert.AreEqual("Test_File.pdf", deserializesSentMessage.Message);
             Assert.AreEqual(file.Type, deserializesSentMessage.Type);
@@ -161,9 +164,10 @@ namespace Testing.Content
         }
 
         [Test]
-        public void Receive_StarringAMessage_ShouldStarTheMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
+        public void
+            Receive_StarringAMessage_ShouldStarTheMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
-            MessageData starMessage = new MessageData
+            var starMessage = new MessageData
             {
                 MessageId = 0,
                 ReplyThreadId = 0,
@@ -171,13 +175,13 @@ namespace Testing.Content
                 Type = MessageType.Chat
             };
 
-            string serializedStarMessage = serializer.Serialize(starMessage);
+            var serializedStarMessage = serializer.Serialize(starMessage);
 
             contentServer.Receive(serializedStarMessage);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData starredMessage = listener.GetOnMessageData();
+            var starredMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("First Message", starredMessage.Message);
             Assert.AreEqual(MessageType.Chat, starredMessage.Type);
@@ -186,9 +190,9 @@ namespace Testing.Content
             Assert.AreEqual(0, starredMessage.ReplyThreadId);
             Assert.IsTrue(starredMessage.Starred);
 
-            string sentMessage = communicator.GetSentData();
+            var sentMessage = communicator.GetSentData();
 
-            MessageData deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
+            var deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
 
             Assert.AreEqual("First Message", deserializesSentMessage.Message);
             Assert.AreEqual(MessageType.Chat, deserializesSentMessage.Type);
@@ -200,9 +204,10 @@ namespace Testing.Content
         }
 
         [Test]
-        public void Receive_UpdatingAMessage_ShouldUpdateTheMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
+        public void
+            Receive_UpdatingAMessage_ShouldUpdateTheMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
-            MessageData updateMessage = new MessageData
+            var updateMessage = new MessageData
             {
                 MessageId = 0,
                 ReplyThreadId = 0,
@@ -211,13 +216,13 @@ namespace Testing.Content
                 Message = "Hello World!"
             };
 
-            string serializedUpdateMessage = serializer.Serialize(updateMessage);
+            var serializedUpdateMessage = serializer.Serialize(updateMessage);
 
             contentServer.Receive(serializedUpdateMessage);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData updatedMessage = listener.GetOnMessageData();
+            var updatedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Hello World!", updatedMessage.Message);
             Assert.AreEqual(MessageType.Chat, updatedMessage.Type);
@@ -225,9 +230,9 @@ namespace Testing.Content
             Assert.AreEqual(0, updatedMessage.MessageId);
             Assert.AreEqual(0, updatedMessage.ReplyThreadId);
 
-            string sentMessage = communicator.GetSentData();
+            var sentMessage = communicator.GetSentData();
 
-            MessageData deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
+            var deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
 
             Assert.AreEqual("Hello World!", deserializesSentMessage.Message);
             Assert.AreEqual(MessageType.Chat, deserializesSentMessage.Type);
@@ -240,13 +245,13 @@ namespace Testing.Content
         [Test]
         public void Receive_DownloadingAFile_FileShouldBeFetchedAndForwadedToTheCommunicator()
         {
-            string CurrentDirectory = Directory.GetCurrentDirectory();
-            string[] path = CurrentDirectory.Split(new string[] { "\\Testing" }, StringSplitOptions.None);
-            string pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
+            var CurrentDirectory = Directory.GetCurrentDirectory();
+            var path = CurrentDirectory.Split(new[] {"\\Testing"}, StringSplitOptions.None);
+            var pathA = path[0] + "\\Testing\\Content\\Test_File.pdf";
 
-            SendFileData file = new SendFileData(pathA);
+            var file = new SendFileData(pathA);
 
-            MessageData fileDownloadMessage = new MessageData
+            var fileDownloadMessage = new MessageData
             {
                 Message = "a.pdf",
                 MessageId = 1,
@@ -256,13 +261,13 @@ namespace Testing.Content
                 SenderId = 10
             };
 
-            string serializedFileDownloadMessage = serializer.Serialize(fileDownloadMessage);
+            var serializedFileDownloadMessage = serializer.Serialize(fileDownloadMessage);
 
             contentServer.Receive(serializedFileDownloadMessage);
 
-            string sentData = communicator.GetSentData();
+            var sentData = communicator.GetSentData();
 
-            MessageData deserializedSentData = serializer.Deserialize<MessageData>(sentData);
+            var deserializedSentData = serializer.Deserialize<MessageData>(sentData);
 
             Assert.AreEqual("a.pdf", deserializedSentData.Message);
             Assert.AreEqual(1, deserializedSentData.MessageId);
@@ -273,26 +278,27 @@ namespace Testing.Content
             Assert.AreEqual(file.fileSize, deserializedSentData.FileData.fileSize);
             Assert.AreEqual(file.fileContent, deserializedSentData.FileData.fileContent);
 
-            List<string> receivers = communicator.GetRcvIds();
+            var receivers = communicator.GetRcvIds();
             Assert.AreEqual(1, receivers.Count);
             Assert.AreEqual("10", receivers[0]);
             Assert.IsFalse(communicator.GetIsBroadcast());
         }
 
         [Test]
-        public void Receive_HandlingPrivateMessages_ShouldSaveTheNewMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
+        public void
+            Receive_HandlingPrivateMessages_ShouldSaveTheNewMessageAndNotifyTheSubcsribersAndForwardTheSerializedMessageToCommunicator()
         {
-            MessageData messageData = utils.GenerateNewMessageData("Hello");
-            messageData.ReceiverIds = new int[] { 2, 3 };
+            var messageData = utils.GenerateNewMessageData("Hello");
+            messageData.ReceiverIds = new[] {2, 3};
             messageData.SenderId = 1;
 
-            string serializesMessage = serializer.Serialize(messageData);
+            var serializesMessage = serializer.Serialize(messageData);
 
             contentServer.Receive(serializesMessage);
 
             Thread.Sleep(sleeptime);
 
-            ReceiveMessageData notifiedMessage = listener.GetOnMessageData();
+            var notifiedMessage = listener.GetOnMessageData();
 
             Assert.AreEqual("Hello", notifiedMessage.Message);
             Assert.AreEqual(messageData.Type, notifiedMessage.Type);
@@ -301,9 +307,9 @@ namespace Testing.Content
             Assert.AreEqual(messageData.Starred, notifiedMessage.Starred);
             Assert.AreEqual(messageData.ReceiverIds, notifiedMessage.ReceiverIds);
 
-            string sentMessage = communicator.GetSentData();
+            var sentMessage = communicator.GetSentData();
 
-            MessageData deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
+            var deserializesSentMessage = serializer.Deserialize<MessageData>(sentMessage);
 
             Assert.AreEqual("Hello", deserializesSentMessage.Message);
             Assert.AreEqual(messageData.Type, deserializesSentMessage.Type);
@@ -312,7 +318,7 @@ namespace Testing.Content
             Assert.AreEqual(messageData.Starred, deserializesSentMessage.Starred);
             Assert.AreEqual(messageData.ReceiverIds, deserializesSentMessage.ReceiverIds);
 
-            List<string> receivers = communicator.GetRcvIds();
+            var receivers = communicator.GetRcvIds();
             Assert.AreEqual(3, receivers.Count);
             Assert.AreEqual("1", receivers[2]);
             Assert.AreEqual("2", receivers[0]);
@@ -323,9 +329,9 @@ namespace Testing.Content
         [Test]
         public void Receive_InvalidEventForChatType_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            string previousMessageToCommunicator = communicator.GetSentData();
+            var previousMessageToCommunicator = communicator.GetSentData();
 
-            MessageData eventMessage = new MessageData
+            var eventMessage = new MessageData
             {
                 MessageId = 0,
                 ReplyThreadId = 0,
@@ -333,7 +339,7 @@ namespace Testing.Content
                 Type = MessageType.Chat
             };
 
-            string serializedStarMessage = serializer.Serialize(eventMessage);
+            var serializedStarMessage = serializer.Serialize(eventMessage);
 
             contentServer.Receive(serializedStarMessage);
 
@@ -343,9 +349,9 @@ namespace Testing.Content
         [Test]
         public void Receive_InvalidEventForFileType_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            string previousMessageToCommunicator = communicator.GetSentData();
+            var previousMessageToCommunicator = communicator.GetSentData();
 
-            MessageData eventMessage = new MessageData
+            var eventMessage = new MessageData
             {
                 MessageId = 1,
                 ReplyThreadId = 1,
@@ -353,7 +359,7 @@ namespace Testing.Content
                 Type = MessageType.File
             };
 
-            string serializedStarMessage = serializer.Serialize(eventMessage);
+            var serializedStarMessage = serializer.Serialize(eventMessage);
 
             contentServer.Receive(serializedStarMessage);
 
@@ -375,11 +381,12 @@ namespace Testing.Content
         }
 
         [Test]
-        public void Receive_StarringAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
+        public void
+            Receive_StarringAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            string previousMessageToCommunicator = communicator.GetSentData();
+            var previousMessageToCommunicator = communicator.GetSentData();
 
-            MessageData starMessage = new MessageData
+            var starMessage = new MessageData
             {
                 MessageId = 10,
                 ReplyThreadId = 10,
@@ -387,7 +394,7 @@ namespace Testing.Content
                 Type = MessageType.Chat
             };
 
-            string serializedStarMessage = serializer.Serialize(starMessage);
+            var serializedStarMessage = serializer.Serialize(starMessage);
 
             contentServer.Receive(serializedStarMessage);
 
@@ -395,11 +402,12 @@ namespace Testing.Content
         }
 
         [Test]
-        public void Receive_UpdatingAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
+        public void
+            Receive_UpdatingAMessageThatDoesNotExist_SubscribersShouldNotBeNotifiedAndNothingShouldBeSentToCommunicator()
         {
-            string previousMessageToCommunicator = communicator.GetSentData();
+            var previousMessageToCommunicator = communicator.GetSentData();
 
-            MessageData updateMessage = new MessageData
+            var updateMessage = new MessageData
             {
                 MessageId = 10,
                 ReplyThreadId = 10,
@@ -408,7 +416,7 @@ namespace Testing.Content
                 Message = "Hello There!"
             };
 
-            string serializedStarMessage = serializer.Serialize(updateMessage);
+            var serializedStarMessage = serializer.Serialize(updateMessage);
 
             contentServer.Receive(serializedStarMessage);
 
@@ -418,9 +426,9 @@ namespace Testing.Content
         [Test]
         public void Receive_GettingInvalidDataFromNotificationListener_ShouldReturnGracefully()
         {
-            string previousMessageToCommunicator = communicator.GetSentData();
+            var previousMessageToCommunicator = communicator.GetSentData();
 
-            string garbageData = " adfasfasfsadf";
+            var garbageData = " adfasfasfsadf";
             contentServer.Receive(garbageData);
 
             Assert.AreEqual(communicator.GetSentData(), previousMessageToCommunicator);
@@ -429,9 +437,9 @@ namespace Testing.Content
         [Test]
         public void SGetAllMessages_GettingAllTheMessagesOnServer_ShouldReturnListOfChatContextsWithAllTheMessages()
         {
-            List<ChatContext> chatContexts = contentServer.SGetAllMessages();
+            var chatContexts = contentServer.SGetAllMessages();
 
-            ReceiveMessageData firstMessage = chatContexts[0].MsgList[0];
+            var firstMessage = chatContexts[0].MsgList[0];
 
             Assert.AreEqual("First Message", firstMessage.Message);
             Assert.AreEqual(MessageType.Chat, firstMessage.Type);
@@ -439,7 +447,7 @@ namespace Testing.Content
             Assert.AreEqual(0, firstMessage.MessageId);
             Assert.AreEqual(0, firstMessage.ReplyThreadId);
 
-            ReceiveMessageData secondMessage = chatContexts[1].MsgList[0];
+            var secondMessage = chatContexts[1].MsgList[0];
 
             Assert.AreEqual("Test_File.pdf", secondMessage.Message);
             Assert.AreEqual(MessageType.File, secondMessage.Type);
@@ -449,25 +457,26 @@ namespace Testing.Content
         }
 
         [Test]
-        public void SSendAllMessagesToClient_SendingAllMessagesToANewlyJoinedClient_ListOfChatContextsShouldBeForwadedToCommunicator()
+        public void
+            SSendAllMessagesToClient_SendingAllMessagesToANewlyJoinedClient_ListOfChatContextsShouldBeForwadedToCommunicator()
         {
             communicator.Reset();
 
-            MessageData messageData = new MessageData
+            var messageData = new MessageData
             {
                 Type = MessageType.HistoryRequest,
                 SenderId = 10
             };
 
-            string serializedMessageData = serializer.Serialize(messageData);
+            var serializedMessageData = serializer.Serialize(messageData);
 
             contentServer.Receive(serializedMessageData);
 
-            string serializedAllMessages = communicator.GetSentData();
+            var serializedAllMessages = communicator.GetSentData();
 
-            List<ChatContext> chatContexts = serializer.Deserialize<List<ChatContext>>(serializedAllMessages);
+            var chatContexts = serializer.Deserialize<List<ChatContext>>(serializedAllMessages);
 
-            ReceiveMessageData firstMessage = chatContexts[0].MsgList[0];
+            var firstMessage = chatContexts[0].MsgList[0];
 
             Assert.AreEqual("First Message", firstMessage.Message);
             Assert.AreEqual(MessageType.Chat, firstMessage.Type);
@@ -475,7 +484,7 @@ namespace Testing.Content
             Assert.AreEqual(0, firstMessage.MessageId);
             Assert.AreEqual(0, firstMessage.ReplyThreadId);
 
-            ReceiveMessageData secondMessage = chatContexts[1].MsgList[0];
+            var secondMessage = chatContexts[1].MsgList[0];
 
             Assert.AreEqual("Test_File.pdf", secondMessage.Message);
             Assert.AreEqual(MessageType.File, secondMessage.Type);
@@ -483,7 +492,7 @@ namespace Testing.Content
             Assert.AreEqual(1, secondMessage.MessageId);
             Assert.AreEqual(1, secondMessage.ReplyThreadId);
 
-            List<string> receiverIds = communicator.GetRcvIds();
+            var receiverIds = communicator.GetRcvIds();
             Assert.AreEqual(1, receiverIds.Count);
             Assert.AreEqual("10", receiverIds[0]);
             Assert.IsFalse(communicator.GetIsBroadcast());

@@ -4,28 +4,23 @@
 ///     Interaction logic for ChatView.xaml.
 /// </summary>
 
-using Client.ViewModel;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Client.ViewModel;
+using Microsoft.Win32;
 
 namespace Client
 {
     public partial class ChatView : UserControl
     {
         /// <summary>
-        ///     Message Id of the message replied it.
-        /// </summary>
-        private int _replyMsgId { get; set; }
-
-        /// <summary>
         ///     Collection of all the messages.
         /// </summary>
-        private ObservableCollection<Message> _allMessages;
+        private readonly ObservableCollection<Message> _allMessages;
 
         /// <summary>
         ///     Creates an instance of the ChatView.
@@ -34,16 +29,21 @@ namespace Client
         {
             InitializeComponent();
 
-            ChatViewModel viewModel = new ChatViewModel();
+            var viewModel = new ChatViewModel();
 
             // Subscribe to the property changed event
             viewModel.PropertyChanged += Listner;
-            this.DataContext = viewModel;
+            DataContext = viewModel;
 
             _allMessages = new ObservableCollection<Message>();
             // Binding AllMessages
-            this.myChat.ItemsSource = _allMessages;
+            myChat.ItemsSource = _allMessages;
         }
+
+        /// <summary>
+        ///     Message Id of the message replied it.
+        /// </summary>
+        private int _replyMsgId { get; set; }
 
         /// <summary>
         ///     Updates the view with the new message on property changed event.
@@ -52,8 +52,8 @@ namespace Client
         /// <param name="e"> The property changed event </param>
         private void Listner(object sender, PropertyChangedEventArgs e)
         {
-            string propertyName = e.PropertyName;
-            ChatViewModel viewModel = this.DataContext as ChatViewModel;
+            var propertyName = e.PropertyName;
+            var viewModel = DataContext as ChatViewModel;
 
             if (propertyName == "ReceivedMsg")
             {
@@ -64,7 +64,6 @@ namespace Client
             {
                 _allMessages.Add(viewModel.ReceivedMsg);
             }
-            
         }
 
         /// <summary>
@@ -74,23 +73,19 @@ namespace Client
         /// <param name="e"> The routed event data </param>
         private void OnSentButtonClick(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(this.SendTextBox.Text))
+            if (!string.IsNullOrEmpty(SendTextBox.Text))
             {
-                ChatViewModel viewModel = this.DataContext as ChatViewModel;
+                var viewModel = DataContext as ChatViewModel;
 
                 // If the reply text box is empty then the message 
                 // is not a reply message, else send the reply message id
-                if (string.IsNullOrEmpty(this.ReplyTextBox.Text))
-                {
-                    viewModel.SendChat(this.SendTextBox.Text, -1);
-                }
+                if (string.IsNullOrEmpty(ReplyTextBox.Text))
+                    viewModel.SendChat(SendTextBox.Text, -1);
                 else
-                {
-                    viewModel.SendChat(this.SendTextBox.Text, _replyMsgId);
-                }
+                    viewModel.SendChat(SendTextBox.Text, _replyMsgId);
 
-                this.SendTextBox.Text = string.Empty;
-                this.ReplyTextBox.Text = "";
+                SendTextBox.Text = string.Empty;
+                ReplyTextBox.Text = "";
             }
         }
 
@@ -101,25 +96,21 @@ namespace Client
         /// <param name="e"> The routed event data </param>
         private void OnUploadButtonClick(object sender, RoutedEventArgs e)
         {
-            ChatViewModel viewModel = this.DataContext as ChatViewModel;
+            var viewModel = DataContext as ChatViewModel;
             // Create OpenFileDialog
-            Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
+            var openFileDlg = new OpenFileDialog();
 
             // Launch OpenFileDialog by calling ShowDialog method
-            Nullable<bool> result = openFileDlg.ShowDialog();
+            var result = openFileDlg.ShowDialog();
 
             // Process open file dialog box results
             if (result == true)
             {
-                if (string.IsNullOrEmpty(this.ReplyTextBox.Text))
-                {
+                if (string.IsNullOrEmpty(ReplyTextBox.Text))
                     viewModel.SendFile(openFileDlg.FileName, -1);
-                }
                 else
-                {
                     viewModel.SendFile(openFileDlg.FileName, _replyMsgId);
-                }
-                this.ReplyTextBox.Text = "";
+                ReplyTextBox.Text = "";
             }
         }
 
@@ -132,14 +123,14 @@ namespace Client
         {
             if (sender is Button)
             {
-                Button cmd = (Button)sender;
+                var cmd = (Button) sender;
                 if (cmd.DataContext is Message)
                 {
                     // Get the message corresponding to the particular reply button
-                    Message m = (Message)cmd.DataContext;
+                    var m = (Message) cmd.DataContext;
 
                     // Display the message in the reply text box
-                    this.ReplyTextBox.Text = m.TextMessage;
+                    ReplyTextBox.Text = m.TextMessage;
 
                     // Set the reply message id
                     _replyMsgId = m.MessageId;
@@ -154,15 +145,15 @@ namespace Client
         /// <param name="e"> The routed event data </param>
         private void OnStarButtonClick(object sender, RoutedEventArgs e)
         {
-            ChatViewModel viewModel = this.DataContext as ChatViewModel;
+            var viewModel = DataContext as ChatViewModel;
 
             if (sender is RadioButton)
             {
-                RadioButton cmd = (RadioButton)sender;
+                var cmd = (RadioButton) sender;
                 if (cmd.DataContext is Message)
                 {
                     // Get the message corresponding to the particular star button
-                    Message m = (Message)cmd.DataContext;
+                    var m = (Message) cmd.DataContext;
 
                     viewModel.StarChat(m.MessageId);
                 }
@@ -178,32 +169,28 @@ namespace Client
         {
             if (sender is Button)
             {
-                ChatViewModel viewModel = this.DataContext as ChatViewModel;
+                var viewModel = DataContext as ChatViewModel;
 
                 // Create SaveFileDialog
-                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+                var dlg = new SaveFileDialog();
 
-                Button cmd = (Button)sender;
+                var cmd = (Button) sender;
                 if (cmd.DataContext is Message)
                 {
                     // Get the message corresponding to the particular download button
-                    Message m = (Message)cmd.DataContext;
+                    var m = (Message) cmd.DataContext;
 
                     // Set the default file name and extension
                     dlg.FileName = Path.GetFileNameWithoutExtension(m.TextMessage);
                     dlg.DefaultExt = Path.GetExtension(m.TextMessage);
 
                     // Show save file dialog box
-                    Nullable<bool> result = dlg.ShowDialog();
+                    var result = dlg.ShowDialog();
 
                     // Process save file dialog box results
-                    if (result == true)
-                    {
-                        viewModel.DownloadFile(m.MessageId, dlg.FileName);
-                    }
+                    if (result == true) viewModel.DownloadFile(m.MessageId, dlg.FileName);
                 }
             }
-            
         }
 
         /// <summary>
@@ -214,8 +201,8 @@ namespace Client
         {
             if (listBox != null)
             {
-                var border = (Border)VisualTreeHelper.GetChild(listBox, 0);
-                var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                var border = (Border) VisualTreeHelper.GetChild(listBox, 0);
+                var scrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(border, 0);
                 scrollViewer.ScrollToBottom();
             }
         }

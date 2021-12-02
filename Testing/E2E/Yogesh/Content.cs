@@ -1,21 +1,15 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using Client.ViewModel;
 using Content;
 using Networking;
 using NUnit.Framework;
-using Testing.UX.Chat;
 
 namespace Testing.E2E.Yogesh
 {
     [TestFixture]
     public class Content
     {
-        private ISerializer _serializer;
-        private ContentServer _contentServer;
-        private ContentClient _contentClient;
-        
         [OneTimeSetUp]
         public void Setup()
         {
@@ -24,7 +18,11 @@ namespace Testing.E2E.Yogesh
             _contentServer = new ContentServer();
             _contentClient = new ContentClient();
         }
-        
+
+        private ISerializer _serializer;
+        private ContentServer _contentServer;
+        private ContentClient _contentClient;
+
         [Test]
         [TestCase("Hi, I am Yogesh", -1, false)]
         [TestCase("Hi, I am Yogesh", 1, true)] // Reply ID 1 does not exist.
@@ -39,7 +37,7 @@ namespace Testing.E2E.Yogesh
                 Assert.That(() => chatViewModel.SendChat(message, replyId), Throws.Exception);
                 return;
             }
-            
+
             chatViewModel.SendChat(message, replyId);
             var serializedData = File.ReadAllText("networking_output.json");
             var data = _serializer.Deserialize<MessageData>(serializedData);
@@ -53,7 +51,7 @@ namespace Testing.E2E.Yogesh
             _contentClient.OnReceive(data);
             // _contentClient.CSubscribe(chatViewModel);
         }
-        
+
         [Test]
         [TestCase("../../../../DesignSpec.pdf", "DesignSpec.pdf", -1, false)]
         [TestCase("../../../../DesignSpec.pdf", "DesignSpec.pdf", -2, true)] // Reply ID -2 is invalid
@@ -67,7 +65,7 @@ namespace Testing.E2E.Yogesh
                 Assert.That(() => chatViewModel.SendFile(filepath, replyId), Throws.Exception);
                 return;
             }
-            
+
             chatViewModel.SendFile(filepath, replyId);
             var serializedData = File.ReadAllText("networking_output.json");
             var data = _serializer.Deserialize<MessageData>(serializedData);
@@ -81,7 +79,7 @@ namespace Testing.E2E.Yogesh
             _contentClient.OnReceive(data);
         }
 
-        SendMessageData CreateChatReply(string message, int replyMsgId)
+        private SendMessageData CreateChatReply(string message, int replyMsgId)
         {
             var msgToSend = new SendMessageData();
             msgToSend.Type = MessageType.Chat;
@@ -93,7 +91,7 @@ namespace Testing.E2E.Yogesh
             msgToSend.ReceiverIds = new int[] { };
             return msgToSend;
         }
-        
+
         [Test]
         [TestCase("Hello World", 0)]
         public void SendChatWithReply(string message, int replyId)
@@ -108,8 +106,8 @@ namespace Testing.E2E.Yogesh
             _contentClient.OnReceive(data);
         }
 
-        
-        SendMessageData CreateFileReply(string message, int replyMsgId)
+
+        private SendMessageData CreateFileReply(string message, int replyMsgId)
         {
             var msgToSend = new SendMessageData();
             msgToSend.Type = MessageType.File;
@@ -121,13 +119,13 @@ namespace Testing.E2E.Yogesh
             msgToSend.ReceiverIds = new int[] { };
             return msgToSend;
         }
-        
+
         [Test]
         [TestCase("../../../../DesignSpec.pdf", "DesignSpec.pdf", 0)]
         public void SendFileWithReply(string filepath, string filename, int replyId)
         {
             SendChat("Hello world", -1, false);
-            
+
             _contentClient.CSend(CreateFileReply(filepath, 0));
             var serializedData = File.ReadAllText("networking_output.json");
             _contentServer.Receive(serializedData);
@@ -136,7 +134,7 @@ namespace Testing.E2E.Yogesh
             _contentClient.OnReceive(data);
         }
 
-        
+
         [Test]
         [TestCase("../../../../DesignSpec.pdf", "DesignSpec.pdf")]
         public void FetchFile(string filepath, string filename)
@@ -155,7 +153,7 @@ namespace Testing.E2E.Yogesh
         public void StarMessage()
         {
             SendChat("Hello world", -1, false);
-            
+
             _contentClient.CMarkStar(0);
             var serializedData = File.ReadAllText("networking_output.json");
             _contentServer.Receive(serializedData);

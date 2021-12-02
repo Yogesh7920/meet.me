@@ -4,8 +4,8 @@
 namespace Client
 {
     /// <summary>
-    /// UserViewData object contains information to be 
-    /// viewed per client in list of users.
+    ///     UserViewData object contains information to be
+    ///     viewed per client in list of users.
     /// </summary>
     public class UserViewData
     {

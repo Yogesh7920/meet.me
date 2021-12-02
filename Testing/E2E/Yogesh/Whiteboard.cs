@@ -2,9 +2,7 @@
 /// <created>26/10/2021</created>
 
 
-using System;
-using System.IO;
-using System.Windows;
+using System.Threading;
 using System.Windows.Controls;
 using Client;
 using Networking;
@@ -13,14 +11,10 @@ using Whiteboard;
 
 namespace Testing.E2E.Yogesh
 {
-    [TestFixture , Apartment(System.Threading.ApartmentState.STA)]
+    [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public class Whiteboard
     {
-        private ISerializer _serializer;
-        private Canvas _globCanvas;
-        private WhiteBoardViewModel _viewModel;
-        private IWhiteBoardOperationHandler _WBOps;
-
         [OneTimeSetUp]
         public void Setup()
         {
@@ -30,6 +24,11 @@ namespace Testing.E2E.Yogesh
             // _viewModel = new WhiteBoardViewModel(_globCanvas);
             // _WBOps = new WhiteBoardOperationHandler(new Coordinate(((int)_globCanvas.Height), ((int)_globCanvas.Width)));
         }
+
+        private ISerializer _serializer;
+        private Canvas _globCanvas;
+        private WhiteBoardViewModel _viewModel;
+        private IWhiteBoardOperationHandler _WBOps;
 
         [Test]
         public void CreateShape()

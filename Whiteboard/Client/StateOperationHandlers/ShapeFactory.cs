@@ -6,28 +6,25 @@
 **/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
     /// <summary>
-    /// Factory for creating mainshape.
+    ///     Factory for creating mainshape.
     /// </summary>
     public static class ShapeFactory
     {
         /// <summary>
-        /// MainShape object to use the functionalites provided by the class.
+        ///     MainShape object to use the functionalites provided by the class.
         /// </summary>
-        private readonly static MainShape _ellipse;
-        private readonly static MainShape _rectangle;
-        private readonly static MainShape _line;
-        private readonly static MainShape _polyline;
+        private static readonly MainShape _ellipse;
+
+        private static readonly MainShape _rectangle;
+        private static readonly MainShape _line;
+        private static readonly MainShape _polyline;
 
         /// <summary>
-        /// Constructor of ShapeFactory
+        ///     Constructor of ShapeFactory
         /// </summary>
         static ShapeFactory()
         {
@@ -38,37 +35,25 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Creates/modifies Shape.
+        ///     Creates/modifies Shape.
         /// </summary>
         /// <param name="shapeType">Defines which shape to create.</param>
         /// <param name="start">Start coordinate of mouse drag.</param>
         /// <param name="end">End coordinate of mouse drag.</param>
         /// <param name="prevShape">previous shape to modify.</param>
         /// <returns></returns>
-        public static MainShape MainShapeCreatorFactory(ShapeType shapeType, Coordinate start, Coordinate end, MainShape prevShape)
+        public static MainShape MainShapeCreatorFactory(ShapeType shapeType, Coordinate start, Coordinate end,
+            MainShape prevShape)
         {
-
             if (shapeType == ShapeType.ELLIPSE)
-            {
                 return _ellipse.ShapeMaker(start, end, prevShape);
-            }
-            else if (shapeType == ShapeType.LINE)
-            {
+            if (shapeType == ShapeType.LINE)
                 return _line.ShapeMaker(start, end, prevShape);
-            }
-            else if (shapeType == ShapeType.POLYLINE)
-            {
+            if (shapeType == ShapeType.POLYLINE)
                 return _polyline.ShapeMaker(start, end, prevShape);
-            }
-            else if (shapeType == ShapeType.RECTANGLE)
-            {
+            if (shapeType == ShapeType.RECTANGLE)
                 return _rectangle.ShapeMaker(start, end, prevShape);
-            }
-            else
-            {
-                throw new Exception("Invalid Object type");
-            }
+            throw new Exception("Invalid Object type");
         }
-
     }
 }

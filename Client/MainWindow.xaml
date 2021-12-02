@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        MinWidth="1500" MinHeight="850" WindowStyle="None" 
-        Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}" Width="{x:Static SystemParameters.PrimaryScreenWidth}">
+        MinWidth="1500" MinHeight="850" WindowStyle="None"
+        Title="MainWindow" Height="{x:Static SystemParameters.PrimaryScreenHeight}"
+        Width="{x:Static SystemParameters.PrimaryScreenWidth}">
 
     <Window.Resources>
         <Style TargetType="CheckBox">
@@ -14,24 +15,29 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel Orientation="Horizontal">
-                            <Grid >
-                                <Border Width="30" Height="15" Background="{DynamicResource Color7Bg}" CornerRadius="7" Margin="5,0"></Border>
-                                <Border x:Name="button" Height="15" Width="15" CornerRadius="10" HorizontalAlignment="Left"  ></Border>
+                            <Grid>
+                                <Border Width="30" Height="15" Background="{DynamicResource Color7Bg}" CornerRadius="7"
+                                        Margin="5,0" />
+                                <Border x:Name="button" Height="15" Width="15" CornerRadius="10"
+                                        HorizontalAlignment="Left" />
                             </Grid>
-                            <ContentPresenter x:Name="content" Margin="10,0,0,0" Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
+                            <ContentPresenter x:Name="content" Margin="10,0,0,0" Content="{TemplateBinding Content}"
+                                              VerticalAlignment="Center" />
                         </StackPanel>
                         <ControlTemplate.Resources>
                             <Storyboard x:Key="right">
-                                <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="button" Duration="0:0:0.4" From="0,0,0,0" To="28,0,0,0" >
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="button"
+                                                    Duration="0:0:0.4" From="0,0,0,0" To="28,0,0,0">
                                     <ThicknessAnimation.EasingFunction>
-                                        <CircleEase EasingMode="EaseOut"/>
+                                        <CircleEase EasingMode="EaseOut" />
                                     </ThicknessAnimation.EasingFunction>
                                 </ThicknessAnimation>
                             </Storyboard>
                             <Storyboard x:Key="left">
-                                <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="button" Duration="0:0:0.4" From="28,0,0,0" To="0,0,0,0" >
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin" Storyboard.TargetName="button"
+                                                    Duration="0:0:0.4" From="28,0,0,0" To="0,0,0,0">
                                     <ThicknessAnimation.EasingFunction>
-                                        <CircleEase EasingMode="EaseOut"/>
+                                        <CircleEase EasingMode="EaseOut" />
                                     </ThicknessAnimation.EasingFunction>
                                 </ThicknessAnimation>
                             </Storyboard>
@@ -39,17 +45,17 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="false">
                                 <Trigger.ExitActions>
-                                    <RemoveStoryboard BeginStoryboardName="leftt"></RemoveStoryboard>
-                                    <BeginStoryboard Storyboard="{StaticResource right}" x:Name="rightt" ></BeginStoryboard>
+                                    <RemoveStoryboard BeginStoryboardName="leftt" />
+                                    <BeginStoryboard Storyboard="{StaticResource right}" x:Name="rightt" />
                                 </Trigger.ExitActions>
-                                <Setter TargetName="button" Property="Background" Value="{StaticResource Color4Bg}"></Setter>
+                                <Setter TargetName="button" Property="Background" Value="{StaticResource Color4Bg}" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="true">
                                 <Trigger.ExitActions>
-                                    <RemoveStoryboard BeginStoryboardName="rightt"></RemoveStoryboard>
-                                    <BeginStoryboard Storyboard="{StaticResource left}" x:Name="leftt" ></BeginStoryboard>
+                                    <RemoveStoryboard BeginStoryboardName="rightt" />
+                                    <BeginStoryboard Storyboard="{StaticResource left}" x:Name="leftt" />
                                 </Trigger.ExitActions>
-                                <Setter TargetName="button" Property="Background" Value="{DynamicResource Color4Bg}"></Setter>
+                                <Setter TargetName="button" Property="Background" Value="{DynamicResource Color4Bg}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -61,92 +67,106 @@
     <!-- Parent Grid -->
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40"/>
-            <ColumnDefinition Width="0.02*"/>
-            <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="0.02*"/>
-            <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="0.02*"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="0.0*"/>
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="0.02*" />
+            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="0.02*" />
+            <ColumnDefinition Width="10*" />
+            <ColumnDefinition Width="0.02*" />
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="0.0*" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="687*"/>
-            <RowDefinition Height="0.75"/>
-            <RowDefinition Height="82*"/>
-            <RowDefinition Height="15*"/>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="687*" />
+            <RowDefinition Height="0.75" />
+            <RowDefinition Height="82*" />
+            <RowDefinition Height="15*" />
         </Grid.RowDefinitions>
         <Grid.Effect>
-            <DropShadowEffect BlurRadius="20" Color="DimGray" RenderingBias="Quality" ShadowDepth="1"/>
+            <DropShadowEffect BlurRadius="20" Color="DimGray" RenderingBias="Quality" ShadowDepth="1" />
         </Grid.Effect>
 
         <!-- Title Bar -->
-        <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}" MouseDown="TitleBar_MouseDown" >
-            <TextBlock Text="meet.me" HorizontalAlignment="Center" VerticalAlignment="Top"  
-                       FontWeight="Bold" FontFamily="ComicSans"  FontSize="25" Foreground="{DynamicResource Color3Bg}"/>
+        <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}"
+              MouseDown="TitleBar_MouseDown">
+            <TextBlock Text="meet.me" HorizontalAlignment="Center" VerticalAlignment="Top"
+                       FontWeight="Bold" FontFamily="ComicSans" FontSize="25" Foreground="{DynamicResource Color3Bg}" />
             <DockPanel HorizontalAlignment="Right" Margin="10,0">
                 <DockPanel Name="ThemeButton" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 10 0">
-                    <TextBlock Text="Theme" Foreground="{DynamicResource Color3Bg}" FontSize="12" FontWeight="DemiBold"></TextBlock>
-                    <CheckBox Name="Theme" Click="OnThemeClick" FontSize="15" Background="{DynamicResource Color2Bg}" Foreground="{DynamicResource Color3Bg}" Margin="10 0" ></CheckBox>
+                    <TextBlock Text="Theme" Foreground="{DynamicResource Color3Bg}" FontSize="12" FontWeight="DemiBold" />
+                    <CheckBox Name="Theme" Click="OnThemeClick" FontSize="15" Background="{DynamicResource Color2Bg}"
+                              Foreground="{DynamicResource Color3Bg}" Margin="10 0" />
                 </DockPanel>
                 <!-- Minimize button -->
-                <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
+                <Button x:Name="MinimizeButton" Click="OnMinimizeButtonClick"
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}"
+                        Foreground="{DynamicResource Color3Bg}"
                         ToolTip="Minimize">
-                    <materialDesign:PackIcon Kind="WindowMinimize"/>
+                    <materialDesign:PackIcon Kind="WindowMinimize" />
                 </Button>
 
                 <!--Maximize button -->
-                <Button x:Name="MaximizeButton" Click="OnMaximizeButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
+                <Button x:Name="MaximizeButton" Click="OnMaximizeButtonClick"
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}"
+                        Foreground="{DynamicResource Color3Bg}"
                         ToolTip="Maximize">
-                    <materialDesign:PackIcon Kind="WindowMaximize"/>
+                    <materialDesign:PackIcon Kind="WindowMaximize" />
                 </Button>
 
                 <!--Restore button -->
-                <Button x:Name="RestoreButton" Click="OnRestoreButtonClick" 
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
+                <Button x:Name="RestoreButton" Click="OnRestoreButtonClick"
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}"
+                        Foreground="{DynamicResource Color3Bg}"
                         ToolTip="Restore" Visibility="Collapsed">
-                    <materialDesign:PackIcon Kind="WindowRestore"/>
+                    <materialDesign:PackIcon Kind="WindowRestore" />
                 </Button>
-                
+
                 <!--Close button-->
                 <Button x:Name="CloseButton" Click="OnCloseButtonClick"
-                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource Color3Bg}" 
+                        Width="25" Height="25" Background="{x:Null}" BorderBrush="{x:Null}"
+                        Foreground="{DynamicResource Color3Bg}"
                         ToolTip="Close">
-                    <materialDesign:PackIcon Kind="Close"/>
+                    <materialDesign:PackIcon Kind="Close" />
                 </Button>
             </DockPanel>
         </Grid>
         <!-- Title Bar ends -->
 
         <!-- Buttons -->
-        <DockPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center" VerticalAlignment="Stretch" >
-            <Button x:Name="Whiteboard" Click="OnWhiteboardClick" ToolTip="WhiteBoard" Width="40" Height="40" BorderThickness="0" Background="White" >
-                <Image  Source="/Icons/MainWindow/icons8-whiteboard-150.png"/>
+        <DockPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Center"
+                   VerticalAlignment="Stretch">
+            <Button x:Name="Whiteboard" Click="OnWhiteboardClick" ToolTip="WhiteBoard" Width="40" Height="40"
+                    BorderThickness="0" Background="White">
+                <Image Source="/Icons/MainWindow/icons8-whiteboard-150.png" />
             </Button>
-            <Button x:Name="Screenshare" Click="OnScreenShareClick" ToolTip="ScreenShare"  Width="40" Height="40" BorderThickness="0" Background="White" Margin="7.5 0 7.5 0" >
-                <Image Source="/Icons/MainWindow/icons8-present-to-all-50.png"/>
+            <Button x:Name="Screenshare" Click="OnScreenShareClick" ToolTip="ScreenShare" Width="40" Height="40"
+                    BorderThickness="0" Background="White" Margin="7.5 0 7.5 0">
+                <Image Source="/Icons/MainWindow/icons8-present-to-all-50.png" />
             </Button>
-            <Button x:Name="ChatButton" Click="OnChatButtonClick" ToolTip="Chat" Width="40" Height="40" BorderThickness="0" Background="White" Margin="0 0 7.5 0">
-                <Image Source="/Icons/MainWindow/icons8-chat-96.png"/>
+            <Button x:Name="ChatButton" Click="OnChatButtonClick" ToolTip="Chat" Width="40" Height="40"
+                    BorderThickness="0" Background="White" Margin="0 0 7.5 0">
+                <Image Source="/Icons/MainWindow/icons8-chat-96.png" />
             </Button>
-            <Button x:Name="Dashboard" Click="OnDashboardClick" ToolTip="Dashboard" Width="40" Height="40" BorderThickness="0" Background="White" Margin="0 0 7.5 0">
-                <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png"/>
+            <Button x:Name="Dashboard" Click="OnDashboardClick" ToolTip="Dashboard" Width="40" Height="40"
+                    BorderThickness="0" Background="White" Margin="0 0 7.5 0">
+                <Image Source="/Icons/Mainwindow/icons8-dashboard-60.png" />
             </Button>
-            <Border Width="35" Height="35" BorderBrush="{DynamicResource Color4Bg}" BorderThickness="1" CornerRadius="50" Background="{DynamicResource Color2Bg}">
-                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="22" Height="22" BorderThickness="0" Background="{DynamicResource Color2Bg}" >
-                    <Image Source="/Icons/Mainwindow/icons8-end-call-96.png"/>
+            <Border Width="35" Height="35" BorderBrush="{DynamicResource Color4Bg}" BorderThickness="1"
+                    CornerRadius="50" Background="{DynamicResource Color2Bg}">
+                <Button x:Name="Leave" Click="OnLeaveButtonClicked" ToolTip="Leave" Width="22" Height="22"
+                        BorderThickness="0" Background="{DynamicResource Color2Bg}">
+                    <Image Source="/Icons/Mainwindow/icons8-end-call-96.png" />
                 </Button>
             </Border>
         </DockPanel>
 
-        <ContentControl Name="UsersListControl" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="5"/>
-        <ContentControl Name="SSwb" Grid.Row="2" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <ContentControl Name="Chat" Grid.Row="1" Grid.Column="6" Grid.RowSpan="5" Visibility="Collapsed"/>
+        <ContentControl Name="UsersListControl" Grid.Row="1" Grid.Column="0" Grid.RowSpan="5" />
+        <ContentControl Name="SSwb" Grid.Row="2" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="5"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <ContentControl Name="Chat" Grid.Row="1" Grid.Column="6" Grid.RowSpan="5" Visibility="Collapsed" />
 
     </Grid>
 </Window>

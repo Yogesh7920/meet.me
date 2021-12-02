@@ -141,7 +141,7 @@ namespace Networking
 
             var moduleIdentifier = _moduleIdentifiers[_currentQueue];
             _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
-            
+
             lock (_lockObj)
             {
                 _currentWeight -= 1;
@@ -188,7 +188,7 @@ namespace Networking
             while (true)
             {
                 var moduleIdentifier = _moduleIdentifiers[_currentQueue];
-                
+
                 // If the current queue completed its round move to the next queue
                 if (_currentWeight == 0)
                 {
@@ -198,9 +198,9 @@ namespace Networking
                     _currentModuleIdentifier = moduleIdentifier;
                     continue;
                 }
-            
+
                 if (!_multiLevelQueue[moduleIdentifier].IsEmpty) return;
-            
+
                 // If the next queue has no packets, then search for the first queue that has a packet
                 while (_multiLevelQueue[moduleIdentifier].IsEmpty)
                 {

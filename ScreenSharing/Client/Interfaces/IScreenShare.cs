@@ -5,18 +5,17 @@
  * date modified: 25/11/2021
 **/
 
-using System;
 using System.Drawing;
 
 namespace ScreenSharing
 {
     /// <summary>
-    /// interface to be implemented by subscribers of screenshareclient.
+    ///     interface to be implemented by subscribers of screenshareclient.
     /// </summary>
     public interface IScreenShare
     {
         /// <summary>
-        /// handles the reception of update from screen share client.
+        ///     handles the reception of update from screen share client.
         /// </summary>
         /// <param name="uid"> Stores the Id of the user sharing the screen.</param>
         /// <param name="uname"> Stores the username of the user sharing the screen.</param>

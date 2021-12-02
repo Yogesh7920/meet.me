@@ -4,15 +4,15 @@
 ///     ViewModel for the Chat page.
 /// </summary>
 
-using Content;
-using Dashboard;
-using Dashboard.Client.SessionManagement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
+using Content;
+using Dashboard;
+using Dashboard.Client.SessionManagement;
 
 namespace Client.ViewModel
 {
@@ -22,14 +22,16 @@ namespace Client.ViewModel
         IClientSessionNotifications
     {
         /// <summary>
+        ///     Underlying data models.
+        /// </summary>
+        private readonly IContentClient _model;
+
+        private readonly IUXClientSessionManager _modelDb;
+
+        /// <summary>
         ///     Message ids along with corresponding message strings.
         /// </summary>
         public IDictionary<int, string> Messages;
-
-        /// <summary>
-        ///     User ids along with user names.
-        /// </summary>
-        public IDictionary<int, string> Users;
 
         /// <summary>
         ///     Message ids and their corresponding thread ids.
@@ -37,35 +39,9 @@ namespace Client.ViewModel
         public IDictionary<int, int> ThreadIds;
 
         /// <summary>
-        ///     Current user id.
+        ///     User ids along with user names.
         /// </summary>
-        public static int UserId
-        {
-            get; private set;
-        }
-
-        /// <summary>
-        ///     Message to send.
-        /// </summary>
-        public SendMessageData MsgToSend
-        {
-            get; private set;
-        }
-        /// <summary>
-        ///     Received message.
-        /// </summary>
-        public Message ReceivedMsg
-        {
-            get; private set;
-        }
-
-        /// <summary>
-        ///     Set true for testing purposes.
-        /// </summary>
-        public bool Testing
-        {
-            get; private set;
-        }
+        public IDictionary<int, string> Users;
 
         /// <summary>
         ///     Creates an instance of the Chat ViewModel.
@@ -77,7 +53,7 @@ namespace Client.ViewModel
             Users = new Dictionary<int, string>();
             ThreadIds = new Dictionary<int, int>();
 
-            this.Testing = testing;
+            Testing = testing;
             if (!testing)
             {
                 _model = ContentClientFactory.GetInstance();
@@ -89,6 +65,146 @@ namespace Client.ViewModel
                 _modelDb.SubscribeSession(this);
             }
         }
+
+        /// <summary>
+        ///     Current user id.
+        /// </summary>
+        public static int UserId { get; private set; }
+
+        /// <summary>
+        ///     Message to send.
+        /// </summary>
+        public SendMessageData MsgToSend { get; private set; }
+
+        /// <summary>
+        ///     Received message.
+        /// </summary>
+        public Message ReceivedMsg { get; private set; }
+
+        /// <summary>
+        ///     Set true for testing purposes.
+        /// </summary>
+        public bool Testing { get; }
+
+        /// <summary>
+        ///     Gets the dispatcher to the main thread. In case it is not available
+        ///     (such as during unit testing) the dispatcher associated with the
+        ///     current thread is returned.
+        /// </summary>
+        private Dispatcher ApplicationMainThreadDispatcher =>
+            Application.Current?.Dispatcher != null ? Application.Current.Dispatcher : Dispatcher.CurrentDispatcher;
+
+        /// <summary>
+        ///     Updates the users list with the incoming data.
+        /// </summary>
+        /// <param name="session"> Contains the list of all users </param>
+        public void OnClientSessionChanged(SessionData session)
+        {
+            // Execute the call on the application's main thread.
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new Action<SessionData>(session =>
+                {
+                    lock (this)
+                    {
+                        if (session != null)
+                        {
+                            Trace.WriteLine("[UX] Received users list");
+                            Users.Clear();
+                            foreach (var user in session.users) Users.Add(user.userID, user.username);
+                        }
+                    }
+                }),
+                session);
+        }
+
+        /// <summary>
+        ///     Handles an incoming message.
+        /// </summary>
+        /// <param name="messageData">The message object</param>
+        public void OnMessage(ReceiveMessageData messageData)
+        {
+            // Execute the call on the application's main thread.
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new Action<ReceiveMessageData>(messageData =>
+                {
+                    lock (this)
+                    {
+                        if (messageData.Event == MessageEvent.NewMessage)
+                        {
+                            Trace.WriteLine("[UX] Received new message");
+                            Messages.Add(messageData.MessageId, messageData.Message);
+                            ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
+
+                            // Get the userid from the content module
+                            if (!Testing) UserId = _model.GetUserId();
+
+                            // Create the ReceivedMsg object and update the fields accordingly
+                            ReceivedMsg = new Message();
+                            ReceivedMsg.MessageId = messageData.MessageId;
+                            ReceivedMsg.UserName = Users[messageData.SenderId];
+                            ReceivedMsg.TextMessage = messageData.Message;
+                            ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
+                            ReceivedMsg.ToFrom = UserId == messageData.SenderId;
+                            ReceivedMsg.ReplyMessage =
+                                messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
+                            ReceivedMsg.Type = messageData.Type == MessageType.Chat;
+
+                            OnPropertyChanged("ReceivedMsg");
+                        }
+                    }
+                }),
+                messageData);
+        }
+
+        /// <summary>
+        ///     Handles incoming list of messages when a new user joins.
+        /// </summary>
+        /// <param name="allMessages">The list of all messages</param>
+        public void OnAllMessages(List<ChatContext> allMessages)
+        {
+            // Execute the call on the application's main thread.
+            _ = ApplicationMainThreadDispatcher.BeginInvoke(
+                DispatcherPriority.Normal,
+                new Action<List<ChatContext>>(allMessages =>
+                {
+                    lock (this)
+                    {
+                        Messages.Clear();
+                        ThreadIds.Clear();
+                        foreach (var msgLst in allMessages)
+                        foreach (var messageData in msgLst.MsgList)
+                        {
+                            Trace.WriteLine("[UX] Received all messages");
+                            Messages.Add(messageData.MessageId, messageData.Message);
+                            ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
+
+                            // Get the userid from the content module
+                            if (!Testing) UserId = _model.GetUserId();
+
+                            // Create the ReceivedMsg object and update the fields accordingly
+                            ReceivedMsg = new Message();
+                            ReceivedMsg.MessageId = messageData.MessageId;
+                            ReceivedMsg.UserName = Users[messageData.SenderId];
+                            ReceivedMsg.TextMessage = messageData.Message;
+                            ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
+                            ReceivedMsg.ToFrom = UserId == messageData.SenderId;
+                            ReceivedMsg.ReplyMessage =
+                                messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
+                            ReceivedMsg.Type = messageData.Type == MessageType.Chat;
+
+                            OnPropertyChanged("ReceivedMsgs");
+                        }
+                    }
+                }),
+                allMessages);
+        }
+
+        /// <summary>
+        ///     Property changed event raised when a property is changed on a component.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         ///     Send chat message to the content module.
@@ -160,127 +276,6 @@ namespace Client.ViewModel
         }
 
         /// <summary>
-        ///     Handles an incoming message.
-        /// </summary>
-        /// <param name="messageData">The message object</param>
-        public void OnMessage(ReceiveMessageData messageData)
-        {
-            // Execute the call on the application's main thread.
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<ReceiveMessageData>(messageData =>
-                        {
-                            lock (this)
-                            {
-                                if (messageData.Event == MessageEvent.NewMessage)
-                                {
-                                    Trace.WriteLine("[UX] Received new message");
-                                    Messages.Add(messageData.MessageId, messageData.Message);
-                                    ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
-
-                                    // Get the userid from the content module
-                                    if (!Testing)
-                                    {
-                                        UserId = _model.GetUserId();
-                                    }
-
-                                    // Create the ReceivedMsg object and update the fields accordingly
-                                    ReceivedMsg = new Message();
-                                    ReceivedMsg.MessageId = messageData.MessageId;
-                                    ReceivedMsg.UserName = Users[messageData.SenderId];
-                                    ReceivedMsg.TextMessage = messageData.Message;
-                                    ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
-                                    ReceivedMsg.ToFrom = UserId == messageData.SenderId;
-                                    ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
-                                    ReceivedMsg.Type = messageData.Type == MessageType.Chat;
-
-                                    this.OnPropertyChanged("ReceivedMsg");
-                                }
-                            }
-                        }),
-                        messageData);
-        }
-
-        /// <summary>
-        ///     Updates the users list with the incoming data.
-        /// </summary>
-        /// <param name="session"> Contains the list of all users </param>
-        public void OnClientSessionChanged(SessionData session)
-        {
-            // Execute the call on the application's main thread.
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<SessionData>(session =>
-                        {
-                            lock (this)
-                            {
-                                if(session != null)
-                                {
-                                    Trace.WriteLine("[UX] Received users list");
-                                    Users.Clear();
-                                    foreach (UserData user in session.users)
-                                    {
-                                        Users.Add(user.userID, user.username);
-                                    }
-                                }
-                            }
-                        }),
-                        session);
-        }
-
-        /// <summary>
-        ///     Handles incoming list of messages when a new user joins.
-        /// </summary>
-        /// <param name="allMessages">The list of all messages</param>
-        public void OnAllMessages(List<ChatContext> allMessages)
-        {
-            // Execute the call on the application's main thread.
-            _ = this.ApplicationMainThreadDispatcher.BeginInvoke(
-                        DispatcherPriority.Normal,
-                        new Action<List<ChatContext>>(allMessages =>
-                        {
-                            lock (this)
-                            {
-                                Messages.Clear();
-                                ThreadIds.Clear();
-                                foreach (ChatContext msgLst in allMessages)
-                                {
-                                    foreach (ReceiveMessageData messageData in msgLst.MsgList)
-                                    {
-                                        Trace.WriteLine("[UX] Received all messages");
-                                        Messages.Add(messageData.MessageId, messageData.Message);
-                                        ThreadIds.Add(messageData.MessageId, messageData.ReplyThreadId);
-
-                                        // Get the userid from the content module
-                                        if (!Testing)
-                                        {
-                                            UserId = _model.GetUserId();
-                                        }
-
-                                        // Create the ReceivedMsg object and update the fields accordingly
-                                        ReceivedMsg = new Message();
-                                        ReceivedMsg.MessageId = messageData.MessageId;
-                                        ReceivedMsg.UserName = Users[messageData.SenderId];
-                                        ReceivedMsg.TextMessage = messageData.Message;
-                                        ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
-                                        ReceivedMsg.ToFrom = UserId == messageData.SenderId;
-                                        ReceivedMsg.ReplyMessage = messageData.ReplyMsgId == -1 ? "" : Messages[messageData.ReplyMsgId];
-                                        ReceivedMsg.Type = messageData.Type == MessageType.Chat;
-
-                                        this.OnPropertyChanged("ReceivedMsgs");
-                                    }
-                                }
-                            }
-                        }),
-                        allMessages);
-        }
-
-        /// <summary>
-        ///     Property changed event raised when a property is changed on a component.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
         ///     Handles the property changed event raised on a component.
         /// </summary>
         /// <param name="property">The name of the property.</param>
@@ -288,21 +283,5 @@ namespace Client.ViewModel
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
-        /// <summary>
-        ///     Gets the dispatcher to the main thread. In case it is not available
-        ///     (such as during unit testing) the dispatcher associated with the
-        ///     current thread is returned.
-        /// </summary>
-        private Dispatcher ApplicationMainThreadDispatcher =>
-            (Application.Current?.Dispatcher != null) ?
-                    Application.Current.Dispatcher :
-                    Dispatcher.CurrentDispatcher;
-
-        /// <summary>
-        ///     Underlying data models.
-        /// </summary>
-        private IContentClient _model;
-        private IUXClientSessionManager _modelDb;
     }
 }

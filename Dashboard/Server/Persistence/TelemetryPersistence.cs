@@ -6,7 +6,6 @@
 /// </summary> 
 /// 
 
-using Dashboard.Server.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,119 +13,161 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using Dashboard.Server.Telemetry;
+using ScottPlot;
 
 namespace Dashboard.Server.Persistence
 {
-
     public class TelemetryPersistence : ITelemetryPersistence
     {
-        
         public TelemetryPersistence()
         {
-            serverDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
-            telemetryAnalyticsPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
+            ServerDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            TelemetryAnalyticsPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
         }
+
+        public string ServerDataPath { get; set; }
+
+        public string TelemetryAnalyticsPath { get; set; }
 
 
         /// <summary>
-        /// retrives the ServerData after end of all of the sessions.
+        ///     retrives the ServerData after end of all of the sessions.
         /// </summary>
         /// <returns>returns List of SeverData</returns>
         public ServerDataToSave RetrieveAllSeverData()
         {
             // Creating instance of XmLSerializer, inorder to deserialize an XML stream
-            XmlSerializer deserialiser = new XmlSerializer(typeof(ServerDataToSave));
+            var deserialiser = new XmlSerializer(typeof(ServerDataToSave));
 
             //Saving the Path to save find the XML file.
-            string path = serverDataPath;
+            var path = ServerDataPath;
 
             // Create new object if directory does not exist
-            if (!Directory.Exists(serverDataPath))
+            if (!Directory.Exists(ServerDataPath))
             {
-                ServerDataToSave sdts = new ServerDataToSave();
+                var sdts = new ServerDataToSave();
                 sdts.sessionCount = 0;
-                sdts.allSessionsSummary = new();
+                sdts.allSessionsSummary = new List<SessionSummary>();
                 return sdts;
             }
+
             object objectsList = null;
             try
             {
-                string FullPath = Path.Combine(path, "GlobalServerData.xml");
-                using (StreamReader stream = new StreamReader(FullPath))
+                var FullPath = Path.Combine(path, "GlobalServerData.xml");
+                using (var stream = new StreamReader(FullPath))
                 {
                     objectsList = deserialiser.Deserialize(stream);
                 }
+
                 //TypeCasting and returning the ServerDataToSave
-                return (ServerDataToSave)objectsList;
+                return (ServerDataToSave) objectsList;
             }
             catch (IOException exp)
             {
                 // Handling Exception if someone calls the retriveFunction even before saving the XML file
                 Trace.WriteLine(exp.Message);
                 Trace.WriteLine("Yeah it is being catched here....");
-                ServerDataToSave sdts = new ServerDataToSave();
+                var sdts = new ServerDataToSave();
                 sdts.sessionCount = -1;
-                sdts.allSessionsSummary = new();
+                sdts.allSessionsSummary = new List<SessionSummary>();
                 return sdts;
             }
-             
         }
 
         /// <summary>
-        /// save the UserCountVsTimeStamp, UserIdVsChatCount, InsincereMember data as png after each session.
+        ///     save the UserCountVsTimeStamp, UserIdVsChatCount, InsincereMember data as png after each session.
         /// </summary>
         /// <param name="sessionAnalyticsData"> takes sessionAnalyticsData from Telemetry. </param>
         public ResponseEntity Save(SessionAnalytics sessionAnalyticsData)
         {
             // create folder of name sessionId to store all analytics data
 
-            string sessionId = string.Format("Analytics_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
+            var sessionId = string.Format("Analytics_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
 
             // Logic to plot and save UserCount Vs TimeStamp
 
 
-            ResponseEntity t1 = UserCountVsTimeStamp_PlotUtil(sessionAnalyticsData.userCountAtAnyTime, sessionId);
+            var t1 = UserCountVsTimeStamp_PlotUtil(sessionAnalyticsData.userCountAtAnyTime, sessionId);
 
             // Logic to plot and save ChatCount Vs UserID
 
-            ResponseEntity t2 = ChatCountVsUserID_PlotUtil(sessionAnalyticsData.chatCountForEachUser, sessionId);
+            var t2 = ChatCountVsUserID_PlotUtil(sessionAnalyticsData.chatCountForEachUser, sessionId);
 
             // Logic to save InsincereMembers list
 
-            ResponseEntity t3 = InsincereMembers_SaveUtil(sessionAnalyticsData.insincereMembers, sessionId);
+            var t3 = InsincereMembers_SaveUtil(sessionAnalyticsData.insincereMembers, sessionId);
 
-            List<string> l1 = new List<string>();
+            var l1 = new List<string>();
             l1.Add(t1.FileName);
             l1.Add(t2.FileName);
             l1.Add(t3.FileName);
 
-            ResponseEntity response = new ResponseEntity();
+            var response = new ResponseEntity();
             response.IsSaved = t1.IsSaved & t2.IsSaved & t3.IsSaved;
             response.FileName = sessionId;
             response.TelemetryAnalyticsFiles = l1;
-            
+
             PersistenceFactory.lastSaveResponse = response;
 
             return response;
         }
 
+        /// <summary>
+        ///     append the ServerData into a file after each session end
+        /// </summary>
+        /// <param name="AllserverData"> takes ServerData from Telemetry to be saved into text file </param>
+        /// <returns>Returns true if saved successfully else returns false</returns>
+        public ResponseEntity SaveServerData(ServerDataToSave AllserverData)
+        {
+            var response = new ResponseEntity();
+
+            //Creating the XmlSerializer Instance
+            var xmlser = new XmlSerializer(typeof(ServerDataToSave));
+            var path = ServerDataPath;
+            try
+            {
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+                // Calling Serialize method
+                using (var stream = new StreamWriter(Path.Combine(path, "GlobalServerData.xml")))
+                {
+                    xmlser.Serialize(stream, AllserverData);
+                }
+
+                Trace.WriteLine("ServerData saved Succesfully!!");
+                response.IsSaved = true;
+                response.FileName = "GlobalServerData.xml";
+                if (PersistenceFactory.lastSaveResponse == null)
+                    PersistenceFactory.lastSaveResponse = response;
+                else
+                    PersistenceFactory.lastSaveResponse.FileName = response.FileName;
+                return response;
+            }
+            catch (Exception except)
+            {
+                Trace.WriteLine(except.Message);
+                response.IsSaved = false;
+                return response;
+            }
+        }
+
 
         /// <summary>
-        /// save the InsincereMember data as png after each session.
+        ///     save the InsincereMember data as png after each session.
         /// </summary>
         /// <param name="InsincereMembers"> takes InsincereMembers from Telemetry. </param>
-        /// /// <param name="sessionId"> takes sessionId from Telemetry. </param>
+        /// ///
+        /// <param name="sessionId"> takes sessionId from Telemetry. </param>
         private ResponseEntity InsincereMembers_SaveUtil(List<int> InsincereMembers, string sessionId)
         {
             //Saving the Path to save find the XML file.
-            string p1 = telemetryAnalyticsPath + sessionId;
-            string TextToSave = "Followings are UserIDs of InsincereMembers : " + Environment.NewLine;
-            ResponseEntity response = new ResponseEntity();
+            var p1 = TelemetryAnalyticsPath + sessionId;
+            var TextToSave = "Followings are UserIDs of InsincereMembers : " + Environment.NewLine;
+            var response = new ResponseEntity();
             response.FileName = "insincereMembersList.txt";
-            foreach (int w in InsincereMembers)
-            {
-                TextToSave = TextToSave + w.ToString() + Environment.NewLine;
-            }
+            foreach (var w in InsincereMembers) TextToSave = TextToSave + w + Environment.NewLine;
 
             try
             {
@@ -139,35 +180,32 @@ namespace Dashboard.Server.Persistence
                 response.IsSaved = true;
                 return response;
             }
-            catch(Exception except)
+            catch (Exception except)
             {
                 Trace.WriteLine(except.Message);
                 response.IsSaved = false;
                 return response;
             }
-
         }
 
         /// <summary>
-        /// save the ChatCountForEachUser data as png after each session.
+        ///     save the ChatCountForEachUser data as png after each session.
         /// </summary>
         /// <param name="ChatCountForEachUser"> takes ChatCountForEachUser from Telemetry. </param>
-        /// /// <param name="sessionId"> takes sessionId from Telemetry. </param>
+        /// ///
+        /// <param name="sessionId"> takes sessionId from Telemetry. </param>
         private ResponseEntity ChatCountVsUserID_PlotUtil(Dictionary<int, int> ChatCountForEachUser, string sessionId)
         {
-            string p1 = telemetryAnalyticsPath + sessionId;
+            var p1 = TelemetryAnalyticsPath + sessionId;
             // Converting the data Value of dictionary to Array, inorder to use ScottPlot library
-            int[] val1 = ChatCountForEachUser.Values.ToArray();
-            double[] values1 = new double[val1.Length];
-            for (int i = 0; i < val1.Length; i++)
-            {
-                values1[i] = val1[i];
-            }
-            List<double> pos1 = new List<double>();
-            List<string> lb1 = new List<string>();
+            var val1 = ChatCountForEachUser.Values.ToArray();
+            var values1 = new double[val1.Length];
+            for (var i = 0; i < val1.Length; i++) values1[i] = val1[i];
+            var pos1 = new List<double>();
+            var lb1 = new List<string>();
 
-            int x1 = 0;
-            foreach (int k1 in ChatCountForEachUser.Keys)
+            var x1 = 0;
+            foreach (var k1 in ChatCountForEachUser.Keys)
             {
                 pos1.Add(x1);
                 lb1.Add(k1.ToString());
@@ -175,13 +213,13 @@ namespace Dashboard.Server.Persistence
             }
 
             //Creating the Fixed labels
-            string[] labels1 = lb1.ToArray();
+            var labels1 = lb1.ToArray();
 
             //Fixing the positions of X-labels
-            double[] positions1 = pos1.ToArray();
+            var positions1 = pos1.ToArray();
 
             //Creating ScottPlot fig of mentioned dimension
-            var plt1 = new ScottPlot.Plot(600, 400);
+            var plt1 = new Plot(600, 400);
 
             // Actually plotting the Bars
             plt1.AddBar(values1, positions1);
@@ -196,7 +234,7 @@ namespace Dashboard.Server.Persistence
             // Giving names to X and Y axes
             plt1.XLabel("UserID");
             plt1.YLabel("ChatCount for any User");
-            ResponseEntity response = new ResponseEntity();
+            var response = new ResponseEntity();
             response.FileName = "ChatCountVsUserID.png";
 
             try
@@ -207,35 +245,32 @@ namespace Dashboard.Server.Persistence
                 response.IsSaved = true;
                 Trace.WriteLine("ChatCountVsUserID.png saved Successfully!!");
                 return response;
-
             }
-            catch(Exception except)
+            catch (Exception except)
             {
                 Trace.WriteLine(except.Message);
                 response.IsSaved = false;
                 return response;
             }
-
         }
 
         /// <summary>
-        /// save the UserCountAtAnyTime data as png after each session.
+        ///     save the UserCountAtAnyTime data as png after each session.
         /// </summary>
         /// <param name="UserCountAtAnyTime"> takes UserCountAtAnyTime from Telemetry. </param>
-        /// /// <param name="sessionId"> takes sessionId from Telemetry. </param>
-        private ResponseEntity UserCountVsTimeStamp_PlotUtil(Dictionary<DateTime, int> UserCountAtAnyTime, string sessionId)
+        /// ///
+        /// <param name="sessionId"> takes sessionId from Telemetry. </param>
+        private ResponseEntity UserCountVsTimeStamp_PlotUtil(Dictionary<DateTime, int> UserCountAtAnyTime,
+            string sessionId)
         {
             // Converting the data Value of dictionary to Array, inorder to use ScottPlot library
-            int[] val = UserCountAtAnyTime.Values.ToArray();
-            double[] values = new double[val.Length];
-            for (int i = 0; i < val.Length; i++)
-            {
-                values[i] = val[i];
-            }
-            List<double> pos = new List<double>();
-            List<string> lb = new List<string>();
-            int x = 0;
-            foreach (DateTime k in UserCountAtAnyTime.Keys)
+            var val = UserCountAtAnyTime.Values.ToArray();
+            var values = new double[val.Length];
+            for (var i = 0; i < val.Length; i++) values[i] = val[i];
+            var pos = new List<double>();
+            var lb = new List<string>();
+            var x = 0;
+            foreach (var k in UserCountAtAnyTime.Keys)
             {
                 pos.Add(x);
                 lb.Add(k.ToString());
@@ -243,13 +278,13 @@ namespace Dashboard.Server.Persistence
             }
 
             //Creating the Fixed labels
-            string[] labels = lb.ToArray();
+            var labels = lb.ToArray();
 
             //Fixing the positions of X-labels
-            double[] positions = pos.ToArray();
+            var positions = pos.ToArray();
 
             //Creating ScottPlot fig of mentioned dimension
-            var plt = new ScottPlot.Plot(600, 400);
+            var plt = new Plot(600, 400);
 
             // Actually plotting the Bars
             var temp = plt.AddBar(values, positions);
@@ -267,9 +302,9 @@ namespace Dashboard.Server.Persistence
             // Giving names to X and Y axes
             plt.XLabel("TimeStamp");
             plt.YLabel("UserCount At Any Instant");
-            ResponseEntity response = new ResponseEntity();
+            var response = new ResponseEntity();
             response.FileName = "UserCountVsTimeStamp.png";
-            string p1 = telemetryAnalyticsPath + sessionId;
+            var p1 = TelemetryAnalyticsPath + sessionId;
 
             try
             {
@@ -280,56 +315,12 @@ namespace Dashboard.Server.Persistence
                 response.IsSaved = true;
                 return response;
             }
-            catch(Exception except)
+            catch (Exception except)
             {
                 Trace.WriteLine(except.Message);
                 response.IsSaved = false;
                 return response;
             }
         }
-
-        /// <summary>
-        /// append the ServerData into a file after each session end
-        /// </summary>
-        /// <param name="AllserverData"> takes ServerData from Telemetry to be saved into text file </param> 
-        /// <returns>Returns true if saved successfully else returns false</returns>
-        public ResponseEntity SaveServerData(ServerDataToSave AllserverData)
-        {
-            ResponseEntity response = new ResponseEntity();
-
-            //Creating the XmlSerializer Instance
-            XmlSerializer xmlser = new XmlSerializer(typeof(ServerDataToSave));
-            string path = serverDataPath;
-            try
-            {
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-
-                // Calling Serialize method
-                using (System.IO.StreamWriter stream = new System.IO.StreamWriter(Path.Combine(path, "GlobalServerData.xml")))
-                {
-                    xmlser.Serialize(stream, AllserverData);
-                }
-                Trace.WriteLine("ServerData saved Succesfully!!");
-                response.IsSaved = true;
-                response.FileName = "GlobalServerData.xml";
-                if (PersistenceFactory.lastSaveResponse == null)
-                    PersistenceFactory.lastSaveResponse = response;
-                else
-                    PersistenceFactory.lastSaveResponse.FileName = response.FileName;
-                return response;
-            }
-            catch(Exception except)
-            {
-                Trace.WriteLine(except.Message);
-                response.IsSaved = false;
-                return response;
-            }
-        }
-
-        private string serverDataPath;
-        private string telemetryAnalyticsPath;
-
-        public string ServerDataPath { get => serverDataPath; set => serverDataPath = value; }
-        public string TelemetryAnalyticsPath { get => telemetryAnalyticsPath; set => telemetryAnalyticsPath = value; }
     }
 }

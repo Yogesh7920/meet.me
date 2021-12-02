@@ -6,18 +6,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Content;
 
 namespace Testing.Dashboard.SessionManagement.TestModules
 {
     public class FakeContentServer : IContentServer
     {
+        public List<ChatContext> allChats;
+
         public FakeContentServer()
         {
-            allChats = new();
+            allChats = new List<ChatContext>();
         }
 
         public List<ChatContext> SGetAllMessages()
@@ -27,14 +26,11 @@ namespace Testing.Dashboard.SessionManagement.TestModules
 
         public void SSendAllMessagesToClient(int userId)
         {
-            
         }
 
         public void SSubscribe(IContentListener subscriber)
         {
             throw new NotImplementedException();
         }
-
-        public List<ChatContext> allChats;
     }
 }

@@ -16,13 +16,14 @@ namespace Testing.UX.Chat
             public static void DoEvents()
             {
                 var frame = new DispatcherFrame();
-                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+                Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
+                    new DispatcherOperationCallback(ExitFrame), frame);
                 Dispatcher.PushFrame(frame);
             }
 
             private static object ExitFrame(object frame)
             {
-                ((DispatcherFrame)frame).Continue = false;
+                ((DispatcherFrame) frame).Continue = false;
                 return null;
             }
         }

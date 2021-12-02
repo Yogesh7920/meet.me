@@ -5,20 +5,20 @@
 ///		for testing purpose
 /// </summary>
 /// 
+
 using System;
 using Whiteboard;
 
 namespace Testing.Dashboard.TestModels
 {
-    class TestWhiteBoard : IClientBoardStateManager
+    internal class TestWhiteBoard : IClientBoardStateManager
     {
+        public bool isWhiteBoardInitialised;
+        public string userId;
+
         public TestWhiteBoard()
         {
             isWhiteBoardInitialised = false;
-        }
-        public void ClearWhiteBoard()
-        {
-            throw new NotImplementedException();
         }
 
         public void FetchCheckpoint(int checkpointNumber)
@@ -51,7 +51,9 @@ namespace Testing.Dashboard.TestModels
             throw new NotImplementedException();
         }
 
-        public bool isWhiteBoardInitialised;
-        public string userId;
+        public void ClearWhiteBoard()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

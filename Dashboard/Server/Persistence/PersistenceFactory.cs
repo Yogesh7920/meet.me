@@ -14,24 +14,21 @@ namespace Dashboard.Server.Persistence
     /// </summary>
     public static class PersistenceFactory
     {
+        private static readonly SummaryPersistence _summaryPersisitence;
+        private static readonly TelemetryPersistence _telemetryPersisitence;
+        public static ResponseEntity lastSaveResponse;
 
-        ///<summary>
+        /// <summary>
         ///     It is constructor for the Persistence factory and enables to create only
         ///     one instance in a single run.
         /// </summary>
         static PersistenceFactory()
         {
-            if (_summaryPersisitence == null)
-            {
-                _summaryPersisitence = new SummaryPersistence();
-            }
+            if (_summaryPersisitence == null) _summaryPersisitence = new SummaryPersistence();
 
-            if (_telemetryPersisitence == null)
-            {
-                _telemetryPersisitence = new TelemetryPersistence();
-            }
-
+            if (_telemetryPersisitence == null) _telemetryPersisitence = new TelemetryPersistence();
         }
+
         /// <summary>Helps to create instance of ISummaryPersistence </summary>
         /// <returns> return ITelemetryPersistence Interface which enables to use functions of class inheriting the same </returns>
         public static SummaryPersistence GetSummaryPersistenceInstance()
@@ -45,11 +42,5 @@ namespace Dashboard.Server.Persistence
         {
             return _telemetryPersisitence;
         }
-
-        private static SummaryPersistence _summaryPersisitence;
-        private static TelemetryPersistence _telemetryPersisitence;
-        public static ResponseEntity lastSaveResponse;
-
     }
-
 }

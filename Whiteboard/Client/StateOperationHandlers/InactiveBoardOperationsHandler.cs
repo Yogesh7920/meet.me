@@ -8,19 +8,16 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Whiteboard
 {
     /// <summary>
-    /// Handler when Board is Inactive State.
+    ///     Handler when Board is Inactive State.
     /// </summary>
     public class InactiveBoardOperationsHandler : BoardOperationsState
     {
         /// <summary>
-        /// Constructor for InactiveBoardOperationsHandler
+        ///     Constructor for InactiveBoardOperationsHandler
         /// </summary>
         public InactiveBoardOperationsHandler()
         {
@@ -29,7 +26,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Changes the shape fill of the shape.
+        ///     Changes the shape fill of the shape.
         /// </summary>
         /// <param name="shapeFill">Modified fill color of the shape..</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
@@ -40,7 +37,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Changes the stroke color of the shape.
+        ///     Changes the stroke color of the shape.
         /// </summary>
         /// <param name="strokeColor">Modified fill color of outline stroke of shape..</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
@@ -51,7 +48,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Changes the stroke Width.
+        ///     Changes the stroke Width.
         /// </summary>
         /// <param name="strokeWidth">Width of stroke.</param>
         /// <param name="shapeId">Id of the shape on which operation is performed.</param>
@@ -62,7 +59,7 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Creates shape based on mouse drag.
+        ///     Creates shape based on mouse drag.
         /// </summary>
         /// <param name="shapeType">Denotes which shape to create.</param>
         /// <param name="start">Start of mouse drag.</param>
@@ -73,14 +70,14 @@ namespace Whiteboard
         /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> CreateShape(ShapeType shapetype, Coordinate start, Coordinate end,
-                                                  float strokeWidth, BoardColor strokeColor, string shapeId = null,
-                                                  bool shapeComp = false)
+            float strokeWidth, BoardColor strokeColor, string shapeId = null,
+            bool shapeComp = false)
         {
             return new List<UXShape>();
         }
 
         /// <summary>
-        /// Perform real-time operation on shape.
+        ///     Perform real-time operation on shape.
         /// </summary>
         /// <param name="realTimeOperation">The RealTimeOperation to be performed.</param>
         /// <param name="start">Start of mouse drag.</param>
@@ -89,20 +86,22 @@ namespace Whiteboard
         /// <param name="shapeComp">Denotes whether to send the completed shape to state Manager.</param>
         /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> ModifyShapeRealTime(RealTimeOperation realTimeOperation, Coordinate start,
-                                                          Coordinate end, string shapeId, DragPos dragpos, bool shapeComp = false)
+            Coordinate end, string shapeId, DragPos dragpos, bool shapeComp = false)
         {
             try
             {
-                Trace.WriteLine("[Whiteboard] InactiveBoardOperationsHandler:ModifyShapeRealTime: Sending original shape stored in Manager to re-render");
+                Trace.WriteLine(
+                    "[Whiteboard] InactiveBoardOperationsHandler:ModifyShapeRealTime: Sending original shape stored in Manager to re-render");
 
                 // This requirement is very specified to the UX team.
-                BoardShape shapeFromManager = GetShapeFromManager(shapeId);
+                var shapeFromManager = GetShapeFromManager(shapeId);
                 UXShape oldShape = new(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeId);
                 UXShape newShape = new(UXOperation.CREATE, shapeFromManager.MainShapeDefiner, shapeId);
 
-                List<UXShape> grey = new() { oldShape, newShape };
+                List<UXShape> grey = new() {oldShape, newShape};
 
-                Trace.WriteLine("[Whiteboard] InactiveBoardOperationsHandler:ModifyShapeRealTime: Original Shape sent!");
+                Trace.WriteLine(
+                    "[Whiteboard] InactiveBoardOperationsHandler:ModifyShapeRealTime: Original Shape sent!");
                 return grey;
             }
             catch (Exception e)
@@ -114,7 +113,7 @@ namespace Whiteboard
 
 
         /// <summary>
-        /// Delete a shape with given shape Id.
+        ///     Delete a shape with given shape Id.
         /// </summary>
         /// <param name="shapeId">Id of the shape.</param>
         /// <returns>List of operations to be performed by UX.</returns>
@@ -124,18 +123,18 @@ namespace Whiteboard
         }
 
         /// <summary>
-        /// Perform Redo Operation.
+        ///     Perform Redo Operation.
         /// </summary>
-        ///  <returns>The List of operations on Shapes for UX to render.</returns>
+        /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> Undo()
         {
             return new List<UXShape>();
         }
 
         /// <summary>
-        /// Perform Redo Operation.
+        ///     Perform Redo Operation.
         /// </summary>
-        ///  <returns>The List of operations on Shapes for UX to render.</returns>
+        /// <returns>The List of operations on Shapes for UX to render.</returns>
         public override List<UXShape> Redo()
         {
             return new List<UXShape>();

@@ -164,7 +164,7 @@ namespace Networking
                 File.WriteAllText("networking_output.json", data);
                 return;
             }
-            
+
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data};
             try
             {
@@ -193,6 +193,7 @@ namespace Networking
                 File.WriteAllText("networking_output.json", data);
                 return;
             }
+
             if (!_clientIdSocket.ContainsKey(destination)) throw new Exception("Client does not exist in the room!");
             var packet = new Packet {ModuleIdentifier = identifier, SerializedData = data, Destination = destination};
             try
@@ -213,7 +214,7 @@ namespace Networking
         void ICommunicator.Subscribe(string identifier, INotificationHandler handler, int priority)
         {
             if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
-            
+
             _subscribedModules.Add(identifier, handler);
             _sendQueue.RegisterModule(identifier, priority);
             _receiveQueue.RegisterModule(identifier, priority);

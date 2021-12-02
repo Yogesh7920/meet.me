@@ -15,16 +15,7 @@ namespace Content
         }
 
         /// <summary>
-        /// Clones the messageData object
-        /// </summary>
-        /// <returns>Returns the cloned instance of the object</returns>
-        public MessageData Clone()
-        {
-            return (MessageData)MemberwiseClone();
-        }
-
-        /// <summary>
-        /// Contructor for MessageData from ReceiveMessageData
+        ///     Contructor for MessageData from ReceiveMessageData
         /// </summary>
         /// <param name="msgData"></param>
         /// <returns></returns>
@@ -40,6 +31,15 @@ namespace Content
             Starred = msgData.Starred;
             Type = msgData.Type;
             SentTime = msgData.SentTime;
+        }
+
+        /// <summary>
+        ///     Clones the messageData object
+        /// </summary>
+        /// <returns>Returns the cloned instance of the object</returns>
+        public MessageData Clone()
+        {
+            return (MessageData) MemberwiseClone();
         }
     }
 }

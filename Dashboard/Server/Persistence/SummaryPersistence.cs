@@ -11,50 +11,14 @@ using System.IO;
 
 namespace Dashboard.Server.Persistence
 {
-
     public class SummaryPersistence : ISummaryPersistence
     {
-
-
         public SummaryPersistence()
         {
-            path = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+            summaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
         }
-        /// <summary>
-        ///     This function is created for the purpose of testing, by returnning
-        ///     the file name of the saved function to check if correctly saved or not.
-        /// </summary>
-        /// <param name="message"> takes message string that need to be saved </param>
-        /// <returns> return ResponseEntity(IsSaved as true and FileName of the same) if succesfully saved else return IsSaved as false in ResponseEntity </returns>
-        public ResponseEntity SaveSummary(string message, bool testMode)
-        {
-            // Creating the name of the File, according to Current DateTime in feasible format of file. 
-            string sessionId1 = string.Format("Summary_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
-            // Summary Creation
-            string createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
 
-            ResponseEntity response = new ResponseEntity();
-            response.FileName = sessionId1 + ".txt";
-            try
-            {
-                //Check if Such folder exists if not create Folder for the same
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-
-                //Writing to the Text file
-                File.WriteAllText(Path.Combine(path, sessionId1 + ".txt"), createText);
-                Trace.WriteLine("Summary saved Suceessfully!!");
-                response.IsSaved = true;
-                PersistenceFactory.lastSaveResponse = response;
-                return response;
-            }
-            catch(Exception except)
-            {
-                Trace.WriteLine(except.Message);
-                response.IsSaved = false;
-                return response;
-            }
-            
-        }
+        public string summaryPath { get; set; }
 
         /// <summary>
         ///     saves the summary of the session into a summary file
@@ -64,41 +28,72 @@ namespace Dashboard.Server.Persistence
         public bool SaveSummary(string message)
         {
             // Creating the name of the File, according to Current DateTime in feasible format of file. 
-            string sessionId1 = string.Format("Summary_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
+            var sessionId1 = string.Format("Summary_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
             // Storing the Path
-           // string path = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+            // string path = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
 
             // Summary Creation
-            string createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
+            var createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
 
-            ResponseEntity response = new ResponseEntity();
+            var response = new ResponseEntity();
             response.FileName = sessionId1 + ".txt";
 
             try
             {
                 //Check if Such folder exists if not create Folder for the same
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                if (!Directory.Exists(summaryPath)) Directory.CreateDirectory(summaryPath);
 
                 //Writing to the Text file
-                File.WriteAllText(Path.Combine(path, sessionId1 + ".txt"), createText);
+                File.WriteAllText(Path.Combine(summaryPath, sessionId1 + ".txt"), createText);
                 Trace.WriteLine("Summary saved Suceessfully!!");
                 response.IsSaved = true;
                 PersistenceFactory.lastSaveResponse = response;
                 return response.IsSaved;
             }
-            catch(Exception except)
+            catch (Exception except)
             {
                 Trace.WriteLine(except.Message);
                 response.IsSaved = false;
                 return response.IsSaved;
             }
-
         }
 
-        private string path;
+        /// <summary>
+        ///     This function is created for the purpose of testing, by returnning
+        ///     the file name of the saved function to check if correctly saved or not.
+        /// </summary>
+        /// <param name="message"> takes message string that need to be saved </param>
+        /// <returns>
+        ///     return ResponseEntity(IsSaved as true and FileName of the same) if succesfully saved else return IsSaved as
+        ///     false in ResponseEntity
+        /// </returns>
+        public ResponseEntity SaveSummary(string message, bool testMode)
+        {
+            // Creating the name of the File, according to Current DateTime in feasible format of file. 
+            var sessionId1 = string.Format("Summary_{0:yyyy - MM - dd_hh - mm - ss - tt}", DateTime.Now);
+            // Summary Creation
+            var createText = "Summary : --------- " + Environment.NewLine + message + Environment.NewLine;
 
-        public string summaryPath { get => path; set => path = value; }
+            var response = new ResponseEntity();
+            response.FileName = sessionId1 + ".txt";
+            try
+            {
+                //Check if Such folder exists if not create Folder for the same
+                if (!Directory.Exists(summaryPath)) Directory.CreateDirectory(summaryPath);
+
+                //Writing to the Text file
+                File.WriteAllText(Path.Combine(summaryPath, sessionId1 + ".txt"), createText);
+                Trace.WriteLine("Summary saved Suceessfully!!");
+                response.IsSaved = true;
+                PersistenceFactory.lastSaveResponse = response;
+                return response;
+            }
+            catch (Exception except)
+            {
+                Trace.WriteLine(except.Message);
+                response.IsSaved = false;
+                return response;
+            }
+        }
     }
-
-
 }

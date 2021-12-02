@@ -6,26 +6,16 @@
 ///		validates that each unit of the code performs as expected.
 /// </summary>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Client.ViewModel;
-using NUnit.Framework;
-using Dashboard;
-using System.ComponentModel;
-using System.Diagnostics;
 using Dashboard.Client.SessionManagement;
 using Dashboard.Server.Telemetry;
+using NUnit.Framework;
 
 namespace Testing.UX.Dashboard
 {
     [TestFixture]
     public class DashboardViewModelUnitTests
     {
-        private DashboardViewModel _viewModel;
-        private IUXClientSessionManager _clientSM;
-        private SessionAnalytics _sessionAnalytics;
-
         [SetUp]
         public void SetUp()
         {
@@ -33,6 +23,10 @@ namespace Testing.UX.Dashboard
             _clientSM = _viewModel.GetClientSM();
             _sessionAnalytics = _viewModel.GetSessionAnalytics();
         }
+
+        private DashboardViewModel _viewModel;
+        private IUXClientSessionManager _clientSM;
+        private SessionAnalytics _sessionAnalytics;
 
 
         [Test]
@@ -56,6 +50,5 @@ namespace Testing.UX.Dashboard
             Assert.AreEqual(_viewModel.participantsCount, 1);
             Assert.AreEqual(_viewModel.engagementRate, "0%");
         }
-
-}
+    }
 }
