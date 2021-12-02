@@ -121,6 +121,7 @@ namespace Client
         /// </summary>
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
+            s_userslist.OnLeaveButtonClick();
             Application.Current.Shutdown();
         }
 
@@ -285,6 +286,7 @@ namespace Client
         private void OnLeaveButtonClicked(object sender, RoutedEventArgs e)
         {
             s_userslist.OnLeaveButtonClick();
+            Application.Current.Shutdown();
         }
     }
 }
