@@ -75,6 +75,7 @@ namespace Networking
 
         /// <summary>
         ///     This method runs on a thread and listen for incoming message
+        ///     byte-stuffing is used for packets
         /// </summary>
         /// <returns> Void  </returns>
         private void Listen()
@@ -88,7 +89,7 @@ namespace Networking
                     var networkStream = _clientSocket.GetStream();
 
                     //read when data is available into a buffer
-                    while (networkStream.DataAvailable)
+                    if (networkStream.DataAvailable)
                     {
                         var inStream = new byte[Threshold];
                         _clientSocket.Client.Receive(inStream);
@@ -106,11 +107,11 @@ namespace Networking
                             var nextFlagIndex = message.IndexOf(Utils.Flag, flagIndex + 5, StringComparison.Ordinal);
                             while (!isMessage)
                             {
-                                if (nextFlagIndex == -1)
-                                    break;
+                                if (nextFlagIndex == -1) break;
+
                                 if (message[(nextFlagIndex - 5)..nextFlagIndex] == Utils.Esc)
                                 {
-                                    // if the message is of the form [ESC][FLAG], ignore and continue
+                                    //byte-stuffing approach - if the message is of the form [ESC][FLAG], ignore and continue 
                                     nextFlagIndex = message.IndexOf(Utils.Flag, nextFlagIndex + 6,
                                         StringComparison.Ordinal);
                                     continue;
