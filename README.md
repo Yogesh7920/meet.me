@@ -27,17 +27,16 @@ Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installa
 |                                 | Rajeev Goyal               |                                |
 
 
-| Screen Share & Whiteboard Module (5+1) | UX Module (8+1)              |
+| Screen Share & Whiteboard Module (5+1) | UX Module (7+1)              |
 |----------------------------------------|------------------------------|
 | Manas Sharma (Team Lead)               | Raswanth Murugan (Team Lead) |
 | Ashish Kumar Gupta                     | Irene Casmir                 |
 | Neeraj Patil                           | Mitul Kataria                |
 | Parul Sangwan                          | Suchitra Yechuri             |
-| Gurunadh                               | Sai Vipul Mohan              |
+| Gurunadh                               | Pulavarti Vinay Kumar        |
 | Chandan Srivastava                     | P S Harikrishnan             |
 |                                        | Arpan Tripathi               |
 |                                        | Aniket Singh Rajpoot         |
-|                                        | Pulavarti Vinay Kumar        |
 
 | Teaching Assistants    |
 |------------------------|
