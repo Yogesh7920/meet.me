@@ -199,7 +199,7 @@ namespace Client
         /// <param name="listBox"> The listbox consisting of the scrollbar </param>
         private void UpdateScrollBar(ListBox listBox)
         {
-            if (listBox != null)
+            if ((listBox != null) && (VisualTreeHelper.GetChildrenCount(listBox) != 0))
             {
                 var border = (Border) VisualTreeHelper.GetChild(listBox, 0);
                 var scrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(border, 0);
