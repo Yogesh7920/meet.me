@@ -19,6 +19,8 @@
         <SolidColorBrush x:Key="DynamicSendBox" Color="{DynamicResource Color1}" />
         <SolidColorBrush x:Key="DynamicHeader" Color="{DynamicResource Color1}" />
         <SolidColorBrush x:Key="DynamicButtonBack" Color="{DynamicResource Color1}" />
+        <SolidColorBrush x:Key="DynamicSentReplyMsg" Color="{DynamicResource Color8}" />
+        
 
         <!--Setting the visibility of the reply text box as collapsed when its empty or null-->
         <Style TargetType="TextBlock" x:Key="ReplyText">
@@ -260,7 +262,7 @@
                     <Grid Grid.Row="1">
                         <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource DynamicRecvMsg}"
                                 BorderThickness="5" Background="{DynamicResource DynamicRecvFile}" Opacity="0.5">
-                            <TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicTextClr}"
+                            <TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicSentReplyMsg}"
                                        Text="{Binding ReplyMessage}" TextWrapping="Wrap" Width="250" FontSize="14"
                                        Padding="8,5,8,5" />
                         </Border>
@@ -322,7 +324,7 @@
                     <Grid Grid.Row="1">
                         <Border Grid.Column="0" CornerRadius="8" BorderBrush="{DynamicResource DynamicRecvMsg}"
                                 BorderThickness="5" Background="{DynamicResource DynamicRecvFile}" Opacity="0.5">
-                            <TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicTextClr}"
+                            <TextBlock Style="{StaticResource ReplyText}" Foreground="{DynamicResource DynamicSentReplyMsg}"
                                        Text="{Binding ReplyMessage}" TextWrapping="Wrap" Width="250" FontSize="14"
                                        Padding="8,5,8,5" />
                         </Border>
@@ -341,7 +343,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Image Grid.Column="0" Source="Icons/ChatUX/file3.png" Width="25" Height="25" />
-                                <TextBlock Grid.Column="1" Foreground="{DynamicResource DynamicTextClr}"
+                                <TextBlock Grid.Column="1" Foreground="{DynamicResource DynamicSentReplyMsg}"
                                            Text="{Binding TextMessage}" x:Name="MainText" TextWrapping="Wrap"
                                            Width="150" FontSize="16" Padding="8,5,8,5" />
                                 <Button Grid.Column="2" Background="Transparent" BorderBrush="Transparent"
