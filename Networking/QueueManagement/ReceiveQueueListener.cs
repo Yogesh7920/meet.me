@@ -41,7 +41,6 @@ namespace Networking
         /// </summary>
         public void Stop()
         {
-            _receiveQueue.Close();
             _listenRun = false;
         }
 

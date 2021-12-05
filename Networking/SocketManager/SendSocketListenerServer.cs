@@ -200,7 +200,6 @@ namespace Networking
         /// <returns> Void  </returns>
         public void Stop()
         {
-            _queue.Close();
             _listenRun = false;
             Trace.WriteLine("[Networking] Stopped SendSocketListenerServer thread.");
         }

@@ -18,7 +18,6 @@ namespace Networking
         private const int Threshold = 1024 * 1024;
 
         // Declare the TcpClient  variable 
-        private readonly NetworkStream _networkStream;
         private readonly Socket _clientSocket;
         private byte[] buffer = new byte[Threshold];
         private readonly StringBuilder _message = new();
@@ -40,7 +39,7 @@ namespace Networking
         public ReceiveSocketListener(IQueue queue, TcpClient tcpClient)
         {
             _queue = queue;
-            _networkStream = tcpClient.GetStream();
+            tcpClient.GetStream();
             _clientSocket = tcpClient.Client;
         }
 
