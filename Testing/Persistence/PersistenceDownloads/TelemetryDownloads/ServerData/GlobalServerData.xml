@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServerDataToSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <sessionCount>1</sessionCount>
+  <allSessionsSummary>
+    <SessionSummary>
+      <score>90000</score>
+      <userCount>30</userCount>
+      <chatCount>3000</chatCount>
+    </SessionSummary>
+  </allSessionsSummary>
+</ServerDataToSave>

@@ -7,6 +7,7 @@
     <Color x:Key="Color4">#D500F9</Color>
     <Color x:Key="Color5">White</Color>
     <Color x:Key="Color6">#830394</Color>
+    <Color x:Key="Color8">White</Color>
 
     <SolidColorBrush x:Key="Color1Bg" Color="#FF340051" />
     <SolidColorBrush x:Key="Color2Bg" Color="#FF8522BD" />
@@ -15,5 +16,6 @@
     <SolidColorBrush x:Key="Color5Bg" Color="White" />
     <SolidColorBrush x:Key="Color6Bg" Color="#830394" />
     <SolidColorBrush x:Key="Color7Bg" Color="LightGray" />
+    <SolidColorBrush x:Key="Color8Bg" Color="White" />
 
 </ResourceDictionary>

@@ -50,25 +50,28 @@ namespace Networking
         private void ListenQueue()
         {
             while (_listenRun)
-            while (!_receiveQueue.IsEmpty())
             {
-                var packet = _receiveQueue.Dequeue();
-                var data = packet.SerializedData;
-                var moduleIdentifier = packet.ModuleIdentifier;
+                _receiveQueue.WaitForPacket();
+                while (!_receiveQueue.IsEmpty())
+                {
+                    var packet = _receiveQueue.Dequeue();
+                    var data = packet.SerializedData;
+                    var moduleIdentifier = packet.ModuleIdentifier;
 
-                // If the _notificationHandlers dictionary contains the moduleIdentifier
-                if (_notificationHandlers.ContainsKey(moduleIdentifier))
-                {
-                    var handler = _notificationHandlers[moduleIdentifier];
-                    _ = Task.Run(() =>
+                    // If the _notificationHandlers dictionary contains the moduleIdentifier
+                    if (_notificationHandlers.ContainsKey(moduleIdentifier))
                     {
-                        handler.OnDataReceived(data);
-                        Trace.WriteLine($"[Networking] OnDataReceived notification sent to {moduleIdentifier}");
-                    });
-                }
-                else
-                {
-                    Trace.WriteLine($"[Networking] Handler for {moduleIdentifier} does not exist");
+                        var handler = _notificationHandlers[moduleIdentifier];
+                        _ = Task.Run(() =>
+                        {
+                            handler.OnDataReceived(data);
+                            Trace.WriteLine($"[Networking] OnDataReceived notification sent to {moduleIdentifier}");
+                        });
+                    }
+                    else
+                    {
+                        Trace.WriteLine($"[Networking] Handler for {moduleIdentifier} does not exist");
+                    }
                 }
             }
         }
