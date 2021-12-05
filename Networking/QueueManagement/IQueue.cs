@@ -51,5 +51,15 @@ namespace Networking
         /// </summary>
         /// <returns>True if queue is empty and false otherwise.</returns>
         public bool IsEmpty();
+
+        /// <summary>
+        ///     Blocks until the queue has at-least one packet.
+        /// </summary>
+        public void WaitForPacket();
+
+        /// <summary>
+        ///     Closes the WaitHandle for this queue and clears all the resources held by it. 
+        /// </summary>
+        public void Close();
     }
 }

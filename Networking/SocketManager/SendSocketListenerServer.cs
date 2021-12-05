@@ -107,84 +107,87 @@ namespace Networking
         private void Listen()
         {
             while (_listenRun)
+            {
+                _queue.WaitForPacket();
                 // If the queue is not empty, get a packet from the front of the queue and remove that packet
                 // from the queue
-            while (_queue.Size() != 0)
-            {
-                // Dequeue the front packet of the queue
-                var packet = _queue.Dequeue();
-
-                // Call GetMessage function to form string msg from the packet object 
-                var msg = Utils.GetMessage(packet);
-
-                // Call GetDestination function to know destination from the packet object
-                var tcpSockets = GetDestination(packet);
-
-                foreach (var tcpSocket in tcpSockets)
+                while (_queue.Size() != 0)
                 {
-                    var outStream = Encoding.ASCII.GetBytes(msg);
-                    try
+                    // Dequeue the front packet of the queue
+                    var packet = _queue.Dequeue();
+
+                    // Call GetMessage function to form string msg from the packet object 
+                    var msg = Utils.GetMessage(packet);
+
+                    // Call GetDestination function to know destination from the packet object
+                    var tcpSockets = GetDestination(packet);
+
+                    foreach (var tcpSocket in tcpSockets)
                     {
-                        var socket = tcpSocket.Client;
-
-                        // check client is still connected or not
-                        if (socket.Poll(1, SelectMode.SelectRead) && socket.Available == 0)
+                        var outStream = Encoding.ASCII.GetBytes(msg);
+                        try
                         {
-                            Trace.WriteLine("[Networking] Client lost connection! Retrying...");
+                            var socket = tcpSocket.Client;
 
-                            // client is disconnected try 3 times to send data
-                            _ = Task.Run(() =>
+                            // check client is still connected or not
+                            if (socket.Poll(1, SelectMode.SelectRead) && socket.Available == 0)
                             {
-                                var tcpSocketTry = tcpSocket;
-                                var outStreamTry = outStream;
-                                var isSent = false;
-                                var sTry = tcpSocketTry.Client;
-                                try
+                                Trace.WriteLine("[Networking] Client lost connection! Retrying...");
+
+                                // client is disconnected try 3 times to send data
+                                _ = Task.Run(() =>
                                 {
-                                    for (var t = 0; t < 3; t++)
+                                    var tcpSocketTry = tcpSocket;
+                                    var outStreamTry = outStream;
+                                    var isSent = false;
+                                    var sTry = tcpSocketTry.Client;
+                                    try
                                     {
-                                        Thread.Sleep(_isTesting ? 1 : 100);
-                                        if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
+                                        for (var t = 0; t < 3; t++)
                                         {
-                                            Trace.WriteLine("[Networking] Client has reconnected!");
-                                            sTry.Send(outStreamTry);
-                                            Trace.WriteLine(
-                                                $"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
-                                            isSent = true;
-                                            break;
+                                            Thread.Sleep(_isTesting ? 1 : 100);
+                                            if (!(sTry.Poll(1, SelectMode.SelectRead) && sTry.Available == 0))
+                                            {
+                                                Trace.WriteLine("[Networking] Client has reconnected!");
+                                                sTry.Send(outStreamTry);
+                                                Trace.WriteLine(
+                                                    $"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
+                                                isSent = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (isSent == false)
+                                        {
+                                            Trace.WriteLine("[Networking] Client has disconnected! Removing Client...");
+                                            var clientId = GetClientId(tcpSocketTry);
+
+                                            // call notification handler for removing the client
+                                            foreach (var module in
+                                                _subscribedModules)
+                                                if (clientId != null)
+                                                    module.Value.OnClientLeft(clientId);
+                                                else
+                                                    Trace.WriteLine("[Networking] ClientId is not present");
                                         }
                                     }
-
-                                    if (isSent == false)
+                                    catch (Exception e)
                                     {
-                                        Trace.WriteLine("[Networking] Client has disconnected! Removing Client...");
-                                        var clientId = GetClientId(tcpSocketTry);
-
-                                        // call notification handler for removing the client
-                                        foreach (var module in
-                                            _subscribedModules)
-                                            if (clientId != null)
-                                                module.Value.OnClientLeft(clientId);
-                                            else
-                                                Trace.WriteLine("[Networking] ClientId is not present");
+                                        Trace.WriteLine($"[Networking] {e}");
                                     }
-                                }
-                                catch (Exception e)
-                                {
-                                    Trace.WriteLine($"[Networking] {e}");
-                                }
-                            });
+                                });
+                            }
+                            else
+                            {
+                                socket.Send(outStream);
+                                Trace.WriteLine(
+                                    $"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
+                            }
                         }
-                        else
+                        catch (Exception e)
                         {
-                            socket.Send(outStream);
-                            Trace.WriteLine(
-                                $"[Networking] Data sent from server to client by {packet.ModuleIdentifier}.");
+                            Trace.WriteLine($"[Networking] {e}");
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        Trace.WriteLine($"[Networking] {e}");
                     }
                 }
             }
@@ -197,6 +200,7 @@ namespace Networking
         /// <returns> Void  </returns>
         public void Stop()
         {
+            _queue.Close();
             _listenRun = false;
             Trace.WriteLine("[Networking] Stopped SendSocketListenerServer thread.");
         }
