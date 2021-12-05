@@ -37,6 +37,7 @@ namespace Testing.Networking.QueueManagement
         [TearDown]
         public void TearDown()
         {
+            _queue.Close();
             _receiveQueueListener.Stop();
             _queue = null;
             _receiveQueueListener = null;

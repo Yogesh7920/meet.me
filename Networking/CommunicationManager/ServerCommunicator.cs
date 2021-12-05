@@ -94,6 +94,9 @@ namespace Networking
             _acceptRequestRun = false;
             _serverSocket.Stop();
 
+            _receiveQueue.Close();
+            _sendQueue.Close();
+            
             //stop receiveSocketListener of all the clients 
             foreach (var listener in _clientListener)
             {

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 
 namespace Networking
 {
@@ -18,6 +19,7 @@ namespace Networking
         private readonly object _lockObj = new();
         private readonly ConcurrentDictionary<string, ConcurrentQueue<Packet>> _multiLevelQueue;
         private readonly ConcurrentDictionary<string, int> _priorityMap;
+        private readonly ManualResetEvent _manualResetEvent;
         private int _avoidStateChange;
         private string _currentModuleIdentifier;
         private int _currentQueue;
@@ -36,6 +38,7 @@ namespace Networking
             _currentWeight = 0;
             _avoidStateChange = 0;
             _queueSize = 0;
+            _manualResetEvent = new(false);
             Trace.WriteLine("[Networking] Initializing Queue Module");
         }
 
@@ -101,6 +104,7 @@ namespace Networking
             }
 
             foreach (var keyValuePair in _multiLevelQueue) keyValuePair.Value.Clear();
+            _manualResetEvent.Reset();
         }
 
         /// <summary>
@@ -114,12 +118,15 @@ namespace Networking
             // Check if the _multiLevelQueue dictionary contains the moduleIdentifier
             if (_multiLevelQueue.ContainsKey(moduleIdentifier))
             {
+                _multiLevelQueue[moduleIdentifier].Enqueue(packet);
                 lock (_lockObj)
                 {
                     _queueSize += 1;
+                    if (_queueSize == 1)
+                    {
+                        _manualResetEvent.Set();
+                    }
                 }
-
-                _multiLevelQueue[moduleIdentifier].Enqueue(packet);
             }
             else
             {
@@ -141,14 +148,16 @@ namespace Networking
 
             var moduleIdentifier = _moduleIdentifiers[_currentQueue];
             _multiLevelQueue[moduleIdentifier].TryDequeue(out var packet);
-
             lock (_lockObj)
             {
                 _currentWeight -= 1;
                 _avoidStateChange = 1;
                 _queueSize -= 1;
+                if (_queueSize == 0)
+                {
+                    _manualResetEvent.Reset();
+                }
             }
-
             Trace.WriteLine($"[Networking] Dequeued Packet for {moduleIdentifier}");
             return packet;
         }
@@ -212,6 +221,21 @@ namespace Networking
 
                 break;
             }
+        }
+
+        public void WaitForPacket()
+        {
+            if (_manualResetEvent.GetSafeWaitHandle().IsClosed)
+            {
+                return;
+            }
+            _manualResetEvent.WaitOne();
+        }
+        
+        public void Close()
+        {
+            _manualResetEvent.Set();
+            _manualResetEvent.Dispose();
         }
     }
 }
