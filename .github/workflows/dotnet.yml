@@ -21,7 +21,17 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Module Tests
-      run: dotnet test --filter "FullyQualifiedName!~Testing.E2E" --no-build --verbosity normal
+    - name: Networking Tests
+      run: dotnet test --filter "FullyQualifiedName~Testing.Networking" --no-build --verbosity normal  
+    - name: UX Tests
+      run: dotnet test --filter "FullyQualifiedName~Testing.UX" --no-build --verbosity normal
+    - name: ScreenSharing Tests
+      run: dotnet test --filter "FullyQualifiedName~Testing.ScreenSharing" --no-build --verbosity normal
+    - name: Dashboard Tests
+      run: dotnet test --filter "FullyQualifiedName~Testing.Dashboard" --no-build --verbosity normal
+    - name: Content Tests
+      run: dotnet test --filter "FullyQualifiedName~Testing.Content" --no-build --verbosity normal
+    - name: Whiteboard Tests
+      run: dotnet test --filter "FullyQualifiedName~Testing.Whiteboard" --no-build --verbosity normal
     - name: E2E Tests
       run: dotnet test --filter "FullyQualifiedName~Testing.E2E" --no-build --verbosity normal
