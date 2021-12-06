@@ -64,6 +64,8 @@ namespace Testing.Networking.SocketManagement
         public void TearDown()
         {
             _serverSocket1.Close();
+            _queueR1.Close();
+            _queueS.Close();
             _receiveSocketListener1.Stop();
             _sendSocketListenerServer.Stop();
             _clientSocket1.Close();
@@ -129,6 +131,7 @@ namespace Testing.Networking.SocketManagement
                 Assert.AreEqual(whiteBoardPacket.ModuleIdentifier, packet2.ModuleIdentifier);
             });
             _serverSocket2.Close();
+            _queueR2.Close();
             _receiveSocketListener2.Stop();
             _clientSocket2.Close();
         }
