@@ -225,11 +225,14 @@ namespace Networking
 
         public void WaitForPacket()
         {
-            if (_manualResetEvent.GetSafeWaitHandle().IsClosed)
+            try
+            {
+                _manualResetEvent.WaitOne();
+            }
+            catch (Exception e)
             {
                 return;
             }
-            _manualResetEvent.WaitOne();
         }
         
         public void Close()
