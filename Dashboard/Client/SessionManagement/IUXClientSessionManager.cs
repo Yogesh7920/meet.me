@@ -1,10 +1,11 @@
-﻿/// <author> Rajeev Goyal </author>
+﻿
+
+using System;
+/// <author> Rajeev Goyal </author>
 /// <created> 24/10/2021 </created>
 /// <summary>
 /// This file contains the interface for UX to access Client session manager's methods and fields.
 /// </summary>
-
-
 namespace Dashboard.Client.SessionManagement
 {
     public interface IUXClientSessionManager
@@ -55,6 +56,15 @@ namespace Dashboard.Client.SessionManagement
         /// </summary>
         /// <returns>A userData object for that paritcular client.</returns>
         UserData GetUser();
+
+        /// <summary>
+        ///     Fetches the session data object from the client session manager.
+        /// </summary>
+        /// <returns> A session data object for that paritcular client. </returns>
+        //SessionData GetSessionData() 
+        //{
+        //    return null;
+        //}
 
         // Event for notifying summary creation 
         public event NotifySummaryCreated SummaryCreated;

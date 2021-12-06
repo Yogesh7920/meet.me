@@ -138,6 +138,7 @@ namespace Dashboard.Client.SessionManagement
                     return;
 
                 case "endMeet":
+                    _communicator.Stop();
                     MeetingEnded?.Invoke();
                     return;
 
@@ -201,6 +202,7 @@ namespace Dashboard.Client.SessionManagement
 
             SendDataToServer("getAnalytics", _user.username, _user.userID);
         }
+
 
         /// <summary>
         ///     Get the summary of the chats that were sent from the start of the
