@@ -279,11 +279,11 @@ namespace Networking
                     if (e.SocketErrorCode == SocketError.Interrupted)
                         Trace.WriteLine("[Networking] Socket listener has been closed");
                     else
-                        Trace.WriteLine("[Networking] An Exception has been raised in AcceptRequest :" + e);
+                        Trace.WriteLine($"[Networking] An Exception has been raised in AcceptRequest: {e.Message}");
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("[Networking] An Exception has been raised in AcceptRequest :" + e);
+                    Trace.WriteLine($"[Networking] An Exception has been raised in AcceptRequest: {e.Message}");
                 }
         }
     }

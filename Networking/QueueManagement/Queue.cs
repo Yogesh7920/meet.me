@@ -224,18 +224,28 @@ namespace Networking
         }
 
         public void WaitForPacket()
-        {
-            if (_manualResetEvent.SafeWaitHandle.IsClosed)
+        { 
+            try
             {
-                return;
+                _manualResetEvent.WaitOne();
             }
-            _manualResetEvent.WaitOne();
+            catch (Exception e)
+            {
+                Trace.WriteLine($"[Networking]: {e.Message}");    
+            }
         }
         
         public void Close()
         {
-            _manualResetEvent.Set();
-            _manualResetEvent.Dispose();
+            try
+            {
+                _manualResetEvent.Set();
+                _manualResetEvent.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine($"[Networking]: {ex.Message}");    
+            }
         }
     }
 }
