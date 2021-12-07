@@ -231,7 +231,7 @@ namespace Networking
             }
             catch (Exception e)
             {
-                Trace.WriteLine($"[Networking]: {e.Message}");    
+                Trace.WriteLine($"[Networking] Error while waiting for packets: {e.Message}");    
             }
         }
         
@@ -244,7 +244,7 @@ namespace Networking
             }
             catch (Exception ex)
             {
-                Trace.WriteLine($"[Networking]: {ex.Message}");    
+                Trace.WriteLine($"[Networking] Error while closing the queue: {ex.Message}");    
             }
         }
     }
