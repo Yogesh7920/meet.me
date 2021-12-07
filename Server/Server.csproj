@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Dashboard\Dashboard.csproj"/>
+        <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
     </ItemGroup>
 
 </Project>

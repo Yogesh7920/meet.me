@@ -60,7 +60,7 @@ namespace Networking
             if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "127.0.0.1:8080";
             var ip = IPAddress.Parse(GetLocalIpAddress());
             var port = FreeTcpPort(ip);
-            _serverSocket = new TcpListener(ip, port);
+            _serverSocket = new TcpListener(IPAddress.Any, port);
 
             //start server at the scanned port of the ip 
             _serverSocket.Start();
