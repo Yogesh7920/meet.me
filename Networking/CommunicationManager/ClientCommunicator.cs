@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
@@ -34,6 +35,17 @@ namespace Networking
         // Declare sendSocketListenerClient variable for sending messages 
         private SendSocketListenerClient _sendSocketListenerClient;
 
+        public IPAddress GetIp(string serverIp)
+        {
+            try
+            {
+                return IPAddress.Parse(serverIp);
+            }
+            catch (Exception e)
+            {
+                return Dns.GetHostAddresses(serverIp).Last();
+            }
+        }
         /// <summary>
         ///     This method connects client to server
         /// </summary>
@@ -46,7 +58,9 @@ namespace Networking
             try
             {
                 //try to connect with server
-                var ip = IPAddress.Parse(serverIp);
+                // var ip = IPAddress.Parse(serverIp);
+                // var ip = Dns.GetHostAddresses(serverIp).Last();
+                var ip = GetIp(serverIp);
                 var port = int.Parse(serverPort);
                 _clientSocket = new TcpClient();
 
