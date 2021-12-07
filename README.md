@@ -6,6 +6,12 @@ An application as part of CS5617 Software Engineering project at IIT Palakkad
 ## Installation
 Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installation) guide. 
 
+## To work over the internet
+
+- Download [ngrok](https://ngrok.com/) 
+- Run the server and get port
+- ngrok.exe tcp -region=in <port>
+- Get the IP, e.g.: 0.tcp.in.ngrok.io, and it's corresponding port, and log in to client.
 
 ## The Team
 
