@@ -477,9 +477,10 @@ namespace Dashboard.Server.SessionManagement
             if (_sessionData.users.Count == 1)
             {
                 EndMeetProcedure(receivedObject);
+                _communicator.RemoveClient(userIDToRemove.ToString());
                 return;
             }
-
+            _communicator.RemoveClient(userIDToRemove.ToString());
             var removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
             if (removedUser != null)
             {

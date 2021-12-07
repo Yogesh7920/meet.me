@@ -39,10 +39,12 @@ namespace Networking
         {
             try
             {
+                Trace.WriteLine("[Networking] Parsing IPv4 address");
                 return IPAddress.Parse(serverIp);
             }
-            catch (Exception e)
+            catch (Exception)
             {
+                Trace.WriteLine("[Networking] Parsing DNS name");
                 return Dns.GetHostAddresses(serverIp).Last();
             }
         }
