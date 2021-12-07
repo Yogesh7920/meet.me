@@ -79,7 +79,6 @@ namespace Networking
                             + e.Message);
                     }
                 }
-            }
         }
 
         /// <summary>

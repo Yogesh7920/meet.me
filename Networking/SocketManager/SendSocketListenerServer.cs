@@ -190,7 +190,6 @@ namespace Networking
                         }
                     }
                 }
-            }
         }
 
         /// <summary>
