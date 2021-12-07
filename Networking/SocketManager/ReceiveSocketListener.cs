@@ -103,7 +103,7 @@ namespace Networking
                 }
                 _clientSocket.BeginReceive(buffer,0, Threshold,0, ReceiveCallback, null);
             } catch (Exception e) {  
-                Console.WriteLine(e.ToString());  
+                Trace.WriteLine($"[Networking] Error in ReceiveSocketListener thread: {e.Message}");  
             }  
         }
 
