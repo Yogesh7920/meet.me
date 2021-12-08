@@ -138,6 +138,8 @@ namespace Dashboard.Client.SessionManagement
                     return;
 
                 case "endMeet":
+                    _communicator.Stop();
+                    _screenShareClient.Dispose();
                     MeetingEnded?.Invoke();
                     return;
 
@@ -234,6 +236,9 @@ namespace Dashboard.Client.SessionManagement
             SendDataToServer("removeClient", _user.username, _user.userID);
 
             Trace.WriteLine("[Client Dashboard] Removed the client from the client side.");
+            
+            // _communicator.Stop();
+            // _screenShareClient.Dispose();
         }
 
         /// <summary>
@@ -412,7 +417,6 @@ namespace Dashboard.Client.SessionManagement
                 receivedSessionData = null;
 
                 Trace.WriteLine("[Client Dashboard] Stopping the network communicator.");
-                _communicator.Stop();
             }
 
             // update the sesseon data on the client side and notify the UX about it.
