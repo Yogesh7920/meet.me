@@ -482,7 +482,6 @@ namespace Dashboard.Server.SessionManagement
                 _communicator.RemoveClient(userIDToRemove.ToString());
                 return;
             }
-            _communicator.RemoveClient(userIDToRemove.ToString());
             var removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
             if (removedUser != null)
             {
@@ -490,6 +489,7 @@ namespace Dashboard.Server.SessionManagement
                 NotifyTelemetryModule();
                 SendDataToClient("removeClient", _sessionData, null, null, removedUser);
             }
+            _communicator.RemoveClient(userIDToRemove.ToString());
         }
 
 

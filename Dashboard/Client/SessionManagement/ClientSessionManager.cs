@@ -237,8 +237,7 @@ namespace Dashboard.Client.SessionManagement
 
             Trace.WriteLine("[Client Dashboard] Removed the client from the client side.");
             
-            // _communicator.Stop();
-            // _screenShareClient.Dispose();
+            
         }
 
         /// <summary>
@@ -417,6 +416,8 @@ namespace Dashboard.Client.SessionManagement
                 receivedSessionData = null;
 
                 Trace.WriteLine("[Client Dashboard] Stopping the network communicator.");
+                _communicator.Stop();
+                _screenShareClient.Dispose();
             }
 
             // update the sesseon data on the client side and notify the UX about it.
