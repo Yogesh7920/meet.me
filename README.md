@@ -3,6 +3,8 @@
 An application as part of CS5617 Software Engineering project at IIT Palakkad
 * [Wiki](https://github.com/Yogesh7920/meet.me/wiki)
 
+![stats](./images/stats.png)
+
 ## Installation
 Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installation) guide. 
 
@@ -10,8 +12,9 @@ Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installa
 
 - Download [ngrok](https://ngrok.com/) 
 - Run the server and get port
-- ngrok.exe tcp -region=in \<port>
-- Get the IP, e.g.: 0.tcp.in.ngrok.io, and it's corresponding port, and log in to client.
+- `ngrok.exe tcp -region=in \<port>`
+- Get the ngrok IP, and it's port. e.g.: 0.tcp.in.ngrok.io:17000
+- log in to client with the above credentials.
 
 ## The Team
 
