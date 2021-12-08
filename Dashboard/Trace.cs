@@ -21,7 +21,8 @@ namespace Dashboard
         /// </summary>
         public void TraceListener()
         {
-            traceFile = File.Open("trace.txt", FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), @"trace.txt");
+            traceFile = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             Trace.Listeners.Add(new TextWriterTraceListener(traceFile));
             Trace.AutoFlush = true;
             Trace.IndentSize = 4;
