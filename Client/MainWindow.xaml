@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         MinWidth="1500" MinHeight="850" WindowStyle="None"
-        Title="Main Window" Height="{x:Static SystemParameters.PrimaryScreenHeight}"
+        Title="meet.me" Icon="/Icons/logo.ico" Height="{x:Static SystemParameters.PrimaryScreenHeight}"
         Width="{x:Static SystemParameters.PrimaryScreenWidth}">
 
     <Window.Resources>
@@ -92,8 +92,10 @@
         <!-- Title Bar -->
         <Grid x:Name="Title" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Background="{DynamicResource Color1Bg}"
               MouseDown="TitleBar_MouseDown">
-            <TextBlock Text="meet.me" HorizontalAlignment="Center" VerticalAlignment="Top"
-                       FontWeight="Bold" FontFamily="ComicSans" FontSize="25" Foreground="{DynamicResource Color3Bg}" />
+            <Image Height="20" Width="20" Margin="0 0 220 0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                          Source="/Icons/meet.me_logo_no_bg.png" />
+            <TextBlock Text="meet.me" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="25 0 0 0"
+                       FontWeight="Bold" FontFamily="ComicSans" FontSize="15" Foreground="{DynamicResource Color3Bg}" />
             <DockPanel HorizontalAlignment="Right" Margin="10,0">
                 <DockPanel Name="ThemeButton" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0 0 10 0">
                     <TextBlock Text="Theme" Foreground="{DynamicResource Color3Bg}" FontSize="12" FontWeight="DemiBold" />
