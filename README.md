@@ -47,9 +47,5 @@ Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installa
 |                                        | Arpan Tripathi               |
 |                                        | Aniket Singh Rajpoot         |
 
-| Teaching Assistants    |
-|------------------------|
-| Sreejith K P           |
-
 
 [Guidelines for Contribution](./CONTRIBUTING.md)
