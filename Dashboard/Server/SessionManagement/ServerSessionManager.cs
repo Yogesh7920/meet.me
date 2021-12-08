@@ -85,8 +85,7 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-            //_ = new ScreenShareServer();
-
+            _screenShareServer = ScreenShareFactory.GetScreenShareServer();
 
             TraceManager traceManager = new();
             traceManager.TraceListener();
