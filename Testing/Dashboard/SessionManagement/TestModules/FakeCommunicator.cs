@@ -32,7 +32,7 @@ namespace Testing.Dashboard.SessionManagement.TestModules
 
         public void RemoveClient(string clientId)
         {
-            throw new NotImplementedException();
+
         }
 
         public void Send(string data, string identifier)

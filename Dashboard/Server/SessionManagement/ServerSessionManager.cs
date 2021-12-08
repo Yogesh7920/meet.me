@@ -85,8 +85,7 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-            //_ = new ScreenShareServer();
-
+            _screenShareServer = ScreenShareFactory.GetScreenShareServer();
 
             TraceManager traceManager = new();
             traceManager.TraceListener();
@@ -482,7 +481,6 @@ namespace Dashboard.Server.SessionManagement
                 _communicator.RemoveClient(userIDToRemove.ToString());
                 return;
             }
-            _communicator.RemoveClient(userIDToRemove.ToString());
             var removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
             if (removedUser != null)
             {
@@ -490,6 +488,7 @@ namespace Dashboard.Server.SessionManagement
                 NotifyTelemetryModule();
                 SendDataToClient("removeClient", _sessionData, null, null, removedUser);
             }
+            _communicator.RemoveClient(userIDToRemove.ToString());
         }
 
 
