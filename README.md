@@ -18,9 +18,9 @@ Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installa
 
 ## The Team
 
-| Project Mentor     |
-|--------------------|
-| Ramaswamy Krishnan |
+| Project Mentor     | Teaching Assistant   |
+|--------------------|----------------------|
+| Ramaswamy Krishnan | Sreejith K P         |
 
 | Project Manager    | Technical Architect   |
 |--------------------|-----------------------|
