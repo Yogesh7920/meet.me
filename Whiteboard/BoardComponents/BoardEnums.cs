@@ -12,8 +12,8 @@ namespace Whiteboard
     /// </summary>
     public enum BoardState
     {
-        ACTIVE,
-        INACTIVE
+        Active,
+        Inactive
     }
 
     /// <summary>
@@ -21,11 +21,11 @@ namespace Whiteboard
     /// </summary>
     public enum ShapeType
     {
-        ELLIPSE,
-        RECTANGLE,
-        LINE,
-        POLYLINE,
-        NONE
+        Ellipse,
+        Rectangle,
+        Line,
+        Polyline,
+        None
     }
 
     /// <summary>
@@ -33,9 +33,9 @@ namespace Whiteboard
     /// </summary>
     public enum UXOperation
     {
-        CREATE,
-        DELETE,
-        NONE
+        Create,
+        Delete,
+        None
     }
 
     /// <summary>
@@ -43,14 +43,14 @@ namespace Whiteboard
     /// </summary>
     public enum Operation
     {
-        CREATE,
-        DELETE,
-        MODIFY,
-        FETCH_STATE,
-        FETCH_CHECKPOINT,
-        CREATE_CHECKPOINT,
-        CLEAR_STATE,
-        NONE
+        Create,
+        Delete,
+        Modify,
+        FetchState,
+        FetchCheckpoint,
+        CreateCheckpoint,
+        ClearState,
+        None
     }
 
     /// <summary>
@@ -58,10 +58,10 @@ namespace Whiteboard
     /// </summary>
     public enum RealTimeOperation
     {
-        TRANSLATE,
-        ROTATE,
-        CREATE,
-        RESIZE
+        Translate,
+        Rotate,
+        Create,
+        Resize
     }
 
     /// <summary>
@@ -69,14 +69,14 @@ namespace Whiteboard
     /// </summary>
     public enum DragPos
     {
-        TOP_RIGHT,
-        TOP_LEFT,
-        BOTTOM_LEFT,
-        BOTTOM_RIGHT,
-        RIGHT,
-        LEFT,
-        TOP,
-        BOTTOM,
-        NONE
+        TopRight,
+        TopLeft,
+        BottomLeft,
+        BottomRight,
+        Right,
+        Left,
+        Top,
+        Bottom,
+        None
     }
 }

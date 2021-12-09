@@ -56,26 +56,26 @@ namespace Whiteboard
                 Trace.WriteLine("ServerBoardCommunicator.onDataReceived: Receiving the XML string");
                 var deserializedObject = serializer.Deserialize<BoardServerShape>(data);
                 var userId = deserializedObject.RequesterId;
-                if (deserializedObject.OperationFlag == Operation.FETCH_STATE)
+                if (deserializedObject.OperationFlag == Operation.FetchState)
                 {
                     var shapes = stateManager.FetchState(userId);
                     Send(shapes, userId);
                 }
-                else if (deserializedObject.OperationFlag == Operation.FETCH_CHECKPOINT)
+                else if (deserializedObject.OperationFlag == Operation.FetchCheckpoint)
                 {
                     var checkPointNumber = deserializedObject.CheckpointNumber;
                     var shapes = stateManager.FetchCheckpoint(checkPointNumber, userId);
                     Send(shapes);
                 }
-                else if (deserializedObject.OperationFlag == Operation.CREATE_CHECKPOINT)
+                else if (deserializedObject.OperationFlag == Operation.CreateCheckpoint)
                 {
                     var shape = stateManager.SaveCheckpoint(userId);
                     Send(shape);
                 }
-                else if (deserializedObject.OperationFlag == Operation.CREATE ||
-                         deserializedObject.OperationFlag == Operation.DELETE ||
-                         deserializedObject.OperationFlag == Operation.MODIFY ||
-                         deserializedObject.OperationFlag == Operation.CLEAR_STATE
+                else if (deserializedObject.OperationFlag == Operation.Create ||
+                         deserializedObject.OperationFlag == Operation.Delete ||
+                         deserializedObject.OperationFlag == Operation.Modify ||
+                         deserializedObject.OperationFlag == Operation.ClearState
                 )
                 {
                     var resp = stateManager.SaveUpdate(deserializedObject);

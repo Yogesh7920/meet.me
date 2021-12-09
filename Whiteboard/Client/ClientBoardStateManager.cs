@@ -31,7 +31,7 @@ namespace Whiteboard
         private readonly object _stateLock = new();
 
         // no. of states till the client can undo
-        private readonly int _undoRedoCapacity = BoardConstants.UNDO_REDO_STACK_SIZE;
+        private readonly int _undoRedoCapacity = BoardConstants.UndoRedoStackSize;
 
         // no. of checkpoints stored on the server
         private int _checkpointsNumber;
@@ -128,14 +128,14 @@ namespace Whiteboard
         public void Start()
         {
             // initializing all attributes 
-            _checkpointsNumber = BoardConstants.EMPTY_SIZE;
-            _currentCheckpointState = BoardConstants.INITIAL_CHECKPOINT_STATE;
+            _checkpointsNumber = BoardConstants.EmptySize;
+            _currentCheckpointState = BoardConstants.InitialCheckpointState;
             _clientBoardCommunicator = ClientBoardCommunicator.Instance;
             _clientCheckPointHandler = new ClientCheckPointHandler();
             _clients = new Dictionary<string, IClientBoardStateListener>();
             _deletedShapeIds = new HashSet<string>();
             _currentUserId = null;
-            _userLevel = BoardConstants.LOW_USER_LEVEL;
+            _userLevel = BoardConstants.LowUserLevel;
 
             InitializeDataStructures();
 
@@ -165,7 +165,7 @@ namespace Whiteboard
                 // Creating BoardServerShape object and requesting communicator
                 Trace.WriteLine(
                     "[Whiteboard] ClientBoardStateManager.Subscribe: Sending fetch state request to communicator.");
-                BoardServerShape boardServerShape = new(null, Operation.FETCH_STATE, _currentUserId,
+                BoardServerShape boardServerShape = new(null, Operation.FetchState, _currentUserId,
                     currentCheckpointState: _currentCheckpointState);
                 _clientBoardCommunicator.Send(boardServerShape);
 
@@ -189,11 +189,11 @@ namespace Whiteboard
                 "[Whiteboard] ClientBoardStateManager.ClearWhiteBoard: Sending Clear_State request to server.");
 
             // Only user with higher user level can clear complete state.
-            if (_userLevel == BoardConstants.HIGH_USER_LEVEL)
+            if (_userLevel == BoardConstants.HighUserLevel)
             {
                 // reset state in sync to currentCheckpointState = 0.
-                _clientBoardCommunicator.Send(new BoardServerShape(null, Operation.CLEAR_STATE, _currentUserId,
-                    currentCheckpointState: BoardConstants.INITIAL_CHECKPOINT_STATE));
+                _clientBoardCommunicator.Send(new BoardServerShape(null, Operation.ClearState, _currentUserId,
+                    currentCheckpointState: BoardConstants.InitialCheckpointState));
                 return true;
             }
 
@@ -345,12 +345,12 @@ namespace Whiteboard
         {
             try
             {
-                if (boardShape.RecentOperation == Operation.CREATE)
+                if (boardShape.RecentOperation == Operation.Create)
                 {
                     lock (_stateLock)
                     {
-                        // Checking pre-conditions for CREATE
-                        PreConditionChecker(Operation.CREATE, boardShape.Uid);
+                        // Checking pre-conditions for Create
+                        PreConditionChecker(Operation.Create, boardShape.Uid);
 
                         // New QueueElement
                         QueueElement queueElement = new(boardShape.Uid, boardShape.LastModifiedTime);
@@ -365,16 +365,16 @@ namespace Whiteboard
 
                         _deletedShapeIds.Remove(boardShape.Uid);
                         Trace.WriteLine(
-                            "[Whiteboard] ClientBoardStateManager.SaveOperation: State updated for CREATE operation.");
+                            "[Whiteboard] ClientBoardStateManager.SaveOperation: State updated for Create operation.");
                     }
 
                     // Send the update to server
                     _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShape},
-                        Operation.CREATE, _currentUserId, currentCheckpointState: _currentCheckpointState));
+                        Operation.Create, _currentUserId, currentCheckpointState: _currentCheckpointState));
                     return true;
                 }
 
-                if (boardShape.RecentOperation == Operation.MODIFY)
+                if (boardShape.RecentOperation == Operation.Modify)
                 {
                     lock (_stateLock)
                     {
@@ -386,8 +386,8 @@ namespace Whiteboard
                             return false;
                         }
 
-                        // Checking pre-conditions for MODIFY
-                        PreConditionChecker(Operation.MODIFY, boardShape.Uid);
+                        // Checking pre-conditions for Modify
+                        PreConditionChecker(Operation.Modify, boardShape.Uid);
 
                         // create a deep copy and add previous & new one to undo-stack
                         _undoStack.Push(_mapIdToBoardShape[boardShape.Uid].Clone(), boardShape.Clone());
@@ -397,17 +397,17 @@ namespace Whiteboard
                         var queueElement = _mapIdToQueueElement[boardShape.Uid];
                         _priorityQueue.IncreaseTimestamp(queueElement, boardShape.LastModifiedTime);
                         Trace.WriteLine(
-                            "[Whiteboard] ClientBoardStateManager.SaveOperation: State updated for MODIFY operation.");
+                            "[Whiteboard] ClientBoardStateManager.SaveOperation: State updated for Modify operation.");
                     }
 
                     // Send the update to server
                     _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShape},
-                        Operation.MODIFY, _currentUserId, currentCheckpointState: _currentCheckpointState));
+                        Operation.Modify, _currentUserId, currentCheckpointState: _currentCheckpointState));
                     GC.Collect();
                     return true;
                 }
 
-                if (boardShape.RecentOperation == Operation.DELETE)
+                if (boardShape.RecentOperation == Operation.Delete)
                 {
                     lock (_stateLock)
                     {
@@ -419,8 +419,8 @@ namespace Whiteboard
                             return false;
                         }
 
-                        // Checking pre-conditions for DELETE
-                        PreConditionChecker(Operation.DELETE, boardShape.Uid);
+                        // Checking pre-conditions for Delete
+                        PreConditionChecker(Operation.Delete, boardShape.Uid);
 
                         // create a deep copy and push it in undo stack
                         _undoStack.Push(_mapIdToBoardShape[boardShape.Uid].Clone(), null);
@@ -432,12 +432,12 @@ namespace Whiteboard
                         _deletedShapeIds.Add(boardShape.Uid);
 
                         Trace.WriteLine(
-                            "[Whiteboard] ClientBoardStateManager.SaveOperation: State updated for DELETE operation.");
+                            "[Whiteboard] ClientBoardStateManager.SaveOperation: State updated for Delete operation.");
                     }
 
                     // Send the update to server
                     _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShape},
-                        Operation.DELETE, _currentUserId, currentCheckpointState: _currentCheckpointState));
+                        Operation.Delete, _currentUserId, currentCheckpointState: _currentCheckpointState));
                     GC.Collect();
                     return true;
                 }
@@ -472,10 +472,10 @@ namespace Whiteboard
             try
             {
                 // a case of state fetching for newly joined client
-                if (serverUpdate.OperationFlag == Operation.FETCH_STATE && serverUpdate.RequesterId == _currentUserId)
+                if (serverUpdate.OperationFlag == Operation.FetchState && serverUpdate.RequesterId == _currentUserId)
                 {
                     Trace.WriteLine(
-                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: FETCH_STATE (subscribe) request's result arrived.");
+                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: FetchState (subscribe) request's result arrived.");
                     lock (_stateLock)
                     {
                         // converting network update to UXShapes and sending them to UX
@@ -486,10 +486,10 @@ namespace Whiteboard
                     Trace.WriteLine("[Whiteboard] ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
                 // a case of checkpoint fetching
-                else if (serverUpdate.OperationFlag == Operation.FETCH_CHECKPOINT)
+                else if (serverUpdate.OperationFlag == Operation.FetchCheckpoint)
                 {
                     Trace.WriteLine(
-                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: FETCH_CHECKPOINT request's result arrived.");
+                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: FetchCheckpoint request's result arrived.");
                     lock (_stateLock)
                     {
                         // Nullify current state
@@ -503,10 +503,10 @@ namespace Whiteboard
                     Trace.WriteLine("[Whiteboard] ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
                 // a case of new checkpoint created
-                else if (serverUpdate.OperationFlag == Operation.CREATE_CHECKPOINT)
+                else if (serverUpdate.OperationFlag == Operation.CreateCheckpoint)
                 {
                     Trace.WriteLine(
-                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: CREATE_CHECKPOINT request's result arrived.");
+                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: CreateCheckpoint request's result arrived.");
 
                     // checking sync conditions
                     CheckCountAndCurrentCheckpoint(serverUpdate, false);
@@ -518,32 +518,32 @@ namespace Whiteboard
                         _clientCheckPointHandler.CheckpointNumber = _checkpointsNumber;
 
                         // notify UX to display new number
-                        NotifyClients(new List<UXShapeHelper> {new(_checkpointsNumber, Operation.CREATE_CHECKPOINT)});
+                        NotifyClients(new List<UXShapeHelper> {new(_checkpointsNumber, Operation.CreateCheckpoint)});
                     }
 
                     Trace.WriteLine("[Whiteboard] ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
                 // when other users create a shape
-                else if (serverUpdate.OperationFlag == Operation.CREATE && serverUpdate.RequesterId != _currentUserId)
+                else if (serverUpdate.OperationFlag == Operation.Create && serverUpdate.RequesterId != _currentUserId)
                 {
                     Trace.WriteLine(
-                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: CREATE request's result arrived.");
+                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: Create request's result arrived.");
 
                     // checking conditions on server update.
                     CheckCountAndCurrentCheckpoint(serverUpdate);
 
                     lock (_stateLock)
                     {
-                        NotifyClients(ServerOperationUpdate(serverUpdate.ShapeUpdates[0], Operation.CREATE));
+                        NotifyClients(ServerOperationUpdate(serverUpdate.ShapeUpdates[0], Operation.Create));
                     }
 
                     Trace.WriteLine("[Whiteboard] ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
 
-                else if (serverUpdate.OperationFlag == Operation.MODIFY && serverUpdate.RequesterId != _currentUserId)
+                else if (serverUpdate.OperationFlag == Operation.Modify && serverUpdate.RequesterId != _currentUserId)
                 {
                     Trace.WriteLine(
-                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: MODIFY request's result arrived.");
+                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: Modify request's result arrived.");
 
                     // checking conditions on server update.
                     CheckCountAndCurrentCheckpoint(serverUpdate);
@@ -558,15 +558,15 @@ namespace Whiteboard
 
                     lock (_stateLock)
                     {
-                        NotifyClients(ServerOperationUpdate(serverUpdate.ShapeUpdates[0], Operation.MODIFY));
+                        NotifyClients(ServerOperationUpdate(serverUpdate.ShapeUpdates[0], Operation.Modify));
                     }
 
                     Trace.WriteLine("[Whiteboard] ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
-                else if (serverUpdate.OperationFlag == Operation.DELETE && serverUpdate.RequesterId != _currentUserId)
+                else if (serverUpdate.OperationFlag == Operation.Delete && serverUpdate.RequesterId != _currentUserId)
                 {
                     Trace.WriteLine(
-                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: DELETE request's result arrived.");
+                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: Delete request's result arrived.");
 
                     // checking conditions on server update.
                     CheckCountAndCurrentCheckpoint(serverUpdate);
@@ -581,15 +581,15 @@ namespace Whiteboard
 
                     lock (_stateLock)
                     {
-                        NotifyClients(ServerOperationUpdate(serverUpdate.ShapeUpdates[0], Operation.DELETE));
+                        NotifyClients(ServerOperationUpdate(serverUpdate.ShapeUpdates[0], Operation.Delete));
                     }
 
                     Trace.WriteLine("[Whiteboard] ClientBoardStateManager.OnMessageReceived: Clients Notified.");
                 }
-                else if (serverUpdate.OperationFlag == Operation.CLEAR_STATE)
+                else if (serverUpdate.OperationFlag == Operation.ClearState)
                 {
                     Trace.WriteLine(
-                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: CLEAR_STATE request's result arrived.");
+                        "[Whiteboard] ClientBoardStateManager.OnMessageReceived: ClearState request's result arrived.");
 
                     // checking conditions on server update.
                     CheckCountAndCurrentCheckpoint(serverUpdate, false, false);
@@ -597,11 +597,11 @@ namespace Whiteboard
                     lock (_stateLock)
                     {
                         // set checkpoint state
-                        _currentCheckpointState = BoardConstants.INITIAL_CHECKPOINT_STATE;
+                        _currentCheckpointState = BoardConstants.InitialCheckpointState;
 
                         // clear the state and notify the UX for the same
                         NullifyDataStructures();
-                        NotifyClients(new List<UXShapeHelper> {new(_checkpointsNumber, Operation.CLEAR_STATE)});
+                        NotifyClients(new List<UXShapeHelper> {new(_checkpointsNumber, Operation.ClearState)});
                     }
 
                     Trace.WriteLine("[Whiteboard] ClientBoardStateManager.OnMessageReceived: Clients Notified.");
@@ -685,7 +685,7 @@ namespace Whiteboard
                 });
 
                 // updating checkpoint number for subscribe result
-                if (boardServerShape.OperationFlag == Operation.FETCH_STATE)
+                if (boardServerShape.OperationFlag == Operation.FetchState)
                 {
                     _checkpointsNumber = boardServerShape.CheckpointNumber;
                     _clientCheckPointHandler.CheckpointNumber = _checkpointsNumber;
@@ -711,7 +711,7 @@ namespace Whiteboard
                     // The ids which were considered to be deleted
                     if (_deletedShapeIds.Contains(boardShapeId)) _deletedShapeIds.Remove(boardShapeId);
                     // converting BoardShape to UXShape and adding it in the list
-                    uXShapeHelpers.Add(new UXShapeHelper(UXOperation.CREATE, boardShapes[i].MainShapeDefiner,
+                    uXShapeHelpers.Add(new UXShapeHelper(UXOperation.Create, boardShapes[i].MainShapeDefiner,
                         boardShapeId, _checkpointsNumber, boardServerShape.OperationFlag));
                 }
 
@@ -763,7 +763,7 @@ namespace Whiteboard
         /// <param name="id">Id of the shape.</param>
         private void PreConditionChecker(Operation operation, string id)
         {
-            if (operation == Operation.CREATE)
+            if (operation == Operation.Create)
             {
                 if (_mapIdToBoardShape.ContainsKey(id) || _mapIdToQueueElement.ContainsKey(id))
                 {
@@ -772,7 +772,7 @@ namespace Whiteboard
                 }
             }
 
-            else if (operation == Operation.MODIFY || operation == Operation.DELETE)
+            else if (operation == Operation.Modify || operation == Operation.Delete)
             {
                 if (!_mapIdToBoardShape.ContainsKey(id) || !_mapIdToQueueElement.ContainsKey(id))
                 {
@@ -792,7 +792,7 @@ namespace Whiteboard
         {
             List<BoardShape> boardShapes = new();
             List<QueueElement> queueElements = new();
-            while (_priorityQueue.GetSize() > BoardConstants.EMPTY_SIZE && _priorityQueue.Top().Timestamp > timestamp)
+            while (_priorityQueue.GetSize() > BoardConstants.EmptySize && _priorityQueue.Top().Timestamp > timestamp)
             {
                 boardShapes.Add(_mapIdToBoardShape[_priorityQueue.Top().Id]);
                 queueElements.Add(_priorityQueue.Extract());
@@ -833,8 +833,8 @@ namespace Whiteboard
         private List<UXShapeHelper> ServerOperationUpdate([NotNull] BoardShape boardShape,
             [NotNull] Operation operation)
         {
-            // Only CREATE, MODIFY and DELETE is supported by this function
-            if (operation != Operation.CREATE && operation != Operation.DELETE && operation != Operation.MODIFY)
+            // Only Create, Modify and Delete is supported by this function
+            if (operation != Operation.Create && operation != Operation.Delete && operation != Operation.Modify)
                 throw new InvalidOperationException("Operation type not supported.");
 
             // Recent operation should match the operation desired.
@@ -844,13 +844,13 @@ namespace Whiteboard
             // checking pre-conditions 
             PreConditionChecker(operation, boardShape.Uid);
 
-            if (operation == Operation.DELETE)
+            if (operation == Operation.Delete)
             {
                 // updating data structures
                 _priorityQueue.DeleteElement(_mapIdToQueueElement[boardShape.Uid]);
                 _mapIdToQueueElement.Remove(boardShape.Uid);
                 var tempShape = _mapIdToBoardShape[boardShape.Uid].Clone();
-                tempShape.RecentOperation = Operation.DELETE;
+                tempShape.RecentOperation = Operation.Delete;
                 _mapIdToBoardShape.Remove(boardShape.Uid);
                 _deletedShapeIds.Add(boardShape.Uid);
 
@@ -858,15 +858,15 @@ namespace Whiteboard
                     "[Whiteboard] ClientBoardStateManager.ServerOperationUpdate: Delete case - state successfully updated.");
                 return new List<UXShapeHelper>
                 {
-                    new(UXOperation.DELETE, tempShape.MainShapeDefiner, tempShape.Uid, operationType: Operation.DELETE)
+                    new(UXOperation.Delete, tempShape.MainShapeDefiner, tempShape.Uid, operationType: Operation.Delete)
                 };
             }
 
             // Shapes having last modified time before the current update needs to be deleted in UX first
             var tuple = LaterShapes(boardShape.LastModifiedTime);
-            var uXShapeHelpers = ToUXShapeHelpers(tuple.Item1, UXOperation.DELETE, operation);
+            var uXShapeHelpers = ToUXShapeHelpers(tuple.Item1, UXOperation.Delete, operation);
 
-            if (operation == Operation.CREATE)
+            if (operation == Operation.Create)
             {
                 // update data structures
                 _mapIdToBoardShape.Add(boardShape.Uid, boardShape);
@@ -881,9 +881,9 @@ namespace Whiteboard
             else
             {
                 // delete previous shape
-                uXShapeHelpers.Add(new UXShapeHelper(UXOperation.DELETE,
+                uXShapeHelpers.Add(new UXShapeHelper(UXOperation.Delete,
                     _mapIdToBoardShape[boardShape.Uid].MainShapeDefiner, boardShape.Uid,
-                    operationType: Operation.MODIFY));
+                    operationType: Operation.Modify));
 
                 // update data structures
                 _mapIdToBoardShape[boardShape.Uid] = boardShape;
@@ -894,9 +894,9 @@ namespace Whiteboard
             }
 
             // Inserting new shape and reinserting temporarily deleted shapes
-            uXShapeHelpers.Add(new UXShapeHelper(UXOperation.CREATE, boardShape.MainShapeDefiner, boardShape.Uid,
+            uXShapeHelpers.Add(new UXShapeHelper(UXOperation.Create, boardShape.MainShapeDefiner, boardShape.Uid,
                 _checkpointsNumber, operation));
-            uXShapeHelpers = ToUXShapeHelpers(tuple.Item1, UXOperation.CREATE, operation, uXShapeHelpers);
+            uXShapeHelpers = ToUXShapeHelpers(tuple.Item1, UXOperation.Create, operation, uXShapeHelpers);
 
             // populating the priority queue back
             _priorityQueue.Insert(tuple.Item2);
@@ -922,7 +922,7 @@ namespace Whiteboard
 
                 // clone the item and mark it to delete
                 var boardShape = tuple.Item2.Clone();
-                boardShape.RecentOperation = Operation.DELETE;
+                boardShape.RecentOperation = Operation.Delete;
 
                 // If server update just deleted the object then return empty list
                 if (_deletedShapeIds.Contains(boardShape.Uid))
@@ -936,13 +936,13 @@ namespace Whiteboard
                 _deletedShapeIds.Add(boardShape.Uid);
 
                 // send update to server
-                _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShape}, Operation.DELETE,
+                _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShape}, Operation.Delete,
                     _currentUserId, currentCheckpointState: _currentCheckpointState));
                 Trace.WriteLine(
                     "[Whiteboard] ClientBoardStateManager.UndoRedoRollback: Sent delete request to server.");
 
                 // update state and send UXShapes to UX
-                return UXShape.ToUXShape(ServerOperationUpdate(boardShape, Operation.DELETE));
+                return UXShape.ToUXShape(ServerOperationUpdate(boardShape, Operation.Delete));
             }
 
             // when original operation was delete
@@ -953,16 +953,16 @@ namespace Whiteboard
 
                 // clone the item and mark it to create
                 var boardShape = tuple.Item1.Clone();
-                boardShape.RecentOperation = Operation.CREATE;
+                boardShape.RecentOperation = Operation.Create;
 
                 // send update to server
-                _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShape}, Operation.CREATE,
+                _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShape}, Operation.Create,
                     _currentUserId, currentCheckpointState: _currentCheckpointState));
                 Trace.WriteLine(
                     "[Whiteboard] ClientBoardStateManager.UndoRedoRollback: Sent create request to server.");
 
                 // update state and send UXShapes to UX
-                return UXShape.ToUXShape(ServerOperationUpdate(boardShape, Operation.CREATE));
+                return UXShape.ToUXShape(ServerOperationUpdate(boardShape, Operation.Create));
             }
 
             // when original operation was modify
@@ -972,8 +972,8 @@ namespace Whiteboard
             // mark new one to delete and previous one to create
             var boardShapePrev = tuple.Item1.Clone();
             var boardShapeNew = tuple.Item2.Clone();
-            boardShapeNew.RecentOperation = Operation.DELETE;
-            boardShapePrev.RecentOperation = Operation.CREATE;
+            boardShapeNew.RecentOperation = Operation.Delete;
+            boardShapePrev.RecentOperation = Operation.Create;
 
             // If server update just deleted the object then return empty list
             if (_deletedShapeIds.Contains(boardShapeNew.Uid))
@@ -984,18 +984,18 @@ namespace Whiteboard
             }
 
             // send updates to server
-            _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShapeNew}, Operation.DELETE,
+            _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShapeNew}, Operation.Delete,
                 _currentUserId, currentCheckpointState: _currentCheckpointState));
             Trace.WriteLine(
                 "[Whiteboard] ClientBoardStateManager.UndoRedoRollback: Sent delete request to server for new.");
-            _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShapePrev}, Operation.CREATE,
+            _clientBoardCommunicator.Send(new BoardServerShape(new List<BoardShape> {boardShapePrev}, Operation.Create,
                 _currentUserId, currentCheckpointState: _currentCheckpointState));
             Trace.WriteLine(
                 "[Whiteboard] ClientBoardStateManager.UndoRedoRollback: Sent create request to server for old.");
 
             // Get respective UXShapes and update state
-            var uXShapes = UXShape.ToUXShape(ServerOperationUpdate(boardShapeNew, Operation.DELETE));
-            uXShapes.AddRange(UXShape.ToUXShape(ServerOperationUpdate(boardShapePrev, Operation.CREATE)));
+            var uXShapes = UXShape.ToUXShape(ServerOperationUpdate(boardShapeNew, Operation.Delete));
+            uXShapes.AddRange(UXShape.ToUXShape(ServerOperationUpdate(boardShapePrev, Operation.Create)));
             return uXShapes;
         }
 
@@ -1009,7 +1009,7 @@ namespace Whiteboard
             bool checkpointState = true)
         {
             // only single update is supported.
-            if (count && serverUpdate.ShapeUpdates.Count != BoardConstants.SINGLE_UPDATE_SIZE)
+            if (count && serverUpdate.ShapeUpdates.Count != BoardConstants.SingleUpdateSize)
                 throw new NotSupportedException("Multiple Shape Operation.");
 
             // state number should match with the server

@@ -48,7 +48,7 @@ namespace Whiteboard
             _mapIdToQueueElement = new Dictionary<string, QueueElement>();
             _priorityQueue = new BoardPriorityQueue();
             _deletedShapeIds = new HashSet<string>();
-            _currentCheckpointState = BoardConstants.INITIAL_CHECKPOINT_STATE;
+            _currentCheckpointState = BoardConstants.InitialCheckpointState;
 
             Trace.WriteLine("[Whiteboard] ServerBoardStateManager.ServerBoardStateManager: Initialized attributes.");
         }
@@ -84,7 +84,7 @@ namespace Whiteboard
                 // Current base state will change to new checkpoint number.
                 _currentCheckpointState = checkpointNumber;
 
-                BoardServerShape boardServerShape = new(boardShapes, Operation.FETCH_CHECKPOINT, userId,
+                BoardServerShape boardServerShape = new(boardShapes, Operation.FetchCheckpoint, userId,
                     checkpointNumber, _currentCheckpointState);
                 Trace.WriteLine("[Whiteboard] ServerBoardStateManager.FetchCheckpoint: Checkpoint fetched.");
                 return boardServerShape;
@@ -112,7 +112,7 @@ namespace Whiteboard
 
                 // number of checkpoints currently saved at the server
                 var checkpointNumber = GetCheckpointsNumber();
-                BoardServerShape serverShape = new(boardShapes, Operation.FETCH_STATE, userId, checkpointNumber,
+                BoardServerShape serverShape = new(boardShapes, Operation.FetchState, userId, checkpointNumber,
                     _currentCheckpointState);
                 return serverShape;
             }
@@ -151,7 +151,7 @@ namespace Whiteboard
                 // the checkpoint number should increment by 1
                 if (checkpointNumber != prevCheckpointNumber + 1) throw new Exception("Checkpoint number mismatch");
 
-                BoardServerShape boardServerShape = new(null, Operation.CREATE_CHECKPOINT, userId, checkpointNumber,
+                BoardServerShape boardServerShape = new(null, Operation.CreateCheckpoint, userId, checkpointNumber,
                     _currentCheckpointState);
                 Trace.WriteLine("[Whiteboard] ServerBoardStateManager.SaveCheckpoint: Checkpoint saved.");
                 return boardServerShape;
@@ -175,12 +175,12 @@ namespace Whiteboard
             try
             {
                 // expecting one operation update at a time
-                if (boardServerShape.OperationFlag != Operation.CLEAR_STATE &&
-                    boardServerShape.ShapeUpdates.Count != BoardConstants.SINGLE_UPDATE_SIZE)
+                if (boardServerShape.OperationFlag != Operation.ClearState &&
+                    boardServerShape.ShapeUpdates.Count != BoardConstants.SingleUpdateSize)
                     throw new NotSupportedException("Multiple shape operation.");
 
                 // if some stale request for previous state is received, discard it
-                if (boardServerShape.OperationFlag != Operation.CLEAR_STATE &&
+                if (boardServerShape.OperationFlag != Operation.ClearState &&
                     boardServerShape.CurrentCheckpointState != _currentCheckpointState)
                 {
                     Trace.WriteLine(
@@ -188,7 +188,7 @@ namespace Whiteboard
                     return false;
                 }
 
-                if (boardServerShape.OperationFlag == Operation.CREATE)
+                if (boardServerShape.OperationFlag == Operation.Create)
                 {
                     Trace.WriteLine("[Whiteboard] ServerBoardStateManager.SaveUpdate: Create request received.");
 
@@ -197,7 +197,7 @@ namespace Whiteboard
                     QueueElement queueElement = new(boardShape.Uid, boardShape.LastModifiedTime);
 
                     // Checking pre-conditions
-                    PreConditionChecker(boardShape, Operation.CREATE);
+                    PreConditionChecker(boardShape, Operation.Create);
 
                     // Add the update in respective data structures
                     _mapIdToBoardShape.Add(boardShape.Uid, boardShape);
@@ -208,7 +208,7 @@ namespace Whiteboard
                     return true;
                 }
 
-                if (boardServerShape.OperationFlag == Operation.MODIFY)
+                if (boardServerShape.OperationFlag == Operation.Modify)
                 {
                     Trace.WriteLine("[Whiteboard] ServerBoardStateManager.SaveUpdate: Modify request received.");
 
@@ -223,7 +223,7 @@ namespace Whiteboard
                     }
 
                     // Checking pre-conditions
-                    PreConditionChecker(boardShape, Operation.MODIFY);
+                    PreConditionChecker(boardShape, Operation.Modify);
 
                     // Modify the update in respective data structures
                     _mapIdToBoardShape[boardShape.Uid] = boardShape;
@@ -233,7 +233,7 @@ namespace Whiteboard
                     return true;
                 }
 
-                if (boardServerShape.OperationFlag == Operation.DELETE)
+                if (boardServerShape.OperationFlag == Operation.Delete)
                 {
                     Trace.WriteLine("[Whiteboard] ServerBoardStateManager.SaveUpdate: Delete request received.");
 
@@ -248,7 +248,7 @@ namespace Whiteboard
                     }
 
                     // Checking pre-conditions
-                    PreConditionChecker(boardShape, Operation.DELETE);
+                    PreConditionChecker(boardShape, Operation.Delete);
 
                     // Delete from the respective data structures
                     _mapIdToBoardShape.Remove(boardShape.Uid);
@@ -259,7 +259,7 @@ namespace Whiteboard
                     return true;
                 }
 
-                if (boardServerShape.OperationFlag == Operation.CLEAR_STATE)
+                if (boardServerShape.OperationFlag == Operation.ClearState)
                 {
                     // update current checkpoint state.
                     _currentCheckpointState = boardServerShape.CurrentCheckpointState;
@@ -301,7 +301,7 @@ namespace Whiteboard
             List<BoardShape> boardShapes = new();
 
             // Getting all elements from the queue
-            while (_priorityQueue.GetSize() != BoardConstants.EMPTY_SIZE) queueElements.Add(_priorityQueue.Extract());
+            while (_priorityQueue.GetSize() != BoardConstants.EmptySize) queueElements.Add(_priorityQueue.Extract());
 
             // Adding elements in the list in inceasing order of their timestamp
             for (var i = queueElements.Count - 1; i >= 0; i--) boardShapes.Add(_mapIdToBoardShape[queueElements[i].Id]);
@@ -327,7 +327,7 @@ namespace Whiteboard
                 throw new InvalidOperationException("Operation type should be same.");
             }
 
-            if (operation == Operation.CREATE)
+            if (operation == Operation.Create)
             {
                 // Remove the key,value pair from the map if an entry with that key already exist.
                 if (_mapIdToBoardShape.ContainsKey(boardShape.Uid) || _mapIdToQueueElement.ContainsKey(boardShape.Uid))
@@ -337,7 +337,7 @@ namespace Whiteboard
                     throw new InvalidOperationException("Shape with same id already exists.");
                 }
             }
-            else if (operation == Operation.DELETE || operation == Operation.MODIFY)
+            else if (operation == Operation.Delete || operation == Operation.Modify)
             {
                 // The maps should contain this shape's UID. 
                 if (!_mapIdToBoardShape.ContainsKey(boardShape.Uid) ||

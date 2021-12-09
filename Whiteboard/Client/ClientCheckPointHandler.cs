@@ -44,10 +44,10 @@ namespace Whiteboard
             {
                 if (checkpointNumber <= CheckpointNumber)
                 {
-                    //creating boardServerShape object with FETCH_CHECKPOINT object
+                    //creating boardServerShape object with FetchCheckpoint object
                     List<BoardShape> boardShape = null;
                     var boardServerShape = new BoardServerShape(boardShape,
-                        Operation.FETCH_CHECKPOINT,
+                        Operation.FetchCheckpoint,
                         UserId,
                         checkpointNumber,
                         currentCheckpointState);
@@ -79,10 +79,10 @@ namespace Whiteboard
                 // increasing the checkpoint number by one
                 CheckpointNumber++;
 
-                //creating boardServerShape object with CREATE_CHECKPOINT object
+                //creating boardServerShape object with CreateCheckpoint object
                 List<BoardShape> boardShape = null;
                 var boardServerShape = new BoardServerShape(boardShape,
-                    Operation.CREATE_CHECKPOINT,
+                    Operation.CreateCheckpoint,
                     UserId,
                     CheckpointNumber,
                     currentCheckpointState);

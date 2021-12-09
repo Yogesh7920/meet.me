@@ -33,7 +33,7 @@ namespace Testing.Whiteboard
         public void SaveCheckPoint_RequestSentToCommunicator()
         {
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            BoardServerShape expected = new(null, Operation.CREATE_CHECKPOINT, "userId", 1);
+            BoardServerShape expected = new(null, Operation.CreateCheckpoint, "userId", 1);
             _clientCheckPointHandler.SaveCheckpoint("userId", 0);
             _mockCommunicator.Verify(m => m.Send(
                 It.Is<BoardServerShape>(obj => StateManagerHelper.CompareBoardServerShapes(obj, expected))
@@ -46,7 +46,7 @@ namespace Testing.Whiteboard
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
             _clientCheckPointHandler.SaveCheckpoint("userId", 0);
 
-            BoardServerShape expected = new(null, Operation.FETCH_CHECKPOINT, "userId", 1);
+            BoardServerShape expected = new(null, Operation.FetchCheckpoint, "userId", 1);
 
             _clientCheckPointHandler.FetchCheckpoint(1, "userId", 0);
             _mockCommunicator.Verify(m => m.Send(

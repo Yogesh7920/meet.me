@@ -115,7 +115,7 @@ namespace Testing.Whiteboard
             Coordinate start = new(1, 1);
             Coordinate end = new(-3, -5);
             var newPolyline = _polyline.ShapeMaker(start, end);
-            Assert.IsFalse(newPolyline.ResizeAboutCenter(start.Clone(), end.Clone(), DragPos.TOP_RIGHT));
+            Assert.IsFalse(newPolyline.ResizeAboutCenter(start.Clone(), end.Clone(), DragPos.TopRight));
         }
 
         [Test]

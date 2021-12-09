@@ -42,8 +42,8 @@ namespace Whiteboard
         /// <returns>True if equal, else false.</returns>
         public bool Equals(Coordinate otherCord)
         {
-            return Math.Abs(R - otherCord.R) < BoardConstants.ALLOWED_DELTA &&
-                   Math.Abs(C - otherCord.C) < BoardConstants.ALLOWED_DELTA;
+            return Math.Abs(R - otherCord.R) < BoardConstants.AllowedDelta &&
+                   Math.Abs(C - otherCord.C) < BoardConstants.AllowedDelta;
         }
 
 

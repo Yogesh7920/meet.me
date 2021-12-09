@@ -45,13 +45,13 @@ namespace Whiteboard
         public static MainShape MainShapeCreatorFactory(ShapeType shapeType, Coordinate start, Coordinate end,
             MainShape prevShape)
         {
-            if (shapeType == ShapeType.ELLIPSE)
+            if (shapeType == ShapeType.Ellipse)
                 return _ellipse.ShapeMaker(start, end, prevShape);
-            if (shapeType == ShapeType.LINE)
+            if (shapeType == ShapeType.Line)
                 return _line.ShapeMaker(start, end, prevShape);
-            if (shapeType == ShapeType.POLYLINE)
+            if (shapeType == ShapeType.Polyline)
                 return _polyline.ShapeMaker(start, end, prevShape);
-            if (shapeType == ShapeType.RECTANGLE)
+            if (shapeType == ShapeType.Rectangle)
                 return _rectangle.ShapeMaker(start, end, prevShape);
             throw new Exception("Invalid Object type");
         }

@@ -20,7 +20,7 @@ namespace Whiteboard
         ///     Constructor setting just the basic attributes of Polyline.
         /// </summary>
         /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
-        public Polyline(Coordinate start) : base(ShapeType.POLYLINE)
+        public Polyline(Coordinate start) : base(ShapeType.Polyline)
         {
             Start = start;
             AddToList(Start.Clone());
@@ -46,14 +46,14 @@ namespace Whiteboard
             Coordinate center,
             List<Coordinate> points,
             float angle) :
-            base(ShapeType.POLYLINE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
+            base(ShapeType.Polyline, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
         }
 
         /// <summary>
         ///     Default constructor.
         /// </summary>
-        public Polyline() : base(ShapeType.POLYLINE)
+        public Polyline() : base(ShapeType.Polyline)
         {
             Points = new List<Coordinate>();
         }

@@ -77,8 +77,8 @@ namespace Whiteboard
         private void SwapElements(int index1, int index2)
         {
             // checking validity of indexes
-            if (index1 >= GetSize() || index1 < BoardConstants.EMPTY_SIZE || index2 >= GetSize() ||
-                index2 < BoardConstants.EMPTY_SIZE)
+            if (index1 >= GetSize() || index1 < BoardConstants.EmptySize || index2 >= GetSize() ||
+                index2 < BoardConstants.EmptySize)
                 throw new IndexOutOfRangeException("Index value out of range. Swapping can't happen.");
 
             // interchanging index values of the element
@@ -99,7 +99,7 @@ namespace Whiteboard
         private void Heapify(int index)
         {
             // checking validity of indexes
-            if (index < BoardConstants.EMPTY_SIZE || index >= GetSize())
+            if (index < BoardConstants.EmptySize || index >= GetSize())
                 throw new IndexOutOfRangeException("Index value out of range. Can't Heapify.");
 
             var leftChild = LeftChild(index);
@@ -125,7 +125,7 @@ namespace Whiteboard
         /// <returns>QueueElement having highest priority or null if queue is empty.</returns>
         public QueueElement Top()
         {
-            if (GetSize() == BoardConstants.EMPTY_SIZE)
+            if (GetSize() == BoardConstants.EmptySize)
             {
                 Trace.Indent();
                 Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Top: Priority queue empty, returning null");
@@ -174,7 +174,7 @@ namespace Whiteboard
         public QueueElement Extract()
         {
             Trace.Indent();
-            if (GetSize() == BoardConstants.EMPTY_SIZE)
+            if (GetSize() == BoardConstants.EmptySize)
             {
                 Trace.WriteLine("[Whiteboard] BoardPriorityQueue.Extract: No element present, returning null.");
                 Trace.Unindent();
@@ -222,7 +222,7 @@ namespace Whiteboard
             var index = queueElement.Index;
 
             // if index is out of range 
-            if (index < BoardConstants.EMPTY_SIZE || index >= GetSize())
+            if (index < BoardConstants.EmptySize || index >= GetSize())
             {
                 Trace.WriteLine("[Whiteboard] BoardPriorityQueue.IncreaseTimestamp: Index out of range.");
                 throw new IndexOutOfRangeException("Element index not in the queue. IncreaseTimestamp failed.");
