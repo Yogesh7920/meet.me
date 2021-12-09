@@ -59,8 +59,11 @@ namespace Networking
         {
             if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return "127.0.0.1:8080";
             var ip = IPAddress.Parse(GetLocalIpAddress());
-            var port = FreeTcpPort(ip);
-            _serverSocket = new TcpListener(ip, port);
+            string stringPort = Environment.GetEnvironmentVariable("MEETME_PORT");
+            int port = stringPort is null ? -1 : Int32.Parse(stringPort); 
+            if (port == -1)
+                port = FreeTcpPort(ip);
+            _serverSocket = new TcpListener(IPAddress.Any, port);
 
             //start server at the scanned port of the ip 
             _serverSocket.Start();
@@ -94,6 +97,7 @@ namespace Networking
             _acceptRequestRun = false;
             _serverSocket.Stop();
 
+            
             //stop receiveSocketListener of all the clients 
             foreach (var listener in _clientListener)
             {
@@ -104,6 +108,9 @@ namespace Networking
             _receiveQueueListener.Stop();
             // stop sendSocketListener of server
             _sendSocketListenerServer.Stop();
+            
+            _receiveQueue.Close();
+            _sendQueue.Close();
         }
 
         /// <summary>
@@ -135,6 +142,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.RemoveClient(string clientId)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             // stop the listener of the client 
             var receiveSocketListener = _clientListener[clientId];
             receiveSocketListener.Stop();
@@ -276,11 +284,11 @@ namespace Networking
                     if (e.SocketErrorCode == SocketError.Interrupted)
                         Trace.WriteLine("[Networking] Socket listener has been closed");
                     else
-                        Trace.WriteLine("[Networking] An Exception has been raised in AcceptRequest :" + e);
+                        Trace.WriteLine($"[Networking] An Exception has been raised in AcceptRequest: {e.Message}");
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine("[Networking] An Exception has been raised in AcceptRequest :" + e);
+                    Trace.WriteLine($"[Networking] An Exception has been raised in AcceptRequest: {e.Message}");
                 }
         }
     }

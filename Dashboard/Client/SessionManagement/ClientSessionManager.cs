@@ -64,8 +64,8 @@ namespace Dashboard.Client.SessionManagement
             _user = null;
             _chatSummary = null;
 
-            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             _screenShareClient = ScreenShareFactory.GetScreenShareClient();
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
         }
 
         /// <summary>
@@ -138,6 +138,8 @@ namespace Dashboard.Client.SessionManagement
                     return;
 
                 case "endMeet":
+                    _communicator.Stop();
+                    _screenShareClient.Dispose();
                     MeetingEnded?.Invoke();
                     return;
 
@@ -162,6 +164,8 @@ namespace Dashboard.Client.SessionManagement
                 Trace.WriteLine("[Client Dashboard] Null user name or whitespace given.");
                 return false;
             }
+
+            ipAddress = ipAddress.Trim();
 
             lock (this)
             {
@@ -202,6 +206,7 @@ namespace Dashboard.Client.SessionManagement
             SendDataToServer("getAnalytics", _user.username, _user.userID);
         }
 
+
         /// <summary>
         ///     Get the summary of the chats that were sent from the start of the
         ///     meet till the function was called.
@@ -232,8 +237,15 @@ namespace Dashboard.Client.SessionManagement
             Trace.WriteLine("[Client Dashboard] Asking the server to remove client from the server side.");
 
             SendDataToServer("removeClient", _user.username, _user.userID);
+            Trace.WriteLine("[Client Dashboard] Stopping the network communicator.");
+
+            _communicator.Stop();
+            Trace.WriteLine("[Client Dashboard] Disposing the Screen Share Client.");
+            _screenShareClient.Dispose();
 
             Trace.WriteLine("[Client Dashboard] Removed the client from the client side.");
+            
+            
         }
 
         /// <summary>
@@ -410,9 +422,6 @@ namespace Dashboard.Client.SessionManagement
                 _user = null;
                 Trace.WriteLine("[Client Dashboard] Client removed from the client session data.");
                 receivedSessionData = null;
-
-                Trace.WriteLine("[Client Dashboard] Stopping the network communicator.");
-                _communicator.Stop();
             }
 
             // update the sesseon data on the client side and notify the UX about it.

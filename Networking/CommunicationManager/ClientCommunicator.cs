@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
@@ -34,6 +35,19 @@ namespace Networking
         // Declare sendSocketListenerClient variable for sending messages 
         private SendSocketListenerClient _sendSocketListenerClient;
 
+        public IPAddress GetIp(string serverIp)
+        {
+            try
+            {
+                Trace.WriteLine("[Networking] Parsing IPv4 address");
+                return IPAddress.Parse(serverIp);
+            }
+            catch (Exception)
+            {
+                Trace.WriteLine("[Networking] Parsing DNS name");
+                return Dns.GetHostAddresses(serverIp).Last();
+            }
+        }
         /// <summary>
         ///     This method connects client to server
         /// </summary>
@@ -46,7 +60,9 @@ namespace Networking
             try
             {
                 //try to connect with server
-                var ip = IPAddress.Parse(serverIp);
+                // var ip = IPAddress.Parse(serverIp);
+                // var ip = Dns.GetHostAddresses(serverIp).Last();
+                var ip = GetIp(serverIp);
                 var port = int.Parse(serverPort);
                 _clientSocket = new TcpClient();
 
@@ -84,11 +100,16 @@ namespace Networking
         {
             if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             if (!_clientSocket.Connected) return;
+            
+            
             // stop the listener of the client 
             _sendSocketListenerClient.Stop();
             _receiveSocketListener.Stop();
             _receiveQueueListener.Stop();
 
+            _receiveQueue.Close();
+            _sendQueue.Close();
+            
             //close stream  and connection of the client
             _clientSocket.GetStream().Close();
             _clientSocket.Close();

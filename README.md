@@ -3,15 +3,24 @@
 An application as part of CS5617 Software Engineering project at IIT Palakkad
 * [Wiki](https://github.com/Yogesh7920/meet.me/wiki)
 
+![stats](./images/stats.png)
+
 ## Installation
 Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installation) guide. 
 
+## To work over the internet
+
+- Download [ngrok](https://ngrok.com/) 
+- Run the server and get port
+- `ngrok.exe tcp -region=in \<port>`
+- Get the ngrok IP, and it's port. e.g.: 0.tcp.in.ngrok.io:17000
+- log in to client with the above credentials.
 
 ## The Team
 
-| Project Mentor     |
-|--------------------|
-| Ramaswamy Krishnan |
+| Project Mentor     | Teaching Assistant   |
+|--------------------|----------------------|
+| Ramaswamy Krishnan | Sreejith K P         |
 
 | Project Manager    | Technical Architect   |
 |--------------------|-----------------------|
@@ -27,21 +36,16 @@ Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installa
 |                                 | Rajeev Goyal               |                                |
 
 
-| Screen Share & Whiteboard Module (5+1) | UX Module (8+1)              |
+| Screen Share & Whiteboard Module (5+1) | UX Module (7+1)              |
 |----------------------------------------|------------------------------|
 | Manas Sharma (Team Lead)               | Raswanth Murugan (Team Lead) |
 | Ashish Kumar Gupta                     | Irene Casmir                 |
 | Neeraj Patil                           | Mitul Kataria                |
 | Parul Sangwan                          | Suchitra Yechuri             |
-| Gurunadh                               | Sai Vipul Mohan              |
+| Gurunadh                               | Pulavarti Vinay Kumar        |
 | Chandan Srivastava                     | P S Harikrishnan             |
 |                                        | Arpan Tripathi               |
 |                                        | Aniket Singh Rajpoot         |
-|                                        | Pulavarti Vinay Kumar        |
-
-| Teaching Assistants    |
-|------------------------|
-| Sreejith K P           |
 
 
 [Guidelines for Contribution](./CONTRIBUTING.md)

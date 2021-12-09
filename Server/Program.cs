@@ -22,10 +22,6 @@ namespace Server
             MeetingCredentials meeting = serverSM.GetPortsAndIPAddress();
             Console.WriteLine(meeting.ipAddress + " : " + meeting.port);
             Console.WriteLine("Meeting has started by Host");
-            while (true)
-            {
-                // code for listener event to end the meeting
-            }
         }
     }
 }

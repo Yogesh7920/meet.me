@@ -42,6 +42,7 @@ namespace Testing.Networking.SocketManagement
         public void TearDown()
         {
             _clientSocket.Close();
+            _queue.Close();
             _receiveSocketListener.Stop();
             _serverSocket.Close();
         }

@@ -50,18 +50,22 @@ namespace Testing.E2E.Yogesh
             var valid = authViewModel.SendForAuth(ip, port, username);
             Assert.AreEqual(valid, !error);
             if (error) return;
+            
             var serializedData = File.ReadAllText("networking_output.json");
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
             Assert.AreEqual(dataSent.eventType, "addClient");
             Assert.AreEqual(dataSent.username, username);
+            
             _serverSessionManager.OnClientJoined(1);
             _serverSessionManager.OnDataReceived(serializedData);
+            
             serializedData = File.ReadAllText("networking_output.json");
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
             Assert.AreEqual(dataReceived.eventType, "addClient");
             var users = dataReceived.sessionData.users;
             Assert.IsTrue(users.Exists(user => user.username == username));
             _clientSessionManager.OnDataReceived(serializedData);
+            
         }
 
         [Test]
@@ -72,12 +76,15 @@ namespace Testing.E2E.Yogesh
             var dashboardViewModel = new DashboardViewModel();
             dashboardViewModel.UpdateVM();
             var serializedData = File.ReadAllText("networking_output.json");
+            
             var dataSent = _serializer.Deserialize<ClientToServerData>(serializedData);
             Assert.AreEqual(dataSent.eventType, "getAnalytics");
+            
             _serverSessionManager.OnDataReceived(serializedData);
             serializedData = File.ReadAllText("networking_output.json");
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
             Assert.AreEqual(dataReceived.eventType, "getAnalytics");
+            
             _clientSessionManager.OnDataReceived(serializedData);
         }
 
@@ -100,6 +107,7 @@ namespace Testing.E2E.Yogesh
             serializedData = File.ReadAllText("networking_output.json");
             var dataReceived = _serializer.Deserialize<ServerToClientData>(serializedData);
             Assert.AreEqual(dataReceived.eventType, "getSummary");
+            
             _clientSessionManager.OnDataReceived(serializedData);
         }
 

@@ -43,11 +43,13 @@ namespace Testing.E2E.Yogesh
             var data = _serializer.Deserialize<MessageData>(serializedData);
             Assert.AreEqual(data.Message, message);
             Assert.AreEqual(data.ReplyMsgId, replyId);
+            
             _contentServer.Receive(serializedData);
             serializedData = File.ReadAllText("networking_output.json");
             data = _serializer.Deserialize<MessageData>(serializedData);
             Assert.AreEqual(data.Message, message);
             Assert.AreEqual(data.ReplyMsgId, replyId);
+            
             _contentClient.OnReceive(data);
             // _contentClient.CSubscribe(chatViewModel);
         }

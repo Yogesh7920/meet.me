@@ -16,6 +16,7 @@ namespace Testing.Dashboard.TestModels
         public string ipAddressAndPort;
         public bool isCommunicatorStopped;
         public string sentData;
+        public string removedClientId;
 
         public TestCommunicator()
         {
@@ -30,7 +31,7 @@ namespace Testing.Dashboard.TestModels
 
         public void RemoveClient(string clientID)
         {
-            throw new NotImplementedException();
+            removedClientId = clientID;
         }
 
         public void Send(string data, string identifier)

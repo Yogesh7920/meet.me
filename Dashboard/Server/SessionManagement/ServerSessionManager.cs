@@ -39,6 +39,7 @@ namespace Dashboard.Server.SessionManagement
         private ITelemetry _telemetry;
         public bool summarySaved;
         private int userCount;
+        private ScreenShareServer _screenShareServer;
 
         /// <summary>
         ///     Constructor for the ServerSessionManager. It initialises the
@@ -69,7 +70,7 @@ namespace Dashboard.Server.SessionManagement
             //_telemetry = new Telemetry.Telemetry();
             if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             _ = ServerBoardCommunicator.Instance;
-            _ = ScreenShareFactory.GetScreenShareServer();
+            _screenShareServer = ScreenShareFactory.GetScreenShareServer();
             _contentServer = ContentServerFactory.GetInstance();
         }
 
@@ -84,8 +85,7 @@ namespace Dashboard.Server.SessionManagement
             _serializer = new Serializer();
             _telemetrySubscribers = new List<ITelemetryNotifications>();
             _summarizer = SummarizerFactory.GetSummarizer();
-            //_ = new ScreenShareServer();
-
+            _screenShareServer = ScreenShareFactory.GetScreenShareServer();
 
             TraceManager traceManager = new();
             traceManager.TraceListener();
@@ -348,6 +348,7 @@ namespace Dashboard.Server.SessionManagement
 
             // stopping the communicator and notifying UX server about the End Meet event.
             _communicator.Stop();
+            _screenShareServer.Dispose();
             Trace.WriteLine("[Server Dashboard] Notifying server UX about the end of the meet.");
             MeetingEnded?.Invoke();
         }
@@ -474,13 +475,15 @@ namespace Dashboard.Server.SessionManagement
             else
                 userIDToRemove = userID;
 
-            if (_sessionData.users.Count == 1)
+            var removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
+            _communicator.RemoveClient(userIDToRemove.ToString());
+
+            if (_sessionData.users.Count == 0)
             {
                 EndMeetProcedure(receivedObject);
                 return;
             }
 
-            var removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
             if (removedUser != null)
             {
                 Trace.WriteLine("[Server Dashboard] Removed from session: " + removedUser);

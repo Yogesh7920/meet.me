@@ -1,4 +1,6 @@
 .DS_Store
+/Server/Persistence/
+/Testing/Persistence/
 
 # documenting
 *.doc
