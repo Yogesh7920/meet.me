@@ -30,7 +30,7 @@ namespace Whiteboard
         ///     Initializes BoardStack.
         /// </summary>
         /// <param name="capacity">Capacity of stack. Default is 7.</param>
-        public BoardStack(int capacity = BoardConstants.UNDO_REDO_STACK_SIZE)
+        public BoardStack(int capacity = BoardConstants.UndoRedoStackSize)
         {
             s_capacity = capacity;
             _stack = new List<Tuple<BoardShape, BoardShape>>();
@@ -41,7 +41,7 @@ namespace Whiteboard
         /// </summary>
         private void RemoveFirstInserted()
         {
-            if (GetSize() == BoardConstants.EMPTY_SIZE) throw new InvalidOperationException("Stack is empty");
+            if (GetSize() == BoardConstants.EmptySize) throw new InvalidOperationException("Stack is empty");
             _stack.RemoveAt(0);
         }
 
@@ -50,7 +50,7 @@ namespace Whiteboard
         /// </summary>
         private void RemoveLastInserted()
         {
-            if (GetSize() == BoardConstants.EMPTY_SIZE) throw new InvalidOperationException("Stack is empty");
+            if (GetSize() == BoardConstants.EmptySize) throw new InvalidOperationException("Stack is empty");
             _stack.RemoveAt(GetSize() - 1);
         }
 
@@ -88,7 +88,7 @@ namespace Whiteboard
         /// <returns>Tuple of BoardShape before and after the operation.</returns>
         public Tuple<BoardShape, BoardShape> Top()
         {
-            if (GetSize() == BoardConstants.EMPTY_SIZE)
+            if (GetSize() == BoardConstants.EmptySize)
             {
                 Trace.Indent();
                 Trace.WriteLine("[Whiteboard] BoardStack.Top: Stack is empty.");
@@ -104,7 +104,7 @@ namespace Whiteboard
         /// </summary>
         public void Pop()
         {
-            if (GetSize() == BoardConstants.EMPTY_SIZE)
+            if (GetSize() == BoardConstants.EmptySize)
             {
                 Trace.Indent();
                 Trace.WriteLine("[Whiteboard] BoardStack.Pop: Stack is empty.");
@@ -121,7 +121,7 @@ namespace Whiteboard
         /// <returns>Boolean indicating if stack is empty.</returns>
         public bool IsEmpty()
         {
-            return GetSize() == BoardConstants.EMPTY_SIZE;
+            return GetSize() == BoardConstants.EmptySize;
         }
 
         /// <summary>

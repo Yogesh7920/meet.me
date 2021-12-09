@@ -43,7 +43,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-id");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
             Mock<IClientBoardStateListener> listener = new();
-            BoardServerShape expected = new(null, Operation.FETCH_STATE, _clientBoardStateManager.GetUser());
+            BoardServerShape expected = new(null, Operation.FetchState, _clientBoardStateManager.GetUser());
 
             // Act
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
@@ -76,7 +76,7 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            _clientBoardStateManager.SetUserLevel(BoardConstants.LOW_USER_LEVEL);
+            _clientBoardStateManager.SetUserLevel(BoardConstants.LowUserLevel);
 
             // Act
             _clientBoardStateManager.ClearWhiteBoard();
@@ -91,9 +91,9 @@ namespace Testing.Whiteboard
             // Arrange
             _clientBoardStateManager.SetUser("user-id");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            _clientBoardStateManager.SetUserLevel(BoardConstants.HIGH_USER_LEVEL);
-            BoardServerShape expected = new(null, Operation.CLEAR_STATE, _clientBoardStateManager.GetUser(),
-                currentCheckpointState: BoardConstants.INITIAL_CHECKPOINT_STATE);
+            _clientBoardStateManager.SetUserLevel(BoardConstants.HighUserLevel);
+            BoardServerShape expected = new(null, Operation.ClearState, _clientBoardStateManager.GetUser(),
+                currentCheckpointState: BoardConstants.InitialCheckpointState);
 
             // Act
             _clientBoardStateManager.ClearWhiteBoard();
@@ -120,9 +120,9 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _clientBoardStateManager.SetUser("user-id");
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            BoardServerShape expected = new(new List<BoardShape> {createShape}, Operation.CREATE, "user-id",
+            BoardServerShape expected = new(new List<BoardShape> {createShape}, Operation.Create, "user-id",
                 currentCheckpointState: 0);
 
             // Act
@@ -144,10 +144,10 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-id");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             _clientBoardStateManager.SaveOperation(createShape);
 
-            var createShapeNew = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShapeNew = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             createShapeNew.Uid = createShape.Uid;
 
             // Act
@@ -161,8 +161,8 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.MODIFY)]
-        [TestCase(Operation.DELETE)]
+        [TestCase(Operation.Modify)]
+        [TestCase(Operation.Delete)]
         public void SaveOperation_ModifyOrDeleteIdNotFound_ReturnsFalse(Operation operation)
         {
             // Arrange
@@ -185,12 +185,12 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-id");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             _clientBoardStateManager.SaveOperation(createShape);
 
-            var modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            var modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.Modify);
             modifyShape.Uid = createShape.Uid;
-            BoardServerShape expected = new(new List<BoardShape> {modifyShape}, Operation.MODIFY, "user-id",
+            BoardServerShape expected = new(new List<BoardShape> {modifyShape}, Operation.Modify, "user-id",
                 currentCheckpointState: 0);
 
             // Act
@@ -212,12 +212,12 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-id");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             _clientBoardStateManager.SaveOperation(createShape);
 
-            var deleteShape = StateManagerHelper.GetCompleteBoardShape(Operation.DELETE);
+            var deleteShape = StateManagerHelper.GetCompleteBoardShape(Operation.Delete);
             deleteShape.Uid = createShape.Uid;
-            BoardServerShape expected = new(new List<BoardShape> {deleteShape}, Operation.DELETE, "user-id",
+            BoardServerShape expected = new(new List<BoardShape> {deleteShape}, Operation.Delete, "user-id",
                 currentCheckpointState: 0);
 
             // Act
@@ -232,11 +232,11 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.CLEAR_STATE)]
-        [TestCase(Operation.FETCH_STATE)]
-        [TestCase(Operation.FETCH_CHECKPOINT)]
-        [TestCase(Operation.CREATE_CHECKPOINT)]
-        [TestCase(Operation.NONE)]
+        [TestCase(Operation.ClearState)]
+        [TestCase(Operation.FetchState)]
+        [TestCase(Operation.FetchCheckpoint)]
+        [TestCase(Operation.CreateCheckpoint)]
+        [TestCase(Operation.None)]
         public void SaveOperation_InvalidOperationFlag_ReturnsFalse(Operation operation)
         {
             // Arrange
@@ -268,7 +268,7 @@ namespace Testing.Whiteboard
             _clientBoardStateManager.SetUser("user-id");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             _clientBoardStateManager.SaveOperation(createShape);
 
             // Act and assert
@@ -297,8 +297,8 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _clientBoardStateManager.SetUser("user-1");
-            BoardServerShape update = new(StateManagerHelper.GenerateSortedRandomBoardShapes(3, Operation.CREATE),
-                Operation.FETCH_STATE, "user-2", 1, 1);
+            BoardServerShape update = new(StateManagerHelper.GenerateSortedRandomBoardShapes(3, Operation.Create),
+                Operation.FetchState, "user-2", 1, 1);
 
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
@@ -314,8 +314,8 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _clientBoardStateManager.SetUser("user-id");
-            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
-            BoardServerShape update = new(boardShapes, Operation.FETCH_STATE, "user-id", 2, 1);
+            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.Create);
+            BoardServerShape update = new(boardShapes, Operation.FetchState, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
             listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
@@ -336,7 +336,7 @@ namespace Testing.Whiteboard
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
                 It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) &&
-                                                  obj[0].OperationType == Operation.FETCH_STATE &&
+                                                  obj[0].OperationType == Operation.FetchState &&
                                                   obj[0].CheckpointNumber == 2)
             ), Times.Once());
         }
@@ -346,8 +346,8 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _clientBoardStateManager.SetUser("user-id");
-            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
-            BoardServerShape update = new(boardShapes, Operation.FETCH_CHECKPOINT, "user-id", 2, 1);
+            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.Create);
+            BoardServerShape update = new(boardShapes, Operation.FetchCheckpoint, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
             listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
@@ -368,7 +368,7 @@ namespace Testing.Whiteboard
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
                 It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) &&
-                                                  obj[0].OperationType == Operation.FETCH_CHECKPOINT)
+                                                  obj[0].OperationType == Operation.FetchCheckpoint)
             ), Times.Once());
         }
 
@@ -377,9 +377,9 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _clientBoardStateManager.SetUser("user-id");
-            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(2, Operation.CREATE);
+            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(2, Operation.Create);
             boardShapes[0].Uid = boardShapes[1].Uid;
-            BoardServerShape update = new(boardShapes, Operation.FETCH_CHECKPOINT, "user-id", 2, 1);
+            BoardServerShape update = new(boardShapes, Operation.FetchCheckpoint, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
             listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
@@ -401,7 +401,7 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _clientBoardStateManager.SetUser("user-id");
-            BoardServerShape update = new(null, Operation.CREATE_CHECKPOINT, "user-id", 2);
+            BoardServerShape update = new(null, Operation.CreateCheckpoint, "user-id", 2);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
             listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
@@ -414,7 +414,7 @@ namespace Testing.Whiteboard
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
                 It.Is<List<UXShapeHelper>>(obj => obj.Count == 1 && obj[0].CheckpointNumber == 2 &&
-                                                  obj[0].OperationType == Operation.CREATE_CHECKPOINT)
+                                                  obj[0].OperationType == Operation.CreateCheckpoint)
             ), Times.Once());
         }
 
@@ -423,7 +423,7 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _clientBoardStateManager.SetUser("user-id");
-            BoardServerShape update = new(null, Operation.CREATE_CHECKPOINT, "user-id", 2, 1);
+            BoardServerShape update = new(null, Operation.CreateCheckpoint, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
             listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
@@ -437,9 +437,9 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.CREATE)]
-        [TestCase(Operation.MODIFY)]
-        [TestCase(Operation.DELETE)]
+        [TestCase(Operation.Create)]
+        [TestCase(Operation.Modify)]
+        [TestCase(Operation.Delete)]
         public void OnMessageReceived_UpdateSameUser_DoNothing(Operation operation)
         {
             // Arrange
@@ -459,9 +459,9 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.CREATE)]
-        [TestCase(Operation.MODIFY)]
-        [TestCase(Operation.DELETE)]
+        [TestCase(Operation.Create)]
+        [TestCase(Operation.Modify)]
+        [TestCase(Operation.Delete)]
         public void OnMessageReceived_UpdateMoreThanOneUpdate_DoNothing(Operation operation)
         {
             // Arrange
@@ -481,9 +481,9 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.CREATE)]
-        [TestCase(Operation.MODIFY)]
-        [TestCase(Operation.DELETE)]
+        [TestCase(Operation.Create)]
+        [TestCase(Operation.Modify)]
+        [TestCase(Operation.Delete)]
         public void OnMessageReceived_UpdateCurrentCheckpointStateNotMatches_DoNothing(Operation operation)
         {
             // Arrange
@@ -514,12 +514,12 @@ namespace Testing.Whiteboard
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
             // creating previous state
-            var prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
+            var prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.Create);
             for (var i = 0; i < prevState.Count; i++) _clientBoardStateManager.SaveOperation(prevState[i]);
 
             // server update
-            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.CREATE);
-            BoardServerShape update = new(boardShapes, Operation.CREATE, "user-2", 2);
+            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.Create);
+            BoardServerShape update = new(boardShapes, Operation.Create, "user-2", 2);
 
             // finding epected order of outcomes
             var expected = GetExpectedOrder(prevState, boardShapes);
@@ -551,13 +551,13 @@ namespace Testing.Whiteboard
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
             // creating previous state
-            var prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
+            var prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.Create);
             for (var i = 0; i < prevState.Count; i++) _clientBoardStateManager.SaveOperation(prevState[i]);
 
             // server update
-            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.CREATE);
+            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.Create);
             boardShapes[0].Uid = prevState[0].Uid;
-            BoardServerShape update = new(boardShapes, Operation.CREATE, "user-2", 2);
+            BoardServerShape update = new(boardShapes, Operation.Create, "user-2", 2);
 
             // finding epected order of outcomes
             var expected = GetExpectedOrder(prevState, boardShapes);
@@ -586,17 +586,17 @@ namespace Testing.Whiteboard
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
             // creating previous state
-            var prevState = StateManagerHelper.GetListCompleteBoardShapes(noOfShapesAlreadyPresent, Operation.CREATE);
+            var prevState = StateManagerHelper.GetListCompleteBoardShapes(noOfShapesAlreadyPresent, Operation.Create);
             for (var i = 0; i < prevState.Count; i++) _clientBoardStateManager.SaveOperation(prevState[i]);
 
             // server update
-            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.MODIFY);
+            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.Modify);
             boardShapes[0].Uid = prevState[0].Uid;
             boardShapes[0].LastModifiedTime.AddMinutes(timeToAdd);
-            BoardServerShape update = new(boardShapes, Operation.MODIFY, "user-2", 2);
+            BoardServerShape update = new(boardShapes, Operation.Modify, "user-2", 2);
 
             // finding epected order of outcomes
-            var expected = GetExpectedOrder(prevState, boardShapes, Operation.MODIFY);
+            var expected = GetExpectedOrder(prevState, boardShapes, Operation.Modify);
 
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
@@ -625,13 +625,13 @@ namespace Testing.Whiteboard
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
             // creating previous state
-            var prevState = StateManagerHelper.GetListCompleteBoardShapes(10, Operation.CREATE);
+            var prevState = StateManagerHelper.GetListCompleteBoardShapes(10, Operation.Create);
             for (var i = 0; i < prevState.Count; i++) _clientBoardStateManager.SaveOperation(prevState[i]);
 
             // server update
-            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.DELETE);
+            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(1, Operation.Delete);
             boardShapes[0].Uid = prevState[0].Uid;
-            BoardServerShape update = new(boardShapes, Operation.DELETE, "user-2", 2);
+            BoardServerShape update = new(boardShapes, Operation.Delete, "user-2", 2);
 
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
@@ -642,13 +642,13 @@ namespace Testing.Whiteboard
                 Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             listener.Verify(m => m.OnUpdateFromStateManager(
                 It.Is<List<UXShapeHelper>>(obj =>
-                    obj.Count == 1 && obj[0].OperationType == Operation.DELETE && obj[0].ShapeId == boardShapes[0].Uid)
+                    obj.Count == 1 && obj[0].OperationType == Operation.Delete && obj[0].ShapeId == boardShapes[0].Uid)
             ), Times.Once());
         }
 
         [Test]
-        [TestCase(Operation.MODIFY)]
-        [TestCase(Operation.DELETE)]
+        [TestCase(Operation.Modify)]
+        [TestCase(Operation.Delete)]
         public void OnMessageReceived_ModifyOrDeleteShapeNotFound_DoNothing(Operation operation)
         {
             // Arrange
@@ -672,12 +672,12 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.CREATE, Operation.MODIFY)]
-        [TestCase(Operation.CREATE, Operation.DELETE)]
-        [TestCase(Operation.MODIFY, Operation.CREATE)]
-        [TestCase(Operation.MODIFY, Operation.DELETE)]
-        [TestCase(Operation.DELETE, Operation.CREATE)]
-        [TestCase(Operation.DELETE, Operation.MODIFY)]
+        [TestCase(Operation.Create, Operation.Modify)]
+        [TestCase(Operation.Create, Operation.Delete)]
+        [TestCase(Operation.Modify, Operation.Create)]
+        [TestCase(Operation.Modify, Operation.Delete)]
+        [TestCase(Operation.Delete, Operation.Create)]
+        [TestCase(Operation.Delete, Operation.Modify)]
         public void OnMessageReceived_OperationMismatch_DoNothing(Operation boardShapeOp, Operation serverShapeOp)
         {
             // Arrange
@@ -712,11 +712,11 @@ namespace Testing.Whiteboard
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
             // creating previous state
-            var prevState = StateManagerHelper.GetListCompleteBoardShapes(10, Operation.CREATE);
+            var prevState = StateManagerHelper.GetListCompleteBoardShapes(10, Operation.Create);
             for (var i = 0; i < prevState.Count; i++) _clientBoardStateManager.SaveOperation(prevState[i]);
 
             // server update
-            BoardServerShape update = new(null, Operation.CLEAR_STATE, "user-1", 2);
+            BoardServerShape update = new(null, Operation.ClearState, "user-1", 2);
 
             // Act
             _clientBoardStateManager.OnMessageReceived(update);
@@ -725,7 +725,7 @@ namespace Testing.Whiteboard
             for (var i = 1; i < prevState.Count; i++)
                 Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
             listener.Verify(m => m.OnUpdateFromStateManager(
-                It.Is<List<UXShapeHelper>>(obj => obj.Count == 1 && obj[0].OperationType == Operation.CLEAR_STATE)
+                It.Is<List<UXShapeHelper>>(obj => obj.Count == 1 && obj[0].OperationType == Operation.ClearState)
             ), Times.Once());
         }
 
@@ -749,11 +749,11 @@ namespace Testing.Whiteboard
             // Arrange
             _clientBoardStateManager.SetUser("user-1");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             _clientBoardStateManager.SaveOperation(createShape);
             var deleteShape = createShape.Clone();
-            deleteShape.RecentOperation = Operation.DELETE;
-            BoardServerShape expected = new(new List<BoardShape> {deleteShape}, Operation.DELETE, "user-1",
+            deleteShape.RecentOperation = Operation.Delete;
+            BoardServerShape expected = new(new List<BoardShape> {deleteShape}, Operation.Delete, "user-1",
                 currentCheckpointState: 0);
 
             _mockCommunicator.Reset();
@@ -762,7 +762,7 @@ namespace Testing.Whiteboard
 
             Assert.IsNotNull(ret);
             Assert.IsTrue(ret.Count == 1 && ret[0].WindowsShape.Uid == createShape.Uid &&
-                          ret[0].UxOperation == UXOperation.DELETE && ret[0].OperationType == Operation.DELETE);
+                          ret[0].UxOperation == UXOperation.Delete && ret[0].OperationType == Operation.Delete);
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(createShape.Uid));
             _mockCommunicator.Verify(m => m.Send(
                 It.Is<BoardServerShape>(obj => StateManagerHelper.CompareBoardServerShapes(obj, expected))
@@ -775,13 +775,13 @@ namespace Testing.Whiteboard
             // Arrange
             _clientBoardStateManager.SetUser("user-1");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             var createShapeCopy = createShape.Clone();
             _clientBoardStateManager.SaveOperation(createShape);
-            var deleteShape = StateManagerHelper.GetCompleteBoardShape(Operation.DELETE);
+            var deleteShape = StateManagerHelper.GetCompleteBoardShape(Operation.Delete);
             deleteShape.Uid = createShape.Uid;
             _clientBoardStateManager.SaveOperation(deleteShape);
-            BoardServerShape expected = new(new List<BoardShape> {createShapeCopy}, Operation.CREATE, "user-1",
+            BoardServerShape expected = new(new List<BoardShape> {createShapeCopy}, Operation.Create, "user-1",
                 currentCheckpointState: 0);
 
             _mockCommunicator.Reset();
@@ -791,7 +791,7 @@ namespace Testing.Whiteboard
 
             Assert.IsNotNull(ret);
             Assert.IsTrue(ret.Count == 1 && ret[0].WindowsShape.Uid == createShape.Uid &&
-                          ret[0].UxOperation == UXOperation.CREATE && ret[0].OperationType == Operation.CREATE);
+                          ret[0].UxOperation == UXOperation.Create && ret[0].OperationType == Operation.Create);
             Assert.IsTrue(StateManagerHelper.CompareBoardShapes(createShapeCopy,
                 _clientBoardStateManager.GetBoardShape(createShape.Uid)));
             _mockCommunicator.Verify(m => m.Send(
@@ -805,10 +805,10 @@ namespace Testing.Whiteboard
             // Arrange
             _clientBoardStateManager.SetUser("user-1");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             var createShapeCopy = createShape.Clone();
             _clientBoardStateManager.SaveOperation(createShape);
-            var modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            var modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.Modify);
             modifyShape.Uid = createShape.Uid;
             _clientBoardStateManager.SaveOperation(modifyShape);
 
@@ -817,7 +817,7 @@ namespace Testing.Whiteboard
             Assert.IsTrue(StateManagerHelper.CompareBoardShapes(createShapeCopy,
                 _clientBoardStateManager.GetBoardShape(createShape.Uid)));
             Assert.IsTrue(ret.Count == 2 && ret[0].WindowsShape.Uid == ret[1].WindowsShape.Uid &&
-                          ret[0].UxOperation == UXOperation.DELETE && ret[1].UxOperation == UXOperation.CREATE
+                          ret[0].UxOperation == UXOperation.Delete && ret[1].UxOperation == UXOperation.Create
                           && ret[0].WindowsShape.Uid == createShape.Uid);
         }
 
@@ -827,11 +827,11 @@ namespace Testing.Whiteboard
             // Arrange
             _clientBoardStateManager.SetUser("user-1");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             var createShapeCopy = createShape.Clone();
             _clientBoardStateManager.SaveOperation(createShape);
             _clientBoardStateManager.DoUndo();
-            BoardServerShape expected = new(new List<BoardShape> {createShapeCopy}, Operation.CREATE, "user-1",
+            BoardServerShape expected = new(new List<BoardShape> {createShapeCopy}, Operation.Create, "user-1",
                 currentCheckpointState: 0);
 
             _mockCommunicator.Reset();
@@ -841,7 +841,7 @@ namespace Testing.Whiteboard
             // Assert
             Assert.IsNotNull(ret);
             Assert.IsTrue(ret.Count == 1 && ret[0].WindowsShape.Uid == createShape.Uid &&
-                          ret[0].UxOperation == UXOperation.CREATE && ret[0].OperationType == Operation.CREATE);
+                          ret[0].UxOperation == UXOperation.Create && ret[0].OperationType == Operation.Create);
             Assert.IsTrue(StateManagerHelper.CompareBoardShapes(createShapeCopy,
                 _clientBoardStateManager.GetBoardShape(createShape.Uid)));
             Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(createShape.Uid));
@@ -856,15 +856,15 @@ namespace Testing.Whiteboard
             // Arrange
             _clientBoardStateManager.SetUser("user-1");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             var createShapeCopy = createShape.Clone();
             _clientBoardStateManager.SaveOperation(createShape);
             var deleteShape = createShape.Clone();
-            deleteShape.RecentOperation = Operation.DELETE;
+            deleteShape.RecentOperation = Operation.Delete;
             deleteShape.Uid = createShape.Uid;
             _clientBoardStateManager.SaveOperation(deleteShape);
             _clientBoardStateManager.DoUndo();
-            BoardServerShape expected = new(new List<BoardShape> {deleteShape}, Operation.DELETE, "user-1",
+            BoardServerShape expected = new(new List<BoardShape> {deleteShape}, Operation.Delete, "user-1",
                 currentCheckpointState: 0);
 
             _mockCommunicator.Reset();
@@ -874,7 +874,7 @@ namespace Testing.Whiteboard
             // Assert
             Assert.IsNotNull(ret);
             Assert.IsTrue(ret.Count == 1 && ret[0].WindowsShape.Uid == createShape.Uid &&
-                          ret[0].UxOperation == UXOperation.DELETE && ret[0].OperationType == Operation.DELETE);
+                          ret[0].UxOperation == UXOperation.Delete && ret[0].OperationType == Operation.Delete);
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(createShape.Uid));
             _mockCommunicator.Verify(m => m.Send(
                 It.Is<BoardServerShape>(obj => StateManagerHelper.CompareBoardServerShapes(obj, expected))
@@ -887,12 +887,12 @@ namespace Testing.Whiteboard
             // Arrange
             _clientBoardStateManager.SetUser("user-1");
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             _clientBoardStateManager.SaveOperation(createShape);
-            var modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            var modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.Modify);
             modifyShape.Uid = createShape.Uid;
             var expected = modifyShape.Clone();
-            expected.RecentOperation = Operation.CREATE;
+            expected.RecentOperation = Operation.Create;
             _clientBoardStateManager.SaveOperation(modifyShape);
             _clientBoardStateManager.DoUndo();
 
@@ -903,7 +903,7 @@ namespace Testing.Whiteboard
             Assert.IsTrue(StateManagerHelper.CompareBoardShapes(expected,
                 _clientBoardStateManager.GetBoardShape(createShape.Uid)));
             Assert.IsTrue(ret.Count == 2 && ret[0].WindowsShape.Uid == ret[1].WindowsShape.Uid &&
-                          ret[0].UxOperation == UXOperation.DELETE && ret[1].UxOperation == UXOperation.CREATE
+                          ret[0].UxOperation == UXOperation.Delete && ret[1].UxOperation == UXOperation.Create
                           && ret[0].WindowsShape.Uid == createShape.Uid);
         }
 
@@ -912,8 +912,8 @@ namespace Testing.Whiteboard
         {
             // Arrange
             _clientBoardStateManager.SetUser("user-id");
-            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
-            BoardServerShape update = new(boardShapes, Operation.FETCH_CHECKPOINT, "user-id", 2, 1);
+            var boardShapes = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.Create);
+            BoardServerShape update = new(boardShapes, Operation.FetchCheckpoint, "user-id", 2, 1);
             Mock<IClientBoardStateListener> listener = new();
             _clientBoardStateManager.Subscribe(listener.Object, "client-UX");
             listener.Setup(m => m.OnUpdateFromStateManager(It.IsAny<List<UXShapeHelper>>()));
@@ -921,7 +921,7 @@ namespace Testing.Whiteboard
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
             // creating previous state
-            var prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
+            var prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.Create);
             for (var i = 0; i < prevState.Count; i++) _clientBoardStateManager.SaveOperation(prevState[i]);
 
             // Act
@@ -943,7 +943,7 @@ namespace Testing.Whiteboard
             // asserting on UX update
             listener.Verify(m => m.OnUpdateFromStateManager(
                 It.Is<List<UXShapeHelper>>(obj => StateManagerHelper.CompareUXShapeOrder(obj, boardShapes) &&
-                                                  obj[0].OperationType == Operation.FETCH_CHECKPOINT)
+                                                  obj[0].OperationType == Operation.FetchCheckpoint)
             ), Times.Once());
         }
 
@@ -959,7 +959,7 @@ namespace Testing.Whiteboard
             _mockCommunicator.Setup(m => m.Send(It.IsAny<BoardServerShape>()));
 
             // creating previous state
-            var prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.CREATE);
+            var prevState = StateManagerHelper.GetListCompleteBoardShapes(5, Operation.Create);
             for (var i = 0; i < prevState.Count; i++)
             {
                 prevState[i].Uid = i.ToString();
@@ -970,22 +970,22 @@ namespace Testing.Whiteboard
 
             // server update to delete first shape
             var deleteShape = prevState[0].Clone();
-            deleteShape.RecentOperation = Operation.DELETE;
-            BoardServerShape boardServerShape = new(new List<BoardShape> {deleteShape}, Operation.DELETE, "user-2");
+            deleteShape.RecentOperation = Operation.Delete;
+            BoardServerShape boardServerShape = new(new List<BoardShape> {deleteShape}, Operation.Delete, "user-2");
             _clientBoardStateManager.OnMessageReceived(boardServerShape);
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[0].Uid));
 
             // client undo (fifth shape inserted must be deleted)
             var ret = _clientBoardStateManager.DoUndo();
             Assert.IsNotNull(ret);
-            Assert.IsTrue(ret[0].WindowsShape.Uid == prevState[4].Uid && ret[0].UxOperation == UXOperation.DELETE);
+            Assert.IsTrue(ret[0].WindowsShape.Uid == prevState[4].Uid && ret[0].UxOperation == UXOperation.Delete);
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[4].Uid));
 
             // server modify 
-            var modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            var modifyShape = StateManagerHelper.GetCompleteBoardShape(Operation.Modify);
             modifyShape.Uid = prevState[3].Uid;
             modifyShape.LastModifiedTime = prevState[3].LastModifiedTime;
-            BoardServerShape modifyUpdate = new(new List<BoardShape> {modifyShape}, Operation.MODIFY, "user-2");
+            BoardServerShape modifyUpdate = new(new List<BoardShape> {modifyShape}, Operation.Modify, "user-2");
             _clientBoardStateManager.OnMessageReceived(modifyUpdate);
             var ret2 = _clientBoardStateManager.GetBoardShape(prevState[3].Uid);
             Assert.IsNotNull(ret2);
@@ -995,7 +995,7 @@ namespace Testing.Whiteboard
             // client undo (fourth shape inserted must be deleted)
             var ret3 = _clientBoardStateManager.DoUndo();
             Assert.IsNotNull(ret3);
-            Assert.IsTrue(ret3[0].WindowsShape.Uid == prevState[3].Uid && ret3[0].UxOperation == UXOperation.DELETE);
+            Assert.IsTrue(ret3[0].WindowsShape.Uid == prevState[3].Uid && ret3[0].UxOperation == UXOperation.Delete);
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[3].Uid));
 
             // server modify again on fourth shape won't work
@@ -1004,43 +1004,43 @@ namespace Testing.Whiteboard
 
             // server delete third shape
             var deleteShape2 = prevState[2].Clone();
-            deleteShape2.RecentOperation = Operation.DELETE;
-            BoardServerShape deleteUpdate = new(new List<BoardShape> {deleteShape2}, Operation.DELETE, "user-2");
+            deleteShape2.RecentOperation = Operation.Delete;
+            BoardServerShape deleteUpdate = new(new List<BoardShape> {deleteShape2}, Operation.Delete, "user-2");
             _clientBoardStateManager.OnMessageReceived(deleteUpdate);
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[0].Uid));
 
             // undo will not work for third shape (already deleted) [second one will be deleted]
             var ret4 = _clientBoardStateManager.DoUndo();
             Assert.IsNotNull(ret4);
-            Assert.IsTrue(ret4[0].WindowsShape.Uid == prevState[1].Uid && ret4[0].UxOperation == UXOperation.DELETE);
+            Assert.IsTrue(ret4[0].WindowsShape.Uid == prevState[1].Uid && ret4[0].UxOperation == UXOperation.Delete);
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(prevState[1].Uid));
 
             // redo (second one will be recreated)
             var ret5 = _clientBoardStateManager.DoRedo();
             Assert.IsNotNull(ret5);
-            Assert.IsTrue(ret5[0].WindowsShape.Uid == prevState[1].Uid && ret5[0].UxOperation == UXOperation.CREATE);
+            Assert.IsTrue(ret5[0].WindowsShape.Uid == prevState[1].Uid && ret5[0].UxOperation == UXOperation.Create);
             Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[1].Uid));
 
             // Client creates a shape
-            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.CREATE);
+            var createShape = StateManagerHelper.GetCompleteBoardShape(Operation.Create);
             Assert.IsTrue(_clientBoardStateManager.SaveOperation(createShape));
             Assert.NotNull(_clientBoardStateManager.GetBoardShape(createShape.Uid));
 
             // Client deletes shape
             var deleteShape3 = prevState[1].Clone();
-            deleteShape3.RecentOperation = Operation.DELETE;
+            deleteShape3.RecentOperation = Operation.Delete;
             Assert.IsTrue(_clientBoardStateManager.SaveOperation(deleteShape3));
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(deleteShape3.Uid));
 
             // Client modifies shape
-            var modifyShape2 = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            var modifyShape2 = StateManagerHelper.GetCompleteBoardShape(Operation.Modify);
             modifyShape2.Uid = createShape.Uid;
             modifyShape2.LastModifiedTime = createShape.LastModifiedTime.AddMinutes(2);
             Assert.IsTrue(_clientBoardStateManager.SaveOperation(modifyShape2));
             Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(modifyShape2.Uid));
 
             // Client modifies deleted shape
-            var modifyShape3 = StateManagerHelper.GetCompleteBoardShape(Operation.MODIFY);
+            var modifyShape3 = StateManagerHelper.GetCompleteBoardShape(Operation.Modify);
             modifyShape3.Uid = deleteShape3.Uid;
             modifyShape3.LastModifiedTime = createShape.LastModifiedTime.AddMinutes(2);
             Assert.IsFalse(_clientBoardStateManager.SaveOperation(modifyShape3));
@@ -1052,36 +1052,36 @@ namespace Testing.Whiteboard
 
             // Server update delete a deleted shape
             _clientBoardStateManager.OnMessageReceived(new BoardServerShape(new List<BoardShape> {deleteShape3},
-                Operation.DELETE, "user-2"));
+                Operation.Delete, "user-2"));
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(deleteShape3.Uid));
 
             // Server update deletes modifyShape2
-            modifyShape2.RecentOperation = Operation.DELETE;
-            BoardServerShape update = new(new List<BoardShape> {modifyShape2}, Operation.DELETE, "user-2");
+            modifyShape2.RecentOperation = Operation.Delete;
+            BoardServerShape update = new(new List<BoardShape> {modifyShape2}, Operation.Delete, "user-2");
             _clientBoardStateManager.OnMessageReceived(update);
             Assert.IsNull(_clientBoardStateManager.GetBoardShape(modifyShape2.Uid));
 
             // Client tries to undo but this won't happen
             var ret6 = _clientBoardStateManager.DoUndo();
             Assert.IsNotNull(ret6);
-            Assert.IsTrue(UXOperation.CREATE == ret6[0].UxOperation && prevState[1].Uid == ret6[0].WindowsShape.Uid &&
+            Assert.IsTrue(UXOperation.Create == ret6[0].UxOperation && prevState[1].Uid == ret6[0].WindowsShape.Uid &&
                           ret.Count == 1);
 
             // Fetch Checkpoint server update
-            BoardServerShape fetchCheckpoint = new(prevState, Operation.FETCH_CHECKPOINT, "user-4", 2, 1);
+            BoardServerShape fetchCheckpoint = new(prevState, Operation.FetchCheckpoint, "user-4", 2, 1);
             _clientBoardStateManager.OnMessageReceived(fetchCheckpoint);
             for (var i = 0; i < prevState.Count; i++)
                 Assert.IsNotNull(_clientBoardStateManager.GetBoardShape(prevState[i].Uid));
         }
 
         private static List<BoardShape> GetExpectedOrder(List<BoardShape> prevState, List<BoardShape> boardShapes,
-            Operation operation = Operation.CREATE, int indexOfModify = 0)
+            Operation operation = Operation.Create, int indexOfModify = 0)
         {
             List<BoardShape> expected = new();
             for (var i = 0; i < prevState.Count; i++)
                 if (prevState[i].LastModifiedTime >= boardShapes[0].LastModifiedTime)
                     expected.Add(prevState[i]);
-            if (operation == Operation.MODIFY) expected.Add(prevState[indexOfModify]);
+            if (operation == Operation.Modify) expected.Add(prevState[indexOfModify]);
             expected.Add(boardShapes[0]);
             for (var i = 0; i < prevState.Count; i++)
                 if (prevState[i].LastModifiedTime >= boardShapes[0].LastModifiedTime)

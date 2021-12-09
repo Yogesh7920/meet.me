@@ -51,7 +51,7 @@ namespace Whiteboard
         /// <param name="end">Last Operation's mouse-up coordinate.</param>
         /// <param name="operation">Last performed operations.</param>
         public void SetLastDrawn(BoardShape shape, Coordinate end = null,
-            RealTimeOperation operation = RealTimeOperation.ROTATE)
+            RealTimeOperation operation = RealTimeOperation.Rotate)
         {
             if (IsRunningFromNUnit)
             {
@@ -86,7 +86,7 @@ namespace Whiteboard
                 var newBoardShape = shapeFromManager.Clone();
                 newBoardShape.MainShapeDefiner.ShapeFill = shapeFill.Clone();
 
-                var Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
+                var Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.Modify);
 
                 return Operations;
             }
@@ -118,7 +118,7 @@ namespace Whiteboard
                 var newBoardShape = shapeFromManager.Clone();
                 newBoardShape.MainShapeDefiner.StrokeColor = strokeColor.Clone();
 
-                var Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
+                var Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.Modify);
 
                 return Operations;
             }
@@ -150,7 +150,7 @@ namespace Whiteboard
                 var newBoardShape = shapeFromManager.Clone();
                 newBoardShape.MainShapeDefiner.StrokeWidth = strokeWidth;
 
-                var Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.MODIFY);
+                var Operations = UpdateManager(shapeFromManager, newBoardShape, Operation.Modify);
 
                 return Operations;
             }
@@ -184,10 +184,10 @@ namespace Whiteboard
             var oldShapeId = oldBoardShape.Uid;
 
             // Creation of UXShapes for old boardshape.
-            UXShape oldShape = new(UXOperation.DELETE, oldBoardShape.MainShapeDefiner, oldShapeId);
+            UXShape oldShape = new(UXOperation.Delete, oldBoardShape.MainShapeDefiner, oldShapeId);
 
             // Creation of UXShape for new boardshape. Shape Id of the shape is kept same, After modification.
-            UXShape uxNewShape = new(UXOperation.CREATE, newBoardShape.MainShapeDefiner, oldShapeId);
+            UXShape uxNewShape = new(UXOperation.Create, newBoardShape.MainShapeDefiner, oldShapeId);
 
             // Appending them to list of operations to be performed by the UX.
             operations.Add(oldShape);
@@ -242,7 +242,7 @@ namespace Whiteboard
                     newMainShape.StrokeWidth = strokeWidth;
 
                     // Creating corresponding UX shape to be sent to the UX
-                    UXShape newUxShape = new(UXOperation.CREATE, newMainShape);
+                    UXShape newUxShape = new(UXOperation.Create, newMainShape);
                     prevShapeId = newUxShape.WindowsShape.Uid;
                     operations.Add(newUxShape);
 
@@ -253,16 +253,16 @@ namespace Whiteboard
                     _lastDrawn = new LastDrawnDetails
                     {
                         LastShape = new BoardShape(newMainShape, UserLevel, DateTime.Now, DateTime.Now, prevShapeId,
-                            userId, Operation.CREATE),
+                            userId, Operation.Create),
                         End = end,
-                        LastOperation = RealTimeOperation.CREATE
+                        LastOperation = RealTimeOperation.Create
                     };
 
                     Trace.WriteLine("[Whiteboard] ActiveBoardOperationsHandler:CreateShape: Shape Creation complete.");
                 }
                 // check to ensure shape is same as the one previously rendering
                 else if (_lastDrawn.IsPending() && _lastDrawn.LastShape.Uid == shapeId &&
-                         _lastDrawn.LastOperation == RealTimeOperation.CREATE)
+                         _lastDrawn.LastOperation == RealTimeOperation.Create)
                 {
                     Trace.WriteLine(
                         "[Whiteboard] ActiveBoardOperationsHandler:CreateShape: Preparing previous object for deletion");
@@ -270,17 +270,17 @@ namespace Whiteboard
 
                     // Delete the Object that was already created in the canvas because of real time rendering
                     prevShapeId = _lastDrawn.LastShape.Uid;
-                    UXShape oldShape = new(UXOperation.DELETE, _lastDrawn.LastShape.MainShapeDefiner, prevShapeId);
+                    UXShape oldShape = new(UXOperation.Delete, _lastDrawn.LastShape.MainShapeDefiner, prevShapeId);
                     operations.Add(oldShape);
 
                     // modify the MainshapeDefiner and also provide another reference to it.
                     var modifiedPrevShape = ShapeFactory.MainShapeCreatorFactory(shapeType, _lastDrawn.End, end,
                         _lastDrawn.LastShape.MainShapeDefiner);
-                    UXShape newUxShape = new(UXOperation.CREATE, modifiedPrevShape, prevShapeId);
+                    UXShape newUxShape = new(UXOperation.Create, modifiedPrevShape, prevShapeId);
                     operations.Add(newUxShape);
 
                     _lastDrawn.LastShape.LastModifiedTime = DateTime.Now;
-                    _lastDrawn.LastShape.RecentOperation = Operation.CREATE;
+                    _lastDrawn.LastShape.RecentOperation = Operation.Create;
                     _lastDrawn.End = end.Clone();
 
                     Trace.WriteLine("[Whiteboard] ActiveBoardOperationsHandler:CreateShape: Shape updation complete.");
@@ -351,7 +351,7 @@ namespace Whiteboard
                         LastOperation = realTimeOperation,
                         End = start
                     };
-                    _lastDrawn.LastShape.RecentOperation = Operation.MODIFY;
+                    _lastDrawn.LastShape.RecentOperation = Operation.Modify;
                 }
                 else if (_lastDrawn.IsPending() && _lastDrawn.LastShape.Uid == shapeId &&
                          _lastDrawn.LastOperation == realTimeOperation)
@@ -366,7 +366,7 @@ namespace Whiteboard
 
                 // Append the object already rendered on local client for deletion
                 var prevShapeId = _lastDrawn.LastShape.Uid;
-                UXShape oldShape = new(UXOperation.DELETE, _lastDrawn.LastShape.MainShapeDefiner, prevShapeId);
+                UXShape oldShape = new(UXOperation.Delete, _lastDrawn.LastShape.MainShapeDefiner, prevShapeId);
                 operations.Add(oldShape);
 
 
@@ -377,20 +377,20 @@ namespace Whiteboard
                 var operationSuccess = false;
                 switch (realTimeOperation)
                 {
-                    case RealTimeOperation.TRANSLATE:
+                    case RealTimeOperation.Translate:
 
                         var delta = end - _lastDrawn.End;
                         lastDrawnMainShape.Center.Add(delta);
                         lastDrawnMainShape.Start.Add(delta);
                         operationSuccess = true;
                         break;
-                    case RealTimeOperation.ROTATE:
+                    case RealTimeOperation.Rotate:
                         operationSuccess = lastDrawnMainShape.Rotate(_lastDrawn.End, end);
                         break;
-                    case RealTimeOperation.RESIZE:
+                    case RealTimeOperation.Resize:
                         operationSuccess = lastDrawnMainShape.ResizeAboutCenter(_lastDrawn.End, end, dragpos);
                         break;
-                    case RealTimeOperation.CREATE:
+                    case RealTimeOperation.Create:
                         throw new Exception(
                             "Create Operation Real Time Handling not performed by this function. Call CreateShape");
                     default:
@@ -401,7 +401,7 @@ namespace Whiteboard
                 // If the modification succeeds, then add that for UX to render.
                 if (operationSuccess)
                 {
-                    UXShape newUxShape = new(UXOperation.CREATE, lastDrawnMainShape, shapeId);
+                    UXShape newUxShape = new(UXOperation.Create, lastDrawnMainShape, shapeId);
                     operations.Add(newUxShape);
                     _lastDrawn.End = end;
                 }
@@ -452,7 +452,7 @@ namespace Whiteboard
 
             // get the shape from manager in order to re-render the original shape distorted by UX.
             var shapeFromManager = GetShapeFromManager(uid);
-            UXShape oldShape = new(UXOperation.CREATE, shapeFromManager.MainShapeDefiner, uid);
+            UXShape oldShape = new(UXOperation.Create, shapeFromManager.MainShapeDefiner, uid);
             operations.RemoveAt(1);
             operations.Add(oldShape);
             return operations;
@@ -511,12 +511,12 @@ namespace Whiteboard
                 // get the actual BoardServer object stored in the server
                 var shapeFromManager = GetShapeFromManager(shapeId);
 
-                UXShape oldShape = new(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeFromManager.Uid);
+                UXShape oldShape = new(UXOperation.Delete, shapeFromManager.MainShapeDefiner, shapeFromManager.Uid);
                 operations.Add(oldShape);
 
                 // set params to send to state manager.
                 var shapeFromManagerClone = shapeFromManager.Clone();
-                shapeFromManagerClone.RecentOperation = Operation.DELETE;
+                shapeFromManagerClone.RecentOperation = Operation.Delete;
                 shapeFromManagerClone.LastModifiedTime = DateTime.Now;
 
                 UpdateStateManager(shapeFromManagerClone);

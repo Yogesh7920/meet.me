@@ -18,7 +18,7 @@ namespace Testing.Whiteboard
         [SetUp]
         public void SetUp()
         {
-            _capacity = BoardConstants.UNDO_REDO_STACK_SIZE;
+            _capacity = BoardConstants.UndoRedoStackSize;
             _boardStack = new BoardStack(_capacity);
         }
 
@@ -131,8 +131,8 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(BoardConstants.UNDO_REDO_STACK_SIZE + 5)]
-        [TestCase(BoardConstants.UNDO_REDO_STACK_SIZE + 10)]
+        [TestCase(BoardConstants.UndoRedoStackSize + 5)]
+        [TestCase(BoardConstants.UndoRedoStackSize + 10)]
         public void Push_StackFull_SizeConstant(int noOfInsertions)
         {
             // Act
@@ -154,8 +154,8 @@ namespace Testing.Whiteboard
         [Test]
         [TestCase(0, 0)]
         [TestCase(5, 5)]
-        [TestCase(BoardConstants.UNDO_REDO_STACK_SIZE, BoardConstants.UNDO_REDO_STACK_SIZE)]
-        [TestCase(BoardConstants.UNDO_REDO_STACK_SIZE + 5, BoardConstants.UNDO_REDO_STACK_SIZE)]
+        [TestCase(BoardConstants.UndoRedoStackSize, BoardConstants.UndoRedoStackSize)]
+        [TestCase(BoardConstants.UndoRedoStackSize + 5, BoardConstants.UndoRedoStackSize)]
         public void GetSize_AllCases_SizeCheck(int noOfInsertions, int expected)
         {
             // Arrange

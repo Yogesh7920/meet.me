@@ -25,7 +25,7 @@ namespace Whiteboard
         /// <param name="width">Width of Line.</param>
         /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
         /// <param name="center">Center of the line.</param>
-        public Line(float angle, float width, Coordinate start, Coordinate center) : base(ShapeType.LINE)
+        public Line(float angle, float width, Coordinate start, Coordinate center) : base(ShapeType.Line)
         {
             AngleOfRotation = angle;
             Start = start;
@@ -53,14 +53,14 @@ namespace Whiteboard
             Coordinate center,
             List<Coordinate> points,
             float angle) :
-            base(ShapeType.LINE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
+            base(ShapeType.Line, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
         }
 
         /// <summary>
         ///     Default constructor.
         /// </summary>
-        public Line() : base(ShapeType.LINE)
+        public Line() : base(ShapeType.Line)
         {
             Points = new List<Coordinate>();
         }
@@ -134,29 +134,29 @@ namespace Whiteboard
             switch (dragPos)
             {
                 // the dignonal direction resizing broken into its 2 components.
-                case DragPos.TOP_RIGHT:
+                case DragPos.TopRight:
                     Width += 2 * xDelta;
                     break;
-                case DragPos.BOTTOM_LEFT:
+                case DragPos.BottomLeft:
                     Width -= 2 * xDelta;
                     break;
-                case DragPos.TOP_LEFT:
+                case DragPos.TopLeft:
                     Width -= 2 * xDelta;
                     break;
-                case DragPos.BOTTOM_RIGHT:
+                case DragPos.BottomRight:
                     Width += 2 * xDelta;
                     break;
-                case DragPos.LEFT:
+                case DragPos.Left:
                     Width -= 2 * xDelta;
                     break;
-                case DragPos.RIGHT:
+                case DragPos.Right:
                     Width += 2 * xDelta;
                     break;
                 default:
                     return false;
             }
 
-            Width = Width < BoardConstants.MIN_WIDTH ? BoardConstants.MIN_WIDTH : Width;
+            Width = Width < BoardConstants.MinWidth ? BoardConstants.MinWidth : Width;
 
             return true;
         }
