@@ -23,7 +23,7 @@ namespace Whiteboard
         /// <param name="width">Width.</param>
         /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
         /// <param name="center">Center of the shape.</param>
-        public Rectangle(float height, float width, Coordinate start, Coordinate center) : base(ShapeType.RECTANGLE)
+        public Rectangle(float height, float width, Coordinate start, Coordinate center) : base(ShapeType.Rectangle)
         {
             Height = height;
             Width = width;
@@ -51,14 +51,14 @@ namespace Whiteboard
             Coordinate center,
             List<Coordinate> points,
             float angle) :
-            base(ShapeType.RECTANGLE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
+            base(ShapeType.Rectangle, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
         }
 
         /// <summary>
         ///     Default constructor.
         /// </summary>
-        public Rectangle() : base(ShapeType.RECTANGLE)
+        public Rectangle() : base(ShapeType.Rectangle)
         {
         }
 

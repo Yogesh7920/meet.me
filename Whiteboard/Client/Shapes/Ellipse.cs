@@ -24,7 +24,7 @@ namespace Whiteboard
         /// <param name="width">Width.</param>
         /// <param name="start">The Coordinate of start of mouse drag while creation.</param>
         /// <param name="center"></param>
-        public Ellipse(float height, float width, Coordinate start, Coordinate center) : base(ShapeType.ELLIPSE)
+        public Ellipse(float height, float width, Coordinate start, Coordinate center) : base(ShapeType.Ellipse)
         {
             Height = height;
             Width = width;
@@ -52,14 +52,14 @@ namespace Whiteboard
             Coordinate center,
             List<Coordinate> points,
             float angle) :
-            base(ShapeType.ELLIPSE, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
+            base(ShapeType.Ellipse, height, width, strokeWidth, strokeColor, shapeFill, start, center, points, angle)
         {
         }
 
         /// <summary>
         ///     Default constructor.
         /// </summary>
-        public Ellipse() : base(ShapeType.ELLIPSE)
+        public Ellipse() : base(ShapeType.Ellipse)
         {
         }
 

@@ -25,7 +25,7 @@ namespace Testing.Whiteboard
         [Test]
         public void MainShapeCreatorFactory_createRectangle_ReturnsRectangle()
         {
-            var sType = ShapeType.RECTANGLE;
+            var sType = ShapeType.Rectangle;
             var rectangle = CreateShape(sType);
 
             // Checking the identity of the shape. Other params correctness checked in shape specific tests.
@@ -35,7 +35,7 @@ namespace Testing.Whiteboard
         [Test]
         public void MainShapeCreatorFactory_createEllipse_ReturnsEllipse()
         {
-            var sType = ShapeType.ELLIPSE;
+            var sType = ShapeType.Ellipse;
             var ellipse = CreateShape(sType);
 
             Assert.AreEqual(sType, ellipse.ShapeIdentifier);
@@ -44,7 +44,7 @@ namespace Testing.Whiteboard
         [Test]
         public void MainShapeCreatorFactory_createLine_ReturnsLine()
         {
-            var sType = ShapeType.LINE;
+            var sType = ShapeType.Line;
             var line = CreateShape(sType);
 
             Assert.AreEqual(sType, line.ShapeIdentifier);
@@ -53,7 +53,7 @@ namespace Testing.Whiteboard
         [Test]
         public void MainShapeCreatorFactory_createPolyLine_ReturnsPolyLine()
         {
-            var sType = ShapeType.POLYLINE;
+            var sType = ShapeType.Polyline;
             var polyline = CreateShape(sType);
 
             Assert.AreEqual(sType, polyline.ShapeIdentifier);
@@ -69,7 +69,7 @@ namespace Testing.Whiteboard
         [Test]
         public void MainShapeCreatorFactory_createUnknownShape_ThrowsException()
         {
-            var sType = ShapeType.NONE;
+            var sType = ShapeType.None;
 
             var e = Assert.Throws<Exception>(delegate { CreateShape(sType); });
             Assert.That(e.Message, Is.EqualTo("Invalid Object type"));

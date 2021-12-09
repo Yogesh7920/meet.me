@@ -70,7 +70,7 @@ namespace Testing.Whiteboard
         /// <param name="n">no. of shapes required.</param>
         /// <param name="operation">The operation for all the shapes. By default Modify</param>
         /// <returns>List of boardshapes</returns>
-        public static List<BoardShape> GenerateSortedRandomBoardShapes(int n, Operation operation = Operation.MODIFY)
+        public static List<BoardShape> GenerateSortedRandomBoardShapes(int n, Operation operation = Operation.Modify)
         {
             List<BoardShape> boardShapes = new();
             Random random = new();

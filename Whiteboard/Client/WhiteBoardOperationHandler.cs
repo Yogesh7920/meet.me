@@ -57,7 +57,7 @@ namespace Whiteboard
             _activeBoardOperationsHandler = new ActiveBoardOperationsHandler();
             _inactiveBoardOperationsHandler = new InactiveBoardOperationsHandler();
             _boardState = _activeBoardOperationsHandler;
-            _boardStateIdentifier = BoardState.ACTIVE;
+            _boardStateIdentifier = BoardState.Active;
         }
 
 
@@ -107,7 +107,7 @@ namespace Whiteboard
         public List<UXShape> CreateEllipse(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor,
             string shapeId = null, bool shapeComp = false)
         {
-            return _boardState.CreateShape(ShapeType.ELLIPSE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
+            return _boardState.CreateShape(ShapeType.Ellipse, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace Whiteboard
         public List<UXShape> CreateLine(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor,
             string shapeId = null, bool shapeComp = false)
         {
-            return _boardState.CreateShape(ShapeType.LINE, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
+            return _boardState.CreateShape(ShapeType.Line, start, end, strokeWidth, strokeColor, shapeId, shapeComp);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Whiteboard
         public List<UXShape> CreatePolyline(Coordinate start, Coordinate end, float strokeWidth, BoardColor strokeColor,
             string shapeId = null, bool shapeComp = false)
         {
-            return _boardState.CreateShape(ShapeType.POLYLINE, start, end, strokeWidth, strokeColor, shapeId,
+            return _boardState.CreateShape(ShapeType.Polyline, start, end, strokeWidth, strokeColor, shapeId,
                 shapeComp);
         }
 
@@ -156,7 +156,7 @@ namespace Whiteboard
         public List<UXShape> CreateRectangle(Coordinate start, Coordinate end, float strokeWidth,
             BoardColor strokeColor, string shapeId = null, bool shapeComp = false)
         {
-            return _boardState.CreateShape(ShapeType.RECTANGLE, start, end, strokeWidth, strokeColor, shapeId,
+            return _boardState.CreateShape(ShapeType.Rectangle, start, end, strokeWidth, strokeColor, shapeId,
                 shapeComp);
         }
 
@@ -201,7 +201,7 @@ namespace Whiteboard
         public List<UXShape> ResizeShape(Coordinate start, Coordinate end, string shapeId, DragPos dragPos,
             bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.RESIZE, start, end, shapeId, dragPos, shapeComp);
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.Resize, start, end, shapeId, dragPos, shapeComp);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> RotateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, shapeId, DragPos.NONE,
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.Rotate, start, end, shapeId, DragPos.None,
                 shapeComp);
         }
 
@@ -224,11 +224,11 @@ namespace Whiteboard
         /// <returns> Denotes succesfull state switch. </returns>
         public bool SwitchState()
         {
-            _boardState = _boardStateIdentifier == BoardState.ACTIVE
+            _boardState = _boardStateIdentifier == BoardState.Active
                 ? _inactiveBoardOperationsHandler
                 : _activeBoardOperationsHandler;
             _boardStateIdentifier =
-                _boardStateIdentifier == BoardState.ACTIVE ? BoardState.INACTIVE : BoardState.ACTIVE;
+                _boardStateIdentifier == BoardState.Active ? BoardState.Inactive : BoardState.Active;
             return true;
         }
 
@@ -242,7 +242,7 @@ namespace Whiteboard
         /// <returns> List of UXShapes for UX to render. </returns>
         public List<UXShape> TranslateShape(Coordinate start, Coordinate end, string shapeId, bool shapeComp = false)
         {
-            return _boardState.ModifyShapeRealTime(RealTimeOperation.TRANSLATE, start, end, shapeId, DragPos.NONE,
+            return _boardState.ModifyShapeRealTime(RealTimeOperation.Translate, start, end, shapeId, DragPos.None,
                 shapeComp);
         }
 

@@ -35,10 +35,10 @@ namespace Testing.Whiteboard
             int numInsertions)
         {
             // create current state 
-            var prevState = StateManagerHelper.GenerateSortedRandomBoardShapes(5, Operation.CREATE);
+            var prevState = StateManagerHelper.GenerateSortedRandomBoardShapes(5, Operation.Create);
             for (var i = 0; i < prevState.Count; i++)
                 _serverBoardStateManager.SaveUpdate(new BoardServerShape(new List<BoardShape> {prevState[i]},
-                    Operation.CREATE, userId));
+                    Operation.Create, userId));
 
             // generate random shapes which are present in checkpoint
             var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(numInsertions);
@@ -53,7 +53,7 @@ namespace Testing.Whiteboard
             // Act and assert
             var reply = _serverBoardStateManager.FetchCheckpoint(checkpoint, userId);
             Assert.IsTrue(StateManagerHelper.CompareBoardServerShapes(reply,
-                new BoardServerShape(boardShapes, Operation.FETCH_CHECKPOINT, userId, checkpoint, checkpoint)));
+                new BoardServerShape(boardShapes, Operation.FetchCheckpoint, userId, checkpoint, checkpoint)));
             var state = _serverBoardStateManager.FetchState(userId);
             Assert.IsTrue(StateManagerHelper.CompareBoardShapes(boardShapes, state.ShapeUpdates) &&
                           checkpoint == state.CheckpointNumber);
@@ -84,7 +84,7 @@ namespace Testing.Whiteboard
             // Act and assert
             var reply = _serverBoardStateManager.FetchState(userId);
             Assert.IsTrue(StateManagerHelper.CompareBoardServerShapes(
-                new BoardServerShape(new List<BoardShape>(), Operation.FETCH_STATE, userId, checkpoint), reply));
+                new BoardServerShape(new List<BoardShape>(), Operation.FetchState, userId, checkpoint), reply));
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace Testing.Whiteboard
             // Act and Assert
             var reply = _serverBoardStateManager.SaveCheckpoint(userId);
             Assert.IsTrue(StateManagerHelper.CompareBoardServerShapes(
-                new BoardServerShape(null, Operation.CREATE_CHECKPOINT, userId, checkpoint + 1), reply));
+                new BoardServerShape(null, Operation.CreateCheckpoint, userId, checkpoint + 1), reply));
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace Testing.Whiteboard
         {
             // Arrange
             BoardServerShape boardServerShape = new(StateManagerHelper.GenerateSortedRandomBoardShapes(2),
-                Operation.CREATE, "user-id");
+                Operation.Create, "user-id");
             _mockCheckpointHandler.Setup(m => m.GetCheckpointsNumber()).Returns(1);
 
             // Act and Assert
@@ -166,7 +166,7 @@ namespace Testing.Whiteboard
             _serverBoardStateManager.FetchCheckpoint(checkpoint, userId);
             // creating a request
             BoardServerShape boardServerShape = new(StateManagerHelper.GenerateSortedRandomBoardShapes(1),
-                Operation.CREATE, userId, currentCheckpointState: currCheckpointState);
+                Operation.Create, userId, currentCheckpointState: currCheckpointState);
 
             // Act and assert
             var reply = _serverBoardStateManager.SaveUpdate(boardServerShape);
@@ -179,15 +179,15 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.CREATE, Operation.MODIFY)]
-        [TestCase(Operation.CREATE, Operation.DELETE)]
-        [TestCase(Operation.CREATE_CHECKPOINT, Operation.CREATE)]
-        [TestCase(Operation.MODIFY, Operation.CREATE)]
-        [TestCase(Operation.MODIFY, Operation.DELETE)]
-        [TestCase(Operation.FETCH_CHECKPOINT, Operation.MODIFY)]
-        [TestCase(Operation.DELETE, Operation.CREATE)]
-        [TestCase(Operation.DELETE, Operation.MODIFY)]
-        [TestCase(Operation.FETCH_STATE, Operation.DELETE)]
+        [TestCase(Operation.Create, Operation.Modify)]
+        [TestCase(Operation.Create, Operation.Delete)]
+        [TestCase(Operation.CreateCheckpoint, Operation.Create)]
+        [TestCase(Operation.Modify, Operation.Create)]
+        [TestCase(Operation.Modify, Operation.Delete)]
+        [TestCase(Operation.FetchCheckpoint, Operation.Modify)]
+        [TestCase(Operation.Delete, Operation.Create)]
+        [TestCase(Operation.Delete, Operation.Modify)]
+        [TestCase(Operation.FetchState, Operation.Delete)]
         public void SaveUpdate_OperationMismatch_ReturnsFalse(Operation boardShapeOperation,
             Operation boardServerShapeOperation)
         {
@@ -201,10 +201,10 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.FETCH_STATE)]
-        [TestCase(Operation.FETCH_CHECKPOINT)]
-        [TestCase(Operation.CREATE_CHECKPOINT)]
-        [TestCase(Operation.NONE)]
+        [TestCase(Operation.FetchState)]
+        [TestCase(Operation.FetchCheckpoint)]
+        [TestCase(Operation.CreateCheckpoint)]
+        [TestCase(Operation.None)]
         public void SaveUpdate_InvalidOperation_ReturnsFalse(Operation boardServerShapeOperation)
         {
             // Arrange
@@ -221,8 +221,8 @@ namespace Testing.Whiteboard
         {
             // Arrange
             var userId = "user-id";
-            BoardServerShape update = new(StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.CREATE),
-                Operation.CREATE, userId);
+            BoardServerShape update = new(StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Create),
+                Operation.Create, userId);
             _mockCheckpointHandler.Setup(m => m.GetCheckpointsNumber()).Returns(0);
 
             // Act and Assert
@@ -240,8 +240,8 @@ namespace Testing.Whiteboard
             // Arrange
             // Create and insert shape in state
             var userId = "user-id";
-            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.CREATE);
-            BoardServerShape update = new(boardShapes, Operation.CREATE, userId);
+            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Create);
+            BoardServerShape update = new(boardShapes, Operation.Create, userId);
             _mockCheckpointHandler.Setup(m => m.GetCheckpointsNumber()).Returns(0);
             _serverBoardStateManager.SaveUpdate(update);
 
@@ -255,8 +255,8 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.MODIFY)]
-        [TestCase(Operation.DELETE)]
+        [TestCase(Operation.Modify)]
+        [TestCase(Operation.Delete)]
         public void SaveUpdate_ModifyOrDeleteShapeNotFound_ReturnsFalse(Operation operation)
         {
             // Arrange
@@ -278,15 +278,15 @@ namespace Testing.Whiteboard
         {
             // Arrange
             // Create a shape and insert it in state
-            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.CREATE);
-            BoardServerShape createShape = new(boardShapes, Operation.CREATE, "user-id");
+            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Create);
+            BoardServerShape createShape = new(boardShapes, Operation.Create, "user-id");
             _serverBoardStateManager.SaveUpdate(createShape);
 
             // Create modify request
             var modifiedBoardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1);
             modifiedBoardShapes[0].Uid = boardShapes[0].Uid;
             BoardServerShape modifyShape =
-                new(modifiedBoardShapes, Operation.MODIFY, modifiedBoardShapes[0].ShapeOwnerId);
+                new(modifiedBoardShapes, Operation.Modify, modifiedBoardShapes[0].ShapeOwnerId);
             _mockCheckpointHandler.Setup(m => m.GetCheckpointsNumber()).Returns(0);
 
             // Act and assert
@@ -303,15 +303,15 @@ namespace Testing.Whiteboard
         {
             // Arrange
             // Create a shape and insert it in state
-            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.CREATE);
-            BoardServerShape createShape = new(boardShapes, Operation.CREATE, "user-id");
+            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Create);
+            BoardServerShape createShape = new(boardShapes, Operation.Create, "user-id");
             _serverBoardStateManager.SaveUpdate(createShape);
 
             // Create delete request fot the shape
-            var modifiedBoardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.DELETE);
+            var modifiedBoardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Delete);
             modifiedBoardShapes[0].Uid = boardShapes[0].Uid;
             BoardServerShape modifyShape =
-                new(modifiedBoardShapes, Operation.DELETE, modifiedBoardShapes[0].ShapeOwnerId);
+                new(modifiedBoardShapes, Operation.Delete, modifiedBoardShapes[0].ShapeOwnerId);
 
             _mockCheckpointHandler.Setup(m => m.GetCheckpointsNumber()).Returns(0);
 
@@ -328,7 +328,7 @@ namespace Testing.Whiteboard
         public void SaveUpdate_ClearState_ReturnsTrue()
         {
             // Arrange
-            BoardServerShape clearState = new(null, Operation.CLEAR_STATE, "user-id", currentCheckpointState: 0);
+            BoardServerShape clearState = new(null, Operation.ClearState, "user-id", currentCheckpointState: 0);
             _mockCheckpointHandler.Setup(m => m.GetCheckpointsNumber()).Returns(0);
 
             // Act and Assert
@@ -341,22 +341,22 @@ namespace Testing.Whiteboard
         }
 
         [Test]
-        [TestCase(Operation.DELETE)]
-        [TestCase(Operation.MODIFY)]
+        [TestCase(Operation.Delete)]
+        [TestCase(Operation.Modify)]
         public void CombinationCheck_DeleteDeleteOrModify_MultipleChecks(Operation operation)
         {
             // Arrange
             _mockCheckpointHandler.Setup(m => m.GetCheckpointsNumber()).Returns(0);
             // create
-            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.CREATE);
-            BoardServerShape createShape = new(boardShapes, Operation.CREATE, "user-id");
+            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Create);
+            BoardServerShape createShape = new(boardShapes, Operation.Create, "user-id");
             Assert.IsTrue(_serverBoardStateManager.SaveUpdate(createShape));
 
             // delete
-            var modifiedBoardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.DELETE);
+            var modifiedBoardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Delete);
             modifiedBoardShapes[0].Uid = boardShapes[0].Uid;
             BoardServerShape modifyShape =
-                new(modifiedBoardShapes, Operation.DELETE, modifiedBoardShapes[0].ShapeOwnerId);
+                new(modifiedBoardShapes, Operation.Delete, modifiedBoardShapes[0].ShapeOwnerId);
             Assert.IsTrue(_serverBoardStateManager.SaveUpdate(modifyShape));
 
             // operation (modify/delete)
@@ -378,24 +378,24 @@ namespace Testing.Whiteboard
             // Arrange
             _mockCheckpointHandler.Setup(m => m.GetCheckpointsNumber()).Returns(0);
             // create
-            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.CREATE);
-            BoardServerShape createShape = new(boardShapes, Operation.CREATE, "user-id");
+            var boardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Create);
+            BoardServerShape createShape = new(boardShapes, Operation.Create, "user-id");
             Assert.IsTrue(_serverBoardStateManager.SaveUpdate(createShape));
 
             // delete
-            var modifiedBoardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.DELETE);
+            var modifiedBoardShapes = StateManagerHelper.GenerateSortedRandomBoardShapes(1, Operation.Delete);
             modifiedBoardShapes[0].Uid = boardShapes[0].Uid;
             BoardServerShape modifyShape =
-                new(modifiedBoardShapes, Operation.DELETE, modifiedBoardShapes[0].ShapeOwnerId);
+                new(modifiedBoardShapes, Operation.Delete, modifiedBoardShapes[0].ShapeOwnerId);
             Assert.IsTrue(_serverBoardStateManager.SaveUpdate(modifyShape));
 
             // create same back
-            BoardServerShape createShapeAgain = new(boardShapes, Operation.CREATE, "user-id");
+            BoardServerShape createShapeAgain = new(boardShapes, Operation.Create, "user-id");
             Assert.IsTrue(_serverBoardStateManager.SaveUpdate(createShapeAgain));
 
             // delete again
             BoardServerShape modifyShapeAgain =
-                new(modifiedBoardShapes, Operation.DELETE, modifiedBoardShapes[0].ShapeOwnerId);
+                new(modifiedBoardShapes, Operation.Delete, modifiedBoardShapes[0].ShapeOwnerId);
             Assert.IsTrue(_serverBoardStateManager.SaveUpdate(modifyShapeAgain));
 
             var state = _serverBoardStateManager.FetchState("user-id");

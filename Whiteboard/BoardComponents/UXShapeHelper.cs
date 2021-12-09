@@ -23,7 +23,7 @@ namespace Whiteboard
         /// <param name="checkpointNumber">The number of checkpoints at server.</param>
         /// <param name="operationType">The type of operation send to server.</param>
         public UXShapeHelper([NotNull] UXOperation uXOperation, [NotNull] MainShape mainShape, string shapeId = null,
-            int checkpointNumber = 0, Operation operationType = Operation.NONE)
+            int checkpointNumber = 0, Operation operationType = Operation.None)
         {
             UxOperation = uXOperation;
             MainShapeDefiner = mainShape;
@@ -37,9 +37,9 @@ namespace Whiteboard
         /// </summary>
         /// <param name="checkpointNumber">The number of checkpoints at server.</param>
         /// <param name="operationFlag">The type of operation send to server.</param>
-        public UXShapeHelper(int checkpointNumber, Operation operationFlag = Operation.FETCH_CHECKPOINT)
+        public UXShapeHelper(int checkpointNumber, Operation operationFlag = Operation.FetchCheckpoint)
         {
-            UxOperation = UXOperation.NONE;
+            UxOperation = UXOperation.None;
             MainShapeDefiner = null;
             ShapeId = null;
             CheckpointNumber = checkpointNumber;

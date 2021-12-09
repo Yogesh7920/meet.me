@@ -209,7 +209,7 @@ namespace Testing.Whiteboard
             float height = _random.Next(0, 10);
             float width = _random.Next(0, 10);
             MainShape rectangle = new Rectangle(height, width, start, center);
-            var successFlag = rectangle.ResizeAboutCenter(new Coordinate(0, 0), new Coordinate(1, 1), DragPos.NONE);
+            var successFlag = rectangle.ResizeAboutCenter(new Coordinate(0, 0), new Coordinate(1, 1), DragPos.None);
 
             Assert.IsFalse(successFlag);
             Comparators.Compare(rectangle, start, center, height, width, 1,
