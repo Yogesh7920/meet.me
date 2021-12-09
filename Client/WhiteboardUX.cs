@@ -2198,9 +2198,9 @@ namespace Client
                         else GlobCanvas = this.shapeManager.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
 
                         break;
-                    case Operation.MODIFY:
+                    case Operation.Modify:
                         // If the operation is a deletion operation, unselect the shape before deletion
-                        if (received[i].UxOperation == UXOperation.DELETE && this.shapeManager.selectedShapes.Count > 0 && this.shapeManager.selectedShapes.Contains(received[i].WindowsShape.Uid))
+                        if (received[i].UxOperation == UXOperation.Delete && this.shapeManager.selectedShapes.Count > 0 && this.shapeManager.selectedShapes.Contains(received[i].WindowsShape.Uid))
                         {
                             this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
                         }
