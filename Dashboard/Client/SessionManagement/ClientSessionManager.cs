@@ -165,6 +165,8 @@ namespace Dashboard.Client.SessionManagement
                 return false;
             }
 
+            ipAddress = ipAddress.Trim();
+
             lock (this)
             {
                 // trying to connect
@@ -204,6 +206,7 @@ namespace Dashboard.Client.SessionManagement
             SendDataToServer("getAnalytics", _user.username, _user.userID);
         }
 
+
         /// <summary>
         ///     Get the summary of the chats that were sent from the start of the
         ///     meet till the function was called.
@@ -234,6 +237,11 @@ namespace Dashboard.Client.SessionManagement
             Trace.WriteLine("[Client Dashboard] Asking the server to remove client from the server side.");
 
             SendDataToServer("removeClient", _user.username, _user.userID);
+            Trace.WriteLine("[Client Dashboard] Stopping the network communicator.");
+
+            _communicator.Stop();
+            Trace.WriteLine("[Client Dashboard] Disposing the Screen Share Client.");
+            _screenShareClient.Dispose();
 
             Trace.WriteLine("[Client Dashboard] Removed the client from the client side.");
             
@@ -414,10 +422,6 @@ namespace Dashboard.Client.SessionManagement
                 _user = null;
                 Trace.WriteLine("[Client Dashboard] Client removed from the client session data.");
                 receivedSessionData = null;
-
-                Trace.WriteLine("[Client Dashboard] Stopping the network communicator.");
-                _communicator.Stop();
-                _screenShareClient.Dispose();
             }
 
             // update the sesseon data on the client side and notify the UX about it.

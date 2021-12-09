@@ -475,20 +475,21 @@ namespace Dashboard.Server.SessionManagement
             else
                 userIDToRemove = userID;
 
-            if (_sessionData.users.Count == 1)
+            var removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
+            _communicator.RemoveClient(userIDToRemove.ToString());
+
+            if (_sessionData.users.Count == 0)
             {
                 EndMeetProcedure(receivedObject);
-                _communicator.RemoveClient(userIDToRemove.ToString());
                 return;
             }
-            var removedUser = _sessionData.RemoveUserFromSession(userIDToRemove);
+
             if (removedUser != null)
             {
                 Trace.WriteLine("[Server Dashboard] Removed from session: " + removedUser);
                 NotifyTelemetryModule();
                 SendDataToClient("removeClient", _sessionData, null, null, removedUser);
             }
-            _communicator.RemoveClient(userIDToRemove.ToString());
         }
 
 
