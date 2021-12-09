@@ -708,7 +708,7 @@ namespace Client
         public Canvas MoveShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
 
-            if (mouseDownSh == null )
+            if (mouseDownSh == null || selectedShapes.Count() == 0)
             {
                 return cn;
             }
@@ -884,7 +884,7 @@ namespace Client
         public Canvas RotateShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Point strt, Point end, Shape mouseDownSh, bool shapeComp)
         {
 
-            if (mouseDownSh == null)
+            if (mouseDownSh == null || selectedShapes.Count() == 0)
             {
                 return cn;
             }
@@ -1478,6 +1478,8 @@ namespace Client
         /// <returns> The updated Canvas </returns>
         public Canvas ResizeShape(Canvas cn, IWhiteBoardOperationHandler WBOps, Shape shp, Point strt, Point end, AdornerDragPos pos)
         {
+            if (selectedShapes.Count() == 0) return cn;
+
             Coordinate C_strt = new Coordinate(((int)(cn.Height - strt.Y)), ((int)strt.X));
             Coordinate C_end = new Coordinate(((int)(cn.Height - end.Y)), ((int)end.X));
 
@@ -2197,6 +2199,11 @@ namespace Client
 
                         break;
                     case Operation.MODIFY:
+                        // If the operation is a deletion operation, unselect the shape before deletion
+                        if (received[i].UxOperation == UXOperation.DELETE && this.shapeManager.selectedShapes.Count > 0 && this.shapeManager.selectedShapes.Contains(received[i].WindowsShape.Uid))
+                        {
+                            this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
+                        }
                         //If the operation is MODIFY, directly render it onto the Canvas
                         if (received[i].WindowsShape == null) Trace.WriteLine("RenderUXElement received null");
                         else if (received[i].WindowsShape is System.Windows.Shapes.Polyline) GlobCanvas = this.freeHand.RenderUXElement(new List<UXShape> { received[i] }, GlobCanvas, WBOps);
