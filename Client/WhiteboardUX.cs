@@ -2113,7 +2113,7 @@ namespace Client
             //if (testing) Debug.Assert(iterat2.Count() == 0 || iterat2.Count() == received.Count());
             if (received[0].OperationType == Operation.FetchState)
             {
-
+                if(this.shapeManager.selectedShapes.Count > 0) this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
                 //New user has joined, the 'numCheckpoints' was last updated in the ViewModel Constructor as 0
                 //if (testing) Debug.Assert(_numCheckpoints == 0);
 
@@ -2129,6 +2129,7 @@ namespace Client
             //if (testing) Debug.Assert(iterat3.Count() == 0 || iterat3.Count() == received.Count());
             if (received[0].OperationType == Operation.FetchCheckpoint)
             {
+                if(this.shapeManager.selectedShapes.Count > 0) this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
                 //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO SAVE CHECKPOINT, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
                 GlobCanvas.Children.Clear();
                 
@@ -2167,6 +2168,7 @@ namespace Client
                         if (i == received.Count() - 1) this.GlobCanvas.IsEnabled = true;
                         break;
                     case Operation.ClearState:
+                        if(this.shapeManager.selectedShapes.Count > 0) this.GlobCanvas = this.shapeManager.UnselectAllBB(this.GlobCanvas, this.WBOps);
                         //ASSUMING THAT THE USER HAS ACCEPTED THE WARNING TO CLEAR FRAME, SINCE ALL THE CHANGES MADE SINCE LAST CHECKPOINT WOULD BE LOST FOREVER
                         //based on above assumption that current server update batch can only have one ClearState request
  
