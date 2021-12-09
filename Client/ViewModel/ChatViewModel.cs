@@ -143,7 +143,7 @@ namespace Client.ViewModel
                             // Create the ReceivedMsg object and update the fields accordingly
                             ReceivedMsg = new Message();
                             ReceivedMsg.MessageId = messageData.MessageId;
-                            ReceivedMsg.UserName = Users[messageData.SenderId];
+                            ReceivedMsg.UserName = Users.ContainsKey(messageData.SenderId) ? Users[messageData.SenderId] : "Anonymous";
                             ReceivedMsg.TextMessage = messageData.Message;
                             ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                             ReceivedMsg.ToFrom = UserId == messageData.SenderId;
@@ -186,7 +186,7 @@ namespace Client.ViewModel
                             // Create the ReceivedMsg object and update the fields accordingly
                             ReceivedMsg = new Message();
                             ReceivedMsg.MessageId = messageData.MessageId;
-                            ReceivedMsg.UserName = Users[messageData.SenderId];
+                            ReceivedMsg.UserName = Users.ContainsKey(messageData.SenderId) ? Users[messageData.SenderId] : "Anonymous";
                             ReceivedMsg.TextMessage = messageData.Message;
                             ReceivedMsg.Time = messageData.SentTime.ToString("hh:mm tt");
                             ReceivedMsg.ToFrom = UserId == messageData.SenderId;

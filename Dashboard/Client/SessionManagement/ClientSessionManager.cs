@@ -64,8 +64,8 @@ namespace Dashboard.Client.SessionManagement
             _user = null;
             _chatSummary = null;
 
-            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             _screenShareClient = ScreenShareFactory.GetScreenShareClient();
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
         }
 
         /// <summary>

@@ -138,6 +138,7 @@ namespace Networking
         /// <returns> void </returns>
         void ICommunicator.RemoveClient(string clientId)
         {
+            if (Environment.GetEnvironmentVariable("TEST_MODE") == "E2E") return;
             // stop the listener of the client 
             var receiveSocketListener = _clientListener[clientId];
             receiveSocketListener.Stop();

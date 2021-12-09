@@ -9,4 +9,9 @@
         <ProjectReference Include="..\Dashboard\Dashboard.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Persistence\PersistenceDownloads\SummaryDownloads" />
+      <Folder Include="Persistence\PersistenceDownloads\TelemetryDownloads\TelemetryAnalytics" />
+    </ItemGroup>
+
 </Project>
