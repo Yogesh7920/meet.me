@@ -60,7 +60,7 @@ namespace Whiteboard
         /// <param name="checkPointNumber">The count of checkpoints.</param>
         /// <param name="operationType">The operation performed on state.</param>
         public UXShape([NotNull] UXOperation uxOperation, [NotNull] MainShape s, string shapeId = null,
-            int checkPointNumber = 0, Operation operationType = Operation.NONE)
+            int checkPointNumber = 0, Operation operationType = Operation.None)
         {
             // setting params of UXShape
             UxOperation = uxOperation;
@@ -76,7 +76,7 @@ namespace Whiteboard
                     Convert.ToByte(s.ShapeFill.B))
             };
             // setting paramaters based on shape
-            if (s.ShapeIdentifier == ShapeType.ELLIPSE)
+            if (s.ShapeIdentifier == ShapeType.Ellipse)
             {
                 System.Windows.Shapes.Ellipse EllipseUXElement = new()
                 {
@@ -86,7 +86,7 @@ namespace Whiteboard
                 };
                 WindowsShape = EllipseUXElement;
             }
-            else if (s.ShapeIdentifier == ShapeType.RECTANGLE)
+            else if (s.ShapeIdentifier == ShapeType.Rectangle)
             {
                 System.Windows.Shapes.Rectangle RectangleUXElement = new()
                 {
@@ -96,7 +96,7 @@ namespace Whiteboard
                 };
                 WindowsShape = RectangleUXElement;
             }
-            else if (s.ShapeIdentifier == ShapeType.LINE)
+            else if (s.ShapeIdentifier == ShapeType.Line)
             {
                 TranslationCoordinate = new Coordinate(0, 0);
                 System.Windows.Shapes.Line LineUXElement = new()
@@ -138,17 +138,17 @@ namespace Whiteboard
         }
 
         /// <summary>
-        ///     Constructor for UXShape for FETCH_CHECKPOINT operation.
+        ///     Constructor for UXShape for FetchCheckpoint operation.
         /// </summary>
         /// <param name="checkpointNumber">Count of checkpoints.</param>
-        /// <param name="operationFlag">FETCH_CHECKPOINT</param>
-        public UXShape(int checkpointNumber, Operation operationFlag = Operation.FETCH_CHECKPOINT)
+        /// <param name="operationFlag">FetchCheckpoint</param>
+        public UXShape(int checkpointNumber, Operation operationFlag = Operation.FetchCheckpoint)
         {
             CheckPointNumber = checkpointNumber;
             OperationType = operationFlag;
-            UxOperation = UXOperation.NONE;
+            UxOperation = UXOperation.None;
             WindowsShape = null;
-            ShapeIdentifier = ShapeType.NONE;
+            ShapeIdentifier = ShapeType.None;
             TranslationCoordinate = null;
             AngleOfRotation = 0;
         }

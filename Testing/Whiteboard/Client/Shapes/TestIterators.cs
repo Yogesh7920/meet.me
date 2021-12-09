@@ -122,7 +122,7 @@ namespace Testing.Whiteboard
                 var sin60 = (float) Math.Sin(Math.PI / 3);
                 float deltaH = 2;
                 var deltaW = 2 * (float) Math.Sqrt(3);
-                var dragPos = DragPos.TOP_RIGHT;
+                var dragPos = DragPos.TopRight;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 + deltaH, 4 + deltaW, dragPos)
                     .SetArgDisplayNames("TopRight_Inc_H_Inc_W");
                 yield return new TestCaseData(new Coordinate(0, -mag), 4 + deltaH, 4 - deltaW, dragPos)
@@ -133,7 +133,7 @@ namespace Testing.Whiteboard
                     .SetArgDisplayNames("TopRight_Dec_H_Inc_W");
 
 
-                dragPos = DragPos.TOP_LEFT;
+                dragPos = DragPos.TopLeft;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 + deltaH, 4 - deltaW, dragPos)
                     .SetArgDisplayNames("TopLeft_Inc_H_Dec_W");
                 yield return new TestCaseData(new Coordinate(0, -mag), 4 + deltaH, 4 + deltaW, dragPos)
@@ -143,7 +143,7 @@ namespace Testing.Whiteboard
                 yield return new TestCaseData(new Coordinate(0, mag), 4 - deltaH, 4 - deltaW, dragPos)
                     .SetArgDisplayNames("TopLeft_Dec_H_Dec_W");
 
-                dragPos = DragPos.BOTTOM_LEFT;
+                dragPos = DragPos.BottomLeft;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 - deltaH, 4 - deltaW, dragPos)
                     .SetArgDisplayNames("BottomRight_Dec_H_Dec_W");
                 yield return new TestCaseData(new Coordinate(0, -mag), 4 - deltaH, 4 + deltaW, dragPos)
@@ -152,10 +152,10 @@ namespace Testing.Whiteboard
                     dragPos).SetArgDisplayNames("BottomRight_Inc_H_Inc_W");
                 yield return new TestCaseData(new Coordinate(0, mag), 4 + deltaH, 4 - deltaW, dragPos)
                     .SetArgDisplayNames("BottomRight_Inc_H_Dec_W");
-                yield return new TestCaseData(new Coordinate(4 * sin60, 4 * cos60), BoardConstants.MIN_HEIGHT,
-                    BoardConstants.MIN_WIDTH, dragPos).SetArgDisplayNames("BottomLeft_MinH_MinW");
+                yield return new TestCaseData(new Coordinate(4 * sin60, 4 * cos60), BoardConstants.MinHeight,
+                    BoardConstants.MinWidth, dragPos).SetArgDisplayNames("BottomLeft_MinH_MinW");
 
-                dragPos = DragPos.BOTTOM_RIGHT;
+                dragPos = DragPos.BottomRight;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 - deltaH, 4 + deltaW, dragPos)
                     .SetArgDisplayNames("BottomLeft_Dec_H_Inc_W");
                 yield return new TestCaseData(new Coordinate(0, -mag), 4 - deltaH, 4 - deltaW, dragPos)
@@ -165,19 +165,19 @@ namespace Testing.Whiteboard
                 yield return new TestCaseData(new Coordinate(0, mag), 4 + deltaH, 4 + deltaW, dragPos)
                     .SetArgDisplayNames("BottomLeft_Inc_H_Inc_W");
 
-                dragPos = DragPos.TOP;
+                dragPos = DragPos.Top;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 + deltaH, 4, dragPos)
                     .SetArgDisplayNames("Top_Inc_H");
 
-                dragPos = DragPos.BOTTOM;
+                dragPos = DragPos.Bottom;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4 - deltaH, 4, dragPos)
                     .SetArgDisplayNames("Bottom_Dec_H");
 
-                dragPos = DragPos.RIGHT;
+                dragPos = DragPos.Right;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4, 4 + deltaW, dragPos)
                     .SetArgDisplayNames("Right_Inc_W");
 
-                dragPos = DragPos.LEFT;
+                dragPos = DragPos.Left;
                 yield return new TestCaseData(new Coordinate(mag * sin60, mag * cos60), 4, 4 - deltaW, dragPos)
                     .SetArgDisplayNames("Left_Dec_W");
             }
@@ -194,7 +194,7 @@ namespace Testing.Whiteboard
                 float mag = 2;
                 var cos60 = (float) Math.Cos(Math.PI / 3);
                 var sin60 = (float) Math.Sin(Math.PI / 3);
-                var dragPos = DragPos.TOP_RIGHT;
+                var dragPos = DragPos.TopRight;
                 var changeW = 2 * (float) Math.Sqrt(3);
                 yield return new TestCaseData(w + changeW, new Coordinate(mag * sin60, mag * cos60), dragPos)
                     .SetArgDisplayNames("TopRight_W_Inc_1");
@@ -205,7 +205,7 @@ namespace Testing.Whiteboard
                 yield return new TestCaseData(w + changeW, new Coordinate(0, mag), dragPos).SetArgDisplayNames(
                     "TopRight_H_Inc_2");
 
-                dragPos = DragPos.TOP_LEFT;
+                dragPos = DragPos.TopLeft;
                 yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60), dragPos)
                     .SetArgDisplayNames("TopLeft_W_Dec_1");
                 yield return new TestCaseData(w + changeW, new Coordinate(0, -mag), dragPos).SetArgDisplayNames(
@@ -215,25 +215,25 @@ namespace Testing.Whiteboard
                 yield return new TestCaseData(w - changeW, new Coordinate(0, mag), dragPos).SetArgDisplayNames(
                     "TopLeft_W_Dec_2");
 
-                dragPos = DragPos.BOTTOM_LEFT;
+                dragPos = DragPos.BottomLeft;
                 yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60), dragPos)
                     .SetArgDisplayNames("BottomLeft_W_Dec");
 
-                dragPos = DragPos.BOTTOM_RIGHT;
+                dragPos = DragPos.BottomRight;
                 yield return new TestCaseData(w + changeW, new Coordinate(mag * sin60, mag * cos60), dragPos)
                     .SetArgDisplayNames("BottomRight_W_Inc");
 
-                dragPos = DragPos.RIGHT;
+                dragPos = DragPos.Right;
                 yield return new TestCaseData(w + changeW, new Coordinate(mag * sin60, mag * cos60), dragPos)
                     .SetArgDisplayNames("Right_W_Inc");
 
-                dragPos = DragPos.LEFT;
+                dragPos = DragPos.Left;
                 yield return new TestCaseData(w - changeW, new Coordinate(mag * sin60, mag * cos60), dragPos)
                     .SetArgDisplayNames("Left_W_Dec");
-                yield return new TestCaseData(BoardConstants.MIN_WIDTH, new Coordinate(4 * sin60, 4 * cos60), dragPos)
+                yield return new TestCaseData(BoardConstants.MinWidth, new Coordinate(4 * sin60, 4 * cos60), dragPos)
                     .SetArgDisplayNames("Left_W_Dec");
 
-                dragPos = DragPos.TOP;
+                dragPos = DragPos.Top;
                 yield return new TestCaseData(w, new Coordinate(mag * sin60, mag * cos60), dragPos).SetArgDisplayNames(
                     "Top_W_Same");
             }

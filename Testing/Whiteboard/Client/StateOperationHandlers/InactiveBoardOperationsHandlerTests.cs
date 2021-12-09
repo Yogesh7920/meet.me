@@ -49,7 +49,7 @@ namespace Testing.Whiteboard
         [Test]
         public void CreateShape_RequestChange_ReturnsEmptyList()
         {
-            Assert.IsEmpty(_handler.CreateShape(ShapeType.ELLIPSE, new Coordinate(0, 0), new Coordinate(0, 0), 1,
+            Assert.IsEmpty(_handler.CreateShape(ShapeType.Ellipse, new Coordinate(0, 0), new Coordinate(0, 0), 1,
                 new BoardColor(0, 0, 0), "12"));
         }
 
@@ -59,20 +59,20 @@ namespace Testing.Whiteboard
             // setup return value from manager.
             var uid = "123";
             MainShape mainShape = new Line(2, 2, new Coordinate(1, 1), new Coordinate(2, 2));
-            BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.CREATE);
+            BoardShape shape = new(mainShape, 0, DateTime.Now, DateTime.Now, uid, "1", Operation.Create);
             _mockStateManager.Setup(m => m.GetBoardShape(It.IsAny<string>())).Returns(shape);
 
             // shape creation.
             Coordinate start = new(1, 1);
             Coordinate end = new(2, 2);
-            var operations = _handler.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, uid, DragPos.NONE);
+            var operations = _handler.ModifyShapeRealTime(RealTimeOperation.Rotate, start, end, uid, DragPos.None);
 
             // Assertions to verify the correctness.
             Assert.AreEqual(2, operations.Count);
             Assert.AreEqual(uid, operations[0].WindowsShape.Uid);
             Assert.AreEqual(uid, operations[1].WindowsShape.Uid);
-            Assert.AreEqual(UXOperation.DELETE, operations[0].UxOperation);
-            Assert.AreEqual(UXOperation.CREATE, operations[1].UxOperation);
+            Assert.AreEqual(UXOperation.Delete, operations[0].UxOperation);
+            Assert.AreEqual(UXOperation.Create, operations[1].UxOperation);
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace Testing.Whiteboard
             // shape creation.
             Coordinate start = new(1, 1);
             Coordinate end = new(2, 2);
-            var operations = _handler.ModifyShapeRealTime(RealTimeOperation.ROTATE, start, end, "uid", DragPos.NONE);
+            var operations = _handler.ModifyShapeRealTime(RealTimeOperation.Rotate, start, end, "uid", DragPos.None);
 
             // Assertions to verify the correctness.
             Assert.AreEqual(null, operations);

@@ -47,7 +47,7 @@ namespace Whiteboard
             LastModifiedTime = DateTime.Now;
             Uid = null;
             ShapeOwnerId = null;
-            RecentOperation = Operation.NONE;
+            RecentOperation = Operation.None;
         }
 
         /// <summary>

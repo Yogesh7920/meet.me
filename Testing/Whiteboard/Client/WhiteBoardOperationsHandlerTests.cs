@@ -197,12 +197,12 @@ namespace Testing.Whiteboard
         {
             MockForModification(new List<UXShape> {new(), new()});
 
-            var operations = _handler.ResizeShape(new Coordinate(0, 0), new Coordinate(0, 0), "<+_+>", DragPos.NONE);
+            var operations = _handler.ResizeShape(new Coordinate(0, 0), new Coordinate(0, 0), "<+_+>", DragPos.None);
             Assert.AreEqual(2, operations.Count);
 
             MockForModification(null);
 
-            operations = _handler.ResizeShape(new Coordinate(0, 0), new Coordinate(0, 0), "<+_+>", DragPos.NONE);
+            operations = _handler.ResizeShape(new Coordinate(0, 0), new Coordinate(0, 0), "<+_+>", DragPos.None);
             Assert.IsNull(operations);
         }
 

@@ -208,40 +208,40 @@ namespace Whiteboard
             switch (dragPos)
             {
                 // the dignonal direction resizing broken into its 2 components.
-                case DragPos.TOP_RIGHT:
+                case DragPos.TopRight:
                     Height += 2 * yDelta;
                     Width += 2 * xDelta;
                     break;
-                case DragPos.BOTTOM_LEFT:
+                case DragPos.BottomLeft:
                     Height -= 2 * yDelta;
                     Width -= 2 * xDelta;
                     break;
-                case DragPos.TOP_LEFT:
+                case DragPos.TopLeft:
                     Height += 2 * yDelta;
                     Width -= 2 * xDelta;
                     break;
-                case DragPos.BOTTOM_RIGHT:
+                case DragPos.BottomRight:
                     Height -= 2 * yDelta;
                     Width += 2 * xDelta;
                     break;
-                case DragPos.LEFT:
+                case DragPos.Left:
                     Width -= 2 * xDelta;
                     break;
-                case DragPos.RIGHT:
+                case DragPos.Right:
                     Width += 2 * xDelta;
                     break;
-                case DragPos.TOP:
+                case DragPos.Top:
                     Height += 2 * yDelta;
                     break;
-                case DragPos.BOTTOM:
+                case DragPos.Bottom:
                     Height -= 2 * yDelta;
                     break;
                 default:
                     return false;
             }
 
-            Height = Height < BoardConstants.MIN_HEIGHT ? BoardConstants.MIN_HEIGHT : Height;
-            Width = Width < BoardConstants.MIN_WIDTH ? BoardConstants.MIN_WIDTH : Width;
+            Height = Height < BoardConstants.MinHeight ? BoardConstants.MinHeight : Height;
+            Width = Width < BoardConstants.MinWidth ? BoardConstants.MinWidth : Width;
             return true;
         }
     }

@@ -63,7 +63,7 @@ namespace Testing.Whiteboard
                     DateTime.Now.AddMinutes(i),
                     RandomString(8),
                     RandomString(8),
-                    Operation.CREATE));
+                    Operation.Create));
             return boardShapes;
         }
 

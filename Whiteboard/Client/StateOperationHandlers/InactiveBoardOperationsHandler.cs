@@ -95,8 +95,8 @@ namespace Whiteboard
 
                 // This requirement is very specified to the UX team.
                 var shapeFromManager = GetShapeFromManager(shapeId);
-                UXShape oldShape = new(UXOperation.DELETE, shapeFromManager.MainShapeDefiner, shapeId);
-                UXShape newShape = new(UXOperation.CREATE, shapeFromManager.MainShapeDefiner, shapeId);
+                UXShape oldShape = new(UXOperation.Delete, shapeFromManager.MainShapeDefiner, shapeId);
+                UXShape newShape = new(UXOperation.Create, shapeFromManager.MainShapeDefiner, shapeId);
 
                 List<UXShape> grey = new() {oldShape, newShape};
 
