@@ -204,6 +204,7 @@ namespace Dashboard.Client.SessionManagement
             SendDataToServer("getAnalytics", _user.username, _user.userID);
         }
 
+
         /// <summary>
         ///     Get the summary of the chats that were sent from the start of the
         ///     meet till the function was called.
