@@ -16,22 +16,33 @@ using Client.ViewModel;
 namespace Client
 {
     /// <summary>
-    ///     Interaction logic for DashboardView.xaml
+    /// Interaction logic for DashboardView.xaml
     /// </summary>
     public partial class DashboardView : Window
     {
+        public DashboardViewModel DashboardVM { get; set; }
+
         public DashboardView()
         {
             InitializeComponent();
-            DashboardVM = new DashboardViewModel();
-            DataContext = DashboardVM;
+            this.DashboardVM = new DashboardViewModel();
+
+            // Updating when a user requests for the first time
+            this.DashboardVM.UpdateVM();
+            usersVsTimeChart.Series[0].Values = this.DashboardVM.usersCountList;
+            usersVsTimeChart.AxisX[0].Labels = this.DashboardVM.timestampList;
+            usersVsTimeChart.Update();
+
+            usersVsMessagesPlot.AxisX[0].Labels = this.DashboardVM.usersList;
+            usersVsMessagesPlot.Series[0].Values = this.DashboardVM.messagesCountList;
+            usersVsMessagesPlot.Update();
+
+            this.DataContext = DashboardVM;
         }
 
-        public DashboardViewModel DashboardVM { get; set; }
-
         /// <summary>
-        ///     Copies the summary text to the clipboard
-        ///     which can be used further for any purpose.
+        /// Copies the summary text to the clipboard 
+        /// which can be used further for any purpose.
         /// </summary>
         private void CopyToClipboard(object sender, RoutedEventArgs e)
         {
@@ -39,63 +50,65 @@ namespace Client
         }
 
         /// <summary>
-        ///     Refreshes the dashboard window  with latest analytics
+        /// Refreshes the dashboard window  with latest analytics
         /// </summary>
         private void OnRefreshButtonClick(object sender, RoutedEventArgs e)
         {
-            DashboardVM.UpdateVM();
-            usersVsTimeChart.Series[0].Values = DashboardVM.usersCountList;
-            usersVsTimeChart.AxisX[0].Labels = DashboardVM.timestampList;
+            this.DashboardVM.UpdateVM();
+            usersVsTimeChart.Series[0].Values = this.DashboardVM.usersCountList;
+            usersVsTimeChart.AxisX[0].Labels = this.DashboardVM.timestampList;
             usersVsTimeChart.Update();
 
-            usersVsMessagesPlot.AxisX[0].Labels = DashboardVM.usersList;
-            usersVsMessagesPlot.Series[0].Values = DashboardVM.messagesCountList;
+            usersVsMessagesPlot.AxisX[0].Labels = this.DashboardVM.usersList;
+            usersVsMessagesPlot.Series[0].Values = this.DashboardVM.messagesCountList;
             usersVsMessagesPlot.Update();
         }
 
         /// <summary>
-        ///     Window Minimize Functionality
+        /// Window Minimize Functionality
         /// </summary>
         private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
         {
-            WindowState = WindowState.Minimized;
+            this.WindowState = WindowState.Minimized;
         }
 
         /// <summary>
-        ///     Window Maximize Functionality
+        /// Window Maximize Functionality
         /// </summary>
         private void OnMaximizeButtonClick(object sender, RoutedEventArgs e)
         {
-            MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-            WindowState = WindowState.Maximized;
+            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            this.WindowState = WindowState.Maximized;
             MaximizeButton.Visibility = Visibility.Collapsed;
             RestoreButton.Visibility = Visibility.Visible;
         }
 
         /// <summary>
-        ///     Window Restore Functionality
+        /// Window Restore Functionality
         /// </summary>
         private void OnRestoreButtonClick(object sender, RoutedEventArgs e)
         {
-            WindowState = WindowState.Normal;
+            this.WindowState = WindowState.Normal;
             RestoreButton.Visibility = Visibility.Collapsed;
             MaximizeButton.Visibility = Visibility.Visible;
         }
 
         /// <summary>
-        ///     Window Close Functionality
+        /// Window Close Functionality
         /// </summary>
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
-            Close();
+            this.Close();
         }
 
         /// <summary>
-        ///     Window Drag Functionality
+        /// Window Drag Functionality
         /// </summary>
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
         }
+
     }
+
 }

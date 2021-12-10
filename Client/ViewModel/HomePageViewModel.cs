@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using Dashboard;
 using Dashboard.Client.SessionManagement;
 
+
 namespace Client.ViewModel
 {
     public class HomePageViewModel : IClientSessionNotifications // Notifies change in list of users.
@@ -17,6 +18,7 @@ namespace Client.ViewModel
         ///     Underlying data model.
         /// </summary>
         private readonly IUXClientSessionManager _model;
+        private DashboardSessionData _dashboardSessionData;
 
         public HomePageViewModel()
         {
@@ -25,6 +27,7 @@ namespace Client.ViewModel
             users = new List<UserViewData>();
             client = new UserData();
             client.userID = -1;
+            _dashboardSessionData = DashboardSessionData.GetInstance();
         }
 
         /// <summary>
