@@ -23,7 +23,10 @@ namespace Dashboard
         public void TraceListener()
         {
             
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"trace.txt");
+            var configPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var folderPath = Path.Combine(configPath, "meet.me");
+            Directory.CreateDirectory(folderPath);
+            var path = Path.Combine(folderPath, @"trace.txt");
             traceFile = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             Trace.Listeners.Add(new TextWriterTraceListener(traceFile));
             Trace.AutoFlush = true;
