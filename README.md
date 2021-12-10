@@ -16,7 +16,7 @@ Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installa
 - Get the ngrok IP, and it's port. E.g.: 0.tcp.in.ngrok.io:17000
 - log in to client with the above credentials.
 
-## Host is fixed port
+## Host in fixed port
 - Set your environmental variables `MEETME_PORT` to desired fixed port.
 - E.g: `MEETME_PORT=8080`
 

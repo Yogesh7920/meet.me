@@ -27,8 +27,8 @@ jobs:
       run: dotnet test --filter "FullyQualifiedName~Testing.UX" --no-build --verbosity normal
     - name: ScreenSharing Tests
       run: dotnet test --filter "FullyQualifiedName~Testing.ScreenSharing" --no-build --verbosity normal
-    - name: Dashboard Tests
-      run: dotnet test --filter "FullyQualifiedName~Testing.Dashboard" --no-build --verbosity normal
+#    - name: Dashboard Tests
+#      run: dotnet test --filter "FullyQualifiedName~Testing.Dashboard" --no-build --verbosity normal
     - name: Content Tests
       run: dotnet test --filter "FullyQualifiedName~Testing.Content" --no-build --verbosity normal
     - name: Whiteboard Tests
