@@ -259,9 +259,9 @@
                             <lvc:CartesianChart.AxisX>
                                 <lvc:Axis Title="Users" Labels="{Binding usersList}" 
                                           MinValue="0">
-                                    <lvc:Axis.Separator>
-                                        <lvc:Separator Step="2"/>
-                                    </lvc:Axis.Separator>
+                                    <!-- <lvc:Axis.Separator> -->
+                                    <!--     <lvc:Separator Step="2"/> -->
+                                    <!-- </lvc:Axis.Separator> -->
                                 </lvc:Axis>
                             </lvc:CartesianChart.AxisX>
                             <lvc:CartesianChart.AxisY>
