@@ -22,8 +22,12 @@ namespace Dashboard.Server.Persistence
     {
         public TelemetryPersistence()
         {
-            ServerDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
-            TelemetryAnalyticsPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
+            //ServerDataPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/ServerData";
+            //TelemetryAnalyticsPath = "../../../Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
+            var configPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var folderPath = Path.Combine(configPath, "meet.me");
+            ServerDataPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/ServerData/";
+            TelemetryAnalyticsPath = folderPath + "/Server/Persistence/PersistenceDownloads/TelemetryDownloads/TelemetryAnalytics/";
         }
 
         public string ServerDataPath { get; set; }
@@ -62,7 +66,7 @@ namespace Dashboard.Server.Persistence
                 }
 
                 //TypeCasting and returning the ServerDataToSave
-                return (ServerDataToSave) objectsList;
+                return (ServerDataToSave)objectsList;
             }
             catch (IOException exp)
             {

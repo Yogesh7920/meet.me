@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace Dashboard.Server.Persistence
 {
@@ -15,7 +16,11 @@ namespace Dashboard.Server.Persistence
     {
         public SummaryPersistence()
         {
-            summaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+            //summaryPath = "../../../Persistence/PersistenceDownloads/SummaryDownloads/";
+            var configPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var folderPath = Path.Combine(configPath, "meet.me");
+            string path = folderPath + "/Server/Persistence/PersistenceDownloads/SummaryDownloads/";
+            summaryPath = path;
         }
 
         public string summaryPath { get; set; }
