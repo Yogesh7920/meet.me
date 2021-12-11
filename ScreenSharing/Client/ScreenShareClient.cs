@@ -2,7 +2,7 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 28/11/2021
+ * date modified: 11/12/2021
 **/
 
 using System;
@@ -31,20 +31,16 @@ namespace ScreenSharing
         // Stores the incoming frames
         private Queue<SharedScreen> frameQueue;
 
-        // boolean to control the notifying thread
-        //public bool IsNotifying;
-
-        // boolean to run the sharing thread infinitely
-        //public bool IsSharing;
-
         // Stores a thread which shares the images.
         private Task sharingThread;
 
+        // token to control Sharing thread.
         private CancellationTokenSource isSharing;
 
         // Stores the thread which will be used to notify _ux regarding the shared screen.
         private Task notifyingThread;
 
+        // token to conrol the Notifying thread.
         private CancellationTokenSource isNotifying;
 
 
@@ -81,19 +77,35 @@ namespace ScreenSharing
             _communicator = CommunicationFactory.GetCommunicator();
             _communicator.Subscribe("ScreenSharing", this);
             _serializer = new Serializer();
-
-            isSharing = new CancellationTokenSource();
             thisSharing = false;
-            // creating a thread to capture and send the screen
-            sharingThread = new Task(CaptureAndSend,isSharing.Token, TaskCreationOptions.LongRunning);
-            // starting the execution of the sharing thread
-            sharingThread.Start();
+            try
+            {
+                isSharing = new CancellationTokenSource();
+                sharingThread = new Task(CaptureAndSend, isSharing.Token, TaskCreationOptions.LongRunning);
+                sharingThread.Start();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("ScreenSharingClent : Problem in creating Sharing thread");
+                Trace.WriteLine(e.Message);
+            }
             // creating a thread to notify the _ux and starting its execution
-            isNotifying = new CancellationTokenSource();
-            notifyingThread = new Task(NotifyUx,isNotifying.Token,TaskCreationOptions.LongRunning);
-            notifyingThread.Start();
+            try
+            {
+                isNotifying = new CancellationTokenSource();
+                notifyingThread = new Task(NotifyUx, isNotifying.Token, TaskCreationOptions.LongRunning);
+                notifyingThread.Start();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("ScreenSharingClient: Problem in creating notifying thread");
+                Trace.WriteLine(e.Message);
+            }
         }
 
+        /// <summary>
+        ///     Public Constructor used for unit testing.
+        /// </summary>
         public ScreenShareClient(ICommunicator communicator)
         {
 
@@ -141,8 +153,6 @@ namespace ScreenSharing
                 var scrn = _serializer.Deserialize<SharedScreen>(data);
                 frameQueue.Enqueue(scrn);
                 Trace.WriteLine("[ScreenSharingClient] Recieved data from networking team");
-            
-            
         }
 
 
@@ -235,6 +245,9 @@ namespace ScreenSharing
                 }            
         }
 
+        /// <summary>
+        ///     This method will be used to capture the screen.
+        /// </summary>
         public SharedScreen Capture()
         {
             try
@@ -259,7 +272,7 @@ namespace ScreenSharing
             }
             catch (Exception e)
             {
-                Trace.WriteLine("ScreenSharingClient: Unable to Capture");
+                Trace.WriteLine("[ScreenSharingClient]: Unable to Capture");
                 Trace.WriteLine(e.Message);
                 return null;
             }
@@ -284,9 +297,7 @@ namespace ScreenSharing
         {
             
             _ux = listener;
-            Trace.WriteLine("[ScreenSharingClient] _ux has subscribed");
-            
-           
+            Trace.WriteLine("[ScreenSharingClient] _ux has subscribed"); 
         }
 
         /// <summary>
@@ -319,12 +330,11 @@ namespace ScreenSharing
                             var screen = GetImage(currScreen.screen);
                             _ux.OnScreenRecieved(uid, uname, mtype, screen);
                         }
-
-                        //if (thisSharing && uid != userId)
-                        //{
-                        //    thisSharing = false;
-                        //    _ux.OnScreenRecieved(userId, userName, -1, null);
-                        //}
+                        if (thisSharing && uid != userId)
+                        {
+                            thisSharing = false;
+                            _ux.OnScreenRecieved(userId, userName, -1, null);
+                        }
 
                         Trace.WriteLine("[ScreenSharingClient] _ux has been notified");
                     }
@@ -357,6 +367,9 @@ namespace ScreenSharing
             }
         }
 
+        /// <summary>
+        ///     Used to Dispose the object.
+        /// </summary>
         public void Dispose()
         {
             thisSharing=false;

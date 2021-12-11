@@ -2,7 +2,7 @@
  * owned by: Neeraj Patil
  * created by: Neeraj Patil
  * date created: 14/10/2021
- * date modified: 25/11/2021
+ * date modified: 11/12/2021
 **/
 
 using System;
@@ -40,14 +40,14 @@ namespace ScreenSharing
         public Timer timer;
 
         //Stores the user Id of the user currently sharing the screen.
-        public string UserId;
+        public string userId;
 
         /// <summary>
         ///     Public Constructor which will initialize most of the attributes.
         /// </summary>
         public ScreenShareServer()
         {
-            UserId = "-";
+            userId = "-";
             timer = new Timer(10000);
             timer.Elapsed += OnTimeout;
             timer.AutoReset = true;
@@ -62,9 +62,12 @@ namespace ScreenSharing
             sharingThread.Start();
         }
 
+        /// <summary>
+        ///     Public Constructor which is used for unit testing.
+        /// </summary>
         public ScreenShareServer(ICommunicator communicator)
         {
-            UserId = "-";
+            userId = "-";
             timer = new Timer(10000);
             timer.Elapsed += OnTimeout;
             timer.AutoReset = true;
@@ -102,13 +105,13 @@ namespace ScreenSharing
                         if (timer.Enabled == false)
                             timer.Start();
                         var currScreen = frameQueue.Dequeue();
-                        if (UserId == "-")
+                        if (userId == "-")
                         {
                             // this is the case when server is idle and someone wants to share screen
-                            UserId = currScreen.userId;
+                            userId = currScreen.userId;
                             if (currScreen.messageType == 0)
                             {
-                                UserId = "-";
+                                userId = "-";
                                 timer.Stop();
                                 timer.Interval = 10000;
                             }
@@ -118,7 +121,7 @@ namespace ScreenSharing
                             _communicator.Send(data, "ScreenSharing");
                             Trace.WriteLine("[ScreenSharingServer] Data sent to Networking");
                         }
-                        else if (currScreen.userId != UserId)
+                        else if (currScreen.userId != userId)
                         {
                             // this is a case of simultaneous sharing and the user who is trying to share has to be rejected
                         }
@@ -126,7 +129,7 @@ namespace ScreenSharing
                         {
                             if (currScreen.messageType == 0)
                             {
-                                UserId = "-";
+                                userId = "-";
                                 timer.Stop();
                                 timer.Interval = 10000;
                             }
@@ -147,20 +150,20 @@ namespace ScreenSharing
         public void OnTimeout(object source, ElapsedEventArgs e)
         {
         
-                UserId = "-";
+                userId = "-";
                 frameQueue.Clear();
                 timer.Stop();
                 timer.Interval = 10000;
-            
-            
         }
 
+        /// <summary>
+        ///     Used to Dispose the object.
+        /// </summary>
         public void Dispose()
         {
             frameQueue.Clear();
             isSharing.Cancel();
             timer.Dispose();
         }
-
     }
 }
