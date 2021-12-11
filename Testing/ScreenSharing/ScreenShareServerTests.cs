@@ -29,7 +29,7 @@ namespace Testing.ScreenSharing
 
             ssServer.timer.Start();
             Thread.Sleep(10100);
-            Assert.AreEqual(ssServer.UserId, "-");
+            Assert.AreEqual(ssServer.userId, "-");
 
             ssServer.Dispose();
 
