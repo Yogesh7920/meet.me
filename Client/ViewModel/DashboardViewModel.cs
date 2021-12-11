@@ -73,7 +73,7 @@ namespace Client.ViewModel
 
             Trace.WriteLine("[UX] Initialized Dashboard Analytics");
         }
-        
+
         public IUXClientSessionManager GetClientSM()
         {
             return _clientSM;
@@ -103,7 +103,8 @@ namespace Client.ViewModel
                 _clientSM.GetAnalytics();
                 Trace.WriteLine("[UX] Obtained the latest analytics data");
 
-                if (_sessionAnalytics.chatCountForEachUser.Count > 0) { 
+                if (_sessionAnalytics.chatCountForEachUser.Count > 0)
+                {
                     _usersList = new List<int>(this._sessionAnalytics.chatCountForEachUser.Keys);
                     _messagesCountList = new List<int>(this._sessionAnalytics.chatCountForEachUser.Values);
                 }
@@ -114,12 +115,12 @@ namespace Client.ViewModel
                     _usersCountList = new List<int>(this._sessionAnalytics.userCountAtAnyTime.Values);
                 }
 
-                _latestSessionData =  _sessionData.UpdateSessionData(_latestSessionData);
+                _latestSessionData = _sessionData.UpdateSessionData(_latestSessionData);
 
                 _insincereMembers = _sessionAnalytics.insincereMembers;
                 messagesCount = _messagesCountList.AsQueryable().Sum();
                 participantsCount = _latestSessionData.users.Count;
-                engagementRate = CalculateEngagementRate(_messagesCountList, _usersList);
+                engagementRate = CalculateEngagementRate(_usersList, _messagesCountList);
 
                 UpdateUserNames(_latestSessionData, usernamesList);
 
@@ -157,11 +158,27 @@ namespace Client.ViewModel
             Trace.Assert(usersList != null, "[UX] Null parameter usersList in CalculateEngagementRate");
             Trace.Assert(messagesCountList != null, "[UX] Null parameter messagesCountList in CalculateEngagementRate");
 
-            float activeMembers = messagesCountList.Count(i => i > 0);
-            //Debug.WriteLine("Active Members:{0}, Participants: {1}", activeMembers, participantsCount);
-            float engagementRate = (float)(activeMembers / usersList.Count) * 100;
-            //Debug.WriteLine("Engagement Rate: {0}", engagementRate);
-            return engagementRate.ToString("0") + "%";
+            if (_latestSessionData != null)
+            {
+                float activeMembers = getActiveUsers(_latestSessionData.users, _sessionAnalytics.chatCountForEachUser);
+                float engagementRate = (float)(activeMembers / _latestSessionData.users.Count) * 100;
+                return engagementRate.ToString("0") + "%";
+            }
+
+            return "0%";
+        }
+
+        private int getActiveUsers(List<UserData> currentUsers, Dictionary<int, int> userMsgDict)
+        {
+            int activeCount = 0;
+            foreach (UserData user in currentUsers)
+            {
+                if (userMsgDict.ContainsKey(user.userID) && userMsgDict[user.userID] != 0)
+                {
+                    activeCount++;
+                }
+            }
+            return activeCount;
         }
 
         /// <summary>
@@ -199,20 +216,29 @@ namespace Client.ViewModel
             if (session != null)
             {
                 usernamesList.Clear();
-                foreach (UserData user in session.users)
+                bool found = false;
+             
+                foreach (int key in _sessionAnalytics.chatCountForEachUser.Keys)
                 {
-                    foreach (int key in _sessionAnalytics.chatCountForEachUser.Keys)
+                    foreach (UserData user in _latestSessionData.users)
                     {
+
                         if (key == user.userID)
                         {
-                            this.usernamesList.Add(user.username);
+                            this.usernamesList.Add(user.username + "(ID:" + key.ToString() + ")");
+                            found = true;
                         }
                     }
+                    if (found == false)
+                    {
+                        this.usernamesList.Add("Left User with ID: " + key.ToString());
+                    }
+                    found = false;
                 }
             }
             Trace.WriteLine("[UX] Updated the users list");
-        }      
-        
+        }
+
         /// <summary>
         /// Notifies view when property value changes
         /// </summary>
