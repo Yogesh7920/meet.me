@@ -143,6 +143,10 @@ namespace Dashboard.Client.SessionManagement
                     MeetingEnded?.Invoke();
                     return;
 
+                case "newID":
+                    SetClientID(deserializedObject);
+                    return;
+
                 default:
                     Trace.WriteLine("Received Invalid event type from the server");
                     return;
@@ -181,8 +185,7 @@ namespace Dashboard.Client.SessionManagement
                 }
             }
 
-            // upon successfull connection, the request to add the client is sent to the server side.
-            SendDataToServer("addClient", username);
+            _user = new(username, -1);
             Trace.WriteLine("[Client Dashboard] Adding Client to the session");
             return true;
         }
@@ -244,8 +247,8 @@ namespace Dashboard.Client.SessionManagement
             _screenShareClient.Dispose();
 
             Trace.WriteLine("[Client Dashboard] Removed the client from the client side.");
-            
-            
+
+
         }
 
         /// <summary>
@@ -322,6 +325,31 @@ namespace Dashboard.Client.SessionManagement
             }
         }
 
+        private void SetClientID(ServerToClientData receivedData)
+        {
+            if (_user.userID == -1)
+            {
+                lock (this)
+                {
+
+                    _user.userID = receivedData._user.userID;
+
+                    // upon successfull connection, the request to add the client is sent to the server side.
+                    SendDataToServer("addClient", _user.username, _user.userID);
+                    clientBoardStateManager.SetUser(_user.userID.ToString());
+                    Trace.WriteLine("[Client Dashboard] Whiteboard's user ID set.");
+
+                    if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
+                        _screenShareClient.SetUser(_user.userID.ToString(), _user.username);
+
+                    Trace.WriteLine("[Client Dashboard] ScreenShare's user ID and username set.");
+
+                    ContentClientFactory.SetUser(_user.userID);
+                    Trace.WriteLine("[Client Dashboard] Content's user ID set.");
+                }
+            }
+        }
+
         /// <summary>
         ///     Used to set/change the Client side UserData Object for testing and deubgging purposes.
         /// </summary>
@@ -339,6 +367,7 @@ namespace Dashboard.Client.SessionManagement
         public void SetSessionUsers(List<UserData> users)
         {
             _clientSessionData.users = users;
+
         }
 
         private void UpdateAnalytics(ServerToClientData receivedData)
@@ -399,25 +428,16 @@ namespace Dashboard.Client.SessionManagement
             // the old user (already present in the meeting) have their _user set.
             if (_user == null)
             {
+                //_user.username = user.username;
                 _user = user;
-
                 Trace.WriteLine("[Client Dashboard] Client added to the client session.");
 
-                clientBoardStateManager.SetUser(user.userID.ToString());
-                Trace.WriteLine("[Client Dashboard] Whiteboard's user ID set.");
-
-                if (Environment.GetEnvironmentVariable("TEST_MODE") != "E2E")
-                    _screenShareClient.SetUser(user.userID.ToString(), user.username);
-
-                Trace.WriteLine("[Client Dashboard] ScreenShare's user ID and username set.");
-
-                ContentClientFactory.SetUser(user.userID);
-                Trace.WriteLine("[Client Dashboard] Content's user ID set.");
+                
             }
 
             // The user received from the server side is equal to _user only in the case of 
             // client departure. So, the _user and received session data are set to null to indicate this departure
-            else if (_user.Equals(user))
+            else if (_user.Equals(user) && receivedData.eventType == "removeClient")
             {
                 _user = null;
                 Trace.WriteLine("[Client Dashboard] Client removed from the client session data.");

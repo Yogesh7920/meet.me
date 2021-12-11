@@ -8,13 +8,17 @@ An application as part of CS5617 Software Engineering project at IIT Palakkad
 ## Installation
 Follow the [installation](https://github.com/Yogesh7920/meet.me/wiki/2.-Installation) guide. 
 
-## To work over the internet
+## Host over the internet
 
 - Download [ngrok](https://ngrok.com/) 
 - Run the server and get port
 - `ngrok.exe tcp -region=in \<port>`
-- Get the ngrok IP, and it's port. e.g.: 0.tcp.in.ngrok.io:17000
+- Get the ngrok IP, and it's port. E.g.: 0.tcp.in.ngrok.io:17000
 - log in to client with the above credentials.
+
+## Host in fixed port
+- Set your environmental variables `MEETME_PORT` to desired fixed port.
+- E.g: `MEETME_PORT=8080`
 
 ## The Team
 

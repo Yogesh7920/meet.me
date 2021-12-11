@@ -113,9 +113,13 @@ namespace Dashboard.Server.SessionManagement
             lock (this)
             {
                 userCount += 1;
+                if (userCount == 1)
+                    _telemetry = testmode ? new Telemetry.Telemetry(this) : TelemetryFactory.GetTelemetryInstance();
+                UserData tempUser = new("dummy", userCount);
+                _communicator.AddClient(userCount.ToString(), socketObject);
+                SendDataToClient("newID", null, null, null, tempUser, userCount);
             }
 
-            _communicator.AddClient(userCount.ToString(), socketObject);
         }
 
 
@@ -254,7 +258,7 @@ namespace Dashboard.Server.SessionManagement
         private void ClientArrivalProcedure(ClientToServerData arrivedClient)
         {
             // create a new user and add it to the session. 
-            var user = CreateUser(arrivedClient.username);
+            var user = new UserData(arrivedClient.username, arrivedClient.userID);
             AddUserToSession(user);
 
             // Notify Telemetry about the change in the session object.
@@ -272,12 +276,14 @@ namespace Dashboard.Server.SessionManagement
         /// </summary>
         /// <param name="username"> The username of the user </param>
         /// <returns>An UserData object that contains a unique ID for the username provided. </returns>
-        private UserData CreateUser(string username)
+        private UserData CreateUser(string username, int userID)
         {
-            if (userCount == 1)
-                _telemetry = testmode ? new Telemetry.Telemetry(this) : TelemetryFactory.GetTelemetryInstance();
-            UserData user = new(username, userCount);
-            return user;
+            lock (this)
+            {
+                
+                UserData user = new(username, userID);
+                return user;
+            }
         }
 
         /// <summary>
@@ -502,7 +508,7 @@ namespace Dashboard.Server.SessionManagement
         /// <param name="sessionaAnalytics">The analytics of the session.</param>
         /// <param name="user">The user to broadcast/reply. </param>
         private void SendDataToClient(string eventName, SessionData sessionData, SummaryData summaryData,
-            SessionAnalytics sessionaAnalytics, UserData user)
+            SessionAnalytics sessionaAnalytics, UserData user, int userId = -1)
         {
             ServerToClientData serverToClientData;
             lock (this)
@@ -511,7 +517,10 @@ namespace Dashboard.Server.SessionManagement
                     new ServerToClientData(eventName, sessionData, summaryData, sessionaAnalytics, user);
                 var serializedSessionData = _serializer.Serialize(serverToClientData);
                 Trace.WriteLine("[Server Dashboard] Sending data to the client.");
-                _communicator.Send(serializedSessionData, moduleIdentifier);
+                if (userId == -1)
+                    _communicator.Send(serializedSessionData, moduleIdentifier);
+                else
+                    _communicator.Send(serializedSessionData, moduleIdentifier, userId.ToString());
             }
         }
     }
