@@ -1,6 +1,7 @@
 # Meet.me
 
 An application as part of CS5617 Software Engineering project at IIT Palakkad
+* [Video Demo](https://youtu.be/Sa7aRJC2wvc)
 * [Wiki](https://github.com/Yogesh7920/meet.me/wiki)
 
 ![stats](./images/stats.png)
